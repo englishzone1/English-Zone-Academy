@@ -1,0 +1,1744 @@
+# MASTER PROJECT PROMPT
+# ENGLISH ZONE — COMPLETE INTERNATIONAL ACADEMY PLATFORM
+
+## PROJECT INSTRUCTION
+
+Build a complete, premium, bilingual online English academy website and learning management platform named **ENGLISH ZONE**.
+
+This is a complete new project. Build it using a clean, stable, modular, scalable architecture.
+
+The final product must be a fully functional educational platform, not a static website, not a visual prototype, and not a collection of nonfunctional dashboard screens.
+
+The platform must include:
+- A professional public website.
+- A complete student portal.
+- A complete teacher portal.
+- A comprehensive Super Admin dashboard.
+- A learning management system.
+- Online tests and homework.
+- Student attendance and points.
+- English Zone Stars rewards system.
+- Advanced interactive avatar customization.
+- Monthly subscriptions and payment management.
+- Certificates and academic reports.
+- Real authentication and persistent database integration.
+- Responsive layouts for desktop, tablet, and mobile.
+- GitHub Pages deployment compatibility.
+
+IMPORTANT:
+Do not display, insert, or invent the founder's personal name anywhere in the website, public pages, branding, certificates, footer, metadata, or dashboards. Use academy branding and professional role titles only when needed.
+
+The academy's identity must remain **English Zone**.
+
+---
+
+# PART 1 — BRAND IDENTITY AND DESIGN
+
+## 1. Academy Identity
+
+Brand name: ENGLISH ZONE
+
+Official slogan:
+
+**Learn English. Speak with Confidence.**
+
+Brand positioning:
+A premium international online English academy offering structured English learning programs, individual lessons, small group classes, conversation training, and specialized English courses.
+
+Teaching format: Online only.
+
+Target audience:
+- Children.
+- Teenagers.
+- Adults.
+- International English learners.
+- Students seeking academic or professional English development.
+
+## 2. Visual Identity
+
+Create a Luxury Modern educational design inspired by prestigious international universities and premium educational institutions.
+
+Use:
+- Deep navy blue as the primary brand color.
+- Champagne gold as the elegant accent.
+- Warm white as the main background.
+- Refined neutral colors for secondary sections.
+
+Design requirements:
+- Professional typography.
+- Elegant spacing.
+- Premium cards and layouts.
+- Sophisticated buttons.
+- Subtle transitions and animations.
+- Consistent iconography.
+- Clear visual hierarchy.
+- Modern dashboard layouts.
+- Beautiful, high-quality images.
+- Professional educational illustrations.
+
+Avoid:
+- Generic website templates.
+- Excessive gradients.
+- Crowded layouts.
+- Childish design in adult-facing sections.
+- Unnecessary decoration.
+- AI-generated founder portraits.
+- Fake student photographs.
+- Fake testimonials.
+- Fake accreditation badges.
+
+Provide an editable image placeholder for the founder's real photograph.
+
+The administrator must be able to upload and change the academy logo and other branding assets.
+
+---
+
+# PART 2 — LANGUAGE AND RESPONSIVE EXPERIENCE
+
+## 3. Bilingual Website
+
+English must be the default language.
+
+Arabic must be fully supported.
+
+Include a clear language switcher.
+
+When Arabic is selected:
+- Switch the entire interface to RTL.
+- Correctly align menus, forms, icons, tables, and dashboard elements.
+- Use suitable Arabic typography.
+- Translate all buttons, labels, notifications, messages, and system feedback.
+
+When English is selected:
+- Use LTR layout.
+- Restore the complete English interface.
+
+Language selection must persist between sessions.
+
+Do not translate only the homepage. The entire platform must be bilingual.
+
+## 4. Responsive Design
+
+The website must be fully responsive on:
+
+1. Desktop.
+2. Laptop.
+3. Tablet.
+4. Mobile phone.
+
+Create optimized layouts rather than simply shrinking desktop screens.
+
+Requirements:
+- Responsive navigation.
+- Mobile-friendly dashboards.
+- Touch-friendly controls.
+- Readable tables on small screens.
+- Responsive forms.
+- Responsive avatar studio.
+- Responsive student portal.
+- Responsive teacher portal.
+- Responsive admin dashboard.
+
+Every feature must remain usable on mobile and tablet.
+
+---
+
+# PART 3 — PUBLIC WEBSITE
+
+## 5. Website Pages
+
+Create these complete public pages:
+
+1. Home.
+2. Programs.
+3. Curriculum.
+4. Pricing.
+5. Offers.
+6. About Us.
+7. Contact.
+8. FAQ.
+9. Testimonials.
+10. Certificates.
+11. Blog.
+12. Student Portal.
+13. Login.
+14. Registration.
+15. Placement Test.
+
+All public pages must be accessible without requiring visitors to register.
+
+## 6. Homepage
+
+Create a premium homepage containing:
+
+- Hero section.
+- Academy introduction.
+- Main slogan.
+- Explore Programs button.
+- Join Now button.
+- Take a Placement Test button.
+- Learning format overview.
+- Program categories.
+- Academy benefits.
+- Individual and group learning options.
+- Curriculum highlights.
+- Founder introduction section with editable photograph placeholder.
+- Testimonials section.
+- FAQ preview.
+- Contact information.
+- Footer and social media links.
+
+Use attractive, professional educational visuals.
+
+Do not invent statistics, student numbers, success rates, testimonials, ratings, or accreditations.
+
+Only display real information entered by the administrator.
+
+## 7. Contact and Social Links
+
+Use these exact contact links:
+
+WhatsApp:
+https://wa.me/84326853884
+
+Email:
+englishzoneabc123@gmail.com
+
+YouTube:
+https://youtube.com/@englishzonewithamal?si=qhhnT1Ws_grCKc2s
+
+Instagram:
+https://www.instagram.com/englishzoneabc?vrfl=MWVtaHBxNXQxanBoaQ==
+
+Discord:
+https://discord.gg/phjyFBRPp
+
+Facebook and Telegram:
+Create editable placeholders only. Do not invent URLs.
+
+All contact links must be editable from the admin dashboard.
+
+---
+
+# PART 4 — ACADEMIC PROGRAMS
+
+## 8. CEFR Levels
+
+The academy offers six main English proficiency levels:
+
+- A1 — Beginner.
+- A2 — Elementary.
+- B1 — Intermediate.
+- B2 — Upper-Intermediate.
+- C1 — Advanced.
+- C2 — Proficiency.
+
+Each main level is a complete six-month program.
+
+Each main level contains three internal stages.
+
+Each stage lasts two months.
+
+Example:
+
+A1:
+- A1.1 — Months 1–2.
+- A1.2 — Months 3–4.
+- A1.3 — Months 5–6.
+
+Apply the same structure to A2, B1, B2, C1, and C2.
+
+Total:
+- 6 main levels.
+- 18 internal stages.
+- 6 months per main level.
+- 2 months per internal stage.
+
+### CRITICAL ENROLLMENT RULE
+
+Students must select only one of the six main levels during registration:
+
+A1, A2, B1, B2, C1, or C2.
+
+Never show A1.1, A1.2, A1.3, or other internal stages as separate enrollment programs.
+
+The internal stages must appear inside:
+- Curriculum pages.
+- Student dashboards.
+- Progress reports.
+- Teacher dashboards.
+- Administration dashboards.
+
+Students advance through the three stages sequentially.
+
+An additional registration option must be available:
+
+**Not sure — I need a placement test.**
+
+## 9. Program Categories
+
+Create program pages for:
+
+- General English.
+- Conversation.
+- English for Kids.
+- Business English.
+- Private Lessons.
+- Small Group Courses.
+- Teacher Training.
+
+Each program page must contain:
+- Description.
+- Learning objectives.
+- Suitable students.
+- Learning format.
+- Duration.
+- Curriculum information.
+- Monthly price.
+- Registration button.
+
+The administrator must be able to manage all program content.
+
+---
+
+# PART 5 — CURRICULUM MANAGEMENT
+
+## 10. Curriculum Structure
+
+Create a structured curriculum for all six CEFR levels.
+
+Each level must have three internal stages.
+
+Each stage should support:
+- Units.
+- Lessons.
+- Grammar topics.
+- Vocabulary.
+- Speaking activities.
+- Listening activities.
+- Reading activities.
+- Writing activities.
+- Pronunciation.
+- Practical communication.
+- Assessments.
+- Learning objectives.
+
+Provide an elegant curriculum interface with clear progress indicators.
+
+The administrator and authorized teachers must be able to:
+- Add units.
+- Edit lessons.
+- Reorder units.
+- Upload learning resources.
+- Add assignments.
+- Assign assessments.
+- Publish or hide content.
+
+Do not invent a fixed number of units or lessons. Allow the academy to configure the actual curriculum.
+
+---
+
+# PART 6 — PRICING AND SUBSCRIPTIONS
+
+## 11. Individual Lesson Pricing
+
+All prices are monthly prices in USD.
+
+| Stage | Current monthly price | Original monthly price |
+|---|---:|---:|
+| A1.1 | $80 | $100 |
+| A1.2 | $85 | $100 |
+| A1.3 | $90 | $100 |
+| A2.1 | $95 | $135 |
+| A2.2 | $100 | $135 |
+| A2.3 | $105 | $135 |
+| B1.1 | $120 | $150 |
+| B1.2 | $120 | $150 |
+| B1.3 | $120 | $150 |
+| B2.1 | $135 | $180 |
+| B2.2 | $135 | $180 |
+| B2.3 | $135 | $180 |
+| C1.1 | $150 | $200 |
+| C1.2 | $150 | $200 |
+| C1.3 | $150 | $200 |
+| C2.1 | $165 | $230 |
+| C2.2 | $165 | $230 |
+| C2.3 | $165 | $230 |
+
+Display:
+- Current price prominently.
+- Original price crossed out.
+- Correct discount percentage calculated from the actual prices.
+
+Never use a generic discount calculation.
+
+## 12. Group Lesson Pricing
+
+| Stage | Monthly price |
+|---|---:|
+| A1.1 | $50 |
+| A1.2 | $55 |
+| A1.3 | $60 |
+| A2.1 | $65 |
+| A2.2 | $70 |
+| A2.3 | $75 |
+| B1.1 | $85 |
+| B1.2 | $85 |
+| B1.3 | $85 |
+| B2.1 | $95 |
+| B2.2 | $95 |
+| B2.3 | $95 |
+| C1.1 | $110 |
+| C1.2 | $110 |
+| C1.3 | $110 |
+| C2.1 | $125 |
+| C2.2 | $125 |
+| C2.3 | $125 |
+
+Do not display original crossed-out prices for group courses.
+
+## 13. Pricing Rules
+
+- All listed prices are monthly.
+- Students pay month by month.
+- Do not require six-month advance payment.
+- Individual prices change between stages according to the pricing table.
+- Group prices follow the exact table.
+- Prices must be editable by Super Admin.
+- Students must see the price applicable to their current stage.
+- Future-stage prices may be displayed for information.
+- Do not automatically charge for future stages without approval.
+
+## 14. Discounts and Offers
+
+Configure:
+- Package discount: 15%.
+- Default promotional discount: 10%, editable.
+- Custom offers.
+- Scheduled offers.
+- Start and end dates.
+- Offer activation and deactivation.
+
+Do not combine discounts automatically unless Super Admin enables that option.
+
+The admin must be able to manage all discounts and promotional campaigns.
+
+---
+
+# PART 7 — LESSONS AND TIMETABLES
+
+## 15. Lesson Duration
+
+Individual lesson:
+**60 minutes.**
+
+Group lesson:
+**90 minutes.**
+
+Automatically display the correct duration in:
+- Program pages.
+- Pricing cards.
+- Registration forms.
+- Student timetable.
+- Teacher timetable.
+- Admin dashboard.
+
+The administrator can edit lesson durations.
+
+Weekly lesson frequency must be a separate configurable setting.
+
+Changing lesson duration must not automatically change the number of weekly lessons.
+
+## 16. Scheduling System
+
+Create a scheduling system for:
+- Individual lessons.
+- Group classes.
+- Teacher availability.
+- Student schedules.
+- Class assignments.
+- Rescheduling.
+- Cancellations.
+- Session records.
+- Attendance.
+
+Prevent scheduling conflicts where possible.
+
+Allow authorized administrators to manage timetables.
+
+---
+
+# PART 8 — REGISTRATION AND AUTHENTICATION
+
+## 17. Student Registration
+
+Visitors can browse the website without creating accounts.
+
+Join Now opens a complete registration form.
+
+Fields:
+- Full name.
+- Age.
+- Country.
+- WhatsApp number.
+- Email.
+- Main CEFR level: A1–C2 only.
+- Learning goal.
+- Learning format: Individual or Group.
+- Placement test option.
+
+Do not display internal stages as registration choices.
+
+After submission:
+1. Save the registration request.
+2. Display a confirmation message.
+3. Notify the administrator.
+4. Allow the student to take a placement test if required.
+5. Allow the administrator to review the request.
+6. Approve or reject the registration.
+7. Assign the student to a program and teacher.
+8. Create or activate the student account.
+9. Send access instructions.
+
+Include a WhatsApp registration option with a prefilled message.
+
+## 18. Authentication
+
+Use Firebase Authentication.
+
+Support:
+- Email and password.
+- Google sign-in.
+- Phone authentication only if fully configured and supported.
+
+Implement:
+- Login.
+- Logout.
+- Password reset.
+- Protected routes.
+- Session persistence.
+- Role-based access.
+
+Do not display a login method as active until its configuration is complete and tested.
+
+---
+
+# PART 9 — STUDENT PORTAL
+
+## 19. Student Dashboard
+
+Build a premium, personalized student dashboard.
+
+Each student must only see their own information.
+
+Include:
+
+1. Personal profile.
+2. Enrolled program.
+3. Main CEFR level.
+4. Current internal stage.
+5. Curriculum.
+6. Learning progress.
+7. Timetable.
+8. Attendance.
+9. Points.
+10. Achievements.
+11. Star of the Week.
+12. Star of the Month.
+13. Badges.
+14. Online tests.
+15. Homework.
+16. Homework submissions.
+17. Grades.
+18. Teacher feedback.
+19. Progress reports.
+20. Class recordings.
+21. Learning resources.
+22. Announcements.
+23. Certificates.
+24. Avatar Studio.
+25. Subscription information.
+26. Payment status.
+
+Create clear visual indicators for:
+- Completed lessons.
+- Upcoming lessons.
+- Pending assignments.
+- Completed tests.
+- Attendance.
+- Achievements.
+- Learning progress.
+
+Students must never be able to modify grades, official attendance records, points transactions, or administrative data.
+
+---
+
+# PART 10 — TEACHER PORTAL
+
+## 20. Teacher Dashboard
+
+Create a dedicated teacher workspace.
+
+Teachers can access only their assigned classes and students.
+
+Include:
+- Assigned groups.
+- Individual students.
+- Timetable.
+- Attendance.
+- Points.
+- Homework.
+- Online tests.
+- Gradebook.
+- Student progress.
+- Feedback.
+- Class announcements.
+- Learning resources.
+- Session records.
+
+Teachers can manage authorized academic activities.
+
+Teachers must not have Super Admin permissions.
+
+---
+
+# PART 11 — SUPER ADMIN DASHBOARD
+
+## 21. Complete Administration System
+
+Create a comprehensive admin dashboard with a modern, professional interface.
+
+The Super Admin must be able to manage the entire academy without programming.
+
+Include these modules:
+
+1. Overview and analytics.
+2. Students.
+3. Teachers.
+4. Registration requests.
+5. Programs.
+6. CEFR levels.
+7. Internal stages.
+8. Curriculum.
+9. Units and lessons.
+10. Classes and groups.
+11. Timetables.
+12. Attendance.
+13. English Zone Stars.
+14. Points and rewards.
+15. Weekly stars.
+16. Monthly stars.
+17. Tests.
+18. Homework.
+19. Gradebook.
+20. Progress reports.
+21. Learning resources.
+22. Recordings.
+23. Certificates.
+24. Badges.
+25. Pricing.
+26. Offers.
+27. Subscriptions.
+28. Payments.
+29. Invoices.
+30. Blog.
+31. Testimonials.
+32. FAQs.
+33. Announcements.
+34. Notifications.
+35. Avatar assets.
+36. Backgrounds.
+37. Academy branding.
+38. Website content.
+39. User roles.
+40. Security and settings.
+
+### Management functionality
+
+All relevant modules must support real:
+- Create.
+- Read.
+- Update.
+- Delete.
+
+Do not create buttons that do nothing.
+
+Do not populate the production database with fake students or fictional records.
+
+Provide search, filtering, sorting, pagination, and clear empty states where appropriate.
+
+---
+
+# PART 12 — ENGLISH ZONE STARS
+
+## 22. Points and Motivation System
+
+Build a dedicated motivation system inspired by ClassDojo, but fully branded as English Zone Stars.
+
+Create an engaging, polished student experience.
+
+### Points management
+
+Teachers and authorized administrators can:
+- Add points.
+- Deduct points.
+- Select a reason.
+- Add notes.
+- View transaction history.
+
+Suggested default point values:
+
+| Activity | Points |
+|---|---:|
+| Attendance | +5 |
+| Homework completion | +10 |
+| Class participation | +5 |
+| Speaking English | +5 |
+| Helping a classmate | +3 |
+| Breaking classroom rules | -3 |
+
+All values must be editable by Super Admin.
+
+### Rules
+
+- Students cannot change their own points.
+- Record the reason for every transaction.
+- Record the person who made each change.
+- Record transaction date and time.
+- Prevent duplicate attendance points for the same student and session.
+- Maintain an audit log.
+- Allow authorized corrections with a recorded reason.
+
+## 23. Leaderboard Privacy
+
+The selected system settings are:
+
+- Student account creation: Self-registration.
+- Leaderboard visibility: Private.
+- Star rewards: Recognition only.
+
+Therefore:
+
+Students can create their own accounts through self-registration, subject to academy approval and account verification.
+
+The leaderboard must be private.
+
+Each student sees their own points and personal achievements.
+
+Students must not see a public academy-wide ranking or another student's private point totals.
+
+Teachers and administrators may access authorized performance information.
+
+## 24. Weekly and Monthly Recognition
+
+Include:
+- Star of the Week.
+- Star of the Month.
+- Recognition badges.
+- Achievement certificates.
+- Winner archives.
+
+Calculate rankings within the relevant class or group.
+
+The administrator must review and confirm winners.
+
+The reward system is recognition-based:
+- Special badge.
+- Recognition certificate.
+- Achievement display.
+- Personal congratulation message.
+
+Do not automatically award cash or academic grade benefits.
+
+The administrator must be able to manage recognition settings.
+
+---
+
+# PART 13 — ADVANCED AVATAR STUDIO
+
+## 25. Avatar Creator
+
+This is a major feature.
+
+Do not create a primitive avatar selector.
+
+Build a premium, modern, visually rich, interactive Avatar Studio.
+
+The avatar must be the central focus of the interface.
+
+Display:
+- A large avatar preview in the center.
+- Customization categories around the avatar.
+- Clear visual controls.
+- Immediate live preview.
+- Smooth transitions.
+- Save and reset controls.
+
+The interface must be intuitive for children, teenagers, and adults.
+
+## 26. Gender and Character Options
+
+Allow students to choose:
+- Male avatar.
+- Female avatar.
+
+Include diverse, friendly, age-appropriate character designs for:
+- Children.
+- Teenagers.
+- Adults.
+
+Neither gender nor hijab use should be forced as the default.
+
+## 27. Skin and Facial Customization
+
+Allow independent customization of:
+- Skin tone.
+- Face shape.
+- Eyes.
+- Eye color.
+- Eyebrows.
+- Facial features.
+- Hair style.
+- Hair color.
+- Accessories.
+
+Provide a wide range of natural skin tones.
+
+Changing one feature must not unintentionally change another.
+
+## 28. Hijab Customization
+
+Provide a comprehensive hijab collection.
+
+Allow:
+- Hijab and non-hijab options.
+- Multiple hijab styles.
+- Different wrapping designs.
+- Different coverage styles.
+- Wide hijab color palette.
+- Pastel colors.
+- Neutral colors.
+- Elegant colors.
+- Optional subtle patterns.
+- Optional textures.
+
+Hijab colors must be independently changeable.
+
+When a hijab is selected, hair should be hidden or naturally adjusted so the avatar looks visually coherent.
+
+Hijab choices must not change skin tone, face, or unrelated features.
+
+## 29. Clothing Wardrobe
+
+Create a diverse wardrobe.
+
+Female options:
+- Abayas.
+- Long dresses.
+- Long skirts.
+- Modest shirts.
+- Blouses.
+- Long-sleeved tops.
+- Cardigans.
+- Jackets.
+- Wide-leg trousers.
+- Casual outfits.
+- Formal outfits.
+- Elegant occasion outfits.
+
+Male options:
+- Shirts.
+- T-shirts.
+- Trousers.
+- Jackets.
+- Casual outfits.
+- Formal outfits.
+- Suitable accessories.
+
+Allow independent clothing color selection.
+
+Allow compatible clothing combinations.
+
+Provide coordinated color options without forcing users to accept suggested combinations.
+
+## 30. Background Customization
+
+Create a high-quality background collection.
+
+Include:
+- Modern study rooms.
+- Beautiful libraries.
+- Creative learning spaces.
+- Elegant academic environments.
+- Nature backgrounds.
+- Colorful child-friendly environments.
+- Minimalist designs.
+- Seasonal backgrounds.
+- Achievement-themed backgrounds.
+
+The avatar must remain visually clear and prominent against every background.
+
+The administrator must be able to add, remove, enable, disable, and manage background assets.
+
+## 31. Avatar Controls
+
+Include:
+- Save avatar.
+- Reset avatar.
+- Preview changes.
+- Random outfit.
+- Random appearance.
+- Select categories.
+- Undo changes where possible.
+
+Save every student's configuration to Firebase.
+
+Restore the exact appearance after login and page refresh.
+
+Students must be able to update their avatar whenever they want.
+
+The interface must work on computer, tablet, and mobile.
+
+Desktop:
+- Large centered avatar.
+- Side customization panels.
+
+Tablet:
+- Balanced avatar and control layout.
+
+Mobile:
+- Prominent avatar preview.
+- Easy bottom or collapsible customization panel.
+- Touch-friendly controls.
+
+Do not make the avatar tiny on mobile.
+
+## 32. Unlockable Cosmetic Items
+
+Prepare optional special items:
+- Special hijabs.
+- Special outfits.
+- Accessories.
+- Backgrounds.
+
+These may be unlocked through achievements such as:
+- Star of the Week.
+- Star of the Month.
+- Special academy achievements.
+
+Super Admin can enable, disable, and manage unlockable items.
+
+Cosmetic items must never affect:
+- Grades.
+- Attendance.
+- Academic scores.
+- Points totals.
+
+They are purely visual rewards.
+
+Use high-quality visual assets or a modular avatar rendering system.
+
+Do not rely on emoji as the final avatar design.
+
+---
+
+# PART 14 — ONLINE TESTING SYSTEM
+
+## 33. Tests and Assessments
+
+Create an integrated online testing system.
+
+Authorized teachers and administrators can:
+- Create tests.
+- Edit tests.
+- Assign tests.
+- Set deadlines.
+- Set time limits.
+- Review results.
+- View submissions.
+- Publish grades.
+
+Support question types:
+- Multiple choice.
+- True or false.
+- Matching.
+- Fill in the blanks.
+- Short answer.
+- Written response.
+
+## 34. Automatic Grading
+
+Automatically grade objective questions.
+
+Written answers must be reviewed by a teacher.
+
+Save:
+- Student answers.
+- Submission time.
+- Score.
+- Teacher feedback.
+- Test status.
+- Attempts where applicable.
+
+Display results in the student gradebook.
+
+Do not let students modify published grades.
+
+---
+
+# PART 15 — HOMEWORK MANAGEMENT
+
+## 35. Homework System
+
+Teachers can:
+- Create assignments.
+- Edit assignments.
+- Assign to groups or students.
+- Add instructions.
+- Attach learning resources.
+- Set due dates.
+- Review submissions.
+- Add corrections.
+- Leave feedback.
+- Approve or request resubmission.
+
+Students can:
+- View assignments.
+- Submit answers.
+- Upload permitted files.
+- View deadlines.
+- Check submission status.
+- Read teacher feedback.
+
+Approved homework can award points according to academy settings.
+
+Integrate homework with:
+- Student portal.
+- Teacher dashboard.
+- Gradebook.
+- English Zone Stars.
+
+Do not create a duplicate homework module if a functional existing module is already implemented.
+
+---
+
+# PART 16 — GRADEBOOK AND PROGRESS
+
+## 36. Student Academic Records
+
+Maintain an individual academic record for each student.
+
+Include:
+- Test results.
+- Homework scores.
+- Attendance.
+- Speaking performance.
+- Participation.
+- Teacher feedback.
+- Curriculum progress.
+- Completed stages.
+- Areas requiring improvement.
+
+## 37. Monthly Reports
+
+Generate monthly student progress reports.
+
+Allow teachers and administrators to:
+- View reports.
+- Edit teacher comments.
+- Review progress.
+- Export reports.
+
+Students should see their own published reports only.
+
+---
+
+# PART 17 — CERTIFICATES AND BADGES
+
+## 38. Certificate System
+
+Create a professional certificate management module.
+
+Certificates must support:
+- English Zone branding.
+- Student name.
+- Completed program.
+- Achievement.
+- Issue date.
+- Unique certificate ID.
+- Authorized signature or role title.
+
+Do not insert the founder's personal name.
+
+Use a professional role title or authorized academy signature field.
+
+Allow:
+- Certificate template management.
+- Preview.
+- Approval.
+- PDF generation.
+- Download.
+- Verification through certificate ID.
+
+Certificates must only be issued according to defined completion and approval rules.
+
+## 39. Badges
+
+Create a badge collection for:
+- Attendance.
+- Homework completion.
+- Speaking achievements.
+- Participation.
+- Progress milestones.
+- Star of the Week.
+- Star of the Month.
+
+Allow the administrator to manage badge names, images, criteria, and visibility.
+
+---
+
+# PART 18 — PAYMENTS AND SUBSCRIPTIONS
+
+## 40. Payment Management
+
+Create a monthly subscription and payment management module.
+
+Configurable payment methods:
+
+- Bank transfer.
+- E-wallet.
+- Secure card payment gateway.
+- PayPal.
+- Manual payment verification.
+
+Include:
+- Monthly subscription records.
+- Invoices.
+- Payment status.
+- Payment history.
+- Due dates.
+- Renewal reminders.
+- Manual approval.
+- Rejection.
+- Payment notes.
+
+Never store raw card details.
+
+Never claim a payment gateway is active until its official integration and credentials have been configured and tested.
+
+## 41. Subscription Rules
+
+- Students pay monthly.
+- No mandatory six-month upfront payment.
+- Current-stage price applies.
+- Future-stage pricing must follow the approved table.
+- Manual payment status must be manageable.
+- Payment history must be stored securely.
+
+---
+
+# PART 19 — NOTIFICATIONS AND COMMUNICATION
+
+## 42. Notification System
+
+Create notifications for:
+
+- New registrations.
+- Registration approvals.
+- Registration rejections.
+- Upcoming lessons.
+- Schedule changes.
+- Homework assignments.
+- Homework deadlines.
+- Test assignments.
+- Test results.
+- Teacher feedback.
+- Attendance.
+- Points awarded.
+- Achievements.
+- Star recognition.
+- Subscription due dates.
+- Payment confirmation.
+
+Provide an announcements center for students and teachers.
+
+Allow administrators to control notification visibility.
+
+Do not claim email or push notifications are operational until the relevant delivery service is configured.
+
+---
+
+# PART 20 — BLOG AND WEBSITE CONTENT
+
+## 43. Content Management
+
+Allow administrators to manage:
+- Blog posts.
+- Categories.
+- Articles.
+- FAQs.
+- Testimonials.
+- Homepage sections.
+- Program descriptions.
+- Images.
+- Offers.
+- Contact information.
+- Social media links.
+
+Support:
+- Drafts.
+- Publishing.
+- Editing.
+- Unpublishing.
+- Deletion.
+
+The public website must display only approved and published content.
+
+---
+
+# PART 21 — DATABASE AND TECHNICAL ARCHITECTURE
+
+## 44. Technology Stack
+
+Preferred architecture:
+
+Frontend:
+- React.
+- TypeScript.
+- Modern CSS.
+- Vite.
+
+Backend:
+- Firebase Authentication.
+- Cloud Firestore.
+- Firebase Storage.
+- Cloud Functions when genuinely needed.
+
+Use modular components and organized folders.
+
+Separate:
+- Public website.
+- Student portal.
+- Teacher portal.
+- Admin dashboard.
+- Shared UI components.
+- Authentication.
+- Database services.
+- Avatar system.
+- Learning management modules.
+
+Avoid putting the entire application in one large file.
+
+## 45. Real Persistent Data
+
+Use Firebase for persistent application data.
+
+Do not rely on:
+- Local storage as the primary database.
+- Hardcoded students.
+- Temporary mock records.
+- Static point totals.
+- Fake authentication.
+- Simulated payment confirmations.
+
+Local caching may be used for performance, but the database remains the source of truth.
+
+Provide useful empty states when there is no data.
+
+## 46. Data Structure
+
+Design a clear Firestore data model for:
+
+- Users.
+- Students.
+- Teachers.
+- Roles.
+- Registration requests.
+- Programs.
+- Levels.
+- Stages.
+- Curriculum.
+- Units.
+- Lessons.
+- Groups.
+- Classes.
+- Sessions.
+- Attendance.
+- Points transactions.
+- Achievements.
+- Leaderboards.
+- Avatar profiles.
+- Avatar assets.
+- Tests.
+- Questions.
+- Submissions.
+- Homework.
+- Homework submissions.
+- Grades.
+- Reports.
+- Recordings.
+- Certificates.
+- Badges.
+- Payments.
+- Subscriptions.
+- Invoices.
+- Announcements.
+- Notifications.
+- Blog content.
+- Offers.
+- Academy settings.
+- Audit logs.
+
+Use appropriate document IDs, timestamps, references, and ownership fields.
+
+## 47. Security
+
+Implement secure role-based access.
+
+Roles:
+
+SUPER ADMIN:
+Full academy control.
+
+TEACHER:
+Access only to assigned classes, students, and authorized academic operations.
+
+STUDENT:
+Access only to personal profile, learning materials, submissions, grades, points, achievements, and certificates.
+
+Security requirements:
+- Firebase Authentication.
+- Firestore Security Rules.
+- Storage Security Rules.
+- Server-side validation for sensitive actions.
+- Role verification.
+- Ownership checks.
+- Audit logs.
+- Protection of private student information.
+
+Do not rely only on hiding buttons or pages in the frontend.
+
+Students must never access other students' private records.
+
+Teachers must never gain Super Admin access.
+
+Never expose private service account keys or backend secrets in frontend code or GitHub.
+
+---
+
+# PART 22 — ADMIN SETTINGS
+
+## 48. Centralized Configuration
+
+Provide an administration settings area to control:
+
+- Academy logo.
+- Branding.
+- Website colors where permitted.
+- Founder profile and photograph.
+- Contact details.
+- Language settings.
+- Programs.
+- CEFR levels.
+- Internal stages.
+- Curriculum.
+- Pricing.
+- Discounts.
+- Lesson duration.
+- Weekly lesson frequency.
+- Class capacity.
+- Teachers.
+- Students.
+- Groups.
+- Points.
+- Rewards.
+- Star recognition.
+- Avatar assets.
+- Hijab collection.
+- Clothing.
+- Backgrounds.
+- Certificates.
+- Payment options.
+- Notifications.
+- Website content.
+- Social links.
+
+Changes must be saved persistently and reflected in the relevant parts of the application.
+
+---
+
+# PART 23 — GITHUB PAGES DEPLOYMENT
+
+## 49. Hosting
+
+The website must be deployed through GitHub Pages.
+
+GitHub username:
+englishzone1
+
+Repository:
+English-zone-try
+
+Expected public URL:
+
+https://englishzone1.github.io/English-zone-try/
+
+Use GitHub Actions for deployment.
+
+Use official GitHub Pages deployment actions.
+
+The workflow must:
+- Build the project.
+- Upload the correct production output.
+- Deploy to GitHub Pages.
+- Run automatically after changes are pushed to the main branch.
+- Support manual deployment when needed.
+
+## 50. Vite Configuration
+
+The application must work in both development and production.
+
+Development:
+base: '/'
+
+GitHub Pages production:
+base: '/English-zone-try/'
+
+Use environment-aware configuration.
+
+Do not hardcode the production base path in a way that breaks Google AI Studio Preview or local development.
+
+Check:
+- Vite configuration.
+- Package scripts.
+- Asset paths.
+- React routing.
+- Direct page reloads.
+- index.html.
+- 404.html.
+- .nojekyll.
+- GitHub Actions workflow.
+
+All images, CSS, JavaScript, fonts, and logos must load correctly under the repository subpath.
+
+## 51. SPA Routing
+
+Support:
+- Homepage.
+- Programs.
+- Curriculum.
+- Pricing.
+- Login.
+- Registration.
+- Student portal.
+- Teacher portal.
+- Admin dashboard.
+
+Direct page refreshes must not produce a blank screen or broken route.
+
+Use a suitable GitHub Pages fallback strategy.
+
+Ensure the fallback works with the configured router and base path.
+
+## 52. Backend Hosting Limitations
+
+GitHub Pages hosts static frontend files.
+
+It does not run a Node.js backend or server-side functions.
+
+Keep Firebase responsible for supported authentication and database operations.
+
+If additional backend services or Cloud Functions are needed, host them on a suitable external service.
+
+Do not pretend that a backend is running directly on GitHub Pages.
+
+---
+
+# PART 24 — DEVELOPMENT AND QUALITY REQUIREMENTS
+
+## 53. Stable Architecture
+
+Build the project with:
+- Modular components.
+- Reusable UI.
+- Organized files.
+- Typed data models.
+- Clear service layers.
+- Reusable forms.
+- Error handling.
+- Loading states.
+- Empty states.
+- Success feedback.
+- Responsive components.
+
+Avoid unnecessary dependencies.
+
+Avoid oversized components.
+
+Do not make unrelated code changes when fixing a specific feature.
+
+## 54. Functional Requirements
+
+Every visible button must perform its intended action.
+
+Every form must validate input.
+
+Every important action must provide feedback.
+
+Every saved record must persist correctly.
+
+Every dashboard must show data based on the authenticated user's role.
+
+Do not use placeholder buttons pretending to work.
+
+Do not mark incomplete features as completed.
+
+## 55. Testing
+
+Test:
+
+- Homepage.
+- Navigation.
+- Arabic and English switching.
+- Registration.
+- Login.
+- Logout.
+- Password reset.
+- Role permissions.
+- Student dashboard.
+- Teacher dashboard.
+- Admin dashboard.
+- Pricing.
+- Stage progression.
+- Timetables.
+- Attendance.
+- Points.
+- Weekly and monthly recognition.
+- Avatar saving.
+- Avatar restoration.
+- Hijab customization.
+- Clothing customization.
+- Background customization.
+- Online tests.
+- Automatic grading.
+- Written answer review.
+- Homework submission.
+- Gradebook.
+- Reports.
+- Certificates.
+- Payments.
+- Notifications.
+- Responsive layouts.
+
+Test both development and production separately.
+
+Do not claim that a feature is functional until it has actually been tested.
+
+---
+
+# PART 25 — BUILD THE PROJECT IN CONTROLLED PHASES
+
+Do not attempt to generate the entire platform in one uncontrolled code operation.
+
+Build in these phases while preserving the full specification.
+
+### PHASE 1 — FOUNDATION AND PUBLIC WEBSITE
+
+Build:
+- Project structure.
+- Brand identity.
+- Navigation.
+- Responsive design.
+- Homepage.
+- Programs.
+- Curriculum.
+- Pricing.
+- Offers.
+- About.
+- Contact.
+- FAQ.
+- Blog.
+- Arabic and English support.
+
+Verify the development server and production build before continuing.
+
+### PHASE 2 — FIREBASE AND AUTHENTICATION
+
+Build:
+- Firebase configuration.
+- Authentication.
+- Database connection.
+- Role-based access.
+- Security rules.
+- Student registration.
+- Admin account setup.
+
+Test all account flows.
+
+### PHASE 3 — ADMINISTRATION AND ACADEMIC MANAGEMENT
+
+Build:
+- Admin dashboard.
+- Student management.
+- Teacher management.
+- Programs.
+- Levels.
+- Stages.
+- Curriculum.
+- Classes.
+- Groups.
+- Pricing.
+- Registration approvals.
+
+Test CRUD operations.
+
+### PHASE 4 — STUDENT AND TEACHER PORTALS
+
+Build:
+- Student portal.
+- Teacher portal.
+- Timetables.
+- Attendance.
+- Learning resources.
+- Progress.
+
+Test permissions and data ownership.
+
+### PHASE 5 — TESTS AND HOMEWORK
+
+Build:
+- Online tests.
+- Question editor.
+- Automatic grading.
+- Written answer review.
+- Homework.
+- Submissions.
+- Teacher feedback.
+- Gradebook.
+
+Test the complete student-to-teacher workflow.
+
+### PHASE 6 — ENGLISH ZONE STARS
+
+Build:
+- Points.
+- Point history.
+- Audit logs.
+- Private leaderboards.
+- Star of the Week.
+- Star of the Month.
+- Recognition badges.
+- Winner archives.
+
+Test that students cannot change their own points.
+
+### PHASE 7 — AVATAR STUDIO
+
+Build:
+- Male and female avatars.
+- Skin tones.
+- Facial features.
+- Hairstyles.
+- Hijab styles.
+- Hijab colors.
+- Modest clothing.
+- Male clothing.
+- Accessories.
+- Backgrounds.
+- Random outfit.
+- Save and restore.
+- Unlockable cosmetic items.
+
+Test on desktop, tablet, and mobile.
+
+### PHASE 8 — CERTIFICATES AND PAYMENTS
+
+Build:
+- Certificates.
+- Verification.
+- Badges.
+- Monthly subscriptions.
+- Invoices.
+- Payment records.
+- Manual verification.
+- Payment gateway integration where configured.
+
+### PHASE 9 — FINAL TESTING AND DEPLOYMENT
+
+Verify:
+- All routes.
+- All roles.
+- All forms.
+- All database operations.
+- All security rules.
+- Arabic and English.
+- Responsive design.
+- Development server.
+- Production build.
+- GitHub Actions.
+- Live GitHub Pages website.
+
+---
+
+# FINAL DELIVERY REQUIREMENTS
+
+The final result must be a complete, professional, premium, bilingual English academy platform.
+
+The platform must include:
+
+1. Public academy website.
+2. Six CEFR programs and 18 internal stages.
+3. Accurate monthly pricing.
+4. Individual and group learning.
+5. Student registration and authentication.
+6. Student portal.
+7. Teacher portal.
+8. Super Admin dashboard.
+9. Curriculum management.
+10. Timetables.
+11. Attendance.
+12. English Zone Stars.
+13. Private student points and recognition.
+14. Advanced Avatar Studio.
+15. Male and female avatar options.
+16. Hijab and modest fashion customization.
+17. Custom backgrounds.
+18. Online tests.
+19. Automatic objective grading.
+20. Homework management.
+21. Teacher feedback.
+22. Gradebook.
+23. Monthly reports.
+24. Certificates.
+25. Payments and subscriptions.
+26. Notifications.
+27. Arabic and English support.
+28. Firebase persistence and security.
+29. Responsive desktop, tablet, and mobile experience.
+30. GitHub Pages deployment.
+
+## FINAL NON-NEGOTIABLE INSTRUCTIONS
+
+- Do not include the founder's personal name anywhere.
+- Do not rebuild the same modules repeatedly.
+- Do not replace real functionality with mock data.
+- Do not use fake authentication.
+- Do not invent academy statistics or testimonials.
+- Do not change the approved prices.
+- Do not change the six-level, 18-stage academic structure.
+- Do not expose private student information.
+- Do not let students edit their grades or points.
+- Do not make the avatar system primitive.
+- Do not create decorative buttons without functionality.
+- Do not claim that Firebase, payment gateways, or deployment are working unless tested.
+- Do not break the development preview when configuring GitHub Pages.
+- Do not delete working files without a clear technical reason.
+- Do not attempt all phases in one uncontrolled build.
+
+Start by establishing the project architecture and completing PHASE 1.
+
+After PHASE 1, run the development server and production build, verify the public website, and report the results.
+
+Wait for approval before moving to the next major phase.
+
+The goal is a reliable, scalable, fully functional academy platform under the English Zone brand.

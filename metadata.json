@@ -1,0 +1,6 @@
+{
+  "name": "English Zone - International Academy",
+  "description": "Premium bilingual online English academy platform offering structured CEFR programs, interactive learning, and personalized progress.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
