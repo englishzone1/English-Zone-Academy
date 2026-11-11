@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Image as ImageIcon
 } from 'lucide-react';
+import { EnglishZoneEmblem } from '../components/common/Logo';
 
 interface AboutPageProps {
   navigate: (route: string) => void;
@@ -126,8 +127,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
             {/* Image Placeholder */}
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative w-full max-w-xs aspect-[4/5] rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 bg-[#060D1A] flex flex-col items-center justify-center p-6 text-center">
-                <div className="w-20 h-20 rounded-full bg-[#162B4D] border-2 border-[#D4AF37] flex items-center justify-center mb-3">
-                  <GraduationCap className="w-10 h-10 text-[#D4AF37]" />
+                <div className="mb-3">
+                  <EnglishZoneEmblem sizeClass="w-20 h-20" glow={true} />
                 </div>
                 <span className="font-serif-luxury font-bold text-base text-[#F3E5AB]">
                   {t.founder.roleTitle}

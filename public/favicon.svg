@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF4C4" />
+      <stop offset="30%" stop-color="#F5D77F" />
+      <stop offset="70%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#8F6A10" />
+    </linearGradient>
+    <radialGradient id="navy" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#183664" />
+      <stop offset="100%" stop-color="#0A192F" />
+    </radialGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF9D8" />
+      <stop offset="50%" stop-color="#F5D77F" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+    <linearGradient id="arrow" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D4AF37" />
+      <stop offset="60%" stop-color="#F5D77F" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#rim)" />
+  <circle cx="50" cy="50" r="43" fill="url(#navy)" />
+  <circle cx="50" cy="50" r="39" fill="none" stroke="url(#gold)" stroke-width="0.8" opacity="0.6" />
+  
+  <!-- Book (LEARN) -->
+  <path d="M 23 71.5 L 23 74 C 33 77.5 43 78 50 75 C 57 78 67 77.5 77 74 L 77 71.5 C 67 75 57 75.5 50 73 C 43 75.5 33 75 23 71.5 Z" fill="url(#gold)" />
+  <path d="M 50 60 C 42 63.5 32 62.5 22 57.5 L 22 69 C 32 74 42 75 50 71.5 Z" fill="#FAF8F5" />
+  <path d="M 50 60 C 58 63.5 68 62.5 78 57.5 L 78 69 C 68 74 58 75 50 71.5 Z" fill="#E8E4DA" />
+  <path d="M 50 59.5 L 50 72.5" stroke="url(#gold)" stroke-width="1.8" stroke-linecap="round" />
+
+  <!-- Speech Bubble with Star (SPEAK) -->
+  <path d="M 37.5 19 C 46.5 19 54 26 54 34.5 C 54 38.6 52.3 42.4 49.3 45.2 L 51.5 53.5 L 43.6 49.5 C 41.7 50.1 39.6 50.5 37.5 50.5 C 28.5 50.5 21 43.5 21 34.5 C 21 26 28.5 19 37.5 19 Z" fill="url(#rim)" />
+  <path d="M 37.5 21 C 45 21 51.5 27 51.5 34.5 C 51.5 38 50 41.2 47.5 43.6 L 49.2 49.8 L 43 46.7 C 41.2 47.2 39.4 47.5 37.5 47.5 C 30 47.5 23.5 41.5 23.5 34.5 C 23.5 27 30 21 37.5 21 Z" fill="#0E2344" />
+  <polygon points="37.5,27.2 39.6,31.7 44.5,32.4 40.9,35.9 41.8,40.8 37.5,38.5 33.2,40.8 34.1,35.9 30.5,32.4 35.4,31.7" fill="url(#gold)" />
+
+  <!-- Arrow (GROW) -->
+  <path d="M 47 62.5 L 56 50.5 L 61 53.5 L 72.5 35.5" stroke="url(#arrow)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <polygon points="79,26.5 67,29.5 70.8,33.5 66.5,39.5 71,42.5 75.2,36.5 79,40.5" fill="url(#arrow)" />
+</svg>

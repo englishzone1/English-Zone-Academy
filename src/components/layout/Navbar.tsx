@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import { 
@@ -13,7 +14,9 @@ import {
   Phone, 
   ChevronDown,
   UserCheck,
-  GraduationCap
+  GraduationCap,
+  User,
+  MessageSquare
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -23,6 +26,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   const { t, language } = useLanguage();
+  const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -45,6 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   const navLinks = [
     { id: 'home', label: t.nav.home },
     { id: 'programs', label: t.nav.programs },
+    { id: 'english-club', label: t.nav.englishClub, highlight: true },
     { id: 'curriculum', label: t.nav.curriculum },
     { id: 'pricing', label: t.nav.pricing },
     { id: 'offers', label: t.nav.offers },
@@ -53,6 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   ];
 
   const moreLinks = [
+    { id: 'english-club', label: t.nav.englishClub, icon: MessageSquare, badge: 'New' },
     { id: 'placement-test', label: t.nav.placementTest, icon: Sparkles, badge: 'Free' },
     { id: 'certificates', label: t.nav.certificates, icon: Award },
     { id: 'faq', label: t.nav.faq, icon: HelpCircle },
@@ -118,7 +124,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                       : 'text-gray-200 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  {link.label}
+                  <span className="flex items-center gap-1.5">
+                    <span>{link.label}</span>
+                    {link.id === 'english-club' && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[10px] font-extrabold tracking-wider uppercase leading-none shadow-xs">
+                        New
+                      </span>
+                    )}
+                  </span>
                 </button>
               );
             })}
@@ -172,22 +185,42 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
           <div className="hidden md:flex items-center gap-3">
             <LanguageSwitcher />
 
-            <button
-              onClick={() => handleNav('login')}
-              className="px-4 py-2 text-sm font-semibold text-gray-200 hover:text-white transition-colors"
-            >
-              {t.nav.login}
-            </button>
+            {user ? (
+              <button
+                onClick={() => handleNav('portal')}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#162B4D] border border-[#D4AF37]/40 text-[#F3E5AB] hover:bg-[#D4AF37] hover:text-[#0A192F] transition-all flex items-center gap-2 shadow"
+              >
+                <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-[#0A192F] flex items-center justify-center font-bold text-[10px]">
+                  {user.fullName.charAt(0)}
+                </div>
+                <span>
+                  {user.role === 'super-admin' || user.role === 'super_admin' || user.role === 'admin'
+                    ? 'Admin Console'
+                    : user.role === 'teacher'
+                    ? 'Teacher Portal'
+                    : 'Student Portal'}
+                </span>
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => handleNav('login')}
+                  className="px-4 py-2 text-sm font-semibold text-gray-200 hover:text-white transition-colors"
+                >
+                  {t.nav.login}
+                </button>
 
-            <button
-              onClick={() => handleNav('register')}
-              className="relative group overflow-hidden px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-lg hover:shadow-[#D4AF37]/20 transition-all active:scale-95"
-            >
-              <span className="relative z-10 flex items-center gap-1.5">
-                <GraduationCap className="w-4 h-4" />
-                {t.nav.register}
-              </span>
-            </button>
+                <button
+                  onClick={() => handleNav('register')}
+                  className="relative group overflow-hidden px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-lg hover:shadow-[#D4AF37]/20 transition-all active:scale-95"
+                >
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    <GraduationCap className="w-4 h-4" />
+                    {t.nav.register}
+                  </span>
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

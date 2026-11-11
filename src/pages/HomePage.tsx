@@ -23,6 +23,8 @@ import {
   TrendingUp,
   Image as ImageIcon
 } from 'lucide-react';
+import { EnglishZoneEmblem } from '../components/common/Logo';
+import { EnglishClubHomeSection } from '../components/englishClub/EnglishClubHomeSection';
 
 interface HomePageProps {
   navigate: (route: string) => void;
@@ -47,7 +49,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             
             {/* Slogan Pill */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#162B4D] border border-[#D4AF37]/40 text-[#F3E5AB] text-xs sm:text-sm font-semibold tracking-wide shadow-sm">
-              <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+              <EnglishZoneEmblem sizeClass="w-4 h-4" glow={false} showBevelBorder={false} />
               <span>{t.hero.badge}</span>
             </div>
 
@@ -385,6 +387,9 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
         </div>
       </section>
 
+      {/* ENGLISH CLUB PROMOTIONAL FEATURE SECTION */}
+      <EnglishClubHomeSection navigate={navigate} onJoinClick={() => navigate('english-club')} />
+
       {/* ACADEMIC LEADERSHIP SECTION (FOUNDER INTRODUCTION WITH EDITABLE PLACEHOLDER & NO PERSONAL NAME) */}
       <section className="py-20 bg-gradient-to-r from-[#0A192F] via-[#0F2042] to-[#0A192F] text-white border-y border-[#D4AF37]/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -395,8 +400,8 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               <div className="relative w-full max-w-sm aspect-[4/5] rounded-3xl overflow-hidden border-2 border-[#D4AF37]/60 shadow-2xl bg-[#060D1A] group">
                 {/* Visual placeholder with refined styling */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-t from-[#060D1A] via-[#0A192F] to-[#102445]">
-                  <div className="w-24 h-24 rounded-full bg-[#162B4D] border-2 border-[#D4AF37] flex items-center justify-center mb-4 shadow-inner">
-                    <GraduationCap className="w-12 h-12 text-[#D4AF37]" />
+                  <div className="mb-4">
+                    <EnglishZoneEmblem sizeClass="w-24 h-24" glow={true} />
                   </div>
                   <span className="font-serif-luxury font-bold text-lg text-[#F3E5AB]">
                     {t.founder.roleTitle}

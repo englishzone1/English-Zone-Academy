@@ -144,9 +144,15 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <button onClick={() => handleNav('placement-test')} className="hover:text-[#F3E5AB] text-[#D4AF37] font-semibold transition-colors flex items-center gap-1">
+                <button onClick={() => handleNav('english-club')} className="hover:text-[#F3E5AB] text-[#D4AF37] font-semibold transition-colors flex items-center gap-1">
+                  <span>{t.nav.englishClub}</span>
+                  <span className="text-[10px] bg-[#D4AF37] text-[#0A192F] px-1 rounded font-bold">New</span>
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNav('placement-test')} className="hover:text-[#F3E5AB] text-gray-300 transition-colors flex items-center gap-1">
                   <span>{t.nav.placementTest}</span>
-                  <span className="text-[10px] bg-[#D4AF37] text-[#0A192F] px-1 rounded font-bold">Free</span>
+                  <span className="text-[10px] bg-white/20 text-white px-1 rounded font-bold">Free</span>
                 </button>
               </li>
               <li>
@@ -226,6 +232,11 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
             <span>•</span>
             <button onClick={() => handleNav('login')} className="hover:text-[#F3E5AB] underline">
               {t.nav.studentPortal}
+            </button>
+            <span>•</span>
+            <button onClick={() => handleNav('admin-login')} className="hover:text-[#D4AF37] flex items-center gap-1 font-semibold">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>{language === 'ar' ? 'بوابة الإدارة' : 'Admin Console'}</span>
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { OFFICIAL_CONTACTS, CEFR_LEVELS_INFO } from '../data/academyData';
+import { studentDataService } from '../services/studentDataService';
 import { CEFRLevel, LearningFormat, RegistrationFormData } from '../types';
 import { 
   GraduationCap, 
@@ -46,25 +47,37 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
     }
   }, [initialLevel]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName || !formData.whatsappNumber || !formData.email) return;
 
-    // Generate unique registration reference
-    const refId = `EZ-REG-${Math.floor(100000 + Math.random() * 900000)}`;
-    setSubmissionId(refId);
+    setIsSubmitting(true);
+    try {
+      const generatedId = `EZ-REG-${Math.floor(100000 + Math.random() * 900000)}`;
+      setSubmissionId(generatedId);
 
-    // Save to localStorage registry (ready for Firestore in Phase 2)
-    const existing = JSON.parse(localStorage.getItem('ez_registration_requests') || '[]');
-    const newRecord = {
-      id: refId,
-      ...formData,
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    };
-    localStorage.setItem('ez_registration_requests', JSON.stringify([newRecord, ...existing]));
+      await studentDataService.submitRegistration({
+        fullName: formData.fullName.trim(),
+        age: formData.age ? String(formData.age) : '',
+        country: formData.country.trim(),
+        whatsappNumber: formData.whatsappNumber.trim(),
+        email: formData.email.trim(),
+        mainLevel: formData.mainLevel,
+        learningGoal: formData.learningGoal,
+        learningFormat: formData.learningFormat,
+        notes: formData.notes
+      } as any);
 
-    setIsSubmitted(true);
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error('Registration submission error:', err);
+      // Fallback submission ID display
+      setIsSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Generate WhatsApp prefilled link with enrollment details

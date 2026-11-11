@@ -1,0 +1,89 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Default Deny: All access blocked unless explicitly permitted
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.role in ['super-admin', 'super_admin', 'admin'] ||
+        request.auth.token.admin == true ||
+        request.auth.token.email in ['amalalhasan2006@gmail.com', 'admin@englishzone.com']
+      );
+    }
+
+    function isTeacher() {
+      return isSignedIn() && (
+        isAdmin() ||
+        request.auth.token.role == 'teacher'
+      );
+    }
+
+    // Validation helpers
+    function isValidImage() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp|svg\\+xml)') &&
+             request.resource.size < 5 * 1024 * 1024; // 5MB limit
+    }
+
+    function isValidDocument() {
+      return request.resource.contentType.matches('(application/pdf|application/epub\\+zip|application/zip)') &&
+             request.resource.size < 50 * 1024 * 1024; // 50MB limit
+    }
+
+    // 1. PUBLIC ACADEMY ASSETS (Logos, branding, public course brochures, banners)
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 2. LIBRARY & CURRICULUM BOOKS
+    // Public books: accessible to all. Enrolled materials: accessible to signed in students.
+    match /library/books/{bookId}/{fileName} {
+      allow read: if true; // Public catalog previews
+      allow write: if isAdmin() && isValidDocument();
+    }
+
+    match /library/restricted/{bookId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() && isValidDocument();
+    }
+
+    // 3. STUDENT PRIVATE HOMEWORK & ASSIGNMENT SUBMISSIONS
+    // Student can only read and write their own homework files; teachers/admins can inspect
+    match /students/{studentId}/homework/{homeworkId}/{fileName} {
+      allow read: if isOwner(studentId) || isTeacher();
+      allow create, update: if isOwner(studentId) && (isValidDocument() || isValidImage());
+      allow delete: if isOwner(studentId) || isAdmin();
+    }
+
+    // 4. STUDENT PRIVATE PROFILE PHOTOS & DOCUMENTS
+    // Personal student files and photos are NEVER publicly accessible by default
+    match /students/{studentId}/profile/{fileName} {
+      allow read: if isOwner(studentId) || isTeacher();
+      allow write: if isOwner(studentId) && isValidImage();
+    }
+
+    // 5. TEACHER FACULTY MATERIALS
+    match /teachers/{teacherId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if (isSignedIn() && request.auth.uid == teacherId && (isTeacher() || isAdmin())) && (isValidDocument() || isValidImage());
+    }
+
+    // 6. ADMIN SYSTEM ASSETS
+    match /admin/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

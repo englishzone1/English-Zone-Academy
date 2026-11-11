@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Award, ShieldCheck, CheckCircle2, Search, Download, Printer, ExternalLink } from 'lucide-react';
+import { EnglishZoneEmblem } from '../components/common/Logo';
 
 interface CertificatesPageProps {
   navigate: (route: string) => void;
@@ -156,8 +157,8 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
 
           {/* Academy Header */}
           <div className="relative z-10 space-y-2">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0A192F] text-[#D4AF37] flex items-center justify-center shadow-lg border border-[#D4AF37]/40 mb-3">
-              <Award className="w-8 h-8" />
+            <div className="flex justify-center mb-3">
+              <EnglishZoneEmblem sizeClass="w-16 h-16 sm:w-20 sm:h-20" glow={true} />
             </div>
             
             <h3 className="font-serif-luxury font-extrabold text-2xl sm:text-4xl tracking-wider text-[#0A192F]">
@@ -197,13 +198,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
 
             {/* Official Gold Seal Badge */}
             <div className="flex justify-center">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#D4AF37] via-[#F3E5AB] to-[#AA820A] p-0.5 shadow-md flex items-center justify-center">
-                <div className="w-full h-full rounded-full bg-[#0A192F] flex flex-col items-center justify-center text-[8px] text-[#F3E5AB] font-bold uppercase tracking-tighter">
-                  <span>OFFICIAL</span>
-                  <Award className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>SEAL</span>
-                </div>
-              </div>
+              <EnglishZoneEmblem sizeClass="w-16 h-16 sm:w-20 sm:h-20" glow={true} />
             </div>
 
             <div>

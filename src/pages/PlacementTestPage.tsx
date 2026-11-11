@@ -12,6 +12,7 @@ import {
   Award,
   Clock
 } from 'lucide-react';
+import { EnglishZoneEmblem } from '../components/common/Logo';
 
 interface PlacementTestPageProps {
   navigate: (route: string, state?: { preselectedLevel?: CEFRLevel }) => void;
@@ -205,8 +206,8 @@ export const PlacementTestPage: React.FC<PlacementTestPageProps> = ({ navigate }
         ) : (
           /* RESULT SCREEN */
           <div className="bg-white rounded-3xl p-8 sm:p-12 border-2 border-[#D4AF37]/50 shadow-2xl text-center space-y-6">
-            <div className="w-20 h-20 mx-auto rounded-3xl bg-[#0A192F] text-[#D4AF37] flex items-center justify-center shadow-lg border border-[#D4AF37]/30">
-              <Award className="w-10 h-10" />
+            <div className="flex justify-center">
+              <EnglishZoneEmblem sizeClass="w-20 h-20 sm:w-24 sm:h-24" glow={true} />
             </div>
 
             <span className="text-xs uppercase font-bold tracking-widest text-[#AA820A]">

@@ -1,0 +1,161 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated student, teacher, or administrator account profile indexed by Firebase Auth UID",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique Firebase Authentication UID" },
+        "email": { "type": "string", "format": "email", "description": "Verified user email address" },
+        "fullName": { "type": "string", "maxLength": 100, "description": "Full legal or enrolled student name" },
+        "role": { "type": "string", "enum": ["student", "teacher", "super_admin"], "description": "Authorization role" },
+        "phone": { "type": "string", "maxLength": 30, "description": "Contact or WhatsApp telephone number" },
+        "country": { "type": "string", "maxLength": 60, "description": "Country of residence" },
+        "age": { "type": "string", "maxLength": 10, "description": "Student age or learner age bracket" },
+        "mainLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2", "needs_test"], "description": "CEFR proficiency level" },
+        "currentStage": { "type": "string", "maxLength": 20, "description": "Internal 2-month academic stage identifier" },
+        "learningFormat": { "type": "string", "enum": ["individual", "group"], "description": "Enrolled instruction format" },
+        "assignedTeacherId": { "type": "string", "description": "UID of the assigned academic faculty instructor" },
+        "assignedTeacherName": { "type": "string", "description": "Name of the assigned faculty instructor" },
+        "points": { "type": "number", "description": "English Zone Stars recognition balance" },
+        "starOfTheWeekCount": { "type": "number", "description": "Star of the week awards count" },
+        "starOfTheMonthCount": { "type": "number", "description": "Star of the month awards count" },
+        "subscriptionStatus": { "type": "string", "enum": ["active", "pending_renewal", "paused", "inactive"], "description": "Monthly tuition status" },
+        "monthlyTuitionUSD": { "type": "number", "description": "Enrolled monthly tuition fee in USD" },
+        "createdAt": { "type": "string", "description": "Account registration timestamp" },
+        "updatedAt": { "type": "string", "description": "Profile modification timestamp" }
+      },
+      "required": ["id", "email", "fullName", "role"]
+    },
+    "RegistrationRequest": {
+      "title": "RegistrationRequest",
+      "description": "New student admission application submitted via the public registration form",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Application reference number" },
+        "fullName": { "type": "string", "maxLength": 100, "description": "Student full name" },
+        "age": { "type": "string", "maxLength": 10, "description": "Student age" },
+        "country": { "type": "string", "maxLength": 60, "description": "Country of residence" },
+        "whatsappNumber": { "type": "string", "maxLength": 30, "description": "WhatsApp number" },
+        "email": { "type": "string", "format": "email", "description": "Contact email address" },
+        "mainLevel": { "type": "string", "description": "Selected or tested CEFR level" },
+        "learningGoal": { "type": "string", "maxLength": 500, "description": "English proficiency objective" },
+        "learningFormat": { "type": "string", "enum": ["individual", "group"], "description": "Preferred lesson format" },
+        "notes": { "type": "string", "maxLength": 1000, "description": "Additional notes or schedule preferences" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"], "description": "Admission review status" },
+        "submittedAt": { "type": "string", "description": "Application submission timestamp" }
+      },
+      "required": ["id", "fullName", "whatsappNumber", "email", "mainLevel", "learningFormat", "status"]
+    },
+    "HomeworkAssignment": {
+      "title": "HomeworkAssignment",
+      "description": "Academic assignment assigned to a specific student or stage",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Assignment unique ID" },
+        "studentId": { "type": "string", "description": "Target student UID" },
+        "titleEn": { "type": "string", "maxLength": 150, "description": "Assignment title in English" },
+        "titleAr": { "type": "string", "maxLength": 150, "description": "Assignment title in Arabic" },
+        "dueDate": { "type": "string", "description": "Submission due deadline" },
+        "status": { "type": "string", "enum": ["pending", "submitted", "graded"], "description": "Assignment completion status" },
+        "grade": { "type": "string", "maxLength": 20, "description": "Assigned evaluation grade" },
+        "feedbackEn": { "type": "string", "maxLength": 1000, "description": "Teacher feedback in English" },
+        "feedbackAr": { "type": "string", "maxLength": 1000, "description": "Teacher feedback in Arabic" },
+        "pointsAward": { "type": "string", "description": "Star reward for on-time completion" },
+        "assignedByTeacherId": { "type": "string", "description": "Instructor UID who created assignment" }
+      },
+      "required": ["id", "studentId", "titleEn", "status"]
+    },
+    "PointsTransaction": {
+      "title": "PointsTransaction",
+      "description": "English Zone Stars recognition audit trail",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Transaction reference" },
+        "studentId": { "type": "string", "description": "Student UID receiving stars" },
+        "amount": { "type": "number", "description": "Points delta" },
+        "reason": { "type": "string", "maxLength": 200, "description": "Academic rationale for stars" },
+        "awardedBy": { "type": "string", "description": "Instructor or admin name" },
+        "timestamp": { "type": "string", "description": "Award timestamp" }
+      },
+      "required": ["id", "studentId", "amount", "reason", "timestamp"]
+    },
+    "GradeRecord": {
+      "title": "GradeRecord",
+      "description": "Student exam, speaking clinic, or stage assessment result",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Grade report reference" },
+        "studentId": { "type": "string", "description": "Student UID" },
+        "assessmentTitle": { "type": "string", "maxLength": 150, "description": "Name of test or exam" },
+        "level": { "type": "string", "description": "CEFR level tested" },
+        "score": { "type": "number", "description": "Percentage score (0-100)" },
+        "passed": { "type": "boolean", "description": "Whether passing threshold was reached" },
+        "date": { "type": "string", "description": "Assessment evaluation date" }
+      },
+      "required": ["id", "studentId", "assessmentTitle", "score", "date"]
+    },
+    "TimetableSession": {
+      "title": "TimetableSession",
+      "description": "Live scheduled virtual classroom timetable entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Session identifier" },
+        "studentId": { "type": "string", "description": "Enrolled student UID" },
+        "topic": { "type": "string", "maxLength": 150, "description": "Classroom conversation topic" },
+        "time": { "type": "string", "description": "Scheduled time and timezone" },
+        "teacherName": { "type": "string", "description": "Instructor name" },
+        "zoomLink": { "type": "string", "description": "Live classroom link" }
+      },
+      "required": ["id", "studentId", "topic", "time"]
+    },
+    "EnglishClubSettings": {
+      "title": "EnglishClubSettings",
+      "description": "Super Admin configuration for English Club sessions, pricing, schedule, and registration status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "isRegistrationOpen": { "type": "boolean" },
+        "membershipFeeUSD": { "type": "number" },
+        "feeNoteEn": { "type": "string" },
+        "feeNoteAr": { "type": "string" },
+        "requiresGeneralEnglish": { "type": "boolean" },
+        "sessionDurationMinutes": { "type": "number" },
+        "maxBreakoutCapacity": { "type": "number" },
+        "status": { "type": "string", "enum": ["open", "waitlist", "coming_soon", "closed"] },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "isRegistrationOpen", "requiresGeneralEnglish"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Private student, teacher, and administrator profiles indexed strictly by Firebase Auth UID"
+    },
+    "/registration_requests/{requestId}": {
+      "schema": "RegistrationRequest",
+      "description": "Student admission applications submitted via public form, reviewed by administrators"
+    },
+    "/homework/{homeworkId}": {
+      "schema": "HomeworkAssignment",
+      "description": "Private homework assignments belonging strictly to individual students"
+    },
+    "/points_log/{pointsId}": {
+      "schema": "PointsTransaction",
+      "description": "Private Star transaction logs for student achievement tracking"
+    },
+    "/grades/{gradeId}": {
+      "schema": "GradeRecord",
+      "description": "Official academic evaluations and milestone exam grades"
+    },
+    "/timetable/{sessionId}": {
+      "schema": "TimetableSession",
+      "description": "Scheduled live classroom sessions for enrolled students"
+    },
+    "/academy_settings/{settingId}": {
+      "schema": "EnglishClubSettings",
+      "description": "Academy public configurations including English Club schedule, capacity, and admission availability"
+    }
+  }
+}

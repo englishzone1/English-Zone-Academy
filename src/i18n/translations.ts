@@ -3,7 +3,8 @@ export const translations = {
     brand: {
       name: 'ENGLISH ZONE',
       tagline: 'International Online Academy',
-      slogan: 'Learn English. Speak with Confidence.',
+      slogan: 'LEARN. SPEAK. GROW. — Master English with Confidence',
+      motto: 'LEARN. SPEAK. GROW.',
       subSlogan: 'A prestigious international online English academy offering structured CEFR learning pathways, 1-on-1 private lessons, and interactive small groups.',
       onlineOnlyBadge: '100% Online Interactive Academy',
       cefrStandard: 'Aligned with International CEFR Standards (A1–C2)',
@@ -22,6 +23,7 @@ export const translations = {
       blog: 'Blog',
       placementTest: 'Placement Test',
       studentPortal: 'Student Portal',
+      englishClub: 'English Club',
       login: 'Sign In',
       register: 'Join Now',
     },
@@ -239,6 +241,64 @@ export const translations = {
       registerLink: 'Apply for Registration',
       demoNotice: 'Phase 1 Portal Preview: Full authentication and live database persistence are configured in Phase 2.',
     },
+    englishClub: {
+      mainTitle: 'ENGLISH CLUB',
+      tagline: 'One Hour. English Only. Real Conversations.',
+      taglineSub: 'One Hour. English Only. Real Conversations.',
+      description: 'Join our interactive online English Club and practice English in a friendly, supportive environment. Discuss interesting topics, read short English texts, exchange ideas, expand your vocabulary, and build your speaking confidence.',
+      badge: 'Interactive Online Practice',
+      joinCta: 'Join English Club',
+      viewSessions: 'Explore Session Tracks',
+      practiceNotReplacementBadge: 'Practice Activity • Separate from General English Course',
+      
+      expectSectionTitle: 'What Students Can Expect',
+      expectSectionSubtitle: 'Every session is structured to maximize speaking time, camaraderie, and linguistic confidence.',
+      expectations: [
+        { title: 'Weekly Scheduled Sessions', desc: 'Convenient online conversation meetings scheduled regularly for consistent practice.' },
+        { title: '60-Minute Interactive Meetings', desc: 'One full hour of engaging English-only conversation and discussion.' },
+        { title: 'Topic-Based Discussions', desc: 'Curated topics ranging from daily life and culture to modern trends and interesting debates.' },
+        { title: 'English Reading Activities', desc: 'Short, accessible English texts to spark thoughts, questions, and natural dialogue.' },
+        { title: 'Speaking Practice & Opinions', desc: 'Ample floor time for every student to share perspectives and express ideas freely.' },
+        { title: 'Vocabulary Development', desc: 'Practical phrases, idioms, and natural expressions you can use immediately in conversation.' },
+        { title: 'Interactive Language Games', desc: 'Fun word challenges, conversation starters, and activities that make speaking effortless.' },
+        { title: 'Supportive & Safe Environment', desc: 'A welcoming space where mistakes are celebrated as stepping stones to fluency.' }
+      ],
+
+      structureSectionTitle: 'Club Structure & CEFR Tracks',
+      structureSectionSubtitle: 'Organized by proficiency levels to ensure balanced, natural, and highly interactive conversations.',
+      structureHighlights: [
+        { title: 'Separate Practice Activity', desc: 'Designed specifically for conversation practice, distinct from the comprehensive General English academic curriculum.' },
+        { title: 'No Course Prerequisite', desc: 'Open to all learners without requiring prior General English enrollment unless specified by the academy.' },
+        { title: 'Interactive Breakout Groups', desc: 'Supports large cohorts while utilizing small breakout rooms to guarantee high active speaking time for everyone.' },
+        { title: 'English-Only Environment', desc: 'English is the primary language used during all meetings to foster total immersion.' }
+      ],
+
+      tracksTitle: 'Choose Your CEFR Conversation Track',
+      tracksSubtitle: 'Sessions are tailored to your current language level for maximum comfort and growth.',
+
+      pricingTitle: 'Club Membership & Tuition',
+      pricingNotice: 'Affordable paid club activity. Membership rates and cohort schedules are set directly by the academy administration upon registration.',
+      pricingUnset: 'Tuition and schedules are provided by the academy administration upon inquiry and registration.',
+      
+      adminConfiguredSchedule: 'Scheduled Meeting Time',
+      scheduleTBA: 'Session schedules are arranged by the academy based on cohort availability.',
+      capacityBadge: 'Small Breakout Groups',
+      platformBadge: 'Live Virtual Meeting',
+
+      modalTitle: 'Register for English Club',
+      modalSubtitle: 'Reserve your spot in the upcoming English Club conversation sessions.',
+      fullNameLabel: 'Full Name',
+      whatsappLabel: 'WhatsApp Number (with country code)',
+      emailLabel: 'Email Address',
+      trackSelectLabel: 'Select Your Preferred CEFR Track',
+      trackAuto: 'Help me choose my track (Free placement)',
+      notesLabel: 'Additional Notes or Goals (Optional)',
+      submitBtn: 'Submit Application',
+      submitting: 'Submitting...',
+      successTitle: 'Application Submitted Successfully!',
+      successDesc: 'Your registration reference has been logged. The academy administration will reach out via WhatsApp with session access details.',
+      chatWhatsapp: 'Contact Administration on WhatsApp'
+    },
     footer: {
       aboutText: 'English Zone is a premier international online English academy dedicated to transforming learners into confident, fluent speakers through structured CEFR programs and live interactive classrooms.',
       quickLinks: 'Quick Links',
@@ -252,7 +312,8 @@ export const translations = {
     brand: {
       name: 'ENGLISH ZONE',
       tagline: 'الأكاديمية الدولية للغة الإنجليزية عبر الإنترنت',
-      slogan: 'تعلّم الإنجليزية. تكلّم بثقة.',
+      slogan: 'تعلّم. تكلّم. تطوّر. — أتقن الإنجليزية بثقة',
+      motto: 'تعلّم. تكلّم. تطوّر. (LEARN. SPEAK. GROW.)',
       subSlogan: 'أكاديمية دولية راقية متخصصة في تدريس الإنجليزية عبر مسارات أوروبية معتمدة (CEFR)، دروس فردية خاصة ومجموعات تفاعلية صغيرة.',
       onlineOnlyBadge: 'أكاديمية تفاعلية 100% عبر الإنترنت',
       cefrStandard: 'متوافقة مع معايير الإطار الأوروبي المعتمد (A1–C2)',
@@ -271,6 +332,7 @@ export const translations = {
       blog: 'المدونة التعليمية',
       placementTest: 'اختبار تحديد المستوى',
       studentPortal: 'بوابة الطالب',
+      englishClub: 'نادي الإنجليزية',
       login: 'تسجيل الدخول',
       register: 'انضم الآن',
     },
@@ -487,6 +549,64 @@ export const translations = {
       needAccount: 'ليس لديك حساب طالب بعد؟',
       registerLink: 'تقديم طلب تسجيل جديد',
       demoNotice: 'معاينة البوابات (المرحلة 1): يتم تفعيل المصادقة الكاملة وقاعدة بيانات Firebase الحية في المرحلة 2.',
+    },
+    englishClub: {
+      mainTitle: 'ENGLISH CLUB',
+      tagline: 'ساعة واحدة. بالإنجليزية فقط. محادثات حقيقية.',
+      taglineSub: 'One Hour. English Only. Real Conversations.',
+      description: 'انضم إلى نادي اللغة الإنجليزية التفاعلي عبر الإنترنت ومارس التحدث بالإنجليزية في بيئة ودية ومحفزة. ناقش مواضيع شيقة، واقرأ نصوصاً إنجليزية قصيرة، وتبادل الأفكار، ووسّع حصيلتك اللغوية، واكتسب ثقة حقيقية في التحدث.',
+      badge: 'نشاط تفاعلي عبر الإنترنت',
+      joinCta: 'انضم إلى نادي الإنجليزية',
+      viewSessions: 'استعرض مسارات النادي',
+      practiceNotReplacementBadge: 'نشاط ممارسة مستقل • لا يشترط التسجيل في الدورة العامة',
+      
+      expectSectionTitle: 'ماذا ينتظر الطلاب في نادي الإنجليزية؟',
+      expectSectionSubtitle: 'صُممت كل جلسة لتعزيز وقت التحدث الفعلي، والتفاعل الإيجابي، وبناء الثقة اللغوية.',
+      expectations: [
+        { title: 'جلسات محادثة دورية مجدولة', desc: 'لقاءات دورية مريحة عبر الإنترنت لممارسة التحدث باستمرار وبناء عادة يومية.' },
+        { title: 'لقاءات تفاعلية لمدة 60 دقيقة', desc: 'ساعة كاملة مكرسة بالكامل للمحادثة الحية والنقاش بالإنجليزية فقط.' },
+        { title: 'نقاشات قائمة على مواضيع مختارة', desc: 'مواضيع شيقة ومتجددة تشمل الحياة اليومية، الثقافات، الاتجاهات الحديثة، والقضايا الحوارية.' },
+        { title: 'أنشطة قراءة نصوص إنجليزية', desc: 'نصوص إنجليزية قصيرة وملهمة لإثارة الأفكار والنقاشات التلقائية.' },
+        { title: 'ممارسة التحدث ومشاركة الآراء', desc: 'مساحة متكافئة لكل طالب للتعبير عن رأيه ومشاركة تجاربه بكل حرية.' },
+        { title: 'تطوير المفردات والتعابير', desc: 'اكتساب عبارات ومصطلحات شائعة وتراكيب طبيعية يمكنك استخدامها فوراً.' },
+        { title: 'ألعاب وأنشطة لغوية تفاعلية', desc: 'تحديات لغوية ممتعة وأنشطة كسر الجليد تجعل التحدث سلساً وممتعاً.' },
+        { title: 'بيئة تعليمية داعمة ومريحة', desc: 'مجتمع ودود يشجع على المحاولة ويحتفي بالأخطاء كخطوات أساسية نحو الطلاقة.' }
+      ],
+
+      structureSectionTitle: 'هيكلية النادي ومسارات المستويات الأوروبية (CEFR)',
+      structureSectionSubtitle: 'تنظيم الجلسات حسب مستويات الكفاءة لضمان محادثات متكافئة ومريحة ومفيدة للجميع.',
+      structureHighlights: [
+        { title: 'نشاط ممارسة مستقل', desc: 'صُمم النادي خصيصاً لممارسة المحادثة، وهو نشاط منفصل ومستقل عن برنامج اللغة الإنجليزية العام الأكاديمي.' },
+        { title: 'لا يُشترط التسجيل المسبق في البرنامج العام', desc: 'متاح لجميع المتعلمين الراغبين في ممارسة التحدث دون اشتراط الالتحاق المسبق بالدورة العامة.' },
+        { title: 'غرف نقاش فرعية تفاعلية (Breakout Rooms)', desc: 'يدعم النادي أعداداً كبيرة من المشاركين مع تقسيمهم لمجموعات صغيرة لضمان مشاركة الجميع.' },
+        { title: 'الإنجليزية هي لغة التواصل الوحيدة', desc: 'تُدار الجلسات باللغة الإنجليزية حصراً لتوفير بيئة انغماس لغوي واقعية وتفاعلية.' }
+      ],
+
+      tracksTitle: 'اختر مسار المحادثة الأنسب لمستواك',
+      tracksSubtitle: 'جلسات مخصصة لكل فئة مستوى أوروبي لضمان أقصى درجات الراحة والتطور.',
+
+      pricingTitle: 'الرسوم والاشتراك في النادي',
+      pricingNotice: 'نادي اللغة الإنجليزية هو نشاط مدفوع برسوم ميسرة في متناول الجميع. يتم تحديد الرسوم ومواعيد المجموعات مباشرة من قِبل إدارة الأكاديمية عند التسجيل.',
+      pricingUnset: 'يتم تحديد الرسوم ومواعيد الجلسات من قِبل إدارة الأكاديمية عند التواصل والتسجيل.',
+      
+      adminConfiguredSchedule: 'موعد الجلسات المجدولة',
+      scheduleTBA: 'تُحدد مواعيد الجلسات بالتنسيق مع إدارة الأكاديمية عند اكتمال المجموعة.',
+      capacityBadge: 'مجموعات صغيرة تفاعلية',
+      platformBadge: 'لقاءات افتراضية مباشرة',
+
+      modalTitle: 'التسجيل في نادي اللغة الإنجليزية',
+      modalSubtitle: 'احجز مقعدك في جلسات المحادثة التفاعلية القادمة لنادي English Zone.',
+      fullNameLabel: 'الاسم الكامل',
+      whatsappLabel: 'رقم الواتساب (مع رمز الدولة)',
+      emailLabel: 'البريد الإلكتروني',
+      trackSelectLabel: 'اختر مسار المستوى المناسب',
+      trackAuto: 'ساعدني في اختيار المسار (تحديد مستوى مجاني)',
+      notesLabel: 'ملاحظات إضافية أو أهدافك من النادي (اختياري)',
+      submitBtn: 'إرسال طلب الانضمام',
+      submitting: 'جارٍ إرسال الطلب...',
+      successTitle: 'تم إرسال طلبك بنجاح!',
+      successDesc: 'تم تسجيل بياناتك، وستتواصل معك إدارة الأكاديمية عبر الواتساب لتزويدك برابط الجلسة وتفاصيل الاشتراك.',
+      chatWhatsapp: 'تواصل مباشرة مع إدارة الأكاديمية عبر الواتساب'
     },
     footer: {
       aboutText: 'English Zone أكاديمية دولية راقية لتعليم الإنجليزية عبر الإنترنت، مكرسة لتحويل المتعلمين إلى متحدثين واثقين ومفوهين من خلال مسارات CEFR المنهجية والفصول التفاعلية الحية.',
