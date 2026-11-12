@@ -16,20 +16,27 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Trusted Role checks powered by Firebase Custom Claims
+    // Owner email must be verified (Google sign-in is verified automatically)
+    function isVerifiedOwnerEmail() {
+      return isSignedIn() &&
+        request.auth.token.email_verified == true &&
+        request.auth.token.email == 'amalalhasan2006@gmail.com';
+    }
+
+    // Trusted Role checks
     function isAdmin() {
       return isSignedIn() && (
         request.auth.token.role in ['super-admin', 'super_admin', 'admin'] ||
         request.auth.token.admin == true ||
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        request.auth.token.email in ['amalalhasan2006@gmail.com', 'admin@englishzone.com']
+        isVerifiedOwnerEmail()
       );
     }
 
     function isSuperAdmin() {
       return isSignedIn() && (
         request.auth.token.role in ['super-admin', 'super_admin'] ||
-        request.auth.token.email in ['amalalhasan2006@gmail.com', 'admin@englishzone.com']
+        isVerifiedOwnerEmail()
       );
     }
 
@@ -46,27 +53,23 @@ service cloud.firestore {
     }
 
     // --- System Initialization Lock ---
-    // Only backend Admin SDK can write the atomic initialization lock; admins can read status
     match /system_config/{configId} {
-      allow get: if true; // Public check of initialization status flag without exposing secret
+      allow get: if true;
       allow list: if isAdmin();
-      allow write: if false; // Blocked for direct frontend client writes
+      allow write: if false;
     }
 
     // --- Users Profiles (Strictly isolated by Firebase Auth UID) ---
     match /users/{userId} {
       allow get: if isOwner(userId) || isTeacher() || isAdmin();
       allow list: if isAdmin() || (isTeacher() && resource.data.assignedTeacherId == request.auth.uid);
-      
-      // New student profile creation (locked to student role and matching UID)
+
       allow create: if isAdmin() || (
-        isOwner(userId) && 
-        request.resource.data.role == 'student' && 
+        isOwner(userId) &&
+        request.resource.data.role == 'student' &&
         request.resource.data.id == userId
       );
 
-      // Student can update their own cosmetic/contact fields (e.g. avatar, phone, country)
-      // but CANNOT escalate role or self-assign points, levels, stages, or teachers
       allow update: if isAdmin() || (
         isOwner(userId) &&
         request.resource.data.role == resource.data.role &&
@@ -82,7 +85,8 @@ service cloud.firestore {
 
     // --- Admins collection ---
     match /admins/{adminId} {
-      allow read: if isSignedIn();
+      allow get: if isOwner(adminId) || isAdmin();
+      allow list: if isAdmin();
       allow write: if isSuperAdmin();
     }
 
@@ -94,9 +98,7 @@ service cloud.firestore {
 
     // --- Admission Registration Requests ---
     match /registration_requests/{requestId} {
-      // Public visitors can submit applications; status must be 'pending'
       allow create: if request.resource.data.status == 'pending' && isValidId(requestId);
-      // Only administrators can review, approve, or manage applications
       allow get, list, update, delete: if isAdmin();
     }
 
@@ -134,39 +136,33 @@ service cloud.firestore {
       allow create, update, delete: if isTeacher();
     }
 
-    // --- Academy Public Configurations (English Club settings, session schedule) ---
+    // --- Academy Public Configurations ---
     match /academy_settings/{settingId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
     // --- Dynamic Content Management Collections ---
-
-    // 1. Website content and sections (Hero, Announcements, Policy)
     match /website_content/{contentId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    // 2. Courses and Curricula Management
     match /courses/{courseId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    // 3. Books and Downloadable Materials (Library)
     match /library_materials/{materialId} {
-      allow get, list: if true; // Public catalog
+      allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    // 4. Special Offers and Promotions
     match /promotions_offers/{offerId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    // 5. Student Testimonials and Feedback Moderation
     match /testimonials/{testimonialId} {
       allow get, list: if true;
       allow create: if isSignedIn();
