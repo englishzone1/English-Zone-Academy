@@ -7,7 +7,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Reusable Global Identity & Role Helpers
     function isSignedIn() {
       return request.auth != null;
     }
@@ -16,9 +15,14 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Trusted Role checks: server-verified Custom Claims OR manually created /admins/{uid} document
+    // Admin: server-verified Custom Claims OR a document created manually from the Firebase Console
     function isAdminDoc() {
       return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Teacher document: /teachers is writable only by admins
+    function isTeacherDoc() {
+      return isSignedIn() && exists(/databases/$(database)/documents/teachers/$(request.auth.uid));
     }
 
     function isSuperAdmin() {
@@ -44,7 +48,8 @@ service cloud.firestore {
     function isTeacher() {
       return isSignedIn() && (
         isAdmin() ||
-        request.auth.token.role == 'teacher'
+        request.auth.token.role == 'teacher' ||
+        isTeacherDoc()
       );
     }
 
@@ -53,37 +58,32 @@ service cloud.firestore {
     }
 
     // --- System Initialization Lock ---
-    // Only the public status flag in initialization_lock can be read to check setup state
-    // Writes are completely blocked for direct client connections; only backend Admin SDK can write
     match /system_config/{configId} {
       allow get: if configId == 'initialization_lock';
       allow list: if isAdmin();
       allow write: if false;
     }
 
-    // --- Users Profiles (Strictly isolated by Firebase Auth UID) ---
+    // --- Users Profiles ---
     match /users/{userId} {
-      // Students can only read their own profile. Teachers can read assigned students. Admins can read all.
       allow get: if isOwner(userId) || isTeacher() || isAdmin();
       allow list: if isAdmin() || (isTeacher() && resource.data.assignedTeacherId == request.auth.uid);
-      
-      // Student profile creation: strictly validated schema and safe initial values
+
       allow create: if isAdmin() || (
-        isOwner(userId) && 
+        isOwner(userId) &&
         request.resource.data.id == userId &&
         request.resource.data.role == 'student' &&
         request.resource.data.points == 0 &&
         request.resource.data.subscriptionStatus == 'pending' &&
-        request.resource.data.email == request.auth.token.email &&
+        request.resource.data.email.lower() == request.auth.token.email.lower() &&
         request.resource.data.keys().hasOnly([
           'id', 'email', 'fullName', 'role', 'phone', 'country', 'age',
           'avatarUrl', 'avatarConfig', 'createdAt', 'points', 'mainLevel',
-          'currentStage', 'subscriptionStatus', 'learningFormat'
+          'currentStage', 'subscriptionStatus', 'learningFormat',
+          'starOfTheWeekCount', 'starOfTheMonthCount'
         ])
       );
 
-      // Student profile updates: STRICT ALLOWLIST of student-editable personal cosmetic fields
-      // Students CANNOT modify role, points, levels, stages, subscription, tuition, teachers, or groups
       allow update: if isAdmin() || (
         isOwner(userId) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -94,8 +94,7 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // --- Admins collection ---
-    // No client can write to /admins; documents are created manually from the Firebase Console only.
+    // --- Admins collection: no client can write; documents are created from the Firebase Console only ---
     match /admins/{adminId} {
       allow get: if isOwner(adminId) || isAdmin();
       allow list: if isAdmin();
@@ -103,7 +102,6 @@ service cloud.firestore {
     }
 
     // --- Teachers collection ---
-    // Protected: students CANNOT read internal teacher records
     match /teachers/{teacherId} {
       allow get, list: if isTeacher() || isAdmin();
       allow write: if isAdmin();
@@ -111,9 +109,8 @@ service cloud.firestore {
 
     // --- Admission Registration Requests ---
     match /registration_requests/{requestId} {
-      // Anonymous visitors can submit applications ONLY with strict allowlist and pending status
-      allow create: if 
-        request.resource.data.status == 'pending' &&
+      allow create:
+        if request.resource.data.status == 'pending' &&
         isValidId(requestId) &&
         request.resource.data.keys().hasOnly([
           'id', 'fullName', 'age', 'country', 'whatsappNumber', 'email',
@@ -123,7 +120,6 @@ service cloud.firestore {
         request.resource.data.email is string && request.resource.data.email.size() <= 150 &&
         request.resource.data.whatsappNumber is string && request.resource.data.whatsappNumber.size() <= 40;
 
-      // Only administrators can review, approve, update status, or delete applications
       allow get, list, update, delete: if isAdmin();
     }
 
@@ -159,44 +155,36 @@ service cloud.firestore {
       allow create, update, delete: if isTeacher();
     }
 
-    // --- Academy Public Configurations (English Club settings, session schedule) ---
+    // --- Academy Public Configurations ---
     match /academy_settings/{settingId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
     // --- Dynamic Content Management Collections ---
-
-    // 1. Website content and sections (Hero, Announcements, Policy)
     match /website_content/{contentId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    // 2. Courses and Curricula Management
     match /courses/{courseId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    // 3. Books and Downloadable Materials (Library)
     match /library_materials/{materialId} {
-      allow get, list: if true; // Public catalog
+      allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    // 4. Special Offers and Promotions
     match /promotions_offers/{offerId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    // 5. Student Testimonials and Feedback Moderation
     match /testimonials/{testimonialId} {
-      // Public visitors can ONLY read approved testimonials
       allow get, list: if resource.data.isApproved == true || isAdmin();
-      
-      // Authenticated users can submit, but status MUST be unapproved (isApproved: false)
+
       allow create: if isSignedIn() &&
         request.resource.data.isApproved == false &&
         request.resource.data.keys().hasOnly([
@@ -206,11 +194,9 @@ service cloud.firestore {
         request.resource.data.rating >= 1 && request.resource.data.rating <= 5 &&
         request.resource.data.quoteEn is string && request.resource.data.quoteEn.size() <= 1000;
 
-      // Only administrators can moderate, approve, edit, or delete testimonials
       allow update, delete: if isAdmin();
     }
 
-    // 6. Genuine Student & Parent Feedback Screenshots
     function isValidFeedbackScreenshot(data) {
       return data.keys().hasOnly([
         'id', 'imageDataUrl', 'category', 'captionEn', 'captionAr',
@@ -230,16 +216,4 @@ service cloud.firestore {
     }
 
     match /feedback_screenshots/{screenshotId} {
-      // Unpublished screenshots MUST remain strictly private to administrators
       allow get, list: if resource.data.isPublished == true || isAdmin();
-      allow create: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
-      allow update: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
-      allow delete: if isAdmin();
-    }
-
-    // --- Connection test collection ---
-    match /test/{docId} {
-      allow read, write: if isSignedIn();
-    }
-  }
-}
