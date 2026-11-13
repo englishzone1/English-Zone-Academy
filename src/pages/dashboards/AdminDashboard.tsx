@@ -47,6 +47,7 @@ import {
   DynamicPromotionOffer, 
   DynamicTestimonial 
 } from '../../services/contentManagementService';
+import { AdminReviewsManager } from '../../components/admin/AdminReviewsManager';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -57,7 +58,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const { user, logout } = useAuth();
 
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'registrations' | 'students' | 'pricing' | 'stars_audit' | 'settings' | 'english_club' | 'content_cms'
+    'overview' | 'registrations' | 'students' | 'feedback_reviews' | 'pricing' | 'stars_audit' | 'settings' | 'english_club' | 'content_cms'
   >('overview');
   const [registrations, setRegistrations] = useState<RegistrationRequest[]>(() => storageService.getRegistrations());
   const [usersList, setUsersList] = useState<UserProfile[]>(() => storageService.getUsers());
@@ -403,6 +404,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             { id: 'overview', labelEn: 'Overview & Metrics', labelAr: 'الإحصائيات العامة' },
             { id: 'registrations', labelEn: `Registrations (${pendingRegistrations.length} Pending)`, labelAr: `طلبات التسجيل (${pendingRegistrations.length})` },
             { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
+            { id: 'feedback_reviews', labelEn: 'Student Reviews Gallery', labelAr: 'آراء وتقييمات الطلاب' },
             { id: 'content_cms', labelEn: 'Dynamic Content CMS', labelAr: 'إدارة المحتوى والمناهج' },
             { id: 'pricing', labelEn: 'Tuition & Stages', labelAr: 'الأسعار والمراحل' },
             { id: 'english_club', labelEn: 'English Club Config', labelAr: 'إعدادات نادي الإنجليزية' },
@@ -1584,6 +1586,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
               </div>
             )}
           </div>
+        )}
+
+        {/* TAB: STUDENT REVIEWS & FEEDBACK GALLERY */}
+        {activeTab === 'feedback_reviews' && (
+          <AdminReviewsManager
+            onNotice={(msg) => {
+              setActionNotice(msg);
+              setTimeout(() => setActionNotice(null), 4000);
+            }}
+          />
         )}
 
       </div>

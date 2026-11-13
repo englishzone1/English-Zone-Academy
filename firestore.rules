@@ -210,6 +210,33 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // 6. Genuine Student & Parent Feedback Screenshots
+    function isValidFeedbackScreenshot(data) {
+      return data.keys().hasOnly([
+        'id', 'imageDataUrl', 'category', 'captionEn', 'captionAr',
+        'orderIndex', 'isPublished', 'hasPrivacyMask', 'createdAt', 'updatedAt', 'createdBy'
+      ]) &&
+      data.id is string && data.id.size() > 0 && data.id.size() <= 128 &&
+      data.imageDataUrl is string && data.imageDataUrl.size() > 0 && data.imageDataUrl.size() <= 950000 &&
+      data.category is string && data.category in ['none', 'student_reviews', 'parents_feedback', 'lecture_feedback', 'course_experience'] &&
+      (!('captionEn' in data) || (data.captionEn is string && data.captionEn.size() <= 200)) &&
+      (!('captionAr' in data) || (data.captionAr is string && data.captionAr.size() <= 200)) &&
+      (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 60)) &&
+      (!('createdBy' in data) || (data.createdBy is string && data.createdBy.size() <= 120)) &&
+      data.orderIndex is number &&
+      data.isPublished is bool &&
+      data.hasPrivacyMask is bool &&
+      data.createdAt is string && data.createdAt.size() <= 60;
+    }
+
+    match /feedback_screenshots/{screenshotId} {
+      // Unpublished screenshots MUST remain strictly private to administrators
+      allow get, list: if resource.data.isPublished == true || isAdmin();
+      allow create: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
+      allow update: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
     // --- Connection test collection ---
     match /test/{docId} {
       allow read, write: if isSignedIn();

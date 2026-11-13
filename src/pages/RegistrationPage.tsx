@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { OFFICIAL_CONTACTS, CEFR_LEVELS_INFO } from '../data/academyData';
+import { OFFICIAL_CONTACTS, CEFR_LEVELS_INFO, EF_SET_PLACEMENT_TEST_URL } from '../data/academyData';
 import { studentDataService } from '../services/studentDataService';
 import { CEFRLevel, LearningFormat, RegistrationFormData } from '../types';
 import { 
@@ -140,12 +140,14 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
               {formData.mainLevel === 'needs_test' && (
                 <div className="pt-2">
-                  <button
-                    onClick={() => navigate('placement-test')}
-                    className="px-6 py-2.5 rounded-xl text-xs font-semibold text-[#0A192F] bg-[#FAF8F5] border border-[#D4AF37] hover:bg-[#D4AF37]/10"
+                  <a
+                    href={EF_SET_PLACEMENT_TEST_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-6 py-2.5 rounded-xl text-xs font-semibold text-[#0A192F] bg-[#FAF8F5] border border-[#D4AF37] hover:bg-[#D4AF37]/10"
                   >
                     {t.hero.ctaTest}
-                  </button>
+                  </a>
                 </div>
               )}
             </div>
@@ -299,14 +301,15 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F]">
                     {t.register.levelLabel} *
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => navigate('placement-test')}
+                  <a
+                    href={EF_SET_PLACEMENT_TEST_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-xs text-[#AA820A] font-semibold hover:underline flex items-center gap-1"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>{t.hero.ctaTest}</span>
-                  </button>
+                  </a>
                 </div>
                 <p className="text-[11px] text-gray-500 mb-4">
                   {t.register.levelHint}

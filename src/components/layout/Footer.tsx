@@ -1,14 +1,13 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { Logo } from '../common/Logo';
-import { OFFICIAL_CONTACTS } from '../../data/academyData';
+import { OFFICIAL_CONTACTS, EF_SET_PLACEMENT_TEST_URL } from '../../data/academyData';
 import { 
   Mail, 
   Phone, 
   Youtube, 
   Instagram, 
   MessageSquare, 
-  Award, 
   BookOpen, 
   ShieldCheck, 
   Sparkles,
@@ -109,17 +108,17 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('programs')} className="hover:text-[#F3E5AB] transition-colors">
+                <button onClick={() => handleNav('course/small-group-courses')} className="hover:text-[#F3E5AB] transition-colors">
                   {language === 'ar' ? 'دورات المجموعات (90 دقيقة)' : 'Group Courses (90 min)'}
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('programs')} className="hover:text-[#F3E5AB] transition-colors">
-                  {language === 'ar' ? 'إتقان المحادثة والطلاقة' : 'Conversation Mastery'}
+                <button onClick={() => handleNav('course/kids-english')} className="hover:text-[#F3E5AB] transition-colors">
+                  {language === 'ar' ? 'الإنجليزية للأطفال والناشئة' : 'English for Kids'}
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('programs')} className="hover:text-[#F3E5AB] transition-colors">
+                <button onClick={() => handleNav('course/business-english')} className="hover:text-[#F3E5AB] transition-colors">
                   {language === 'ar' ? 'الإنجليزية المهنية للأعمال' : 'Business English'}
                 </button>
               </li>
@@ -145,10 +144,15 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('placement-test')} className="hover:text-[#F3E5AB] text-gray-300 transition-colors flex items-center gap-1">
+                <a
+                  href={EF_SET_PLACEMENT_TEST_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#F3E5AB] text-gray-300 transition-colors inline-flex items-center gap-1"
+                >
                   <span>{t.nav.placementTest}</span>
                   <span className="text-[10px] bg-white/20 text-white px-1 rounded font-bold">Free</span>
-                </button>
+                </a>
               </li>
               <li>
                 <button onClick={() => handleNav('pricing')} className="hover:text-[#F3E5AB] transition-colors">
@@ -158,11 +162,6 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
               <li>
                 <button onClick={() => handleNav('offers')} className="hover:text-[#F3E5AB] transition-colors">
                   {t.nav.offers}
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleNav('certificates')} className="hover:text-[#F3E5AB] transition-colors">
-                  {t.nav.certificates}
                 </button>
               </li>
               <li>

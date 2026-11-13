@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { CEFR_LEVELS_INFO, CURRICULUM_PREVIEW } from '../data/academyData';
 import { CEFRLevel, StageId } from '../types';
@@ -16,12 +16,20 @@ import {
 
 interface CurriculumPageProps {
   navigate: (route: string) => void;
+  initialLevel?: CEFRLevel;
 }
 
-export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate }) => {
+export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initialLevel }) => {
   const { t, language } = useLanguage();
-  const [activeLevel, setActiveLevel] = useState<CEFRLevel>('A1');
+  const [activeLevel, setActiveLevel] = useState<CEFRLevel>(initialLevel || 'A1');
   const [activeStageNumber, setActiveStageNumber] = useState<1 | 2 | 3>(1);
+
+  useEffect(() => {
+    if (initialLevel) {
+      setActiveLevel(initialLevel);
+      setActiveStageNumber(1);
+    }
+  }, [initialLevel]);
 
   const currentLevelInfo = CEFR_LEVELS_INFO.find((l) => l.code === activeLevel) || CEFR_LEVELS_INFO[0];
   const activeStageId = `${activeLevel}.${activeStageNumber}` as StageId;

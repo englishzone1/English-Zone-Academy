@@ -106,7 +106,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ navigate }) => {
 
                 {isOpen && (
                   <div className="px-6 pb-6 pt-2 border-t border-gray-100 text-sm text-gray-600 leading-relaxed bg-[#FAF8F5]/50">
-                    <p className="pl-7 rtl:pl-0 rtl:pr-7">
+                    <p className="pl-7 rtl:pl-0 rtl:pr-7 whitespace-pre-line">
                       {language === 'ar' ? faq.answerAr : faq.answerEn}
                     </p>
                   </div>

@@ -126,6 +126,25 @@
         "updatedAt": { "type": "string" }
       },
       "required": ["id", "isRegistrationOpen", "requiresGeneralEnglish"]
+    },
+    "FeedbackScreenshot": {
+      "title": "FeedbackScreenshot",
+      "description": "Genuine student or parent feedback screenshot managed by academy administrators with draft-by-default privacy",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique screenshot identifier" },
+        "imageDataUrl": { "type": "string", "description": "Optimized (and optionally privacy-redacted) WebP/JPEG data URL" },
+        "category": { "type": "string", "enum": ["none", "student_reviews", "parents_feedback", "lecture_feedback", "course_experience"], "description": "Optional feedback category" },
+        "captionEn": { "type": "string", "maxLength": 200, "description": "Optional short English caption" },
+        "captionAr": { "type": "string", "maxLength": 200, "description": "Optional short Arabic caption" },
+        "orderIndex": { "type": "number", "description": "Display sort order" },
+        "isPublished": { "type": "boolean", "description": "Whether screenshot is publicly visible (false by default)" },
+        "hasPrivacyMask": { "type": "boolean", "description": "Whether private info masking has been applied" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["id", "imageDataUrl", "category", "orderIndex", "isPublished", "hasPrivacyMask", "createdAt"]
     }
   },
   "firestore": {
@@ -156,6 +175,10 @@
     "/academy_settings/{settingId}": {
       "schema": "EnglishClubSettings",
       "description": "Academy public configurations including English Club schedule, capacity, and admission availability"
+    },
+    "/feedback_screenshots/{screenshotId}": {
+      "schema": "FeedbackScreenshot",
+      "description": "Student & parent feedback screenshots; public read allowed strictly when isPublished == true"
     }
   }
 }

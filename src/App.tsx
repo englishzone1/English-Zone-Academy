@@ -12,9 +12,8 @@ import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { FAQPage } from './pages/FAQPage';
 import { TestimonialsPage } from './pages/TestimonialsPage';
-import { CertificatesPage } from './pages/CertificatesPage';
 import { BlogPage } from './pages/BlogPage';
-import { PlacementTestPage } from './pages/PlacementTestPage';
+import { CourseDetailsPage } from './pages/CourseDetailsPage';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
@@ -81,7 +80,10 @@ function MainApp() {
     return hash || 'home';
   });
 
-  const [navigationState, setNavigationState] = useState<{ preselectedLevel?: CEFRLevel }>({});
+  const [navigationState, setNavigationState] = useState<{
+    preselectedLevel?: CEFRLevel;
+    curriculumLevel?: CEFRLevel;
+  }>({});
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -97,7 +99,10 @@ function MainApp() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const navigate = (route: string, state?: { preselectedLevel?: CEFRLevel }) => {
+  const navigate = (
+    route: string,
+    state?: { preselectedLevel?: CEFRLevel; curriculumLevel?: CEFRLevel }
+  ) => {
     if (state) {
       setNavigationState(state);
     }
@@ -113,7 +118,7 @@ function MainApp() {
       case 'programs':
         return <ProgramsPage navigate={navigate} />;
       case 'curriculum':
-        return <CurriculumPage navigate={navigate} />;
+        return <CurriculumPage navigate={navigate} initialLevel={navigationState.curriculumLevel} />;
       case 'pricing':
         return <PricingPage navigate={navigate} />;
       case 'offers':
@@ -126,12 +131,8 @@ function MainApp() {
         return <FAQPage navigate={navigate} />;
       case 'testimonials':
         return <TestimonialsPage navigate={navigate} />;
-      case 'certificates':
-        return <CertificatesPage navigate={navigate} />;
       case 'blog':
         return <BlogPage navigate={navigate} />;
-      case 'placement-test':
-        return <PlacementTestPage navigate={navigate} />;
       case 'english-club':
         return <EnglishClubPage navigate={navigate} />;
       case 'register':
@@ -181,6 +182,10 @@ function MainApp() {
         return <AvatarStudioPage navigate={navigate} />;
 
       default:
+        if (currentRoute.startsWith('course/')) {
+          const courseId = currentRoute.replace('course/', '');
+          return <CourseDetailsPage courseId={courseId} navigate={navigate} />;
+        }
         return <HomePage navigate={navigate} />;
     }
   };

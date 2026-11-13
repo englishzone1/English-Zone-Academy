@@ -7,7 +7,9 @@ import {
   Clock,
   Users,
   GraduationCap,
-  Info
+  Info,
+  CalendarCheck,
+  Award
 } from 'lucide-react';
 
 interface PricingPageProps {
@@ -15,7 +17,7 @@ interface PricingPageProps {
 }
 
 export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
-  const { t, language } = useLanguage();
+  const { t, language, dir } = useLanguage();
   const [levelFilter, setLevelFilter] = useState<'ALL' | CEFRLevel>('ALL');
 
   const filteredLevels = LEVEL_GROUP_PRICING.filter((item) => {
@@ -83,6 +85,34 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
               <span className="font-bold text-sm text-[#F3E5AB] block mt-1">
                 {language === 'ar' ? 'شهري لكل مستوى بدون التزام 6 أشهر' : 'Month-by-Month per Level'}
               </span>
+            </div>
+          </div>
+        </div>
+
+        {/* PROMINENT STUDY & PAYMENT PLAN NOTICE DIRECTLY ABOVE A1-C2 CARDS */}
+        <div
+          dir={dir}
+          className="mb-10 relative bg-gradient-to-br from-[#0A192F] via-[#0F2042] to-[#0A192F] text-white rounded-3xl p-6 sm:p-8 border-2 border-[#D4AF37] shadow-xl overflow-hidden"
+        >
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]" />
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-[#D4AF37]/50 text-[#D4AF37] flex items-center justify-center flex-shrink-0 shadow-md">
+                <CalendarCheck className="w-6 h-6 sm:w-7 sm:h-7" aria-hidden="true" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h2 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#F3E5AB]">
+                    {t.pricing.studyPaymentTitle}
+                  </h2>
+                  <span className="inline-flex items-center px-3.5 py-1 rounded-lg bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] text-xs sm:text-sm font-extrabold shadow-sm">
+                    {t.pricing.studyPaymentHighlight}
+                  </span>
+                </div>
+                <p className="text-sm sm:text-base text-gray-200 leading-relaxed max-w-4xl">
+                  {t.pricing.studyPaymentDesc}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -208,6 +238,26 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
             <div className="flex items-start gap-2.5">
               <Check className="w-4 h-4 text-[#D4AF37] flex-shrink-0 mt-0.5" />
               <span>{t.pricing.notice4}</span>
+            </div>
+          </div>
+
+          {/* Highlighted Free Certificates Benefit at the End of Academy Fees Policy */}
+          <div
+            dir={dir}
+            className="mt-6 pt-6 border-t border-gray-200/80"
+          >
+            <div className="bg-gradient-to-r from-[#0A192F] to-[#102445] text-white rounded-2xl p-5 sm:p-6 border border-[#D4AF37]/50 shadow-md flex flex-col sm:flex-row items-start gap-4">
+              <div className="w-11 h-11 rounded-xl bg-white/10 border border-[#D4AF37]/40 text-[#D4AF37] flex items-center justify-center flex-shrink-0">
+                <Award className="w-6 h-6" aria-hidden="true" />
+              </div>
+              <div className="space-y-1.5">
+                <h4 className="font-serif-luxury font-bold text-base sm:text-lg text-[#F3E5AB]">
+                  {t.pricing.freeCertificatesTitle}
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                  {t.pricing.freeCertificatesDesc}
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -20,6 +20,8 @@ export const OFFICIAL_CONTACTS: SocialLinks = {
   telegram: '#'  // Editable placeholder as specified
 };
 
+export const EF_SET_PLACEMENT_TEST_URL = 'https://class.efset.org/test/748e100e-26fd-48ff-9b81-790e50277b74';
+
 export const CEFR_LEVELS_INFO: CEFRLevelInfo[] = [
   {
     code: 'A1',
@@ -179,66 +181,71 @@ export const STAGE_PRICING_TABLE: StagePricing[] = [
   { stage: 'C2.3', level: 'C2', stageNumber: 3, months: 'Months 5–6', individualCurrent: 165, individualOriginal: 230, groupPrice: 120, groupOriginalPrice: 170 },
 ];
 
+export const GENERAL_ENGLISH_PROGRAM_DATA: ProgramCategory = {
+  id: 'general-english',
+  titleEn: 'General English',
+  titleAr: 'اللغة الإنجليزية العامة',
+  shortDescEn: 'Comprehensive 4-skills English program following international CEFR standards.',
+  shortDescAr: 'برنامج شامل لتطوير المهارات الأربع وفق المعايير الأوروبية المعتمدة (CEFR).',
+  fullDescEn: 'A balanced, structured pathway covering speaking, listening, reading, writing, and practical grammar to build total linguistic confidence in everyday situations.',
+  fullDescAr: 'مسار منهجي متوازن يغطي مهارات التحدث والاستماع والقراءة والكتابة مع القواعد العملية لبناء ثقة لغوية شاملة.',
+  objectivesEn: [
+    'Master essential grammatical structures with natural usage',
+    'Build rich, thematic vocabulary for everyday situations',
+    'Develop active listening and natural pronunciation skills',
+    'Formulate clear spoken and written expressions with confidence'
+  ],
+  objectivesAr: [
+    'إتقان القواعد النحوية الأساسية وتطبيقها بسلاسة',
+    'بناء مخزون غني من المفردات الموضوعية للحياة اليومية',
+    'تطوير مهارات الاستماع النشط والنطق الطبيعي السليم',
+    'صياغة التعبير الشفهي والكتابي الواضح بكل ثقة'
+  ],
+  suitableForEn: 'Learners of all ages seeking a solid, systematic foundation.',
+  suitableForAr: 'الراغبون في تأسيس شامل ومنهجي بمختلف الأعمار.',
+  formatEn: 'Small Group (90 min, 4–6 students)',
+  formatAr: 'مجموعات صغيرة (90 دقيقة، 4 إلى 6 طلاب)',
+  durationEn: '6 Months per CEFR Level (3 Stages of 2 Months)',
+  durationAr: '6 أشهر لكل مستوى (3 مراحل، كل مرحلة شهران)',
+  iconName: 'BookOpen',
+  badgeEn: 'Most Popular',
+  badgeAr: 'الأكثر طلباً'
+};
+
 export const PROGRAM_CATEGORIES: ProgramCategory[] = [
   {
-    id: 'general-english',
-    titleEn: 'General English',
-    titleAr: 'اللغة الإنجليزية العامة',
-    shortDescEn: 'Comprehensive 4-skills English program following international CEFR standards.',
-    shortDescAr: 'برنامج شامل لتطوير المهارات الأربع وفق المعايير الأوروبية المعتمدة (CEFR).',
-    fullDescEn: 'A balanced, structured pathway covering speaking, listening, reading, writing, and practical grammar to build total linguistic confidence in everyday situations.',
-    fullDescAr: 'مسار منهجي متوازن يغطي مهارات التحدث والاستماع والقراءة والكتابة مع القواعد العملية لبناء ثقة لغوية شاملة.',
+    id: 'small-group-courses',
+    titleEn: 'From Beginner to Confident English Speaker',
+    titleAr: 'من الصفر إلى الطلاقة: رحلتك نحو الإنجليزية بثقة',
+    shortDescEn:
+      'A structured English program from A1 to C2, combining grammar, vocabulary, all essential language skills, and practical communication. Build real speaking confidence and develop the language skills needed to prepare for IELTS and TOEFL.',
+    shortDescAr:
+      'برنامج إنجليزي متكامل بمستويات متدرجة من A1 إلى C2، يعتمد على منهج تعليمي عالمي منظم، ويجمع بين القواعد والمفردات والمهارات اللغوية والتطبيق العملي. نركز على بناء قدرتك على التحدث والتعبير بثقة، ونساعدك على تطوير المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
+    fullDescEn:
+      'A structured small-group English program from A1 to C2 (4–6 learners per class, 90-minute sessions) combining grammar, vocabulary, reading, writing, listening, and active speaking practice. Build real communication confidence step by step and develop the academic and practical language skills needed to prepare for IELTS and TOEFL.',
+    fullDescAr:
+      'برنامج متكامل للمجموعات الصغيرة من المستوى A1 إلى C2 (4 إلى 6 طلاب في الفصل، حصص مدتها 90 دقيقة) يجمع بين القواعد والمفردات والقراءة والكتابة والاستماع والتطبيق العملي للتحدث. ابنِ ثقتك في التواصل خطوة بخطوة وطوّر المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
     objectivesEn: [
-      'Master essential grammatical structures with natural usage',
-      'Build rich, thematic vocabulary for everyday situations',
-      'Develop active listening and natural pronunciation skills',
-      'Formulate clear spoken and written expressions with confidence'
+      'Progress systematically across CEFR levels A1 to C2 with clear stage milestones',
+      'Integrate grammar, vocabulary, reading, writing, listening, and real speaking practice',
+      'Build lasting speaking confidence in small interactive groups of 4–6 learners',
+      'Develop the core academic and communication skills needed to prepare for IELTS and TOEFL'
     ],
     objectivesAr: [
-      'إتقان القواعد النحوية الأساسية وتطبيقها بسلاسة',
-      'بناء مخزون غني من المفردات الموضوعية للحياة اليومية',
-      'تطوير مهارات الاستماع النشط والنطق الطبيعي السليم',
-      'صياغة التعبير الشفهي والكتابي الواضح بكل ثقة'
+      'التدرج المنهجي عبر مستويات الإطار الأوروبي A1 إلى C2 وفق مراحل تعليمية واضحة',
+      'دمج القواعد والمفردات ومهارات القراءة والكتابة والاستماع مع الممارسة العملية للتحدث',
+      'بناء ثقة حقيقية في التحدث والتعبير داخل مجموعات صغيرة تفاعلية (4 إلى 6 طلاب)',
+      'تطوير المهارات اللغوية والأكاديمية اللازمة للاستعداد لاختبارات IELTS وTOEFL'
     ],
-    suitableForEn: 'Learners of all ages seeking a solid, systematic foundation.',
-    suitableForAr: 'الراغبون في تأسيس شامل ومنهجي بمختلف الأعمار.',
-    formatEn: 'Small Group (90 min, 4–6 students)',
-    formatAr: 'مجموعات صغيرة (90 دقيقة، 4 إلى 6 طلاب)',
-    durationEn: '6 Months per CEFR Level (3 Stages of 2 Months)',
-    durationAr: '6 أشهر لكل مستوى (3 مراحل، كل مرحلة شهران)',
-    iconName: 'BookOpen',
-    badgeEn: 'Most Popular',
-    badgeAr: 'الأكثر طلباً'
-  },
-  {
-    id: 'conversation',
-    titleEn: 'Conversation Mastery',
-    titleAr: 'إتقان المحادثة والطلاقة',
-    shortDescEn: 'Intensive speaking-focused classes to eliminate hesitation and speak with natural flow.',
-    shortDescAr: 'حصص مكثفة تركز على المحادثة وإزالة التردد لاكتساب طلاقة طبيعية وسريعة.',
-    fullDescEn: 'Overcome fear of speaking through real-world dialogues, debate simulations, spontaneous presentations, and real-time pronunciation coaching.',
-    fullDescAr: 'تغلب على حاجز الخوف وتحدث بثقة من خلال حوارات واقعية، محاكاة مناظرات، ومتابعة فورية لمخارج الحروف والنبرة الصوتية.',
-    objectivesEn: [
-      'Break speaking barriers and speak spontaneously without translating in your head',
-      'Acquire modern conversational idioms, phrasal verbs, and colloquial expressions',
-      'Improve rhythm, intonation, and native-like speech flow',
-      'Engage in lively debates, opinions sharing, and storytelling'
-    ],
-    objectivesAr: [
-      'كسر حاجز الخوف والتحدث التلقائي دون ترجمة داخلية',
-      'اكتساب التعابير الاصطلاحية والأفعال المركبة الدارجة',
-      'تحسين النبرة والإيقاع اللغوي ومخارج الحروف',
-      'المشاركة التفاعلية في النقاشات وطرح الآراء والقصص'
-    ],
-    suitableForEn: 'Students with passive vocabulary who need active speaking practice.',
-    suitableForAr: 'من يمتلكون حصيلة لغوية لكنهم يحتاجون لممارسة التحدث الفعلي.',
-    formatEn: 'Small Interactive Group (90 min)',
-    formatAr: 'مجموعات تفاعلية صغيرة (90 دقيقة)',
-    durationEn: 'Flexible monthly modules',
-    durationAr: 'وحدات شهرية مرنة',
-    iconName: 'MessageSquare',
-    badgeEn: 'High Interaction',
-    badgeAr: 'تفاعل عالي'
+    suitableForEn: 'Learners from beginner to advanced levels seeking structured A1–C2 progression and speaking confidence.',
+    suitableForAr: 'المتعلمون من المبتدئ إلى المتقدم الباحثون عن تدرج منظم من A1 إلى C2 وثقة في التحدث.',
+    formatEn: 'Small Groups of 4–6 students (90 min per lesson)',
+    formatAr: 'مجموعات صغيرة من 4 إلى 6 طلاب (90 دقيقة لكل حصة)',
+    durationEn: '6 Months per level (2 Months per stage)',
+    durationAr: '6 أشهر لكل مستوى (شهران لكل مرحلة)',
+    iconName: 'Users',
+    badgeEn: 'MOST POPULAR',
+    badgeAr: 'الأكثر طلبًا'
   },
   {
     id: 'kids-english',
@@ -299,66 +306,6 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     iconName: 'Briefcase',
     badgeEn: 'Executive',
     badgeAr: 'تنفيذي'
-  },
-  {
-    id: 'small-group-courses',
-    titleEn: 'Small Group Courses (A1–C2)',
-    titleAr: 'دورات المجموعات الصغيرة (A1–C2)',
-    shortDescEn: 'Collaborative, lively classes with 4–6 peer learners covering CEFR levels A1 through C2.',
-    shortDescAr: 'فصول حيوية تفاعلية تضم 4 إلى 6 طلاب تغطي جميع المستويات من A1 حتى C2 لضمان التفاعل ومشاركة الجميع.',
-    fullDescEn: 'Learn in an inspiring international group environment across CEFR levels A1 to C2. 90-minute extended sessions allowing every student ample speaking time, roleplays, and collaborative assignments.',
-    fullDescAr: 'تعلم في بيئة جماعية ملهمة ومحفزة تغطي المستويات الأوروبية من A1 إلى C2. حصص ممتدة لمدة 90 دقيقة تمنح كل طالب وقتاً كافياً للمشاركة ولعب الأدوار والمنافسة الودية الإيجابية.',
-    objectivesEn: [
-      'Experience diverse international accents and communicative styles',
-      'Practice dynamic team projects, group debates, and peer reviews',
-      'Cost-effective monthly tuition with 90-minute deep-dive lessons',
-      'Benefit from peer motivation and collaborative learning dynamics'
-    ],
-    objectivesAr: [
-      'التعرض لمختلف اللهجات وأساليب التواصل الحوارية',
-      'ممارسة المشاريع الجماعية والمناظرات والنقد الإيجابي البنّاء',
-      'تكلفة اشتراك شهرية ميسرة مع حصة موسعة مدتها 90 دقيقة',
-      'الاستفادة من طاقة المجموعة والتحفيز المتبادل بين الزملاء'
-    ],
-    suitableForEn: 'Learners seeking structured A1–C2 progression with interactive teamwork and discussion.',
-    suitableForAr: 'المتعلمون الباحثون عن تدرج منهجي من A1 إلى C2 مع العمل الجماعي والنقاش التفاعلي.',
-    formatEn: 'Small Groups of 4–6 students (90 min per lesson)',
-    formatAr: 'مجموعات صغيرة من 4 إلى 6 طلاب (90 دقيقة لكل حصة)',
-    durationEn: '6 Months per level (2 Months per stage)',
-    durationAr: '6 أشهر لكل مستوى (شهران لكل مرحلة)',
-    iconName: 'Users',
-    badgeEn: 'Best Value',
-    badgeAr: 'أفضل قيمة'
-  },
-  {
-    id: 'teacher-training',
-    titleEn: 'Teacher Training & TEFL',
-    titleAr: 'تأهيل وتدريب معلمي الإنجليزية',
-    shortDescEn: 'Advanced pedagogical methodology, lesson planning, and digital classroom mastery.',
-    shortDescAr: 'منهجيات تدريس حديثة، تخطيط الدروس، وإدارة الفصول الرقمية باحترافية.',
-    fullDescEn: 'A high-level professional certification course for current and aspiring English teachers. Master communicative language teaching (CLT), phonetics instruction, and student engagement.',
-    fullDescAr: 'برنامج تدريبي احترافي للمعلمين والمعلمات الراغبين في الارتقاء بمهاراتهم. يغطي أحدث نظريات التدريس، الأنشطة التواصلية، وتوظيف التقنية التعليمية الحديثة.',
-    objectivesEn: [
-      'Master Communicative Language Teaching (CLT) and Task-Based Learning',
-      'Design engaging lesson plans with measurable student outcomes',
-      'Learn modern online classroom management and feedback strategies',
-      'Receive official English Zone Teacher Diploma with verification ID'
-    ],
-    objectivesAr: [
-      'إتقان أسلوب التدريس التواصلي (CLT) والتعلم القائم على المهام',
-      'تصميم خطط دروس تفاعلية ذات أهداف تعليمية قابلة للقياس',
-      'إدارة الفصول الافتراضية باحترافية وتطبيق أساليب التقييم البناء',
-      'الحصول على شهادة معتمدة من أكاديمية English Zone برمز تحقق رسمي'
-    ],
-    suitableForEn: 'Aspiring and practicing teachers aiming for international standard accreditation.',
-    suitableForAr: 'المعلمون الحاليون والجدد الراغبون في تطوير أدائهم المهني.',
-    formatEn: 'Intensive Workshop Series & Practical Practicum (90 min)',
-    formatAr: 'ورش تدريبية مكثفة وتطبيق عملي (90 دقيقة)',
-    durationEn: '3-Month Comprehensive Program',
-    durationAr: 'برنامج شامل لمدة 3 أشهر',
-    iconName: 'GraduationCap',
-    badgeEn: 'Professional',
-    badgeAr: 'احترافي'
   }
 ];
 
@@ -805,16 +752,24 @@ export const FAQ_LIST: FAQItem[] = [
     category: 'tests',
     questionEn: 'How do I know which level to choose during registration?',
     questionAr: 'كيف أعرف المستوى المناسب لي عند التسجيل؟',
-    answerEn: 'You can take our free online Placement Test on the website right now! It gives you an instant score and level recommendation. Alternatively, you can choose "Not sure — I need a placement test" during registration, and our academic team will evaluate you.',
-    answerAr: 'يمكنك خوض اختبار تحديد المستوى التفاعلي المجاني على الموقع الآن لتحديد مستواك فوراً، أو اختيار خيار "لست متأكداً - أحتاج اختبار تحديد مستوى" في استمارة التسجيل وسيقوم فريقنا الأكاديمي بتقييمك.'
+    answerEn: 'You can take our free CEFR Placement Test right now via our placement test link to discover your English proficiency level. Alternatively, you can choose "Not sure — I need a placement test" during registration, and our academic team will evaluate you.',
+    answerAr: 'يمكنك خوض اختبار تحديد المستوى المجاني وفق معايير CEFR الآن لمعرفة مستواك اللغوي، أو اختيار خيار "لست متأكداً - أحتاج اختبار تحديد مستوى" في استمارة التسجيل وسيقوم فريقنا الأكاديمي بتقييمك.'
   },
   {
     id: 'faq-6',
     category: 'general',
-    questionEn: 'Will I receive a verified certificate after completing a level?',
+    questionEn: 'Do students receive certificates upon completing their studies?',
     questionAr: 'هل أحصل على شهادة معتمدة بعد إتمام المستوى بنجاح؟',
-    answerEn: 'Yes. Upon successfully completing all stages of a CEFR level and passing the final assessment, you will receive an official English Zone International Certificate with a unique verification ID that can be verified online anytime.',
-    answerAr: 'نعم بالتأكيد. عند إتمام مراحل المستوى واجتياز التقييم الأكاديمي النهائي، تصدر لك شهادة رسمية من أكاديمية English Zone تحمل رقم تحقق فريد يمكن التحقق من صحته عبر الموقع في أي وقت.'
+    answerEn: `Yes! Students receive two certificates completely free of charge:
+
+1. CPD Certificate: An English professional development certificate issued through a British international platform under the Continuing Professional Development (CPD) system. It can be added to your CV and LinkedIn profile.
+
+2. English Level Certificate: A free certificate showing your English proficiency level according to the Common European Framework of Reference for Languages (CEFR), after completing the EF SET test.`,
+    answerAr: `نعم، يحصل الطلاب مجانًا على شهادتين دون أي رسوم إضافية:
+
+1. شهادة التطوير المهني المستمر (CPD): شهادة في التطوير المهني باللغة الإنجليزية من منصة بريطانية عالمية ضمن نظام CPD، ويمكن إضافتها إلى السيرة الذاتية (CV) والملف المهني على LinkedIn.
+
+2. شهادة إثبات مستوى اللغة الإنجليزية: شهادة مجانية توضح مستوى الطالب وفق الإطار الأوروبي المرجعي المشترك للغات (CEFR)، بعد إتمام اختبار EF SET.`
   }
 ];
 

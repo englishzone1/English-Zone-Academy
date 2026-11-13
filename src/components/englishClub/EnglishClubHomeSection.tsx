@@ -2,8 +2,6 @@ import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { EnglishZoneEmblem } from '../common/Logo';
 import { 
-  Sparkles, 
-  ArrowRight, 
   Clock, 
   MessageSquare, 
   Users, 
@@ -126,17 +124,8 @@ export const EnglishClubHomeSection: React.FC<EnglishClubHomeSectionProps> = ({
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Button */}
               <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
-                <button
-                  onClick={() => navigate('english-club')}
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-lg hover:shadow-[#D4AF37]/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>{c.viewSessions}</span>
-                  <ArrowRight className={`w-3.5 h-3.5 ${language === 'ar' ? 'rotate-180' : ''}`} />
-                </button>
-
                 <button
                   onClick={onJoinClick ? onJoinClick : () => navigate('english-club')}
                   className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm border border-[#D4AF37]/60 text-[#F3E5AB] hover:bg-[#D4AF37]/15 hover:border-[#D4AF37] transition-all flex items-center justify-center gap-2"

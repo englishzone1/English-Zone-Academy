@@ -34,8 +34,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
     {
       titleEn: 'Transparent Academic Progress',
       titleAr: 'الشفافية الكاملة في التطور الأكاديمي',
-      descEn: 'Students advance through tangible 2-month stages with continuous teacher feedback and verifiable milestone certificates.',
-      descAr: 'يتقدم الطالب عبر مراحل ملموسة مدتها شهران مع تقارير أداء دورية وشهادات إتمام موثقة برمز تحقق.'
+      descEn: 'Students advance through tangible 2-month stages with continuous teacher feedback and structured stage progress evaluations.',
+      descAr: 'يتقدم الطالب عبر مراحل ملموسة مدتها شهران مع تقارير أداء وتقييمات دورية مستمرة.'
     },
     {
       titleEn: '100% Online Dedicated Classrooms',

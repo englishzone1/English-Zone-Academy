@@ -187,8 +187,16 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
 
                     <div className="pt-6 space-y-3">
                       <button
-                        onClick={() => navigate('register')}
+                        onClick={() => navigate(`course/${prog.id}`)}
                         className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] hover:brightness-110 shadow transition-all flex items-center justify-center gap-2"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        <span>{language === 'ar' ? 'عرض تفاصيل الدورة' : 'View Course Details'}</span>
+                      </button>
+
+                      <button
+                        onClick={() => navigate('register')}
+                        className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] transition-colors flex items-center justify-center gap-2"
                       >
                         <GraduationCap className="w-4 h-4" />
                         <span>{t.programs.enrollNow}</span>

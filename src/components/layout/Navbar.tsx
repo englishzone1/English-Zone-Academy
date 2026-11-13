@@ -3,12 +3,12 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
+import { EF_SET_PLACEMENT_TEST_URL } from '../../data/academyData';
 import { 
   Menu, 
   X, 
   Sparkles, 
   BookOpen, 
-  Award, 
   HelpCircle, 
   FileText, 
   Phone, 
@@ -59,8 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
   const moreLinks = [
     { id: 'english-club', label: t.nav.englishClub, icon: MessageSquare, badge: 'New' },
-    { id: 'placement-test', label: t.nav.placementTest, icon: Sparkles, badge: 'Free' },
-    { id: 'certificates', label: t.nav.certificates, icon: Award },
+    { id: 'placement-test', label: t.nav.placementTest, icon: Sparkles, badge: 'Free', externalUrl: EF_SET_PLACEMENT_TEST_URL },
     { id: 'faq', label: t.nav.faq, icon: HelpCircle },
     { id: 'testimonials', label: t.nav.testimonials, icon: UserCheck },
     { id: 'blog', label: t.nav.blog, icon: FileText },
@@ -84,13 +83,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             <span className="text-gray-400">{t.brand.onlineOnlyBadge}</span>
           </div>
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => handleNav('placement-test')} 
+            <a
+              href={EF_SET_PLACEMENT_TEST_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[#F3E5AB] hover:text-[#D4AF37] transition-colors flex items-center gap-1 font-medium"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
               <span>{t.hero.ctaTest}</span>
-            </button>
+            </a>
             <span className="text-gray-500">|</span>
             <a 
               href="https://wa.me/84326853884" 
@@ -154,6 +155,28 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                   {moreLinks.map((item) => {
                     const IconComponent = item.icon;
                     const isActive = currentRoute === item.id;
+                    if (item.externalUrl) {
+                      return (
+                        <a
+                          key={item.id}
+                          href={item.externalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setIsMoreDropdownOpen(false)}
+                          className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-left transition-colors text-gray-200 hover:bg-white/10 hover:text-white"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <IconComponent className="w-4 h-4 text-[#D4AF37]" />
+                            <span>{item.label}</span>
+                          </div>
+                          {item.badge && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0A192F]">
+                              {item.badge}
+                            </span>
+                          )}
+                        </a>
+                      );
+                    }
                     return (
                       <button
                         key={item.id}
@@ -247,13 +270,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             >
               {t.nav.register}
             </button>
-            <button
-              onClick={() => handleNav('placement-test')}
+            <a
+              href={EF_SET_PLACEMENT_TEST_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="w-full py-2.5 rounded-xl font-semibold text-xs border border-[#D4AF37]/50 text-[#F3E5AB] flex items-center justify-center gap-1"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
               {t.nav.placementTest}
-            </button>
+            </a>
           </div>
 
           <div className="border-t border-white/10 pt-2 space-y-1">
@@ -275,24 +301,42 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               {language === 'ar' ? 'صفحات إضافية' : 'Academy Explorations'}
             </div>
 
-            {moreLinks.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNav(item.id)}
-                className={`w-full flex items-center justify-between py-2.5 px-3 rounded-lg text-sm font-medium ${
-                  currentRoute === item.id
-                    ? 'bg-[#D4AF37]/20 text-[#F3E5AB] font-bold'
-                    : 'text-gray-300 hover:bg-white/5'
-                }`}
-              >
-                <span>{item.label}</span>
-                {item.badge && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0A192F]">
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            ))}
+            {moreLinks.map((item) =>
+              item.externalUrl ? (
+                <a
+                  key={item.id}
+                  href={item.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-between py-2.5 px-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5"
+                >
+                  <span>{item.label}</span>
+                  {item.badge && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0A192F]">
+                      {item.badge}
+                    </span>
+                  )}
+                </a>
+              ) : (
+                <button
+                  key={item.id}
+                  onClick={() => handleNav(item.id)}
+                  className={`w-full flex items-center justify-between py-2.5 px-3 rounded-lg text-sm font-medium ${
+                    currentRoute === item.id
+                      ? 'bg-[#D4AF37]/20 text-[#F3E5AB] font-bold'
+                      : 'text-gray-300 hover:bg-white/5'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  {item.badge && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0A192F]">
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              )
+            )}
 
             <div className="border-t border-white/10 pt-3">
               <button
