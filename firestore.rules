@@ -216,4 +216,15 @@ service cloud.firestore {
     }
 
     match /feedback_screenshots/{screenshotId} {
-      allow get, list: if resource.data.isPublished == true || isAdmin();
+      allow get, list: if resource.data.isPublished == true || isAdmin();      allow create: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
+      allow update: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // --- Connection test collection: read for signed-in users, write for admins only ---
+    match /test/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}
