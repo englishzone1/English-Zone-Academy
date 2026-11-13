@@ -34,7 +34,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
     email: '',
     mainLevel: initialLevel || 'A1',
     learningGoal: '',
-    learningFormat: 'individual',
+    learningFormat: 'group',
     notes: ''
   });
 
@@ -82,8 +82,8 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
   // Generate WhatsApp prefilled link with enrollment details
   const generateWhatsAppLink = () => {
-    const textEn = `Hello English Zone Admissions! I would like to join the academy. Name: ${formData.fullName || 'Student'}, Main Level: ${formData.mainLevel}, Format: ${formData.learningFormat === 'individual' ? 'Private Lessons (60 min)' : 'Group Lessons (90 min)'}.`;
-    const textAr = `مرحباً فريق قبول أكاديمية English Zone، أود التسجيل في الأكاديمية. الاسم: ${formData.fullName || 'طالب'}، المستوى الرئيسي: ${formData.mainLevel}، نظام الحصص: ${formData.learningFormat === 'individual' ? 'دروس فردية (60 دقيقة)' : 'دورات مجموعات (90 دقيقة)'}.`;
+    const textEn = `Hello English Zone Admissions! I would like to join the academy. Name: ${formData.fullName || 'Student'}, Main Level: ${formData.mainLevel}, Format: Small Group Lessons (90 min).`;
+    const textAr = `مرحباً فريق قبول أكاديمية English Zone، أود التسجيل في الأكاديمية. الاسم: ${formData.fullName || 'طالب'}، المستوى الرئيسي: ${formData.mainLevel}، نظام الحصص: دورات المجموعات (90 دقيقة).`;
     const encoded = encodeURIComponent(language === 'ar' ? textAr : textEn);
     return `${OFFICIAL_CONTACTS.whatsapp}?text=${encoded}`;
   };
@@ -349,37 +349,18 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                 </div>
               </div>
 
-              {/* Learning Format: Individual (60 min) vs Group (90 min) */}
+              {/* Learning Format: Small Group Classes (90 min) */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-2">
                   {t.register.formatLabel} *
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, learningFormat: 'individual' })}
-                    className={`p-4 rounded-xl text-left rtl:text-right border-2 transition-all ${
-                      formData.learningFormat === 'individual'
-                        ? 'bg-[#0A192F] text-[#F3E5AB] border-[#D4AF37] shadow'
-                        : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="font-bold text-sm">{t.register.formatIndividual}</div>
-                    <div className="text-xs text-gray-400 mt-1">100% dedicated instructor, 60 minutes</div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, learningFormat: 'group' })}
-                    className={`p-4 rounded-xl text-left rtl:text-right border-2 transition-all ${
-                      formData.learningFormat === 'group'
-                        ? 'bg-[#0A192F] text-[#F3E5AB] border-[#D4AF37] shadow'
-                        : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="font-bold text-sm">{t.register.formatGroup}</div>
-                    <div className="text-xs text-gray-400 mt-1">4–6 students, 90 minutes extended session</div>
-                  </button>
+                <div className="p-4 rounded-xl text-left rtl:text-right border-2 bg-[#0A192F] text-[#F3E5AB] border-[#D4AF37] shadow">
+                  <div className="font-bold text-sm">{t.register.formatGroup}</div>
+                  <div className="text-xs text-gray-300 mt-1">
+                    {language === 'ar'
+                      ? 'من 4 إلى 6 طلاب فقط، حصة تفاعلية ممتدة لمدة 90 دقيقة'
+                      : '4–6 students, 90 minutes extended interactive session'}
+                  </div>
                 </div>
               </div>
 

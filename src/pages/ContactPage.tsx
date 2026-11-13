@@ -196,7 +196,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
             <p className="text-sm text-gray-300 leading-relaxed">
               {language === 'ar'
                 ? 'فريق القبول والتنسيق الأكاديمي متاح للرد على استفساراتك حول البرامج وتحديد موعد الحصة التجريبية أو حجز مقعدك مباشرة.'
-                : 'Our academic coordinator responds promptly to answer questions regarding CEFR level placement, private or group class schedules, and tuition payments.'}
+                : 'Our academic coordinator responds promptly to answer questions regarding CEFR level placement, small group schedules, and program enrollment.'}
             </p>
 
             <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2 text-xs text-gray-300">

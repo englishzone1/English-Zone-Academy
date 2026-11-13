@@ -38,6 +38,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserProfile | null>(null);
   const [hasProfile, setHasProfile] = useState<boolean>(false);
   const [customClaims, setCustomClaims] = useState<Record<string, any>>({});
+  const [hasAdminDoc, setHasAdminDoc] = useState<boolean>(false);
+  const [isAdminDocSuper, setIsAdminDocSuper] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -54,24 +56,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.warn('Could not refresh ID token claims:', tokenErr);
       }
 
-      // 2. Check admin doc first if claim or email matches, otherwise user doc
+      // 2. Check admins/{uid} document in Firestore
       let resolvedProfile: UserProfile | null = null;
+      let adminDocExists = false;
+      let adminDocSuper = false;
       
       try {
         const adminSnap = await getDoc(doc(db, 'admins', fbUser.uid));
         if (adminSnap.exists()) {
-          const adminData = adminSnap.data();
+          adminDocExists = true;
+          const adminData = adminSnap.data() || {};
+          const docRole = typeof adminData.role === 'string' ? adminData.role : '';
+          adminDocSuper =
+            docRole === 'super-admin' ||
+            docRole === 'super_admin' ||
+            adminData.isSuperAdmin === true;
+
           resolvedProfile = {
             id: fbUser.uid,
             email: fbUser.email || adminData.email || '',
-            fullName: adminData.fullName || 'Academy Administrator',
-            role: (tokenClaims.role as any) || adminData.role || 'super-admin',
-            createdAt: adminData.addedAt || new Date().toISOString()
+            fullName: adminData.fullName || fbUser.displayName || 'Academy Administrator',
+            role: (tokenClaims.role as any) || (adminDocSuper ? 'super-admin' : (docRole as any) || 'admin'),
+            createdAt: adminData.addedAt || adminData.createdAt || new Date().toISOString()
           };
         }
       } catch {
-        // Non-admin may not read admins collection
+        // Non-admin or unreadable admins/{uid}
       }
+
+      setHasAdminDoc(adminDocExists);
+      setIsAdminDocSuper(adminDocSuper);
 
       if (!resolvedProfile) {
         const userSnap = await getDoc(doc(db, 'users', fbUser.uid));
@@ -86,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(resolvedProfile);
         setHasProfile(true);
       } else {
-        const defaultRole = (tokenClaims.role as any) || (fbUser.email?.toLowerCase() === 'amalalhasan2006@gmail.com' ? 'super-admin' : 'student');
+        const defaultRole = (tokenClaims.role as any) || 'student';
         setUser({
           id: fbUser.uid,
           email: fbUser.email || '',
@@ -115,6 +129,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setFirebaseUser(null);
         setUser(null);
         setHasProfile(false);
+        setCustomClaims({});
+        setHasAdminDoc(false);
+        setIsAdminDocSuper(false);
       }
       setIsLoading(false);
     });
@@ -208,36 +225,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const claims = tokenResult.claims || {};
       setCustomClaims(claims);
 
-      // Verify administrative claims or admin doc in Firestore
+      // Authorization: admin/super-admin custom claim OR an existing admins/{uid} document in Firestore
       const claimRole = (claims.role as string) || '';
       const isClaimAdmin = 
         claimRole === 'super-admin' || 
         claimRole === 'super_admin' || 
         claimRole === 'admin' || 
         claims.admin === true;
-      
-      const isConfiguredAdminEmail = 
-        cred.user.email?.toLowerCase() === 'amalalhasan2006@gmail.com' ||
-        cred.user.email?.toLowerCase() === 'admin@englishzone.com';
 
-      let hasAdminDoc = false;
+      let adminDocExists = false;
       try {
-        const adminDocSnap = await getDoc(doc(db, 'admins', cred.user.uid));
-        if (adminDocSnap.exists()) {
-          hasAdminDoc = true;
-        }
+        const adminSnap = await getDoc(doc(db, 'admins', cred.user.uid));
+        adminDocExists = adminSnap.exists();
       } catch {
-        // Firestore rules handle non-admins
+        adminDocExists = false;
       }
 
-      if (!isClaimAdmin && !isConfiguredAdminEmail && !hasAdminDoc) {
+      if (!isClaimAdmin && !adminDocExists) {
         // Automatically revoke session and reject unauthorized users
         await signOut(auth);
         setFirebaseUser(null);
         setUser(null);
         setCustomClaims({});
+        setHasAdminDoc(false);
+        setIsAdminDocSuper(false);
         setIsLoading(false);
-        const deniedMsg = 'Access Denied: This account is not authorized to access the Administration Console. Please sign in via the Student Portal.';
+        const deniedMsg = 'Access Denied: This account lacks administrative custom claims or an admins/{uid} record in Firestore. Access to the Administration Console is restricted.';
         setAuthError(deniedMsg);
         return { success: false, message: deniedMsg };
       }
@@ -340,6 +353,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setFirebaseUser(null);
       setUser(null);
       setHasProfile(false);
+      setCustomClaims({});
+      setHasAdminDoc(false);
+      setIsAdminDocSuper(false);
     }
   };
 
@@ -364,19 +380,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await updateProfile({ avatarConfig: config });
   };
 
+  // Admin authorization: admin/super-admin custom claim OR a document exists at admins/{uid} in Firestore
   const isSuperAdmin = 
     customClaims.role === 'super-admin' || 
-    customClaims.role === 'super_admin' || 
-    user?.role === 'super-admin' || 
-    user?.role === 'super_admin' || 
-    firebaseUser?.email?.toLowerCase() === 'amalalhasan2006@gmail.com' ||
-    firebaseUser?.email?.toLowerCase() === 'admin@englishzone.com';
+    customClaims.role === 'super_admin' ||
+    (hasAdminDoc && isAdminDocSuper);
 
   const isAdmin = 
     isSuperAdmin || 
     customClaims.role === 'admin' || 
-    customClaims.admin === true || 
-    user?.role === 'admin';
+    customClaims.admin === true ||
+    hasAdminDoc;
 
   const isTeacher = customClaims.role === 'teacher' || user?.role === 'teacher';
   const isStudent = !isAdmin && !isTeacher;

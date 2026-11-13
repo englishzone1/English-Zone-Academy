@@ -20,6 +20,18 @@ export interface StagePricing {
   individualCurrent: number;
   individualOriginal: number;
   groupPrice: number;
+  groupOriginalPrice?: number;
+}
+
+export interface LevelGroupPricing {
+  level: CEFRLevel;
+  nameEn: string;
+  nameAr: string;
+  durationMonths: number;
+  stagesCount: number;
+  originalPrice: number;
+  offerPrice: number;
+  priceNoteAr: string;
 }
 
 export interface CEFRLevelInfo {
@@ -50,7 +62,9 @@ export interface ProgramCategory {
   formatAr: string;
   durationEn: string;
   durationAr: string;
-  monthlyStartingPrice: number;
+  monthlyStartingPrice?: number;
+  originalPrice?: number;
+  priceNoteAr?: string;
   iconName: string;
   badgeEn?: string;
   badgeAr?: string;

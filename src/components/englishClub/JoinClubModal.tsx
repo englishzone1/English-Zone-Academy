@@ -201,14 +201,11 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
               </div>
 
               {/* Club Policy Badge */}
-              <div className="p-3 rounded-2xl bg-[#FAF8F5] border border-gray-200 text-[11px] text-gray-600 space-y-1">
+              <div className="p-3 rounded-2xl bg-[#FAF8F5] border border-gray-200 text-[11px] text-gray-600">
                 <div className="flex items-center gap-1.5 text-[#0A192F] font-bold">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
                   <span>{c.practiceNotReplacementBadge}</span>
                 </div>
-                <p className="text-gray-500">
-                  {c.pricingNotice}
-                </p>
               </div>
 
               <div className="pt-2">

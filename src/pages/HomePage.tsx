@@ -3,10 +3,12 @@ import { useLanguage } from '../context/LanguageContext';
 import { 
   OFFICIAL_CONTACTS, 
   CEFR_LEVELS_INFO, 
+  LEVEL_GROUP_PRICING,
   PROGRAM_CATEGORIES, 
   TESTIMONIALS_LIST, 
   FAQ_LIST 
 } from '../data/academyData';
+import { CEFRLevel } from '../types';
 import { 
   Sparkles, 
   ArrowRight, 
@@ -21,13 +23,14 @@ import {
   GraduationCap, 
   HelpCircle,
   TrendingUp,
-  Image as ImageIcon
+  ClipboardCheck,
+  ExternalLink
 } from 'lucide-react';
 import { EnglishZoneEmblem } from '../components/common/Logo';
 import { EnglishClubHomeSection } from '../components/englishClub/EnglishClubHomeSection';
 
 interface HomePageProps {
-  navigate: (route: string) => void;
+  navigate: (route: string, state?: { preselectedLevel?: CEFRLevel }) => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
@@ -151,11 +154,83 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
         </div>
       </section>
 
-      {/* LEARNING FORMATS: INDIVIDUAL (60 min) vs GROUP (90 min) */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* FEATURES & BENEFITS SECTION */}
+      <section className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+            {language === 'ar' ? 'مميزات وفوائد الأكاديمية' : `${t.brand.name} Benefits`}
+          </span>
+          <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-2">
+            {language === 'ar' ? 'مميزات وفوائد التعلم معنا' : 'Academy Features & Benefits'}
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+          {/* Feature 1: Free Placement Test */}
+          <div
+            dir="rtl"
+            className="relative bg-white rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37]/35 shadow-lg hover:border-[#D4AF37] transition-all flex flex-col justify-between overflow-hidden"
+          >
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#0A192F] via-[#D4AF37] to-[#0A192F]" />
+            <div>
+              <div className="w-14 h-14 rounded-2xl bg-[#0A192F] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shadow-md mb-5">
+                <ClipboardCheck className="w-7 h-7" />
+              </div>
+
+              <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#0A192F] mb-3">
+                اختبار تحديد مستوى مجاني
+              </h3>
+
+              <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-7">
+                اختبري مستواك في اللغة الإنجليزية مجانًا وفق الإطار الأوروبي المرجعي المشترك للغات (CEFR)، واحصلي على نتيجة توضح مستواك اللغوي.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-gray-100">
+              <a
+                href="https://class.efset.org/test/748e100e-26fd-48ff-9b81-790e50277b74"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-md hover:shadow-lg hover:brightness-105 active:scale-95 transition-all"
+              >
+                <span>ابدئي الاختبار مجانًا</span>
+                <ExternalLink className="w-4 h-4 flex-shrink-0" />
+              </a>
+            </div>
+          </div>
+
+          {/* Feature 2: CPD Certificate */}
+          <div
+            dir="rtl"
+            className="relative bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37]/50 shadow-xl hover:border-[#D4AF37] transition-all flex flex-col justify-between overflow-hidden"
+          >
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]" />
+            <div>
+              <div className="w-14 h-14 rounded-2xl bg-white/10 text-[#F3E5AB] border border-[#D4AF37]/50 flex items-center justify-center shadow-md mb-5">
+                <Award className="w-7 h-7 text-[#D4AF37]" />
+              </div>
+
+              <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#F3E5AB] mb-3">
+                شهادة التطوير المهني المستمر (CPD)
+              </h3>
+
+              <p className="text-sm sm:text-base text-gray-200 leading-relaxed">
+                احصلي على شهادة تطوير مهني في اللغة الإنجليزية معتمدة من جهة بريطانية ضمن نظام التطوير المهني المستمر (CPD)، لتعزيز ملفك المهني وإضافتها إلى سيرتك الذاتية (CV) وحسابك على LinkedIn.
+              </p>
+            </div>
+
+            <div className="mt-7 pt-4 border-t border-white/10">
+              <div className="h-1 w-16 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* LEARNING FORMAT & LEVEL-BASED GROUP PRICING */}
+      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
-            {t.brand.name} Formats
+            {t.brand.name} Format
           </span>
           <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-2">
             {t.formats.title}
@@ -165,62 +240,20 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Card 1: Individual Lessons */}
-          <div className="relative rounded-3xl p-8 sm:p-10 bg-white border-2 border-[#D4AF37]/30 shadow-xl hover:border-[#D4AF37] transition-all">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-semibold mb-4">
-              <Clock className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>{t.formats.individualTime}</span>
-            </div>
-            
-            <h3 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mb-3">
-              {t.formats.individualTitle}
-            </h3>
-            
-            <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-6">
-              {t.formats.individualDesc}
-            </p>
-
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-center gap-3 text-sm text-[#0A192F]">
-                <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
-                <span>{t.formats.individualBenefit1}</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-[#0A192F]">
-                <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
-                <span>{t.formats.individualBenefit2}</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-[#0A192F]">
-                <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
-                <span>{t.formats.individualBenefit3}</span>
-              </li>
-            </ul>
-
-            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-              <div>
-                <span className="text-xs text-gray-500 block">{t.programs.startingFrom}</span>
-                <span className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
-                  $80 <span className="text-sm font-normal text-gray-500">{t.programs.perMonth}</span>
-                </span>
-              </div>
-              <button
-                onClick={() => navigate('pricing')}
-                className="px-6 py-2.5 rounded-xl font-bold text-sm bg-[#0A192F] text-white hover:bg-[#162B4D] transition-colors"
-              >
-                {t.pricing.sectionTitle}
-              </button>
-            </div>
-          </div>
-
-          {/* Card 2: Small Group Courses */}
+        <div className="max-w-4xl mx-auto mb-12">
+          {/* Small Group Courses Format Overview */}
           <div className="relative rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-[#0A192F] to-[#0F2042] text-white border-2 border-[#D4AF37]/50 shadow-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-xs font-bold mb-4">
-              <Clock className="w-3.5 h-3.5 text-[#0A192F]" />
-              <span>{t.formats.groupTime}</span>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-xs font-bold">
+                <Clock className="w-3.5 h-3.5 text-[#0A192F]" />
+                <span>{t.formats.groupTime}</span>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-white/10 border border-[#D4AF37]/40 text-[#F3E5AB] text-xs font-semibold">
+                {language === 'ar' ? '6 مستويات منفصلة (A1–C2)' : '6 Separate CEFR Levels (A1–C2)'}
+              </span>
             </div>
             
-            <h3 className="font-serif-luxury font-bold text-2xl text-white mb-3">
+            <h3 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-white mb-3">
               {t.formats.groupTitle}
             </h3>
             
@@ -228,37 +261,109 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               {t.formats.groupDesc}
             </p>
 
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-center gap-3 text-sm text-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <div className="flex items-center gap-3 text-sm text-gray-200">
                 <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                 <span>{t.formats.groupBenefit1}</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-gray-200">
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-200">
                 <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                 <span>{t.formats.groupBenefit2}</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-gray-200">
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-200">
                 <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                 <span>{t.formats.groupBenefit3}</span>
-              </li>
-            </ul>
-
-            <div className="flex items-center justify-between pt-4 border-t border-white/10">
-              <div>
-                <span className="text-xs text-gray-400 block">{t.programs.startingFrom}</span>
-                <span className="font-serif-luxury font-bold text-2xl text-[#F3E5AB]">
-                  $50 <span className="text-sm font-normal text-gray-300">{t.programs.perMonth}</span>
-                </span>
               </div>
-              <button
-                onClick={() => navigate('register')}
-                className="px-6 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] hover:brightness-110 transition-all shadow-md"
-              >
-                {t.nav.register}
-              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-5 border-t border-white/10">
+              <span className="text-xs sm:text-sm text-[#F3E5AB] font-semibold">
+                {language === 'ar'
+                  ? 'اختر مستواك أدناه للاطلاع على الرسوم الشهرية والتسجيل:'
+                  : 'Select your level below to view monthly group tuition and enroll:'}
+              </span>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate('pricing')}
+                  className="px-5 py-2.5 rounded-xl font-semibold text-sm border border-[#D4AF37]/50 text-[#F3E5AB] hover:bg-[#D4AF37]/10 transition-colors"
+                >
+                  {t.nav.pricing}
+                </button>
+                <button
+                  onClick={() => navigate('register')}
+                  className="px-6 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] hover:brightness-110 transition-all shadow-md"
+                >
+                  {t.nav.register}
+                </button>
+              </div>
             </div>
           </div>
+        </div>
 
+        {/* 6 SEPARATE LEVEL-BASED GROUP PRICING CARDS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {LEVEL_GROUP_PRICING.map((item) => (
+            <div
+              key={item.level}
+              className="luxury-card rounded-2xl p-6 flex flex-col justify-between border-2 border-[#D4AF37]/30 hover:border-[#D4AF37] transition-all"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-11 h-11 rounded-xl bg-[#0A192F] text-[#F3E5AB] font-serif-luxury font-bold text-lg flex items-center justify-center shadow">
+                      {item.level}
+                    </span>
+                    <div>
+                      <h4 className="font-serif-luxury font-bold text-lg text-[#0A192F]">
+                        {language === 'ar' ? `المستوى ${item.level}` : `Level ${item.level}`}
+                      </h4>
+                      <span className="text-xs text-gray-500 font-medium block">
+                        {language === 'ar' ? item.nameAr : item.nameEn}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF8F5] text-gray-600 border border-gray-200">
+                    {item.durationMonths} {language === 'ar' ? 'أشهر' : 'Months'}
+                  </span>
+                </div>
+
+                {/* Level Offer Price Box */}
+                <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/30 mb-5">
+                  <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                    <div>
+                      <span className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold block">
+                        {t.pricing.originalPrice}
+                      </span>
+                      <span className="text-lg font-semibold text-gray-400 line-through inline-block mt-1" dir="ltr">
+                        ${item.originalPrice}
+                      </span>
+                    </div>
+                    <div className="text-end">
+                      <span className="text-[11px] uppercase tracking-wider text-[#AA820A] font-bold block">
+                        {t.pricing.monthlyPrice}
+                      </span>
+                      <div className="inline-flex items-baseline gap-1 px-3 py-1 rounded-xl bg-[#0A192F] text-[#F3E5AB] mt-1 shadow-sm">
+                        <span className="font-serif-luxury font-bold text-2xl sm:text-3xl" dir="ltr">
+                          ${item.offerPrice}
+                        </span>
+                        <span className="text-xs text-gray-300">{t.programs.perMonth}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="block text-xs font-semibold text-[#AA820A] mt-2.5 text-center pt-2 border-t border-[#D4AF37]/20" dir="rtl">
+                    {item.priceNoteAr}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate('register', { preselectedLevel: item.level })}
+                className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#0A192F] text-[#F3E5AB] hover:bg-[#D4AF37] hover:text-[#0A192F] transition-all shadow-sm"
+              >
+                {language === 'ar' ? `سجّل في المستوى ${item.level}` : `Enroll Level ${item.level}`}
+              </button>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -327,11 +432,14 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
-            {t.programs.sectionTitle}
+            {t.brand.name} Programs
           </span>
           <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-2">
-            {t.programs.sectionSubtitle}
+            {t.programs.sectionTitle}
           </h2>
+          <p className="text-gray-600 mt-3 text-base">
+            {t.programs.sectionSubtitle}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -370,14 +478,13 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-                <div>
-                  <span className="text-[11px] text-gray-500 block">{t.programs.startingFrom}</span>
-                  <span className="font-bold text-lg text-[#0A192F]">${prog.monthlyStartingPrice} <span className="text-xs font-normal text-gray-500">/mo</span></span>
-                </div>
+              <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+                <span className="text-xs font-semibold text-[#AA820A]">
+                  {language === 'ar' ? prog.durationAr : prog.durationEn}
+                </span>
                 <button
                   onClick={() => navigate('programs')}
-                  className="px-4 py-2 rounded-lg text-xs font-bold bg-[#0A192F] text-white hover:bg-[#162B4D] transition-colors"
+                  className="px-4 py-2 rounded-lg text-xs font-bold bg-[#0A192F] text-white hover:bg-[#162B4D] transition-colors flex-shrink-0"
                 >
                   {t.programs.learnMore}
                 </button>
@@ -395,33 +502,14 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Editable Image Placeholder for Founder's Real Photograph */}
+            {/* English Zone Academy Image */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-sm aspect-[4/5] rounded-3xl overflow-hidden border-2 border-[#D4AF37]/60 shadow-2xl bg-[#060D1A] group">
-                {/* Visual placeholder with refined styling */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-t from-[#060D1A] via-[#0A192F] to-[#102445]">
-                  <div className="mb-4">
-                    <EnglishZoneEmblem sizeClass="w-24 h-24" glow={true} />
-                  </div>
-                  <span className="font-serif-luxury font-bold text-lg text-[#F3E5AB]">
-                    {t.founder.roleTitle}
-                  </span>
-                  <span className="text-xs text-[#D4AF37] uppercase tracking-widest font-semibold mt-1">
-                    English Zone Academy
-                  </span>
-                  <div className="mt-6 p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] text-gray-300">
-                    <div className="flex items-center justify-center gap-1 text-[#D4AF37] mb-1 font-semibold">
-                      <ImageIcon className="w-3.5 h-3.5" />
-                      <span>{t.founder.photoPlaceholder}</span>
-                    </div>
-                    <span>{t.founder.photoUploadNote}</span>
-                  </div>
-                </div>
-
-                {/* Crest badge overlay */}
-                <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-[10px] font-bold tracking-wider uppercase shadow">
-                  Verified Academic Lead
-                </div>
+              <div className="relative w-full max-w-sm rounded-3xl overflow-hidden border-2 border-[#D4AF37]/60 shadow-2xl bg-[#060D1A]">
+                <img
+                  src="/assets/aistudio/file_00000000c3b08210abdde9ab8258756c_98faaab4.png"
+                  alt="English Zone Academy"
+                  className="w-full h-auto block"
+                />
               </div>
             </div>
 

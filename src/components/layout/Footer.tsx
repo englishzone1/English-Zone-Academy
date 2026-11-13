@@ -110,11 +110,6 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
               </li>
               <li>
                 <button onClick={() => handleNav('programs')} className="hover:text-[#F3E5AB] transition-colors">
-                  {language === 'ar' ? 'الدروس الفردية (60 دقيقة)' : 'Private Lessons (60 min)'}
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleNav('programs')} className="hover:text-[#F3E5AB] transition-colors">
                   {language === 'ar' ? 'دورات المجموعات (90 دقيقة)' : 'Group Courses (90 min)'}
                 </button>
               </li>

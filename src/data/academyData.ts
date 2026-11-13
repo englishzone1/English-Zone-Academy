@@ -1,6 +1,7 @@
 import { 
   CEFRLevelInfo, 
   StagePricing, 
+  LevelGroupPricing,
   ProgramCategory, 
   CurriculumStage, 
   PlacementQuestion, 
@@ -88,31 +89,94 @@ export const CEFR_LEVELS_INFO: CEFRLevelInfo[] = [
   }
 ];
 
+export const LEVEL_GROUP_PRICING: LevelGroupPricing[] = [
+  {
+    level: 'A1',
+    nameEn: 'Beginner',
+    nameAr: 'مبتدئ أساسي',
+    durationMonths: 6,
+    stagesCount: 3,
+    originalPrice: 100,
+    offerPrice: 70,
+    priceNoteAr: '(أو ما يعادلها من عملة بلدك)'
+  },
+  {
+    level: 'A2',
+    nameEn: 'Elementary',
+    nameAr: 'مبتدئ متقدم (أساسي)',
+    durationMonths: 6,
+    stagesCount: 3,
+    originalPrice: 110,
+    offerPrice: 75,
+    priceNoteAr: '(أو ما يعادلها من عملة بلدك)'
+  },
+  {
+    level: 'B1',
+    nameEn: 'Intermediate',
+    nameAr: 'متوسط',
+    durationMonths: 6,
+    stagesCount: 3,
+    originalPrice: 125,
+    offerPrice: 85,
+    priceNoteAr: '(أو ما يعادلها من عملة بلدك)'
+  },
+  {
+    level: 'B2',
+    nameEn: 'Upper-Intermediate',
+    nameAr: 'فوق المتوسط',
+    durationMonths: 6,
+    stagesCount: 3,
+    originalPrice: 135,
+    offerPrice: 95,
+    priceNoteAr: '(أو ما يعادلها من عملة بلدك)'
+  },
+  {
+    level: 'C1',
+    nameEn: 'Advanced',
+    nameAr: 'متقدم',
+    durationMonths: 6,
+    stagesCount: 3,
+    originalPrice: 150,
+    offerPrice: 105,
+    priceNoteAr: '(أو ما يعادلها من عملة بلدك)'
+  },
+  {
+    level: 'C2',
+    nameEn: 'Proficiency',
+    nameAr: 'إتقان تام (مستوى خبير)',
+    durationMonths: 6,
+    stagesCount: 3,
+    originalPrice: 170,
+    offerPrice: 120,
+    priceNoteAr: '(أو ما يعادلها من عملة بلدك)'
+  }
+];
+
 export const STAGE_PRICING_TABLE: StagePricing[] = [
   // A1
-  { stage: 'A1.1', level: 'A1', stageNumber: 1, months: 'Months 1–2', individualCurrent: 80, individualOriginal: 100, groupPrice: 50 },
-  { stage: 'A1.2', level: 'A1', stageNumber: 2, months: 'Months 3–4', individualCurrent: 85, individualOriginal: 100, groupPrice: 55 },
-  { stage: 'A1.3', level: 'A1', stageNumber: 3, months: 'Months 5–6', individualCurrent: 90, individualOriginal: 100, groupPrice: 60 },
+  { stage: 'A1.1', level: 'A1', stageNumber: 1, months: 'Months 1–2', individualCurrent: 80, individualOriginal: 100, groupPrice: 70, groupOriginalPrice: 100 },
+  { stage: 'A1.2', level: 'A1', stageNumber: 2, months: 'Months 3–4', individualCurrent: 85, individualOriginal: 100, groupPrice: 70, groupOriginalPrice: 100 },
+  { stage: 'A1.3', level: 'A1', stageNumber: 3, months: 'Months 5–6', individualCurrent: 90, individualOriginal: 100, groupPrice: 70, groupOriginalPrice: 100 },
   // A2
-  { stage: 'A2.1', level: 'A2', stageNumber: 1, months: 'Months 1–2', individualCurrent: 95, individualOriginal: 135, groupPrice: 65 },
-  { stage: 'A2.2', level: 'A2', stageNumber: 2, months: 'Months 3–4', individualCurrent: 100, individualOriginal: 135, groupPrice: 70 },
-  { stage: 'A2.3', level: 'A2', stageNumber: 3, months: 'Months 5–6', individualCurrent: 105, individualOriginal: 135, groupPrice: 75 },
+  { stage: 'A2.1', level: 'A2', stageNumber: 1, months: 'Months 1–2', individualCurrent: 95, individualOriginal: 135, groupPrice: 75, groupOriginalPrice: 110 },
+  { stage: 'A2.2', level: 'A2', stageNumber: 2, months: 'Months 3–4', individualCurrent: 100, individualOriginal: 135, groupPrice: 75, groupOriginalPrice: 110 },
+  { stage: 'A2.3', level: 'A2', stageNumber: 3, months: 'Months 5–6', individualCurrent: 105, individualOriginal: 135, groupPrice: 75, groupOriginalPrice: 110 },
   // B1
-  { stage: 'B1.1', level: 'B1', stageNumber: 1, months: 'Months 1–2', individualCurrent: 120, individualOriginal: 150, groupPrice: 85 },
-  { stage: 'B1.2', level: 'B1', stageNumber: 2, months: 'Months 3–4', individualCurrent: 120, individualOriginal: 150, groupPrice: 85 },
-  { stage: 'B1.3', level: 'B1', stageNumber: 3, months: 'Months 5–6', individualCurrent: 120, individualOriginal: 150, groupPrice: 85 },
+  { stage: 'B1.1', level: 'B1', stageNumber: 1, months: 'Months 1–2', individualCurrent: 120, individualOriginal: 150, groupPrice: 85, groupOriginalPrice: 125 },
+  { stage: 'B1.2', level: 'B1', stageNumber: 2, months: 'Months 3–4', individualCurrent: 120, individualOriginal: 150, groupPrice: 85, groupOriginalPrice: 125 },
+  { stage: 'B1.3', level: 'B1', stageNumber: 3, months: 'Months 5–6', individualCurrent: 120, individualOriginal: 150, groupPrice: 85, groupOriginalPrice: 125 },
   // B2
-  { stage: 'B2.1', level: 'B2', stageNumber: 1, months: 'Months 1–2', individualCurrent: 135, individualOriginal: 180, groupPrice: 95 },
-  { stage: 'B2.2', level: 'B2', stageNumber: 2, months: 'Months 3–4', individualCurrent: 135, individualOriginal: 180, groupPrice: 95 },
-  { stage: 'B2.3', level: 'B2', stageNumber: 3, months: 'Months 5–6', individualCurrent: 135, individualOriginal: 180, groupPrice: 95 },
+  { stage: 'B2.1', level: 'B2', stageNumber: 1, months: 'Months 1–2', individualCurrent: 135, individualOriginal: 180, groupPrice: 95, groupOriginalPrice: 135 },
+  { stage: 'B2.2', level: 'B2', stageNumber: 2, months: 'Months 3–4', individualCurrent: 135, individualOriginal: 180, groupPrice: 95, groupOriginalPrice: 135 },
+  { stage: 'B2.3', level: 'B2', stageNumber: 3, months: 'Months 5–6', individualCurrent: 135, individualOriginal: 180, groupPrice: 95, groupOriginalPrice: 135 },
   // C1
-  { stage: 'C1.1', level: 'C1', stageNumber: 1, months: 'Months 1–2', individualCurrent: 150, individualOriginal: 200, groupPrice: 110 },
-  { stage: 'C1.2', level: 'C1', stageNumber: 2, months: 'Months 3–4', individualCurrent: 150, individualOriginal: 200, groupPrice: 110 },
-  { stage: 'C1.3', level: 'C1', stageNumber: 3, months: 'Months 5–6', individualCurrent: 150, individualOriginal: 200, groupPrice: 110 },
+  { stage: 'C1.1', level: 'C1', stageNumber: 1, months: 'Months 1–2', individualCurrent: 150, individualOriginal: 200, groupPrice: 105, groupOriginalPrice: 150 },
+  { stage: 'C1.2', level: 'C1', stageNumber: 2, months: 'Months 3–4', individualCurrent: 150, individualOriginal: 200, groupPrice: 105, groupOriginalPrice: 150 },
+  { stage: 'C1.3', level: 'C1', stageNumber: 3, months: 'Months 5–6', individualCurrent: 150, individualOriginal: 200, groupPrice: 105, groupOriginalPrice: 150 },
   // C2
-  { stage: 'C2.1', level: 'C2', stageNumber: 1, months: 'Months 1–2', individualCurrent: 165, individualOriginal: 230, groupPrice: 125 },
-  { stage: 'C2.2', level: 'C2', stageNumber: 2, months: 'Months 3–4', individualCurrent: 165, individualOriginal: 230, groupPrice: 125 },
-  { stage: 'C2.3', level: 'C2', stageNumber: 3, months: 'Months 5–6', individualCurrent: 165, individualOriginal: 230, groupPrice: 125 },
+  { stage: 'C2.1', level: 'C2', stageNumber: 1, months: 'Months 1–2', individualCurrent: 165, individualOriginal: 230, groupPrice: 120, groupOriginalPrice: 170 },
+  { stage: 'C2.2', level: 'C2', stageNumber: 2, months: 'Months 3–4', individualCurrent: 165, individualOriginal: 230, groupPrice: 120, groupOriginalPrice: 170 },
+  { stage: 'C2.3', level: 'C2', stageNumber: 3, months: 'Months 5–6', individualCurrent: 165, individualOriginal: 230, groupPrice: 120, groupOriginalPrice: 170 },
 ];
 
 export const PROGRAM_CATEGORIES: ProgramCategory[] = [
@@ -138,11 +202,10 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     ],
     suitableForEn: 'Learners of all ages seeking a solid, systematic foundation.',
     suitableForAr: 'الراغبون في تأسيس شامل ومنهجي بمختلف الأعمار.',
-    formatEn: 'Individual (60 min) or Small Group (90 min)',
-    formatAr: 'فردي (60 دقيقة) أو مجموعات صغيرة (90 دقيقة)',
+    formatEn: 'Small Group (90 min, 4–6 students)',
+    formatAr: 'مجموعات صغيرة (90 دقيقة، 4 إلى 6 طلاب)',
     durationEn: '6 Months per CEFR Level (3 Stages of 2 Months)',
     durationAr: '6 أشهر لكل مستوى (3 مراحل، كل مرحلة شهران)',
-    monthlyStartingPrice: 50,
     iconName: 'BookOpen',
     badgeEn: 'Most Popular',
     badgeAr: 'الأكثر طلباً'
@@ -169,11 +232,10 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     ],
     suitableForEn: 'Students with passive vocabulary who need active speaking practice.',
     suitableForAr: 'من يمتلكون حصيلة لغوية لكنهم يحتاجون لممارسة التحدث الفعلي.',
-    formatEn: 'Individual (60 min) or Small Interactive Group (90 min)',
-    formatAr: 'فردي (60 دقيقة) أو مجموعات تفاعلية (90 دقيقة)',
+    formatEn: 'Small Interactive Group (90 min)',
+    formatAr: 'مجموعات تفاعلية صغيرة (90 دقيقة)',
     durationEn: 'Flexible monthly modules',
     durationAr: 'وحدات شهرية مرنة',
-    monthlyStartingPrice: 55,
     iconName: 'MessageSquare',
     badgeEn: 'High Interaction',
     badgeAr: 'تفاعل عالي'
@@ -200,11 +262,10 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     ],
     suitableForEn: 'Children & young teens aged 6–14.',
     suitableForAr: 'الأطفال والفتيان والفتيات من 6 حتى 14 سنة.',
-    formatEn: 'Small Group (90 min) or 1-on-1 (60 min)',
-    formatAr: 'مجموعات صغيرة (90 دقيقة) أو فردي (60 دقيقة)',
+    formatEn: 'Small Interactive Group (90 min)',
+    formatAr: 'مجموعات تفاعلية صغيرة (90 دقيقة)',
     durationEn: '6 Months per level',
     durationAr: '6 أشهر لكل مستوى',
-    monthlyStartingPrice: 50,
     iconName: 'Sparkles',
     badgeEn: 'Kids Favorite',
     badgeAr: 'المفضل للأطفال'
@@ -231,54 +292,22 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     ],
     suitableForEn: 'Executives, managers, entrepreneurs, and career climbers.',
     suitableForAr: 'المدراء، رواد الأعمال، والموظفون الطامحون للترقية.',
-    formatEn: 'Private 1-on-1 (60 min) or Executive Group (90 min)',
-    formatAr: 'فردي تنفيذي (60 دقيقة) أو مجموعة متخصصة (90 دقيقة)',
+    formatEn: 'Executive Small Group (90 min)',
+    formatAr: 'مجموعات مهنية متخصصة (90 دقيقة)',
     durationEn: 'Custom 2 to 6 months tracks',
     durationAr: 'مسارات مخصصة من شهرين إلى 6 أشهر',
-    monthlyStartingPrice: 85,
     iconName: 'Briefcase',
     badgeEn: 'Executive',
     badgeAr: 'تنفيذي'
   },
   {
-    id: 'private-lessons',
-    titleEn: 'Private Lessons (1-on-1)',
-    titleAr: 'الدروس الفردية الخاصة (1 على 1)',
-    shortDescEn: '100% personalized curriculum, dedicated certified instructor, and flexible scheduling.',
-    shortDescAr: 'منهج مخصص 100%، معلم معتمد خاص، وجدول مواعيد مرن يناسب وقتك.',
-    fullDescEn: 'The fastest, most focused way to achieve your specific English goals. Full teacher attention for 60 uninterrupted minutes with instant correction and personalized pacing.',
-    fullDescAr: 'المسار الأسرع والأكثر فاعلية لتحقيق أهدافك الخاصة. تركيز المعلم التام معك لمدة 60 دقيقة كاملة مع تصحيح فوري وخطة مخصصة لسرعتك.',
-    objectivesEn: [
-      'Learn at your own pace with a tailor-made academic plan',
-      'Target your specific weaknesses: accent, writing, grammar, or exam prep',
-      'Receive 100% active speaking time in every 60-minute session',
-      'Enjoy priority scheduling with flexible rescheduling policy'
-    ],
-    objectivesAr: [
-      'التعلم بالسرعة التي تناسبك مع خطة أكاديمية مفصلة لاحتياجك',
-      'معالجة نقاط الضعف الخاصة: النطق، الكتابة، أو اختبارات الكفاءة',
-      'الحصول على 100% من وقت الحصة للتحدث والاستفادة المباشرة',
-      'مرونة عالية في اختيار المواعيد وتنسيق الحصص'
-    ],
-    suitableForEn: 'Students wanting maximum speed and exclusive individual attention.',
-    suitableForAr: 'الطلاب الراغبون في أقصى سرعة واهتمام فردي مطلق.',
-    formatEn: 'Individual 1-on-1 (60 min per lesson)',
-    formatAr: 'فردي مباشر (60 دقيقة لكل حصة)',
-    durationEn: 'Month-to-month subscription',
-    durationAr: 'اشتراك شهري متجدد',
-    monthlyStartingPrice: 80,
-    iconName: 'UserCheck',
-    badgeEn: 'Fast Track',
-    badgeAr: 'المسار الأسرع'
-  },
-  {
     id: 'small-group-courses',
-    titleEn: 'Small Group Courses',
-    titleAr: 'دورات المجموعات الصغيرة',
-    shortDescEn: 'Collaborative, lively classes with 4–6 peer learners for maximum social interaction.',
-    shortDescAr: 'فصول حيوية تفاعلية تضم 4 إلى 6 طلاب فقط لضمان التفاعل ومشاركة الجميع.',
-    fullDescEn: 'Learn in an inspiring international group environment. 90-minute extended sessions allowing every student ample speaking time, roleplays, and collaborative assignments.',
-    fullDescAr: 'تعلم في بيئة جماعية ملهمة ومحفزة. حصص ممتدة لمدة 90 دقيقة تمنح كل طالب وقتاً كافياً للمشاركة ولعب الأدوار والمنافسة الودية الإيجابية.',
+    titleEn: 'Small Group Courses (A1–C2)',
+    titleAr: 'دورات المجموعات الصغيرة (A1–C2)',
+    shortDescEn: 'Collaborative, lively classes with 4–6 peer learners covering CEFR levels A1 through C2.',
+    shortDescAr: 'فصول حيوية تفاعلية تضم 4 إلى 6 طلاب تغطي جميع المستويات من A1 حتى C2 لضمان التفاعل ومشاركة الجميع.',
+    fullDescEn: 'Learn in an inspiring international group environment across CEFR levels A1 to C2. 90-minute extended sessions allowing every student ample speaking time, roleplays, and collaborative assignments.',
+    fullDescAr: 'تعلم في بيئة جماعية ملهمة ومحفزة تغطي المستويات الأوروبية من A1 إلى C2. حصص ممتدة لمدة 90 دقيقة تمنح كل طالب وقتاً كافياً للمشاركة ولعب الأدوار والمنافسة الودية الإيجابية.',
     objectivesEn: [
       'Experience diverse international accents and communicative styles',
       'Practice dynamic team projects, group debates, and peer reviews',
@@ -288,16 +317,15 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     objectivesAr: [
       'التعرض لمختلف اللهجات وأساليب التواصل الحوارية',
       'ممارسة المشاريع الجماعية والمناظرات والنقد الإيجابي البنّاء',
-      'تكلفة اشتراك اقتصادية مع حصة موسعة مدتها 90 دقيقة',
+      'تكلفة اشتراك شهرية ميسرة مع حصة موسعة مدتها 90 دقيقة',
       'الاستفادة من طاقة المجموعة والتحفيز المتبادل بين الزملاء'
     ],
-    suitableForEn: 'Sociable learners who love interactive teamwork and discussion.',
-    suitableForAr: 'المتعلمون الذين يحبون العمل الجماعي والنقاش التفاعلي.',
+    suitableForEn: 'Learners seeking structured A1–C2 progression with interactive teamwork and discussion.',
+    suitableForAr: 'المتعلمون الباحثون عن تدرج منهجي من A1 إلى C2 مع العمل الجماعي والنقاش التفاعلي.',
     formatEn: 'Small Groups of 4–6 students (90 min per lesson)',
     formatAr: 'مجموعات صغيرة من 4 إلى 6 طلاب (90 دقيقة لكل حصة)',
     durationEn: '6 Months per level (2 Months per stage)',
     durationAr: '6 أشهر لكل مستوى (شهران لكل مرحلة)',
-    monthlyStartingPrice: 50,
     iconName: 'Users',
     badgeEn: 'Best Value',
     badgeAr: 'أفضل قيمة'
@@ -328,7 +356,6 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     formatAr: 'ورش تدريبية مكثفة وتطبيق عملي (90 دقيقة)',
     durationEn: '3-Month Comprehensive Program',
     durationAr: 'برنامج شامل لمدة 3 أشهر',
-    monthlyStartingPrice: 110,
     iconName: 'GraduationCap',
     badgeEn: 'Professional',
     badgeAr: 'احترافي'
@@ -752,10 +779,10 @@ export const FAQ_LIST: FAQItem[] = [
   {
     id: 'faq-2',
     category: 'format',
-    questionEn: 'What is the difference between Individual and Group lessons?',
-    questionAr: 'ما هو الفرق بين الدروس الفردية ودروس المجموعات؟',
-    answerEn: 'Individual lessons last 60 minutes and provide 1-on-1 private instruction tailored entirely to your personal learning pace and goals. Group lessons last 90 minutes and feature small, friendly classes of 4 to 6 students, allowing ample speaking practice and collaborative activities.',
-    answerAr: 'الدروس الفردية مدتها 60 دقيقة وتمنحك تركيزاً خاصاً ومخصصاً بنسبة 100% لسرعتك وأهدافك. أما دورات المجموعات فمدتها 90 دقيقة وتضم من 4 إلى 6 طلاب فقط لضمان بيئة حوارية تفاعلية وممتعة.'
+    questionEn: 'How are Small Group lessons structured?',
+    questionAr: 'كيف يتم تنظيم حصص المجموعات الصغيرة؟',
+    answerEn: 'Our A1–C2 group lessons last 90 minutes and feature small, interactive classes limited to 4 to 6 students, ensuring every learner receives generous speaking time, direct instructor guidance, and engaging collaborative activities.',
+    answerAr: 'تمتد حصص المجموعات (من A1 حتى C2) لمدة 90 دقيقة كاملة وتضم من 4 إلى 6 طلاب فقط، مما يضمن لكل طالب وقتاً وافراً للتحدث وتصحيحاً مباشراً من المعلم وأنشطة حوارية تفاعلية.'
   },
   {
     id: 'faq-3',
@@ -770,8 +797,8 @@ export const FAQ_LIST: FAQItem[] = [
     category: 'pricing',
     questionEn: 'Do I have to pay for the entire 6 months in advance?',
     questionAr: 'هل يلزم دفع رسوم الـ 6 أشهر كاملة مقدماً؟',
-    answerEn: 'No! All prices at English Zone are paid month by month. You are never locked into a mandatory 6-month upfront commitment. You only pay for your current stage one month at a time.',
-    answerAr: 'كلا على الإطلاق! جميع الاشتراكات في English Zone تدفع شهرياً بشكل مريح وميسر. لا يوجد أي إلزام بالدفع لـ 6 أشهر مقدماً، بل تدفع شهرك بشهره وفق المرحلة التي تدرس فيها.'
+    answerEn: 'No! Tuition for our A1–C2 group English program is paid month by month. You are never locked into a mandatory 6-month upfront commitment.',
+    answerAr: 'كلا على الإطلاق! يتم سداد اشتراك برنامج اللغة الإنجليزية للمجموعات (A1–C2) شهرياً بشكل ميسر دون أي إلزام بالدفع لـ 6 أشهر مقدماً.'
   },
   {
     id: 'faq-5',
@@ -812,8 +839,8 @@ export const TESTIMONIALS_LIST = [
     roleAr: 'طالبة طب بشري',
     levelEn: 'Level C1 Student',
     levelAr: 'طالبة في المستوى C1',
-    quoteEn: 'The 1-on-1 private lessons are unmatched. Having 60 uninterrupted minutes with a dedicated instructor gave me the exact vocabulary I needed for my medical thesis presentation.',
-    quoteAr: 'الدروس الفردية لا تقارن بأي تجربة سابقة. 60 دقيقة كاملة من التفاعل الخاص مع المعلم منحتني الحصيلة الدقيقة التي احتجتها لتقديم بحثي الطبي.',
+    quoteEn: 'The interactive C1 group sessions are unmatched. Having 90 focused minutes with a dedicated instructor and peers gave me the exact vocabulary I needed for my medical thesis presentation.',
+    quoteAr: 'جلسات المستوى C1 التفاعلية لا تقارن بأي تجربة سابقة. 90 دقيقة كاملة من التفاعل والحوار مع المعلم منحتني الحصيلة الدقيقة التي احتجتها لتقديم بحثي الطبي.',
     rating: 5
   },
   {

@@ -38,15 +38,9 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Bootstrap initial setup state
-  const [bootstrapSecret, setBootstrapSecret] = useState('');
-  const [adminFullName, setAdminFullName] = useState('');
-  const [adminEmail, setAdminEmail] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
+  // Bootstrap lock status
   const [isLockChecked, setIsLockChecked] = useState(false);
   const [isAlreadyLocked, setIsAlreadyLocked] = useState(false);
-  const [bootstrapLoading, setBootstrapLoading] = useState(false);
-  const [bootstrapSuccess, setBootstrapSuccess] = useState(false);
 
   // Check permanent initialization lock status on mount
   useEffect(() => {
@@ -93,62 +87,6 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
       }, 800);
     } else {
       setErrorMsg(res.message || 'Administrative authentication failed. Access denied.');
-    }
-  };
-
-  const handleBootstrapInitialization = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
-    setSuccessMsg(null);
-
-    if (isAlreadyLocked) {
-      setErrorMsg('Initialization is permanently locked: A Super Admin account has already been initialized.');
-      return;
-    }
-
-    if (!bootstrapSecret.trim()) {
-      setErrorMsg('Bootstrap secret key is required.');
-      return;
-    }
-
-    if (adminPassword.length < 8) {
-      setErrorMsg('Administrative password must be at least 8 characters long.');
-      return;
-    }
-
-    setBootstrapLoading(true);
-
-    try {
-      // In web runtime, call the local backend script or callable endpoint
-      // To ensure no secrets leak in frontend, verify secret format and invoke setup
-      const response = await fetch('/api/admin/initialize-super-admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bootstrapSecret: bootstrapSecret.trim(),
-          email: adminEmail.trim(),
-          password: adminPassword,
-          fullName: adminFullName.trim() || 'Super Administrator'
-        })
-      });
-
-      const result = await response.json().catch(() => ({}));
-
-      if (response.ok && result.success) {
-        setBootstrapSuccess(true);
-        setIsAlreadyLocked(true);
-        setSuccessMsg(result.message || 'Super Admin initialized successfully! You can now sign in.');
-        setTimeout(() => {
-          setActiveTab('signin');
-          setEmail(adminEmail);
-        }, 2000);
-      } else {
-        setErrorMsg(result.message || result.error || 'Initialization rejected by backend. Please verify your bootstrap secret.');
-      }
-    } catch (err: any) {
-      setErrorMsg('Could not connect to backend initialization service. Use the CLI script: npm run init:admin');
-    } finally {
-      setBootstrapLoading(false);
     }
   };
 
@@ -333,86 +271,67 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleBootstrapInitialization} className="space-y-4">
-                <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/30 text-[11px] text-amber-200 leading-relaxed">
-                  <span className="font-bold block mb-0.5">One-Time Initial Setup Notice:</span>
-                  This operation initializes the initial Super Admin account and assigns trusted Custom Claims. It permanently locks once completed. Requires your private Bootstrap Secret.
+              <div className="space-y-4">
+                <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200 leading-relaxed">
+                  <div className="flex items-center gap-2 font-bold mb-1 text-amber-300">
+                    <Terminal className="w-4 h-4 text-[#D4AF37]" />
+                    <span>{language === 'ar' ? 'التهيئة عبر سطر الأوامر (CLI)' : 'Secure CLI Initialization Required'}</span>
+                  </div>
+                  <p>
+                    {language === 'ar'
+                      ? 'لأسباب أمنية صارمة ومنعاً لكشف المفتاح السري عبر المتصفح، يتم تهيئة حساب المشرف العام الأول حصرياً عبر أداة سطر الأوامر الآمنة (Firebase Admin SDK).'
+                      : 'To prevent browser network exposure of bootstrap secrets, the initial Super Admin account is provisioned exclusively via the backend Admin SDK CLI.'}
+                  </p>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-1">
-                    Bootstrap Secret Key <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={bootstrapSecret}
-                    onChange={(e) => setBootstrapSecret(e.target.value)}
-                    placeholder="Enter Secret Manager bootstrap key"
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#060D1A] border border-white/20 text-white placeholder-gray-500 text-xs font-mono focus:border-[#D4AF37] outline-none"
-                  />
+                <div className="p-4 rounded-xl bg-[#060D1A] border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between text-xs text-gray-400">
+                    <span className="font-mono text-[11px] text-[#D4AF37]">scripts/init-first-super-admin.ts</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10">Firebase Admin SDK</span>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-black/60 border border-white/10 font-mono text-[11px] text-emerald-400 overflow-x-auto select-all">
+                    npm run init:admin -- "&lt;BOOTSTRAP_SECRET&gt;" "amalalhasan2006@gmail.com" "&lt;SECURE_PASSWORD&gt;" "Super Administrator"
+                  </div>
+
+                  <p className="text-[11px] text-gray-400 leading-normal">
+                    {language === 'ar'
+                      ? 'إذا كان البريد مسجلاً مسبقاً، أضف خيار --confirm-promote-existing للترقية الآمنة.'
+                      : 'If your email is already registered, add the flag --confirm-promote-existing to promote your account.'}
+                  </p>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-1">
-                    Super Admin Full Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={adminFullName}
-                    onChange={(e) => setAdminFullName(e.target.value)}
-                    placeholder="e.g. Academy Executive Lead"
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#060D1A] border border-white/20 text-white placeholder-gray-500 text-xs focus:border-[#D4AF37] outline-none"
-                  />
+                <div className="space-y-2 text-xs text-gray-300">
+                  <div className="font-bold text-gray-200">
+                    {language === 'ar' ? 'خطوات التنفيذ:' : 'Execution Steps:'}
+                  </div>
+                  <ol className="list-decimal list-inside space-y-1 text-gray-400 text-[11px] leading-relaxed">
+                    <li>
+                      {language === 'ar'
+                        ? 'تأكد من إعداد صلاحيات Application Default Credentials أو مفتاح الخدمة.'
+                        : 'Ensure Google Cloud ADC or Service Account credentials are configured.'}
+                    </li>
+                    <li>
+                      {language === 'ar'
+                        ? 'شغّل الأمر أعلاه مع استبدال الرموز بكلمة المرور والمفتاح السري.'
+                        : 'Run the command above with your Secret Manager bootstrap secret.'}
+                    </li>
+                    <li>
+                      {language === 'ar'
+                        ? 'بعد انتهاء التهيئة بنجاح، عُد إلى تبويب "تسجيل دخول المشرف" للمتابعة.'
+                        : 'Once initialized and locked, switch back to Administrator Sign In.'}
+                    </li>
+                  </ol>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-1">
-                    Super Admin Email <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={adminEmail}
-                    onChange={(e) => setAdminEmail(e.target.value)}
-                    placeholder="superadmin@englishzone.com"
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#060D1A] border border-white/20 text-white placeholder-gray-500 text-xs focus:border-[#D4AF37] outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-1">
-                    Password (Min 8 Characters) <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    minLength={8}
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#060D1A] border border-white/20 text-white placeholder-gray-500 text-xs focus:border-[#D4AF37] outline-none"
-                  />
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={bootstrapLoading}
-                    className="w-full py-3.5 rounded-xl font-bold text-xs sm:text-sm bg-[#D4AF37] text-[#0A192F] hover:brightness-110 flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
-                  >
-                    {bootstrapLoading ? (
-                      <span>Initializing & Locking Super Admin...</span>
-                    ) : (
-                      <>
-                        <KeyRound className="w-4 h-4" />
-                        <span>Initialize Super Admin Account</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('signin')}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#0A192F] font-bold text-xs hover:brightness-105 transition-all shadow-md"
+                >
+                  {language === 'ar' ? 'العودة إلى شاشة تسجيل الدخول' : 'Return to Administrator Sign In'}
+                </button>
+              </div>
             )}
           </div>
         )}

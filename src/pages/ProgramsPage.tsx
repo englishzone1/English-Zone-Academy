@@ -46,7 +46,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
             }`}
           >
-            {language === 'ar' ? 'جميع المسارات (7 برامج)' : 'All Programs (7 Tracks)'}
+            {language === 'ar' ? `جميع المسارات (${PROGRAM_CATEGORIES.length} برامج)` : `All Programs (${PROGRAM_CATEGORIES.length} Tracks)`}
           </button>
           <button
             onClick={() => setSelectedFilter('levels')}
@@ -173,21 +173,15 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                     </div>
                   </div>
 
-                  {/* Right Column: Pricing & Enrollment Action */}
+                  {/* Right Column: Program Summary & Enrollment Action */}
                   <div className="lg:col-span-4 bg-[#FAF8F5] rounded-2xl p-6 border border-gray-200/80 flex flex-col justify-between h-full">
-                    <div>
-                      <span className="text-xs uppercase tracking-wider text-gray-500 font-semibold block">
-                        {t.pricing.monthlyPrice}
-                      </span>
-                      <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-xs text-gray-500">{language === 'ar' ? 'من' : 'From'}</span>
-                        <span className="font-serif-luxury font-bold text-3xl text-[#0A192F]">
-                          ${prog.monthlyStartingPrice}
-                        </span>
-                        <span className="text-xs text-gray-500">{t.programs.perMonth}</span>
+                    <div className="space-y-2.5">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4AF37]/15 text-[#AA820A] text-[11px] font-bold">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>{language === 'ar' ? prog.durationAr : prog.durationEn}</span>
                       </div>
-                      <p className="text-[11px] text-gray-500 mt-2">
-                        {t.pricing.notice1}
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        {language === 'ar' ? prog.formatAr : prog.formatEn}
                       </p>
                     </div>
 

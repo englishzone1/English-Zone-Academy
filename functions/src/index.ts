@@ -1,32 +1,34 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import * as admin from 'firebase-admin';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
-if (!admin.apps.length) {
-  admin.initializeApp();
-}
+const app = !admin.apps.length ? admin.initializeApp() : admin.app();
 
-const db = admin.firestore();
-const auth = admin.auth();
+// CRITICAL: Explicitly target the named Firestore database instance used by the application
+export const FIRESTORE_DATABASE_ID = 'ai-studio-englishzoneinter-38f9c0be-d2d0-4184-8171-1d40b8b75898';
+const db = getFirestore(app, FIRESTORE_DATABASE_ID);
+const auth = admin.auth(app);
 
 // Secure Bootstrap Secret defined through Firebase Secret Manager
 const bootstrapSecret = defineSecret('BOOTSTRAP_SECRET');
 
 const SYSTEM_CONFIG_COLLECTION = 'system_config';
 const LOCK_DOCUMENT_ID = 'initialization_lock';
+const LEASE_DURATION_MS = 5 * 60 * 1000; // 5-minute reservation lease for in-progress attempt
 
 /**
  * SECURE ONE-TIME FIRST SUPER ADMIN INITIALIZATION
  * 
  * Performs initialization exclusively on the backend:
  * 1. Verifies the caller possesses the authentic Bootstrap Secret from Secret Manager.
- * 2. Uses an atomic Firestore transaction to check the permanent initialization lock.
+ * 2. Uses an atomic Firestore transaction to check the permanent initialization lock and lease.
  * 3. Prevents concurrent initialization race conditions.
- * 4. Creates the Firebase Auth account.
+ * 4. Creates the Firebase Auth account outside the transaction callback.
  * 5. Assigns trusted Custom Claims { role: 'super-admin', admin: true }.
- * 6. Creates corresponding /users and /admins Firestore documents.
- * 7. Permanently locks the initialization mechanism.
- * 8. Automatic Rollback: If any step fails, cleans up any created Auth account.
+ * 6. Creates corresponding /users and /admins Firestore documents in the named database.
+ * 7. Permanently locks the initialization mechanism without exposing administrator identity.
+ * 8. Automatic Rollback: If any step fails, cleans up any created Auth account and resets lock.
  */
 export const initializeFirstSuperAdmin = onCall(
   {
@@ -70,9 +72,10 @@ export const initializeFirstSuperAdmin = onCall(
     const lockRef = db.collection(SYSTEM_CONFIG_COLLECTION).doc(LOCK_DOCUMENT_ID);
 
     let createdUid: string | null = null;
+    const nowMs = Date.now();
 
     try {
-      // 2. Atomic check-and-lock inside a Firestore transaction
+      // 2. Atomic check-and-reservation inside a Firestore transaction
       await db.runTransaction(async (transaction) => {
         const lockDoc = await transaction.get(lockRef);
 
@@ -84,21 +87,33 @@ export const initializeFirstSuperAdmin = onCall(
               'Initial setup operation has already been permanently completed and locked.'
             );
           }
+
+          // Check if another attempt is actively holding the in-progress reservation lease
+          if (lockData?.status === 'in_progress' && lockData?.leaseExpiresAtMs) {
+            if (nowMs < lockData.leaseExpiresAtMs) {
+              throw new HttpsError(
+                'already-exists',
+                'An initial setup operation is currently in progress. Please wait a few minutes before retrying.'
+              );
+            }
+            console.warn('[SECURITY] Previous in-progress initialization lease expired. Re-reserving lock.');
+          }
         }
 
-        // Pre-reserve lock to prevent race condition
+        // Pre-reserve lock with a bounded expiration lease
         transaction.set(
           lockRef,
           {
             locked: true,
             status: 'in_progress',
-            attemptedAt: admin.firestore.FieldValue.serverTimestamp()
+            leaseExpiresAtMs: nowMs + LEASE_DURATION_MS,
+            attemptedAt: FieldValue.serverTimestamp()
           },
           { merge: true }
         );
       });
 
-      // 3. Create Firebase Authentication account
+      // 3. Create Firebase Authentication account (kept OUTSIDE the transaction callback)
       const userRecord = await auth.createUser({
         email: normalizedEmail,
         password: password,
@@ -137,13 +152,12 @@ export const initializeFirstSuperAdmin = onCall(
         isSuperAdmin: true
       });
 
+      // Permanent lock record deliberately omits superAdminEmail and superAdminUid for privacy
       batch.set(lockRef, {
         initialized: true,
         lockPermanent: true,
         status: 'locked_permanently',
-        superAdminUid: createdUid,
-        superAdminEmail: normalizedEmail,
-        initializedAt: admin.firestore.FieldValue.serverTimestamp()
+        initializedAt: FieldValue.serverTimestamp()
       });
 
       await batch.commit();
@@ -217,6 +231,7 @@ export const checkInitializationStatus = onCall(
  * ROLE ASSIGNMENT FUNCTION (Super Admin Only)
  * Allows the initialized Super Admin to assign or modify roles for teachers and admins.
  * Verifies caller has { role: 'super-admin' } custom claims.
+ * Prohibits assigning super-admin role to prevent privilege escalation.
  */
 export const setRoleCustomClaims = onCall(
   { cors: true },
@@ -243,15 +258,19 @@ export const setRoleCustomClaims = onCall(
       throw new HttpsError('invalid-argument', 'targetUid and targetRole are required.');
     }
 
-    const validRoles = ['super-admin', 'admin', 'teacher', 'student'];
-    if (!validRoles.includes(targetRole)) {
-      throw new HttpsError('invalid-argument', `Invalid role: ${targetRole}. Must be one of: ${validRoles.join(', ')}`);
+    // Subordinate roles only. Super Admin accounts can only be established via the initial bootstrap initialization
+    const assignableRoles = ['admin', 'teacher', 'student'];
+    if (!assignableRoles.includes(targetRole)) {
+      throw new HttpsError(
+        'invalid-argument', 
+        `Invalid or prohibited role: ${targetRole}. Subordinate roles allowed: ${assignableRoles.join(', ')}`
+      );
     }
 
     try {
       await auth.setCustomUserClaims(targetUid, {
         role: targetRole,
-        admin: targetRole === 'super-admin' || targetRole === 'admin'
+        admin: targetRole === 'admin'
       });
 
       // Update in Firestore
@@ -260,12 +279,19 @@ export const setRoleCustomClaims = onCall(
         updatedAt: new Date().toISOString()
       }, { merge: true });
 
-      if (targetRole === 'super-admin' || targetRole === 'admin') {
+      if (targetRole === 'admin') {
         await db.collection('admins').doc(targetUid).set({
           id: targetUid,
           role: targetRole,
           updatedAt: new Date().toISOString()
         }, { merge: true });
+      } else {
+        // If demoted from admin, remove from admins collection
+        try {
+          await db.collection('admins').doc(targetUid).delete();
+        } catch {
+          // Silent if not exists
+        }
       }
 
       return {

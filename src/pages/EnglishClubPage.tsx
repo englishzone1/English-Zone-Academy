@@ -22,8 +22,7 @@ import {
   Dices, 
   Compass, 
   Info,
-  Phone,
-  HelpCircle
+  Phone
 } from 'lucide-react';
 
 interface EnglishClubPageProps {
@@ -441,7 +440,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
         </div>
       </section>
 
-      {/* PRICING & REGISTRATION INFORMATION */}
+      {/* REGISTRATION INFORMATION */}
       <section className="py-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl p-8 sm:p-12 border border-gray-200 shadow-xl relative overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
@@ -454,39 +453,13 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
 
               <h3 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F]">
                 {language === 'ar'
-                  ? 'اشتراك ميسر في متناول الجميع لممارسة اللغة الإنجليزية'
-                  : 'Affordable, High-Impact Online Conversation Practice'}
+                  ? 'انضم إلى جلسات نادي المحادثة التفاعلية عبر الإنترنت'
+                  : 'High-Impact Online Conversation Practice'}
               </h3>
 
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 {c.pricingNotice}
               </p>
-
-              {/* Display price ONLY if Super Admin explicitly configured it */}
-              {settings?.isPriceConfigured && settings?.membershipFeeUSD ? (
-                <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/40 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs text-gray-500 block">
-                      {language === 'ar' ? 'رسوم العضوية المعتمدة:' : 'Configured Membership Fee:'}
-                    </span>
-                    <span className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
-                      ${settings.membershipFeeUSD} USD
-                    </span>
-                  </div>
-                  <span className="text-xs text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 font-bold">
-                    Official Rate
-                  </span>
-                </div>
-              ) : (
-                <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-                  <HelpCircle className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
-                  <span>
-                    {language === 'ar'
-                      ? 'يتم إشعار الطالب بالرسوم المعتمدة والمواعيد الشاغرة عند التواصل والتسجيل المباشر مع إدارة الأكاديمية.'
-                      : 'Tuition rates and cohort openings are communicated by the academy upon inquiry and registration.'}
-                  </span>
-                </div>
-              )}
 
               <div className="pt-2 flex flex-wrap gap-2 text-xs text-gray-500">
                 <span className="flex items-center gap-1">

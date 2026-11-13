@@ -8,10 +8,8 @@ import {
   Sparkles, 
   BookOpen, 
   CheckCircle, 
-  GraduationCap,
-  Image as ImageIcon
+  GraduationCap
 } from 'lucide-react';
-import { EnglishZoneEmblem } from '../components/common/Logo';
 
 interface AboutPageProps {
   navigate: (route: string) => void;
@@ -78,8 +76,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
               </h2>
               <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
                 {language === 'ar'
-                  ? 'أكاديمية English Zone هي صرح تعليمي دولي عبر الإنترنت متخصص في تقديم برامج لغة إنجليزية منهجية عالية الجودة، تشمل الدروس الفردية المكثفة، دورات المجموعات التفاعلية الصغيرة، تدريب المحادثة والطلاقة، والمسارات الإنجليزية المتخصصة للأعمال والأكاديميا.'
-                  : 'English Zone is a premium international online English academy offering structured CEFR learning pathways, private 1-on-1 instruction, interactive small groups, conversation mastery, and specialized English programs for career and academic excellence.'}
+                  ? 'أكاديمية English Zone هي صرح تعليمي دولي عبر الإنترنت متخصص في تقديم برامج لغة إنجليزية منهجية عالية الجودة، تشمل دورات المجموعات التفاعلية الصغيرة، تدريب المحادثة والطلاقة، والمسارات الإنجليزية المتخصصة للأعمال والأكاديميا.'
+                  : 'English Zone is a premium international online English academy offering structured CEFR learning pathways, interactive small groups, conversation mastery, and specialized English programs for career and academic excellence.'}
               </p>
               <div className="pt-2 flex flex-wrap gap-3">
                 <span className="px-3 py-1.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-semibold">
@@ -124,25 +122,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
         <div className="bg-[#0A192F] text-white rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/40 shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
-            {/* Image Placeholder */}
+            {/* English Zone Academy Image */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-xs aspect-[4/5] rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 bg-[#060D1A] flex flex-col items-center justify-center p-6 text-center">
-                <div className="mb-3">
-                  <EnglishZoneEmblem sizeClass="w-20 h-20" glow={true} />
-                </div>
-                <span className="font-serif-luxury font-bold text-base text-[#F3E5AB]">
-                  {t.founder.roleTitle}
-                </span>
-                <span className="text-[11px] text-[#D4AF37] font-semibold mt-1 uppercase">
-                  English Zone Academy
-                </span>
-                <div className="mt-4 p-2.5 rounded-lg bg-white/5 border border-white/10 text-[10px] text-gray-300">
-                  <div className="flex items-center justify-center gap-1 text-[#D4AF37] mb-0.5">
-                    <ImageIcon className="w-3 h-3" />
-                    <span>{t.founder.photoPlaceholder}</span>
-                  </div>
-                  <span>{t.founder.photoUploadNote}</span>
-                </div>
+              <div className="relative w-full max-w-xs sm:max-w-sm rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 shadow-xl bg-[#060D1A]">
+                <img
+                  src="/assets/aistudio/file_00000000c3b08210abdde9ab8258756c_98faaab4.png"
+                  alt="English Zone Academy"
+                  className="w-full h-auto block"
+                />
               </div>
             </div>
 
