@@ -48,7 +48,7 @@ import {
   DynamicTestimonial 
 } from '../../services/contentManagementService';
 import { AdminReviewsManager } from '../../components/admin/AdminReviewsManager';
-
+import { AdminStudentsManager } from '../../components/admin/AdminStudentsManager';
 interface AdminDashboardProps {
   navigate: (route: string) => void;
 }
@@ -623,8 +623,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         )}
 
         {/* TAB 3: STUDENTS MANAGEMENT */}
-        {activeTab === 'students' && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
+{activeTab === 'students' && (
+  <AdminStudentsManager onNotice={(msg) => { setActionNotice(msg); setTimeout(() => setActionNotice(null), 4000); }} />
+)}
+
+{false && (          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
