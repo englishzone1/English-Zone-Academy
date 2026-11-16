@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { BLOG_POSTS } from '../data/academyData';
 import { BlogPost } from '../types';
-import { contentManagementService } from '../services/contentManagementService';
 import { BookOpen, Clock, Calendar, ArrowRight, X } from 'lucide-react';
 
 interface BlogPageProps {
@@ -12,19 +11,6 @@ interface BlogPageProps {
 export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
   const { t, language } = useLanguage();
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  // نبدأ بالمقالات الثابتة حتى لا تظهر الصفحة فارغة أثناء التحميل
-  const [posts, setPosts] = useState<BlogPost[]>(BLOG_POSTS);
-
-  useEffect(() => {
-    let cancelled = false;
-    contentManagementService.getPublishedBlogPosts().then(remote => {
-      // إذا نشر المالك مقالات من لوحة الإدارة نعرضها، وإلا نبقى على المقالات الثابتة
-      if (!cancelled && remote.length > 0) setPosts(remote);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] py-12">
@@ -45,21 +31,19 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {posts.map((post) => (
+          {BLOG_POSTS.map((post) => (
             <article 
               key={post.id}
               className="bg-white rounded-3xl overflow-hidden border border-[#D4AF37]/30 shadow-md hover:border-[#D4AF37] transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="relative h-48 overflow-hidden bg-gray-100">
-                  {post.imageUrl && (
-                    <img 
-                      src={post.imageUrl} 
-                      alt={post.titleEn}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                  )}
+                  <img 
+                    src={post.imageUrl} 
+                    alt={post.titleEn}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
                   <span className="absolute top-4 left-4 rtl:left-auto rtl:right-4 px-3 py-1 rounded-full bg-[#0A192F]/90 text-[#F3E5AB] text-[11px] font-bold">
                     {language === 'ar' ? post.categoryAr : post.categoryEn}
                   </span>
@@ -127,10 +111,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
             </div>
 
             <div className="text-sm sm:text-base text-gray-700 leading-relaxed space-y-4">
-              {/* whitespace-pre-line يحافظ على الفقرات التي يكتبها المالك من لوحة الإدارة */}
-              <p className="whitespace-pre-line">
-                {language === 'ar' ? selectedPost.contentAr : selectedPost.contentEn}
-              </p>
+              <p>{language === 'ar' ? selectedPost.contentAr : selectedPost.contentEn}</p>
               <p className="text-gray-500 italic text-xs pt-4 border-t border-gray-100">
                 {language === 'ar' 
                   ? 'كتب هذا المقال بواسطة هيئة التدريس في أكاديمية English Zone الدولية.'
