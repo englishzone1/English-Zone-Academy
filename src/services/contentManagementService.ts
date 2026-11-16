@@ -1,442 +1,145 @@
-import {
-  collection,
-  doc,
-  getDocs,
-  getDoc,
-  setDoc,
-  deleteDoc,
-  updateDoc,
-  query,
-  where,
-  writeBatch,
-  increment
-} from 'firebase/firestore';
-import { db } from './firebase';
-import type { BlogPost, LevelGroupPricing, StagePricing, SocialLinks } from '../types';
-import {
-  BLOG_POSTS,
-  LEVEL_GROUP_PRICING,
-  STAGE_PRICING_TABLE,
-  OFFICIAL_CONTACTS,
-  EF_SET_PLACEMENT_TEST_URL
-} from '../data/academyData';
+import React, { useEffect, useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
+import { BLOG_POSTS } from '../data/academyData';
+import { BlogPost } from '../types';
+import { contentManagementService } from '../services/contentManagementService';
+import { BookOpen, Clock, Calendar, ArrowRight, X } from 'lucide-react';
 
-/* ------------------------------------------------------------------ */
-/*  إعدادات تحتاج مراجعتك: غيّر الأسماء هنا إذا كانت مختلفة في مشروعك   */
-/* ------------------------------------------------------------------ */
-// اسم مجموعة الطلاب في Firestore وحقل مجموع النجوم داخل وثيقة الطالب
-const STUDENTS_COLLECTION = 'students';
-const STUDENT_STARS_FIELD = 'stars';
-
-/* ------------------------------ Types ------------------------------ */
-
-export interface WebsiteSectionContent {
-  id: string;
-  sectionKey: string;
-  titleEn: string;
-  titleAr: string;
-  contentEn: string;
-  contentAr: string;
-  updatedAt: string;
-  updatedBy: string;
+interface BlogPageProps {
+  navigate: (route: string) => void;
 }
 
-export interface DynamicCourseItem {
-  id: string;
-  titleEn: string;
-  titleAr: string;
-  level: string;
-  descriptionEn: string;
-  descriptionAr: string;
-  durationMonths: number;
-  format: 'individual' | 'group' | 'both';
-  isActive: boolean;
-}
+export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
+  const { t, language } = useLanguage();
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  // نبدأ بالمقالات الثابتة حتى لا تظهر الصفحة فارغة أثناء التحميل
+  const [posts, setPosts] = useState<BlogPost[]>(BLOG_POSTS);
 
-export interface LibraryBookMaterial {
-  id: string;
-  titleEn: string;
-  titleAr: string;
-  category: 'curriculum' | 'reading' | 'grammar' | 'vocabulary';
-  level: string;
-  downloadUrl?: string;
-  fileSizeMb?: number;
-  isPublic: boolean;
-  addedAt: string;
-}
-
-export interface DynamicPromotionOffer {
-  id: string;
-  titleEn: string;
-  titleAr: string;
-  discountPercentage?: number;
-  badgeEn: string;
-  badgeAr: string;
-  descriptionEn: string;
-  descriptionAr: string;
-  validUntil: string;
-  isActive: boolean;
-}
-
-export interface DynamicTestimonial {
-  id: string;
-  studentNameEn: string;
-  studentNameAr: string;
-  roleEn: string;
-  roleAr: string;
-  level: string;
-  quoteEn: string;
-  quoteAr: string;
-  rating: number;
-  isApproved: boolean;
-  submittedAt: string;
-}
-
-export interface BlogPostRecord extends BlogPost {
-  isPublished: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface AcademySettings extends SocialLinks {
-  placementTestUrl: string;
-  registrationOpen: boolean;
-  updatedAt?: string;
-}
-
-export interface StarsLogEntry {
-  id: string;
-  studentId: string;
-  delta: number; // موجب = إضافة، سالب = خصم
-  reason: string;
-  createdAt: string;
-  createdBy: string;
-}
-
-export interface GradeRecord {
-  id: string; // studentId_YYYY-MM
-  studentId: string;
-  month: string; // YYYY-MM
-  monthlyTest?: number; // 0-100
-  homework?: number; // 0-100
-  notes?: string;
-  updatedAt: string;
-  updatedBy: string;
-}
-
-/* ------------------------------ Helpers ---------------------------- */
-
-// Firestore يرفض أي حقل قيمته undefined (مثل downloadUrl الاختياري) فيفشل الحفظ بصمت.
-// هذه الدالة تحذف هذه الحقول قبل الكتابة.
-const clean = <T extends object>(obj: T): T => JSON.parse(JSON.stringify(obj));
-
-// بدل أن يتجاهل الحفظ بصمت عند غياب Firebase، نرمي خطأ واضحاً ليظهر في لوحة الإدارة.
-const requireDb = () => {
-  if (!db) throw new Error('Firebase is not configured');
-  return db;
-};
-
-async function readCollection<T>(name: string): Promise<T[]> {
-  if (!db) return [];
-  try {
-    const snap = await getDocs(collection(db, name));
-    return snap.docs.map(d => ({ ...d.data(), id: d.id } as unknown as T));
-  } catch (err) {
-    // غالباً permission-denied يعني أن قواعد Firestore لا تسمح بالقراءة
-    console.error(`Error reading "${name}" from Firestore:`, err);
-    return [];
-  }
-}
-
-async function saveItem<T extends { id?: string }>(name: string, item: T): Promise<string> {
-  const database = requireDb();
-  const ref = item.id ? doc(database, name, item.id) : doc(collection(database, name));
-  await setDoc(ref, clean({ ...item, id: ref.id }), { merge: true });
-  return ref.id;
-}
-
-async function removeItem(name: string, id: string): Promise<void> {
-  const database = requireDb();
-  await deleteDoc(doc(database, name, id));
-}
-
-const byNewest = <T extends { createdAt?: string }>(a: T, b: T) =>
-  (b.createdAt || '').localeCompare(a.createdAt || '');
-
-/* ------------------------------ Service ---------------------------- */
-
-export const contentManagementService = {
-  // --- 1. Website Content Sections ---
-  async getSections(): Promise<WebsiteSectionContent[]> {
-    return readCollection<WebsiteSectionContent>('website_content');
-  },
-
-  async saveSection(section: WebsiteSectionContent): Promise<void> {
-    const database = requireDb();
-    const key = section.sectionKey || section.id;
-    await setDoc(
-      doc(database, 'website_content', key),
-      clean({ ...section, id: key, updatedAt: new Date().toISOString() }),
-      { merge: true }
-    );
-  },
-
-  // --- 2. Dynamic Courses & Curricula ---
-  async getCourses(): Promise<DynamicCourseItem[]> {
-    return readCollection<DynamicCourseItem>('courses');
-  },
-  async saveCourse(course: DynamicCourseItem): Promise<void> {
-    await saveItem('courses', course);
-  },
-  async deleteCourse(courseId: string): Promise<void> {
-    await removeItem('courses', courseId);
-  },
-
-  // --- 3. Library Materials ---
-  async getLibraryMaterials(): Promise<LibraryBookMaterial[]> {
-    return readCollection<LibraryBookMaterial>('library_materials');
-  },
-  async saveLibraryMaterial(material: LibraryBookMaterial): Promise<void> {
-    await saveItem('library_materials', material);
-  },
-  async deleteLibraryMaterial(materialId: string): Promise<void> {
-    await removeItem('library_materials', materialId);
-  },
-
-  // --- 4. Offers & Promotions ---
-  async getOffers(): Promise<DynamicPromotionOffer[]> {
-    return readCollection<DynamicPromotionOffer>('promotions_offers');
-  },
-  async saveOffer(offer: DynamicPromotionOffer): Promise<void> {
-    await saveItem('promotions_offers', offer);
-  },
-  async deleteOffer(offerId: string): Promise<void> {
-    await removeItem('promotions_offers', offerId);
-  },
-
-  // --- 5. Testimonials Moderation ---
-  async getTestimonials(): Promise<DynamicTestimonial[]> {
-    return readCollection<DynamicTestimonial>('testimonials');
-  },
-  async toggleTestimonialApproval(testimonialId: string, isApproved: boolean): Promise<void> {
-    const database = requireDb();
-    await updateDoc(doc(database, 'testimonials', testimonialId), { isApproved });
-  },
-  async deleteTestimonial(testimonialId: string): Promise<void> {
-    await removeItem('testimonials', testimonialId);
-  },
-
-  // --- 6. Blog (public page reads only published posts) ---
-  async getPublishedBlogPosts(): Promise<BlogPostRecord[]> {
-    if (!db) return [];
-    try {
-      const snap = await getDocs(
-        query(collection(db, 'blog_posts'), where('isPublished', '==', true))
-      );
-      return snap.docs
-        .map(d => ({ ...d.data(), id: d.id } as unknown as BlogPostRecord))
-        .sort(byNewest);
-    } catch (err) {
-      console.error('Error reading published blog posts:', err);
-      return [];
-    }
-  },
-
-  async getAllBlogPosts(): Promise<BlogPostRecord[]> {
-    const posts = await readCollection<BlogPostRecord>('blog_posts');
-    return posts.sort(byNewest);
-  },
-
-  async saveBlogPost(post: Partial<BlogPostRecord> & { id?: string }): Promise<string> {
-    const now = new Date().toISOString();
-    return saveItem('blog_posts', {
-      ...post,
-      isPublished: post.isPublished ?? false,
-      createdAt: post.createdAt || now,
-      updatedAt: now
+  useEffect(() => {
+    let cancelled = false;
+    contentManagementService.getPublishedBlogPosts().then(remote => {
+      // إذا نشر المالك مقالات من لوحة الإدارة نعرضها، وإلا نبقى على المقالات الثابتة
+      if (!cancelled && remote.length > 0) setPosts(remote);
     });
-  },
-
-  async setBlogPostPublished(postId: string, isPublished: boolean): Promise<void> {
-    const database = requireDb();
-    await updateDoc(doc(database, 'blog_posts', postId), {
-      isPublished,
-      updatedAt: new Date().toISOString()
-    });
-  },
-
-  async deleteBlogPost(postId: string): Promise<void> {
-    await removeItem('blog_posts', postId);
-  },
-
-  // رفع المقالات الثلاثة الموجودة في الكود إلى Firestore مرة واحدة لتعديلها من لوحة الإدارة
-  async seedBlogFromDefaults(): Promise<void> {
-    const database = requireDb();
-    const batch = writeBatch(database);
-    const now = new Date().toISOString();
-    BLOG_POSTS.forEach((p, i) => {
-      batch.set(
-        doc(database, 'blog_posts', p.id),
-        clean({
-          ...p,
-          isPublished: true,
-          createdAt: new Date(Date.now() - i * 1000).toISOString(), // يحافظ على الترتيب
-          updatedAt: now
-        }),
-        { merge: true }
-      );
-    });
-    await batch.commit();
-  },
-
-  // --- 7. Pricing (يرجع للقيم الثابتة في الكود إذا لم يُحفظ شيء بعد) ---
-  async getLevelPricing(): Promise<LevelGroupPricing[]> {
-    const rows = await readCollection<LevelGroupPricing>('pricing_levels');
-    if (rows.length === 0) return LEVEL_GROUP_PRICING;
-    return rows.sort((a, b) => a.level.localeCompare(b.level));
-  },
-
-  async getStagePricing(): Promise<StagePricing[]> {
-    const rows = await readCollection<StagePricing>('pricing_stages');
-    if (rows.length === 0) return STAGE_PRICING_TABLE;
-    return rows.sort((a, b) => a.stage.localeCompare(b.stage));
-  },
-
-  async saveLevelPricing(p: LevelGroupPricing): Promise<void> {
-    const database = requireDb();
-    await setDoc(doc(database, 'pricing_levels', p.level), clean(p), { merge: true });
-  },
-
-  async saveStagePricing(p: StagePricing): Promise<void> {
-    const database = requireDb();
-    await setDoc(doc(database, 'pricing_stages', p.stage), clean(p), { merge: true });
-  },
-
-  async seedPricingFromDefaults(): Promise<void> {
-    const database = requireDb();
-    const batch = writeBatch(database);
-    LEVEL_GROUP_PRICING.forEach(p =>
-      batch.set(doc(database, 'pricing_levels', p.level), clean(p), { merge: true })
-    );
-    STAGE_PRICING_TABLE.forEach(p =>
-      batch.set(doc(database, 'pricing_stages', p.stage), clean(p), { merge: true })
-    );
-    await batch.commit();
-  },
-
-  // --- 8. Academy settings (روابط التواصل ورابط اختبار المستوى) ---
-  async getAcademySettings(): Promise<AcademySettings> {
-    const defaults: AcademySettings = {
-      ...OFFICIAL_CONTACTS,
-      placementTestUrl: EF_SET_PLACEMENT_TEST_URL,
-      registrationOpen: true
+    return () => {
+      cancelled = true;
     };
-    if (!db) return defaults;
-    try {
-      const snap = await getDoc(doc(db, 'academy_settings', 'main'));
-      return snap.exists() ? { ...defaults, ...(snap.data() as Partial<AcademySettings>) } : defaults;
-    } catch (err) {
-      console.error('Error reading academy_settings:', err);
-      return defaults;
-    }
-  },
+  }, []);
 
-  async saveAcademySettings(settings: AcademySettings): Promise<void> {
-    const database = requireDb();
-    await setDoc(
-      doc(database, 'academy_settings', 'main'),
-      clean({ ...settings, updatedAt: new Date().toISOString() }),
-      { merge: true }
-    );
-  },
+  return (
+    <div className="min-h-screen bg-[#FAF8F5] py-12">
+      {/* Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="text-center max-w-3xl mx-auto">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+            English Zone Faculty Insights
+          </span>
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
+            {t.blog.title}
+          </h1>
+          <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
+            {t.blog.subtitle}
+          </p>
+        </div>
+      </div>
 
-  // --- 9. Stars audit log ---
-  // يسجل العملية في stars_log ويعدّل مجموع نجوم الطالب في نفس الوقت (كلاهما ينجح أو يفشل معاً)
-  async addStars(studentId: string, delta: number, reason: string, adminId: string): Promise<void> {
-    if (!studentId) throw new Error('studentId is required');
-    if (!Number.isFinite(delta) || delta === 0) throw new Error('delta must be a non-zero number');
-    if (!reason.trim()) throw new Error('reason is required');
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <article 
+              key={post.id}
+              className="bg-white rounded-3xl overflow-hidden border border-[#D4AF37]/30 shadow-md hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="relative h-48 overflow-hidden bg-gray-100">
+                  {post.imageUrl && (
+                    <img 
+                      src={post.imageUrl} 
+                      alt={post.titleEn}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  )}
+                  <span className="absolute top-4 left-4 rtl:left-auto rtl:right-4 px-3 py-1 rounded-full bg-[#0A192F]/90 text-[#F3E5AB] text-[11px] font-bold">
+                    {language === 'ar' ? post.categoryAr : post.categoryEn}
+                  </span>
+                </div>
 
-    const database = requireDb();
-    const batch = writeBatch(database);
-    const logRef = doc(collection(database, 'stars_log'));
-    batch.set(
-      logRef,
-      clean<StarsLogEntry>({
-        id: logRef.id,
-        studentId,
-        delta,
-        reason: reason.trim(),
-        createdAt: new Date().toISOString(),
-        createdBy: adminId
-      })
-    );
-    batch.update(doc(database, STUDENTS_COLLECTION, studentId), {
-      [STUDENT_STARS_FIELD]: increment(delta)
-    });
-    await batch.commit();
-  },
+                <div className="p-6">
+                  <div className="flex items-center gap-4 text-xs text-gray-400 mb-3">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{post.publishDate}</span>
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>{post.readTime}</span>
+                    </span>
+                  </div>
 
-  async getStarsLog(studentId?: string): Promise<StarsLogEntry[]> {
-    if (!db) return [];
-    try {
-      const base = collection(db, 'stars_log');
-      const snap = await getDocs(studentId ? query(base, where('studentId', '==', studentId)) : base);
-      return snap.docs
-        .map(d => ({ ...d.data(), id: d.id } as unknown as StarsLogEntry))
-        .sort(byNewest);
-    } catch (err) {
-      console.error('Error reading stars_log:', err);
-      return [];
-    }
-  },
+                  <h2 className="font-serif-luxury font-bold text-lg text-[#0A192F] line-clamp-2 mb-3">
+                    {language === 'ar' ? post.titleAr : post.titleEn}
+                  </h2>
 
-  // --- 10. Grades (اختبار شهري + واجب) ---
-  async saveGrade(
-    input: { studentId: string; month: string; monthlyTest?: number; homework?: number; notes?: string },
-    adminId: string
-  ): Promise<void> {
-    const { studentId, month, monthlyTest, homework, notes } = input;
-    if (!studentId) throw new Error('studentId is required');
-    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) throw new Error('month must look like 2026-11');
-    for (const v of [monthlyTest, homework]) {
-      if (v !== undefined && (!Number.isFinite(v) || v < 0 || v > 100)) {
-        throw new Error('grades must be between 0 and 100');
-      }
-    }
-    const database = requireDb();
-    const id = `${studentId}_${month}`;
-    await setDoc(
-      doc(database, 'grades', id),
-      clean<GradeRecord>({
-        id,
-        studentId,
-        month,
-        monthlyTest,
-        homework,
-        notes,
-        updatedAt: new Date().toISOString(),
-        updatedBy: adminId
-      } as GradeRecord),
-      { merge: true }
-    );
-  },
+                  <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                    {language === 'ar' ? post.excerptAr : post.excerptEn}
+                  </p>
+                </div>
+              </div>
 
-  async getGrades(studentId?: string): Promise<GradeRecord[]> {
-    if (!db) return [];
-    try {
-      const base = collection(db, 'grades');
-      const snap = await getDocs(studentId ? query(base, where('studentId', '==', studentId)) : base);
-      return snap.docs
-        .map(d => ({ ...d.data(), id: d.id } as unknown as GradeRecord))
-        .sort((a, b) => b.month.localeCompare(a.month));
-    } catch (err) {
-      console.error('Error reading grades:', err);
-      return [];
-    }
-  },
+              <div className="p-6 pt-0 border-t border-gray-100">
+                <button
+                  onClick={() => setSelectedPost(post)}
+                  className="w-full py-2.5 rounded-xl text-xs font-bold bg-[#FAF8F5] text-[#0A192F] hover:bg-[#0A192F] hover:text-[#F3E5AB] transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <span>{t.blog.readMore}</span>
+                  <ArrowRight className={`w-3.5 h-3.5 ${language === 'ar' ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
 
-  async deleteGrade(gradeId: string): Promise<void> {
-    await removeItem('grades', gradeId);
-  }
+      {/* Article Reading Modal */}
+      {selectedPost && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 shadow-2xl relative">
+            <button
+              onClick={() => setSelectedPost(null)}
+              className="absolute top-6 right-6 rtl:right-auto rtl:left-6 p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <span className="text-xs font-bold text-[#AA820A] uppercase tracking-wider">
+              {language === 'ar' ? selectedPost.categoryAr : selectedPost.categoryEn}
+            </span>
+
+            <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mt-2 mb-4">
+              {language === 'ar' ? selectedPost.titleAr : selectedPost.titleEn}
+            </h2>
+
+            <div className="flex items-center gap-4 text-xs text-gray-400 mb-6 pb-4 border-b border-gray-100">
+              <span>{selectedPost.publishDate}</span>
+              <span>•</span>
+              <span>{selectedPost.readTime}</span>
+            </div>
+
+            <div className="text-sm sm:text-base text-gray-700 leading-relaxed space-y-4">
+              {/* whitespace-pre-line يحافظ على الفقرات التي يكتبها المالك من لوحة الإدارة */}
+              <p className="whitespace-pre-line">
+                {language === 'ar' ? selectedPost.contentAr : selectedPost.contentEn}
+              </p>
+              <p className="text-gray-500 italic text-xs pt-4 border-t border-gray-100">
+                {language === 'ar' 
+                  ? 'كتب هذا المقال بواسطة هيئة التدريس في أكاديمية English Zone الدولية.'
+                  : 'Published by the Academic Faculty at English Zone International Academy.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
