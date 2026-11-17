@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { Logo } from '../common/Logo';
-import { OFFICIAL_CONTACTS, EF_SET_PLACEMENT_TEST_URL } from '../../data/academyData';
+import { useAcademySettings, whatsappDisplay } from '../../hooks/useAcademySettings';
 import { 
   Mail, 
   Phone, 
@@ -19,6 +19,7 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ navigate }) => {
+  const contacts = useAcademySettings();
   const { t, language } = useLanguage();
 
   const handleNav = (route: string) => {
@@ -48,8 +49,9 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                 {language === 'ar' ? 'تابع منصات الأكاديمية الرسمية' : 'Official Academy Channels'}
               </span>
               <div className="flex flex-wrap items-center gap-2.5">
+                {contacts.whatsapp && (
                 <a
-                  href={OFFICIAL_CONTACTS.whatsapp}
+                  href={contacts.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#25D366] hover:border-[#25D366] transition-all"
@@ -57,15 +59,19 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                 >
                   <Phone className="w-4 h-4" />
                 </a>
+                )}
+                {contacts.email && (
                 <a
-                  href={`mailto:${OFFICIAL_CONTACTS.email}`}
+                  href={`mailto:${contacts.email}`}
                   className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all"
                   title="Email"
                 >
                   <Mail className="w-4 h-4" />
                 </a>
+                )}
+                {contacts.youtube && (
                 <a
-                  href={OFFICIAL_CONTACTS.youtube}
+                  href={contacts.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#FF0000] hover:border-[#FF0000] transition-all"
@@ -73,8 +79,10 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                 >
                   <Youtube className="w-4 h-4" />
                 </a>
+                )}
+                {contacts.instagram && (
                 <a
-                  href={OFFICIAL_CONTACTS.instagram}
+                  href={contacts.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#E4405F] hover:border-[#E4405F] transition-all"
@@ -82,8 +90,10 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                 >
                   <Instagram className="w-4 h-4" />
                 </a>
+                )}
+                {contacts.discord && (
                 <a
-                  href={OFFICIAL_CONTACTS.discord}
+                  href={contacts.discord}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#5865F2] hover:border-[#5865F2] transition-all"
@@ -91,6 +101,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                 >
                   <MessageSquare className="w-4 h-4" />
                 </a>
+                )}
               </div>
             </div>
           </div>
@@ -143,9 +154,10 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                   <span className="text-[10px] bg-[#D4AF37] text-[#0A192F] px-1 rounded font-bold">New</span>
                 </button>
               </li>
+              {contacts.placementTestUrl && (
               <li>
                 <a
-                  href={EF_SET_PLACEMENT_TEST_URL}
+                  href={contacts.placementTestUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#F3E5AB] text-gray-300 transition-colors inline-flex items-center gap-1"
@@ -154,6 +166,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                   <span className="text-[10px] bg-white/20 text-white px-1 rounded font-bold">Free</span>
                 </a>
               </li>
+              )}
               <li>
                 <button onClick={() => handleNav('pricing')} className="hover:text-[#F3E5AB] transition-colors">
                   {t.nav.pricing}
@@ -189,18 +202,22 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
               {t.footer.contactInfo}
             </h4>
             <ul className="space-y-3 text-xs text-gray-400">
+              {contacts.whatsapp && (
               <li className="flex items-start gap-2">
                 <span className="text-[#D4AF37] font-semibold">WhatsApp:</span>
-                <a href={OFFICIAL_CONTACTS.whatsapp} target="_blank" rel="noopener noreferrer" className="hover:text-white underline">
-                  +84 326 853 884
+                <a href={contacts.whatsapp} target="_blank" rel="noopener noreferrer" className="hover:text-white underline">
+                  {whatsappDisplay(contacts.whatsapp)}
                 </a>
               </li>
+              )}
+              {contacts.email && (
               <li className="flex items-start gap-2">
                 <span className="text-[#D4AF37] font-semibold">Email:</span>
-                <a href={`mailto:${OFFICIAL_CONTACTS.email}`} className="hover:text-white break-all">
-                  englishzoneabc123@gmail.com
+                <a href={`mailto:${contacts.email}`} className="hover:text-white break-all">
+                  {contacts.email}
                 </a>
               </li>
+              )}
               <li className="flex items-start gap-2">
                 <span className="text-[#D4AF37] font-semibold">Format:</span>
                 <span>Online Live Classes (Zoom / Classroom)</span>
