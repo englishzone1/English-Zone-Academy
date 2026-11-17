@@ -486,7 +486,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
                       onClick={() => handleMove(idx, 'up')}
                       disabled={idx === 0}
                       className="flex-1 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 flex items-center justify-center gap-1 text-[11px] font-bold"
-                      title="Move up"
+                      title={isArabic ? "تحريك لأعلى" : "Move up"}
                     >
                       <ArrowUp className="w-3.5 h-3.5" />
                       <span>{isArabic ? 'أعلى' : 'Up'}</span>
@@ -496,7 +496,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
                       onClick={() => handleMove(idx, 'down')}
                       disabled={idx === items.length - 1}
                       className="flex-1 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 flex items-center justify-center gap-1 text-[11px] font-bold"
-                      title="Move down"
+                      title={isArabic ? "تحريك لأسفل" : "Move down"}
                     >
                       <ArrowDown className="w-3.5 h-3.5" />
                       <span>{isArabic ? 'أسفل' : 'Down'}</span>
