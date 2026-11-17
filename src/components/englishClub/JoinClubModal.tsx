@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { englishClubService } from '../../services/englishClubService';
 import { EnglishZoneEmblem } from '../common/Logo';
-import { OFFICIAL_CONTACTS } from '../../data/academyData';
+import { useAcademySettings } from '../../hooks/useAcademySettings';
 import { 
   X, 
   Sparkles, 
@@ -29,6 +29,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
 }) => {
   const { language, t } = useLanguage();
   const c = t.englishClub;
+  const contacts = useAcademySettings();
 
   const [fullName, setFullName] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -261,8 +262,9 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
             </div>
 
             <div className="pt-2 flex flex-col gap-2">
+              {contacts.whatsapp && (
               <a
-                href={`${OFFICIAL_CONTACTS.whatsapp}?text=${encodeURIComponent(
+                href={`${contacts.whatsapp}?text=${encodeURIComponent(
                   `Hello English Zone Academy, I just submitted my registration for English Club! Application Ref: ${successRefId}`
                 )}`}
                 target="_blank"
@@ -272,6 +274,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
                 <Phone className="w-4 h-4" />
                 <span>{c.chatWhatsapp}</span>
               </a>
+              )}
 
               <button
                 type="button"
