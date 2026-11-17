@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Maximize2, Minimize2, BookOpenCheck, CheckCircle2 } from 'lucide-react';
+import { Maximize2, Minimize2, BookOpenCheck, CheckCircle2, ExternalLink } from 'lucide-react';
 import { studentHubService, HomeworkResult } from '../../services/studentHubService';
 
 interface Props {
@@ -25,21 +25,19 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   const [savedNote, setSavedNote] = useState('');
   const [saveError, setSaveError] = useState('');
   const frameRef = useRef<HTMLIFrameElement | null>(null);
+  // صفحة الواجبات الكاملة (تبويب جديد تفتحه المنصة)
+  const popupRef = useRef<Window | null>(null);
+
+  const openFull = () => {
+    const w = window.open(homeworkUrl, 'ez-homework');
+    if (w) {
+      popupRef.current = w;
+      w.focus();
+    }
+  };
   const progressTimer = useRef<number | null>(null);
   const valid = true;
 
-  // ملء الشاشة: تثبيت الصفحة خلفها، والخروج بزر Esc
-  useEffect(() => {
-    if (!tall) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setTall(false);
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [tall]);
 
   const loadResults = () =>
     studentHubService
@@ -52,8 +50,8 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   }, [uid, preview]);
 
   // إرسال اسم الطالب وتقدّمه المحفوظ إلى الموقع المضمّن
-  const greet = async () => {
-    const win = frameRef.current?.contentWindow;
+  const greet = async (target?: Window | null) => {
+    const win = target || frameRef.current?.contentWindow;
     if (!win) return;
     if (!preview) try {
       const data = await studentHubService.getHomeworkProgress(uid);
@@ -67,11 +65,14 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   useEffect(() => {
     if (!valid) return;
     const onMsg = async (ev: MessageEvent) => {
-      if (!frameRef.current || ev.source !== frameRef.current.contentWindow) return;
+      const src = ev.source as Window | null;
+      const fromFrame = !!frameRef.current && src === frameRef.current.contentWindow;
+      const fromPopup = !!popupRef.current && src === popupRef.current;
+      if (!fromFrame && !fromPopup) return;
       const m = ev.data || {};
       if (m.source !== 'ez-homework') return;
       if (m.type === 'ready') {
-        greet();
+        greet(src);
       } else if (preview) {
         if (m.type === 'result') {
           setSavedNote(isAr ? `معاينة: ${m.title} (${m.score}/${m.total}) – لا تُحفظ نتائج الإدارة` : `Preview: ${m.title} (${m.score}/${m.total}) – not saved`);
@@ -119,11 +120,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   return (
     <div className="space-y-4">
       <div
-        className={
-          tall
-            ? 'fixed inset-0 z-[100] bg-white p-2 sm:p-3 flex flex-col gap-2'
-            : 'bg-white rounded-3xl p-4 sm:p-6 border border-[#D4AF37]/40 shadow-sm space-y-4'
-        }
+        className="bg-white rounded-3xl p-4 sm:p-6 border border-[#D4AF37]/40 shadow-sm space-y-4"
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F] flex items-center gap-2">
@@ -132,21 +129,28 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
           </h2>
           <div className="flex items-center gap-2">
             <button
+              onClick={openFull}
+              className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5"
+            >
+              <ExternalLink className="w-4 h-4" />
+              {isAr ? 'فتح في صفحة كاملة' : 'Open full page'}
+            </button>
+            <button
               onClick={() => setTall((t) => !t)}
               className="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 flex items-center gap-1.5"
             >
               {tall ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-              {tall ? (isAr ? 'خروج من ملء الشاشة' : 'Exit full screen') : isAr ? 'ملء الشاشة' : 'Full screen'}
+              {tall ? (isAr ? 'تصغير' : 'Smaller') : isAr ? 'تكبير' : 'Bigger'}
             </button>
           </div>
         </div>
-        <p className={`text-[11px] text-gray-500 ${tall ? 'hidden' : ''}`}>
+        <p className="text-[11px] text-gray-500">
           {preview
             ? isAr
               ? 'معاينة للإدارة: تستطيعين تصفّح الواجبات والاختبارات وتجربتها كما يراها الطالب، ونتائجك هنا لا تُحفظ.'
               : 'Admin preview: browse and try everything as students see it; your answers are not saved.'
             : isAr
-              ? 'نتائجك وتقدّمك تُحفظ تلقائيًا باسمك ويراها معلمك.'
+              ? 'نتائجك وتقدّمك تُحفظ تلقائيًا باسمك ويراها معلمك، سواء حللتِ هنا أو في الصفحة الكاملة (أبقي هذه الصفحة مفتوحة).'
               : 'Your results and progress are saved automatically for your teacher.'}
         </p>
         {savedNote && (
@@ -158,16 +162,16 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         {saveError && (
           <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold">{saveError}</div>
         )}
-        <div className={`rounded-2xl overflow-hidden border border-gray-200 bg-[#FAF8F5] ${tall ? 'flex-1 min-h-0' : ''}`}>
+        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-[#FAF8F5]">
           <iframe
             ref={frameRef}
             src={homeworkUrl}
             title={isAr ? 'الواجبات والاختبارات' : 'Homework and tests'}
             className="w-full block"
-            style={{ height: tall ? '100%' : '75vh' }}
+            style={{ height: tall ? '92vh' : '75vh' }}
             allow="autoplay; fullscreen; clipboard-write"
             allowFullScreen
-            onLoad={() => window.setTimeout(greet, 600)}
+            onLoad={() => window.setTimeout(() => greet(), 600)}
           />
         </div>
       </div>

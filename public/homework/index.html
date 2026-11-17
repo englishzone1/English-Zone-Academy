@@ -3,7 +3,8 @@
 <head>
 <script>
 /* موقع الواجبات يعمل داخل لوحة الطالب في المنصة فقط */
-if (window.self === window.top) { location.replace('/#/portal'); }
+/* أو في صفحة كاملة فتحتها المنصة (window.opener) */
+(function(){ var ok = window.self !== window.top; try { ok = ok || (!!window.opener && window.opener.location.origin === location.origin); } catch (e) {} if (!ok) location.replace('/#/portal'); })();
 </script>
 
 <meta charset="UTF-8">
@@ -1253,12 +1254,13 @@ let student = {};
 /* ---------- ربط المنصة (English Zone Academy) ----------
    عند فتح الموقع داخل لوحة الطالب في المنصة: يُرسل نتائج الدروس والاختبارات
    وتقدّم الطالبة إلى المنصة لتُحفظ باسمها، ويستلم اسمها وتقدّمها المحفوظ. */
-const EZ_EMBED = window.parent !== window;
-function ezPost(msg){ if(!EZ_EMBED) return; try{ window.parent.postMessage(Object.assign({source:`ez-homework`},msg),`*`); }catch(e){} }
+const EZ_HOST = window.parent !== window ? window.parent : (window.opener || null);
+const EZ_EMBED = !!EZ_HOST;
+function ezPost(msg){ if(!EZ_EMBED) return; try{ EZ_HOST.postMessage(Object.assign({source:`ez-homework`},msg),`*`); }catch(e){} }
 function ezProgress(){ const d={}; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf(`ez_`)===0) d[k]=localStorage.getItem(k); } }catch(e){} ezPost({type:`progress`,data:d}); }
 function ezResult(kind,id,title,score,total){ ezPost({type:`result`,kind:kind,id:String(id||title||``).slice(0,80),title:String(title||``).slice(0,150),score:score,total:total}); ezProgress(); }
 window.addEventListener(`message`,ev=>{
-  if(ev.source!==window.parent) return;
+  if(!EZ_HOST||ev.source!==EZ_HOST) return;
   const m=ev.data||{}; if(m.source!==`ez-platform`) return;
   if(m.type===`restore`&&m.data&&typeof m.data===`object`){
     try{ Object.keys(m.data).forEach(k=>{ if(k.indexOf(`ez_`)!==0) return; const cur=localStorage.getItem(k); if(!cur||cur.length<String(m.data[k]).length) localStorage.setItem(k,String(m.data[k])); }); }catch(e){}
