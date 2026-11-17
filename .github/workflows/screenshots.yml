@@ -4,6 +4,8 @@ on:
   push:
     branches: [shots]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   shots:
     runs-on: ubuntu-latest
@@ -14,7 +16,11 @@ jobs:
           node-version: 22
       - run: mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm i playwright@1 --no-audit --no-fund && npx playwright install --with-deps chromium
       - run: cp tools/screenshots.cjs /tmp/pw/ && cd /tmp/pw && node screenshots.cjs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: shots
-          path: /tmp/pw/shots
+      # الصور تُحفظ في فرع منفصل اسمه shots-output
+      - run: |
+          cd /tmp/pw/shots
+          git init -q -b shots-output
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Site screenshots"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" shots-output
