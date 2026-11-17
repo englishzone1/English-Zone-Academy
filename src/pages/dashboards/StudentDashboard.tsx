@@ -12,6 +12,14 @@ import {
 } from '../../services/studentDataService';
 import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
+import {
+  groupService,
+  startOfWeek,
+  startOfMonth,
+  StudyGroup,
+  GroupMember,
+  PointsEntry
+} from '../../services/groupService';
 import { db } from '../../services/firebase';
 
 interface StudentDashboardProps {
@@ -23,11 +31,17 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
   const { user, firebaseUser, hasProfile, isLoading: isAuthLoading, logout } = useAuth();
   const isAr = language === 'ar';
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'stars' | 'curriculum' | 'homework' | 'subscription'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'group' | 'stars' | 'curriculum' | 'homework' | 'subscription'>('overview');
   const [homeworkList, setHomeworkList] = useState<HomeworkRecord[]>([]);
   const [pointsLog, setPointsLog] = useState<PointsLogRecord[]>([]);
   const [gradesList, setGradesList] = useState<GradeRecord[]>([]);
   const [timetable, setTimetable] = useState<TimetableRecord[]>([]);
+  // مجموعتي: تُقرأ فقط مجموعة الطالب (القواعد تمنع غيرها)
+  const [myGroup, setMyGroup] = useState<StudyGroup | null>(null);
+  const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
+  const [groupLog, setGroupLog] = useState<PointsEntry[]>([]);
+  const [groupError, setGroupError] = useState(false);
+
   // رابط واتساب من إعدادات الأكاديمية في لوحة الإدارة فقط (لا قيمة ثابتة)
   const [whatsappLink, setWhatsappLink] = useState('');
 
@@ -66,6 +80,27 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
 
     loadStudentData();
   }, [firebaseUser, isActive]);
+
+  const myGroupId: string = String((user as any)?.groupId || '');
+
+  useEffect(() => {
+    if (!firebaseUser || !isActive || !myGroupId) return;
+    setGroupError(false);
+    Promise.all([
+      groupService.getGroupById(myGroupId),
+      groupService.getGroupMembers(myGroupId),
+      groupService.getGroupPointsLog(myGroupId)
+    ])
+      .then(([g, m, l]) => {
+        setMyGroup(g);
+        setGroupMembers(m);
+        setGroupLog(l);
+      })
+      .catch((err) => {
+        console.error('Error loading group board:', err);
+        setGroupError(true);
+      });
+  }, [firebaseUser, isActive, myGroupId]);
 
   if (isAuthLoading) {
     return (
@@ -183,6 +218,30 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
 
   const notSet = isAr ? 'لم يُحدد بعد' : 'Not set yet';
 
+  // ---------- My group board ----------
+  const weekStart = startOfWeek();
+  const monthStart = startOfMonth();
+  const sumSince = (sid: string, since: Date) =>
+    groupLog
+      .filter((l) => l.studentId === sid && new Date(l.timestamp) >= since)
+      .reduce((a, l) => a + (Number(l.amount) || 0), 0);
+  const boardRows = groupMembers.map((m) => ({
+    m,
+    total: Number(m.points) || 0,
+    week: sumSince(m.id, weekStart),
+    month: sumSince(m.id, monthStart)
+  }));
+  const topBy = (key: 'total' | 'week' | 'month') => {
+    const top = [...boardRows].sort((a, b) => b[key] - a[key])[0];
+    return top && top[key] > 0 ? top : null;
+  };
+  const groupLeader = topBy('total');
+  const groupStarWeek = topBy('week');
+  const groupStarMonth = topBy('month');
+  const myRank = boardRows.findIndex((r) => r.m.id === firebaseUser.uid) + 1;
+  const myWeek = sumSince(firebaseUser.uid, weekStart);
+  const myMonth = sumSince(firebaseUser.uid, monthStart);
+
   return (
     <div className="min-h-screen bg-[#FAF8F5] py-8">
       {/* Top Header Bar */}
@@ -259,6 +318,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-2">
           {[
             { id: 'overview', labelEn: 'Overview & Lessons', labelAr: 'نظرة عامة والدروس' },
+            { id: 'group', labelEn: 'My Group', labelAr: 'مجموعتي' },
             { id: 'stars', labelEn: 'English Zone Stars', labelAr: 'نجوم التحفيز ونقاطي' },
             { id: 'curriculum', labelEn: 'Curriculum & Stages', labelAr: 'المنهج والمراحل' },
             { id: 'homework', labelEn: 'Homework & Tests', labelAr: 'الواجبات والاختبارات' },
@@ -436,6 +496,114 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* TAB: MY GROUP */}
+        {activeTab === 'group' && (
+          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
+            {!myGroupId ? (
+              <p className="text-sm text-gray-500 text-center py-6">
+                {isAr ? 'لم تُضف إلى مجموعة بعد.' : 'You have not been added to a group yet.'}
+              </p>
+            ) : groupError ? (
+              <p className="text-sm text-red-600 text-center py-6">
+                {isAr ? 'تعذر تحميل بيانات المجموعة.' : 'Could not load your group.'}
+              </p>
+            ) : (
+              <>
+                <div>
+                  <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
+                    {myGroup?.name || (isAr ? 'مجموعتي' : 'My Group')}
+                  </h2>
+                  {(myGroup?.level || myGroup?.teacherName) && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {[myGroup?.level, myGroup?.teacherName].filter(Boolean).join(' • ')}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { label: isAr ? 'الأول في المجموعة' : 'Group Leader', row: groupLeader, value: groupLeader?.total },
+                    { label: isAr ? 'نجم الأسبوع' : 'Star of the Week', row: groupStarWeek, value: groupStarWeek?.week },
+                    { label: isAr ? 'نجم الشهر' : 'Star of the Month', row: groupStarMonth, value: groupStarMonth?.month }
+                  ].map((c) => (
+                    <div key={c.label} className="p-4 rounded-2xl bg-[#0A192F] text-center border border-[#D4AF37]/40">
+                      <span className="text-[11px] text-gray-400 block">{c.label}</span>
+                      <span className="font-bold text-sm text-[#F3E5AB] block mt-1">
+                        {c.row ? c.row.m.fullName : '—'}
+                      </span>
+                      {c.row && (
+                        <span className="text-xs text-[#D4AF37]">
+                          {c.value} {isAr ? 'نقطة' : 'pts'}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 text-center text-xs">
+                  <div className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-200">
+                    <span className="text-gray-400 block">{isAr ? 'ترتيبي' : 'My Rank'}</span>
+                    <span className="font-bold text-base text-[#0A192F]">
+                      {myRank > 0 ? `${myRank} / ${boardRows.length}` : '—'}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-200">
+                    <span className="text-gray-400 block">{isAr ? 'نقاطي هذا الأسبوع' : 'My Week'}</span>
+                    <span className="font-bold text-base text-[#0A192F]">{myWeek}</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-200">
+                    <span className="text-gray-400 block">{isAr ? 'نقاطي هذا الشهر' : 'My Month'}</span>
+                    <span className="font-bold text-base text-[#0A192F]">{myMonth}</span>
+                  </div>
+                </div>
+
+                {boardRows.length === 0 ? (
+                  <p className="text-xs text-gray-500 text-center py-4">
+                    {isAr ? 'لا توجد بيانات للمجموعة بعد.' : 'No group data yet.'}
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left rtl:text-right text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-[#FAF8F5] text-xs text-gray-500 border-b border-gray-200">
+                          <th className="py-2.5 px-3">#</th>
+                          <th className="py-2.5 px-3">{isAr ? 'الطالب' : 'Student'}</th>
+                          <th className="py-2.5 px-3">{isAr ? 'الأسبوع' : 'Week'}</th>
+                          <th className="py-2.5 px-3">{isAr ? 'الشهر' : 'Month'}</th>
+                          <th className="py-2.5 px-3">{isAr ? 'المجموع' : 'Total'}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {boardRows.map((r, i) => (
+                          <tr
+                            key={r.m.id}
+                            className={r.m.id === firebaseUser.uid ? 'bg-[#D4AF37]/10 font-bold' : ''}
+                          >
+                            <td className="py-2.5 px-3 text-gray-500">{i + 1}</td>
+                            <td className="py-2.5 px-3 text-[#0A192F]">
+                              {r.m.fullName}
+                              {r.m.id === firebaseUser.uid ? (isAr ? ' (أنت)' : ' (you)') : ''}
+                            </td>
+                            <td className="py-2.5 px-3">{r.week}</td>
+                            <td className="py-2.5 px-3">{r.month}</td>
+                            <td className="py-2.5 px-3 font-bold text-[#AA820A]">{r.total}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                <p className="text-[11px] text-gray-400">
+                  {isAr
+                    ? 'تفاصيل نجومك في تبويب "نجوم التحفيز ونقاطي"، ودرجاتك في تبويب "الواجبات والاختبارات".'
+                    : 'Your star details are in the Stars tab, and your grades in the Homework & Tests tab.'}
+                </p>
+              </>
+            )}
           </div>
         )}
 
