@@ -566,6 +566,9 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                           >
                             <td className="py-2.5 px-3 text-gray-500">{i + 1}</td>
                             <td className="py-2.5 px-3 text-[#0A192F]">
+                              <span className="inline-flex items-center gap-2 align-middle">
+                                <AvatarRenderer config={(r.m as any).avatar} size={28} />
+                              </span>{' '}
                               {r.m.fullName}
                               {r.m.id === firebaseUser.uid ? (isAr ? ' (أنت)' : ' (you)') : ''}
                             </td>
@@ -591,7 +594,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
 
         {/* TAB: COMMUNITY */}
         {activeTab === 'community' && (
-          <CommunityFeed uid={firebaseUser.uid} name={student.fullName || ''} role="student" isAr={isAr} />
+          <CommunityFeed uid={firebaseUser.uid} name={student.fullName || ''} role="student" isAr={isAr} avatar={student.avatarConfig} />
         )}
 
         {/* TAB: LIBRARY */}

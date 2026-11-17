@@ -316,7 +316,7 @@ service cloud.firestore {
 
       allow create: if (isAdmin() || isActiveStudent()) &&
         isValidId(postId) &&
-        request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'text', 'imageDataUrl', 'audioDataUrl', 'videoUrl', 'likes', 'createdAt']) &&
+        request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'authorAvatar', 'text', 'imageDataUrl', 'audioDataUrl', 'videoUrl', 'likes', 'createdAt']) &&
         request.resource.data.authorId == request.auth.uid &&
         (request.resource.data.authorRole == 'student' || (request.resource.data.authorRole == 'admin' && isAdmin())) &&
         request.resource.data.likes.size() == 0 &&
@@ -337,7 +337,7 @@ service cloud.firestore {
         allow get, list: if isAdmin() || isActiveStudent();
         allow create: if (isAdmin() || isActiveStudent()) &&
           isValidId(commentId) &&
-          request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'text', 'createdAt']) &&
+          request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'authorAvatar', 'text', 'createdAt']) &&
           request.resource.data.authorId == request.auth.uid &&
           (request.resource.data.authorRole == 'student' || (request.resource.data.authorRole == 'admin' && isAdmin())) &&
           request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000;

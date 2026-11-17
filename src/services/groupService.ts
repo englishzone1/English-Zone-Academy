@@ -61,6 +61,7 @@ export interface GroupMember {
   groupId: string;
   fullName: string;
   points: number;
+  avatar?: any;
   updatedAt: string;
 }
 
@@ -202,6 +203,7 @@ export const groupService = {
       groupId: data.groupId,
       fullName: data.fullName || '',
       points: Number(data.points) || 0,
+      ...(data.avatarConfig ? { avatar: data.avatarConfig } : {}),
       updatedAt: new Date().toISOString()
     });
   },
@@ -224,6 +226,7 @@ export const groupService = {
             groupId: data.groupId,
             fullName: data.fullName || '',
             points: Number(data.points) || 0,
+            ...(data.avatarConfig ? { avatar: data.avatarConfig } : {}),
             updatedAt: new Date().toISOString()
           })
         );

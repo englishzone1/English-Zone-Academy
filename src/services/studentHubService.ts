@@ -80,6 +80,7 @@ export interface CommunityPost {
   imageDataUrl?: string;
   audioDataUrl?: string;
   videoUrl?: string;
+  authorAvatar?: any;
   likes: string[];
   createdAt: string;
 }
@@ -89,6 +90,7 @@ export interface CommunityComment {
   authorId: string;
   authorName: string;
   authorRole: 'student' | 'admin';
+  authorAvatar?: any;
   text: string;
   createdAt: string;
 }
@@ -259,12 +261,12 @@ export const studentHubService = {
 
   async addComment(postId: string, c: Omit<CommunityComment, 'id' | 'createdAt'>): Promise<void> {
     const id = newId('CMT');
-    await setDoc(doc(db, 'community_posts', postId, 'comments', id), {
+    await setDoc(doc(db, 'community_posts', postId, 'comments', id), clean({
       ...c,
       id,
       text: c.text.trim().slice(0, 1000),
       createdAt: new Date().toISOString()
-    });
+    }));
   },
 
   async deleteComment(postId: string, commentId: string): Promise<void> {

@@ -9,12 +9,15 @@ import {
   isSafeUrl,
   MAX_MEDIA_CHARS
 } from '../../services/studentHubService';
+import { EZAvatar } from '../avatar/EZAvatar';
+import { EnglishZoneEmblem } from '../common/Logo';
 
 interface Props {
   uid: string;
   name: string;
   role: 'student' | 'admin';
   isAr: boolean;
+  avatar?: any;
 }
 
 const MAX_RECORD_SECONDS = 60;
@@ -31,7 +34,7 @@ const driveEmbed = (url: string): string | null => {
 };
 
 // مجتمع English Zone: منشورات الطلاب والإدارة، الإعجابات والتعليقات
-export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr }) => {
+export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const isAdmin = role === 'admin';
 
@@ -149,6 +152,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr }) => {
         authorId: uid,
         authorName: name,
         authorRole: role,
+        authorAvatar: role === 'student' && avatar ? avatar : undefined,
         text: text.trim().slice(0, 3000),
         imageDataUrl: image || undefined,
         audioDataUrl: audio || undefined,
@@ -208,7 +212,13 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr }) => {
   const sendComment = async (postId: string) => {
     if (!commentText.trim()) return;
     try {
-      await studentHubService.addComment(postId, { authorId: uid, authorName: name, authorRole: role, text: commentText });
+      await studentHubService.addComment(postId, {
+        authorId: uid,
+        authorName: name,
+        authorRole: role,
+        authorAvatar: role === 'student' && avatar ? avatar : undefined,
+        text: commentText
+      });
       setCommentText('');
       const list = await studentHubService.getComments(postId);
       setComments((prev) => ({ ...prev, [postId]: list }));
@@ -234,6 +244,13 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr }) => {
         {tr('Academy', 'الأكاديمية')}
       </span>
     ) : null;
+
+  const Face = ({ r, cfg, size }: { r: string; cfg?: any; size: number }) =>
+    r === 'admin' ? (
+      <EnglishZoneEmblem sizeClass={size > 30 ? 'w-10 h-10' : 'w-7 h-7'} glow={false} />
+    ) : (
+      <EZAvatar config={cfg} view="head" size={size} />
+    );
 
   const when = (iso: string) => (iso ? new Date(iso).toLocaleString(isAr ? 'ar' : 'en', { dateStyle: 'medium', timeStyle: 'short' }) : '');
 
@@ -327,12 +344,15 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr }) => {
           return (
             <div key={p.id} className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-[#0A192F]">{p.authorName}</span>
-                    <AuthorBadge r={p.authorRole} />
+                <div className="flex items-center gap-2.5">
+                  <Face r={p.authorRole} cfg={p.authorAvatar} size={40} />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-[#0A192F]">{p.authorName}</span>
+                      <AuthorBadge r={p.authorRole} />
+                    </div>
+                    <span className="text-[11px] text-gray-400">{when(p.createdAt)}</span>
                   </div>
-                  <span className="text-[11px] text-gray-400">{when(p.createdAt)}</span>
                 </div>
                 {canDelete && (
                   <button onClick={() => removePost(p)} className="p-1.5 text-gray-400 hover:text-red-600" title={tr('Delete', 'حذف')}>
@@ -372,6 +392,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr }) => {
                     <div key={c.id} className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-100 text-xs space-y-1">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
+                          <Face r={c.authorRole} cfg={c.authorAvatar} size={28} />
                           <span className="font-bold text-[#0A192F]">{c.authorName}</span>
                           <AuthorBadge r={c.authorRole} />
                         </div>
