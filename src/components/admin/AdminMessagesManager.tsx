@@ -30,6 +30,7 @@ interface ContactMessage {
 export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = false }) => {
   const { firebaseUser } = useAuth();
   const [avatars, setAvatars] = useState<Record<string, any>>({});
+  const [teacherNames, setTeacherNames] = useState<Record<string, string>>({});
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
@@ -60,6 +61,13 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
           ? query(collection(db, 'contact_messages'), where('teacherId', '==', uid))
           : collection(db, 'contact_messages')
       );
+      // الإدارة ترى كل الرسائل، ومعها اسم معلم الطالب إن وُجد
+      if (!teacherMode) {
+        groupService
+          .getTeachers()
+          .then((ts) => setTeacherNames(Object.fromEntries(ts.map((t) => [t.id, t.fullName || t.email]))))
+          .catch(() => undefined);
+      }
       // أفاتار كل طالب بجانب رسالته
       try {
         const people = teacherMode
@@ -132,6 +140,11 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
                   <span className="font-bold text-xs text-[#0A192F]">{m.name}</span>
                   {m.studentId && (
                     <span className="px-2 py-0.5 rounded-full bg-[#0A192F] text-[#F3E5AB] text-[10px] font-bold">{tr('Student', 'طالب')}</span>
+                  )}
+                  {!teacherMode && (m as any).teacherId && (
+                    <span className="px-2 py-0.5 rounded-full bg-[#D4AF37]/20 text-[#7A5C00] text-[10px] font-bold">
+                      {tr('Teacher:', 'المعلم:')} {teacherNames[(m as any).teacherId] || '—'}
+                    </span>
                   )}
                   <a href={`mailto:${m.email}`} className="text-[11px] text-[#AA820A] underline" dir="ltr">
                     {m.email}
