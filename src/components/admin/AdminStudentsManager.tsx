@@ -211,6 +211,11 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         groupId: textOrDelete(form.groupId),
         updatedAt: new Date().toISOString()
       });
+      try {
+        await groupService.syncMember(selected.id); // تحديث لوحة المجموعة التي يراها الطلاب
+      } catch (syncErr) {
+        console.error('Could not update group board:', syncErr);
+      }
       onNotice(isAr ? 'تم حفظ بيانات الطالب.' : 'Student record saved.');
       setSelectedId(null);
       await load(false);
