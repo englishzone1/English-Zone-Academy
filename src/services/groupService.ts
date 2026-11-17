@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   deleteDoc,
@@ -54,6 +55,15 @@ export interface GradeEntry {
   date: string;
 }
 
+// لوحة المجموعة التي يراها الطلاب: الاسم والنقاط فقط (group_members/{uid})
+export interface GroupMember {
+  id: string;
+  groupId: string;
+  fullName: string;
+  points: number;
+  updatedAt: string;
+}
+
 // الدرجة التي يُعتبر عندها الطالب ناجحًا في التقييم. غيّر الرقم إن أردت.
 export const PASS_MARK = 60;
 
@@ -104,7 +114,10 @@ export const groupService = {
   async deleteGroup(id: string): Promise<void> {
     const batch = writeBatch(db);
     const members = await getDocs(query(collection(db, 'users'), where('groupId', '==', id)));
-    members.forEach((d) => batch.update(d.ref, { groupId: deleteField() }));
+    members.forEach((d) => {
+      batch.update(d.ref, { groupId: deleteField() });
+      batch.delete(doc(db, 'group_members', d.id));
+    });
     batch.delete(doc(db, 'groups', id));
     await batch.commit();
   },
@@ -167,6 +180,85 @@ export const groupService = {
       updatedAt: new Date().toISOString()
     });
     await batch.commit();
+    try {
+      await groupService.syncMember(p.studentId);
+    } catch (err) {
+      console.error('Could not update group board:', err);
+    }
+  },
+
+  // ---- Group board (group_members) ----
+  // ينسخ اسم الطالب ونقاطه ومجموعته من users إلى group_members، أو يحذفه إن لم تكن له مجموعة
+  async syncMember(studentId: string): Promise<void> {
+    const snap = await getDoc(doc(db, 'users', studentId));
+    const data = snap.exists() ? (snap.data() as any) : null;
+    const ref = doc(db, 'group_members', studentId);
+    if (!data || data.role !== 'student' || !data.groupId) {
+      await deleteDoc(ref);
+      return;
+    }
+    await setDoc(ref, {
+      id: studentId,
+      groupId: data.groupId,
+      fullName: data.fullName || '',
+      points: Number(data.points) || 0,
+      updatedAt: new Date().toISOString()
+    });
+  },
+
+  // يعيد بناء لوحات كل المجموعات من بيانات الطلاب (زر المزامنة في اللوحة)
+  async syncAllMembers(): Promise<number> {
+    const [usersSnap, boardSnap] = await Promise.all([
+      getDocs(collection(db, 'users')),
+      getDocs(collection(db, 'group_members'))
+    ]);
+    const ops: ((b: ReturnType<typeof writeBatch>) => void)[] = [];
+    const keep = new Set<string>();
+    usersSnap.forEach((d) => {
+      const data = d.data() as any;
+      if (data.role === 'student' && data.groupId) {
+        keep.add(d.id);
+        ops.push((b) =>
+          b.set(doc(db, 'group_members', d.id), {
+            id: d.id,
+            groupId: data.groupId,
+            fullName: data.fullName || '',
+            points: Number(data.points) || 0,
+            updatedAt: new Date().toISOString()
+          })
+        );
+      }
+    });
+    boardSnap.forEach((d) => {
+      if (!keep.has(d.id)) ops.push((b) => b.delete(d.ref));
+    });
+    // Firestore يقبل 500 عملية في الدفعة الواحدة
+    for (let i = 0; i < ops.length; i += 450) {
+      const b = writeBatch(db);
+      ops.slice(i, i + 450).forEach((op) => op(b));
+      await b.commit();
+    }
+    return keep.size;
+  },
+
+  // ---- Student side (يقرأ مجموعته فقط حسب القواعد) ----
+  async getGroupById(id: string): Promise<StudyGroup | null> {
+    const snap = await getDoc(doc(db, 'groups', id));
+    return snap.exists() ? ({ ...(snap.data() as any), id: snap.id } as StudyGroup) : null;
+  },
+
+  async getGroupMembers(groupId: string): Promise<GroupMember[]> {
+    const snap = await getDocs(query(collection(db, 'group_members'), where('groupId', '==', groupId)));
+    return snap.docs
+      .map((d) => ({ ...(d.data() as any), id: d.id } as GroupMember))
+      .sort((a, b) => (b.points || 0) - (a.points || 0));
+  },
+
+  async getGroupPointsLog(groupId: string): Promise<PointsEntry[]> {
+    const snap = await getDocs(query(collection(db, 'points_log'), where('groupId', '==', groupId)));
+    return snap.docs
+      .map((d) => ({ ...(d.data() as any), id: d.id } as PointsEntry))
+      .sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
   },
 
   async getPointsLog(): Promise<PointsEntry[]> {
