@@ -4,14 +4,13 @@ import {
   getDocs,
   doc,
   updateDoc,
-  writeBatch,
-  increment,
   deleteField
 } from 'firebase/firestore';
 import { RefreshCw, Search, Save, Sparkles, X } from 'lucide-react';
 import { db } from '../../services/firebase';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { groupService, StudyGroup, RatingCriterion, PASS_MARK } from '../../services/groupService';
 
 interface AdminStudentsManagerProps {
   onNotice: (message: string) => void;
@@ -33,6 +32,7 @@ interface StudentRow {
   stageProgress?: number;
   lessonsAttended?: number;
   lessonsTotal?: number;
+  groupId?: string;
 }
 
 type FormState = {
@@ -46,6 +46,7 @@ type FormState = {
   stageProgress: string;
   lessonsAttended: string;
   lessonsTotal: string;
+  groupId: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -58,7 +59,8 @@ const EMPTY_FORM: FormState = {
   monthlyTuitionUSD: '',
   stageProgress: '',
   lessonsAttended: '',
-  lessonsTotal: ''
+  lessonsTotal: '',
+  groupId: ''
 };
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
@@ -81,7 +83,8 @@ const toForm = (s: StudentRow): FormState => ({
   monthlyTuitionUSD: s.monthlyTuitionUSD !== undefined ? String(s.monthlyTuitionUSD) : '',
   stageProgress: s.stageProgress !== undefined ? String(s.stageProgress) : '',
   lessonsAttended: s.lessonsAttended !== undefined ? String(s.lessonsAttended) : '',
-  lessonsTotal: s.lessonsTotal !== undefined ? String(s.lessonsTotal) : ''
+  lessonsTotal: s.lessonsTotal !== undefined ? String(s.lessonsTotal) : '',
+  groupId: s.groupId || ''
 });
 
 const textOrDelete = (value: string) => (value.trim() === '' ? deleteField() : value.trim());
@@ -102,18 +105,24 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
   const { language } = useLanguage();
   const { user } = useAuth();
   const isAr = language === 'ar';
+  const adminName = user?.fullName || (isAr ? 'المدير' : 'Administrator');
 
   const [students, setStudents] = useState<StudentRow[]>([]);
   const [courseNames, setCourseNames] = useState<string[]>([]);
+  const [groups, setGroups] = useState<StudyGroup[]>([]);
+  const [criteria, setCriteria] = useState<RatingCriterion[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'pending' | 'active' | 'suspended'>('all');
+  const [groupFilter, setGroupFilter] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [starAmount, setStarAmount] = useState('');
   const [starReason, setStarReason] = useState('');
+  const [gradeTitle, setGradeTitle] = useState('');
+  const [gradeScore, setGradeScore] = useState('');
 
   const load = async (showSpinner = true) => {
     if (showSpinner) setLoading(true);
@@ -146,6 +155,13 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
     } catch {
       // Course suggestions are optional
     }
+
+    try {
+      setGroups(await groupService.getGroups());
+      setCriteria(await groupService.getCriteria());
+    } catch (err) {
+      console.error('Error loading groups/criteria:', err);
+    }
   };
 
   useEffect(() => {
@@ -153,16 +169,21 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
   }, []);
 
   const selected = students.find((s) => s.id === selectedId) || null;
+  const groupName = (id?: string) => groups.find((g) => g.id === id)?.name || '';
 
   const openStudent = (s: StudentRow) => {
     setSelectedId(s.id);
     setForm(toForm(s));
     setStarAmount('');
     setStarReason('');
+    setGradeTitle('');
+    setGradeScore('');
   };
 
   const setField = (key: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
+
+  const errText = (err: any) => err?.code || err?.message || '';
 
   const handleSave = async () => {
     if (!selected) return;
@@ -187,6 +208,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         stageProgress: numberOrDelete(form.stageProgress, 0, 100),
         lessonsAttended: numberOrDelete(form.lessonsAttended, 0),
         lessonsTotal: numberOrDelete(form.lessonsTotal, 0),
+        groupId: textOrDelete(form.groupId),
         updatedAt: new Date().toISOString()
       });
       onNotice(isAr ? 'تم حفظ بيانات الطالب.' : 'Student record saved.');
@@ -194,14 +216,42 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
       await load(false);
     } catch (err: any) {
       console.error('Error saving student:', err);
-      onNotice((isAr ? 'تعذّر الحفظ: ' : 'Save failed: ') + (err?.code || err?.message || ''));
+      onNotice((isAr ? 'تعذّر الحفظ: ' : 'Save failed: ') + errText(err));
     } finally {
       setSaving(false);
     }
   };
 
-  const handleAwardStars = async () => {
+  const record = async (amount: number, reason: string, criterionId?: string) => {
     if (!selected) return;
+    setSaving(true);
+    try {
+      await groupService.awardStars({
+        studentId: selected.id,
+        studentName: selected.fullName,
+        groupId: selected.groupId, // المجموعة المحفوظة للطالب
+        amount,
+        reason,
+        criterionId,
+        awardedBy: adminName
+      });
+      onNotice(
+        isAr
+          ? `تم تسجيل ${amount > 0 ? '+' : ''}${amount} نجمة لـ ${selected.fullName || ''}.`
+          : `Recorded ${amount > 0 ? '+' : ''}${amount} stars for ${selected.fullName || ''}.`
+      );
+      await load(false);
+    } catch (err: any) {
+      console.error('Error awarding stars:', err);
+      onNotice((isAr ? 'تعذّر تسجيل النجوم: ' : 'Could not record stars: ') + errText(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCriterion = (c: RatingCriterion) => record(c.points, c.labelAr || c.labelEn, c.id);
+
+  const handleCustomStars = async () => {
     const amount = Number(starAmount);
     if (!Number.isFinite(amount) || amount === 0) {
       onNotice(isAr ? 'اكتب عدد النجوم (رقماً غير صفر).' : 'Enter a non-zero number of stars.');
@@ -211,30 +261,32 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
       onNotice(isAr ? 'اكتب سبب منح النجوم.' : 'Please enter a reason.');
       return;
     }
+    await record(amount, starReason.trim());
+    setStarAmount('');
+    setStarReason('');
+  };
+
+  const handleAddGrade = async () => {
+    if (!selected) return;
+    const score = Number(gradeScore);
+    if (!gradeTitle.trim() || gradeScore.trim() === '' || !Number.isFinite(score) || score < 0 || score > 100) {
+      onNotice(isAr ? 'اكتب اسم التقييم ودرجة بين 0 و 100.' : 'Enter an assessment name and a score from 0 to 100.');
+      return;
+    }
     setSaving(true);
     try {
-      const batch = writeBatch(db);
-      const logRef = doc(collection(db, 'points_log'));
-      batch.set(logRef, {
-        id: logRef.id,
+      await groupService.addGrade({
         studentId: selected.id,
-        amount,
-        reason: starReason.trim(),
-        awardedBy: user?.fullName || 'Administrator',
-        timestamp: new Date().toISOString()
+        assessmentTitle: gradeTitle.trim(),
+        level: selected.mainLevel || '',
+        score
       });
-      batch.update(doc(db, 'users', selected.id), {
-        points: increment(amount),
-        updatedAt: new Date().toISOString()
-      });
-      await batch.commit();
-      onNotice(isAr ? 'تم تسجيل النجوم في السجل وتحديث الرصيد.' : 'Stars recorded and balance updated.');
-      setStarAmount('');
-      setStarReason('');
-      await load(false);
+      onNotice(isAr ? 'تم تسجيل الدرجة.' : 'Grade recorded.');
+      setGradeTitle('');
+      setGradeScore('');
     } catch (err: any) {
-      console.error('Error awarding stars:', err);
-      onNotice((isAr ? 'تعذّر تسجيل النجوم: ' : 'Could not record stars: ') + (err?.code || err?.message || ''));
+      console.error('Error adding grade:', err);
+      onNotice((isAr ? 'تعذّر تسجيل الدرجة: ' : 'Could not record grade: ') + errText(err));
     } finally {
       setSaving(false);
     }
@@ -244,6 +296,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
 
   const filtered = students.filter((s) => {
     if (filter !== 'all' && statusOf(s) !== filter) return false;
+    if (groupFilter === '__none__' ? !!s.groupId : groupFilter && s.groupId !== groupFilter) return false;
     const q = query.trim().toLowerCase();
     if (!q) return true;
     return (
@@ -281,15 +334,24 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         </button>
       </div>
 
-      <div className="relative">
-        <Search className="w-4 h-4 text-gray-400 absolute top-1/2 -translate-y-1/2 left-3" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={isAr ? 'ابحث بالاسم أو البريد' : 'Search by name or email'}
-          className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 text-xs bg-white"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="relative sm:col-span-2">
+          <Search className="w-4 h-4 text-gray-400 absolute top-1/2 -translate-y-1/2 left-3" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={isAr ? 'ابحث بالاسم أو البريد' : 'Search by name or email'}
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 text-xs bg-white"
+          />
+        </div>
+        <select value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)} className="px-3 py-2.5 rounded-xl border border-gray-300 text-xs bg-white">
+          <option value="">{isAr ? 'كل المجموعات' : 'All groups'}</option>
+          {groups.map((g) => (
+            <option key={g.id} value={g.id}>{g.name}</option>
+          ))}
+          <option value="__none__">{isAr ? 'بدون مجموعة' : 'No group'}</option>
+        </select>
       </div>
 
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -344,6 +406,11 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                     >
                       {label ? (isAr ? label.ar : label.en) : status}
                     </span>
+                    {s.groupId && groupName(s.groupId) && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0A192F] text-[#F3E5AB]">
+                        {groupName(s.groupId)}
+                      </span>
+                    )}
                   </div>
                   <div className="text-[11px] text-gray-500 break-all">{s.email}</div>
                   <div className="text-[11px] text-gray-500 mt-0.5">
@@ -404,6 +471,27 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
 
               <div>
                 <label className="block text-[11px] font-bold text-gray-600 mb-1">
+                  {isAr ? 'المجموعة' : 'Group'}
+                </label>
+                <select
+                  value={form.groupId}
+                  onChange={(e) => setField('groupId', e.target.value)}
+                  className={inputCls}
+                >
+                  <option value="">{isAr ? '— بدون مجموعة —' : '— No group —'}</option>
+                  {groups.map((g) => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
+                {groups.length === 0 && (
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    {isAr ? 'أنشئ مجموعة من تبويب سجل تدقيق النجوم ← إدارة المجموعات.' : 'Create a group in Stars Audit Ledger → Manage groups.'}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-gray-600 mb-1">
                   {isAr ? 'المستوى' : 'Level'}
                 </label>
                 <select
@@ -418,6 +506,19 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-gray-600 mb-1">
+                  {isAr ? 'المرحلة الحالية' : 'Current stage'}
+                </label>
+                <input
+                  type="text"
+                  value={form.currentStage}
+                  onChange={(e) => setField('currentStage', e.target.value)}
+                  placeholder="e.g. B1.1"
+                  className={inputCls}
+                />
               </div>
 
               <div className="sm:col-span-2">
@@ -436,19 +537,6 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                     <option key={n} value={n} />
                   ))}
                 </datalist>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-gray-600 mb-1">
-                  {isAr ? 'المرحلة الحالية' : 'Current stage'}
-                </label>
-                <input
-                  type="text"
-                  value={form.currentStage}
-                  onChange={(e) => setField('currentStage', e.target.value)}
-                  placeholder="e.g. B1.1"
-                  className={inputCls}
-                />
               </div>
 
               <div>
@@ -505,7 +593,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:col-span-2">
                 <div>
                   <label className="block text-[11px] font-bold text-gray-600 mb-1">
                     {isAr ? 'حصص منجزة' : 'Lessons attended'}
@@ -542,36 +630,104 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
               <span>{saving ? (isAr ? 'جارٍ الحفظ...' : 'Saving...') : isAr ? 'حفظ بيانات الطالب' : 'Save student'}</span>
             </button>
 
+            {/* Rating */}
             <div className="border-t border-gray-100 pt-4 space-y-3">
               <h4 className="font-bold text-sm text-[#0A192F] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#AA820A]" />
                 <span>
-                  {isAr ? 'منح أو خصم نجوم' : 'Award or deduct stars'} — {isAr ? 'الرصيد الحالي:' : 'Current:'}{' '}
-                  {selected.points || 0}
+                  {isAr ? 'تقييم الطالب' : 'Rate student'} — {isAr ? 'الرصيد الحالي:' : 'Current:'} {selected.points || 0}
                 </span>
               </h4>
+              {form.groupId !== (selected.groupId || '') && (
+                <p className="text-[11px] text-amber-700">
+                  {isAr ? 'غيّرت المجموعة ولم تحفظ بعد. احفظ أولًا ليُسجَّل التقييم في المجموعة الجديدة.' : 'You changed the group but have not saved. Save first so the rating goes to the new group.'}
+                </p>
+              )}
+
+              {criteria.length === 0 ? (
+                <p className="text-[11px] text-gray-500">
+                  {isAr ? 'لم تُضف معايير تقييم بعد. أضفها من تبويب سجل تدقيق النجوم ← معايير التقييم.' : 'No rating criteria yet. Add them in Stars Audit Ledger → Rating criteria.'}
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {criteria.map((c) => (
+                    <button
+                      key={c.id}
+                      disabled={saving}
+                      onClick={() => handleCriterion(c)}
+                      className={`w-full px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-sm font-bold disabled:opacity-50 ${
+                        c.points < 0 ? 'bg-red-50 text-red-700 hover:bg-red-100' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                      }`}
+                    >
+                      <span>
+                        {c.icon} {isAr ? c.labelAr : c.labelEn || c.labelAr}
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-white/70 text-xs">
+                        {c.points > 0 ? `+${c.points}` : c.points}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="pt-2 space-y-2">
+                <div className="text-[11px] font-bold text-gray-600">{isAr ? 'تقييم مخصص' : 'Custom rating'}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input
+                    type="number"
+                    value={starAmount}
+                    onChange={(e) => setStarAmount(e.target.value)}
+                    placeholder={isAr ? 'العدد (مثل 5 أو -2)' : 'Amount (e.g. 5 or -2)'}
+                    className={inputCls}
+                  />
+                  <input
+                    type="text"
+                    value={starReason}
+                    onChange={(e) => setStarReason(e.target.value)}
+                    placeholder={isAr ? 'السبب' : 'Reason'}
+                    className={`${inputCls} sm:col-span-2`}
+                  />
+                </div>
+                <button
+                  onClick={handleCustomStars}
+                  disabled={saving}
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] disabled:opacity-50"
+                >
+                  {isAr ? 'تسجيل النجوم' : 'Record stars'}
+                </button>
+              </div>
+            </div>
+
+            {/* Grades */}
+            <div className="border-t border-gray-100 pt-4 space-y-3">
+              <h4 className="font-bold text-sm text-[#0A192F]">{isAr ? 'تسجيل درجة' : 'Record a grade'}</h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <input
-                  type="number"
-                  value={starAmount}
-                  onChange={(e) => setStarAmount(e.target.value)}
-                  placeholder={isAr ? 'العدد (مثل 5 أو -2)' : 'Amount (e.g. 5 or -2)'}
-                  className={inputCls}
-                />
-                <input
                   type="text"
-                  value={starReason}
-                  onChange={(e) => setStarReason(e.target.value)}
-                  placeholder={isAr ? 'السبب' : 'Reason'}
+                  value={gradeTitle}
+                  onChange={(e) => setGradeTitle(e.target.value)}
+                  placeholder={isAr ? 'اسم التقييم (مثل اختبار الشهر الأول)' : 'Assessment name'}
                   className={`${inputCls} sm:col-span-2`}
                 />
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={gradeScore}
+                  onChange={(e) => setGradeScore(e.target.value)}
+                  placeholder={isAr ? 'الدرجة من 100' : 'Score / 100'}
+                  className={inputCls}
+                />
               </div>
+              <p className="text-[10px] text-gray-400">
+                {isAr ? `يُعتبر الطالب ناجحًا عند ${PASS_MARK} فأكثر.` : `Counted as passed at ${PASS_MARK} or above.`}
+              </p>
               <button
-                onClick={handleAwardStars}
+                onClick={handleAddGrade}
                 disabled={saving}
-                className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] disabled:opacity-50"
+                className="px-5 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] disabled:opacity-50"
               >
-                {isAr ? 'تسجيل النجوم' : 'Record stars'}
+                {isAr ? 'تسجيل الدرجة' : 'Record grade'}
               </button>
             </div>
           </div>
