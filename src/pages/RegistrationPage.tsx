@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { OFFICIAL_CONTACTS, CEFR_LEVELS_INFO, EF_SET_PLACEMENT_TEST_URL } from '../data/academyData';
+import { CEFR_LEVELS_INFO } from '../data/academyData';
+import { useAcademySettings, whatsappWithText } from '../hooks/useAcademySettings';
 import { studentDataService } from '../services/studentDataService';
 import { CEFRLevel, LearningFormat, RegistrationFormData } from '../types';
 import { 
@@ -24,6 +25,7 @@ interface RegistrationPageProps {
 }
 
 export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, initialLevel }) => {
+  const contacts = useAcademySettings();
   const { t, language } = useLanguage();
 
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -88,8 +90,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
   const generateWhatsAppLink = () => {
     const textEn = `Hello English Zone Admissions! I would like to join the academy. Name: ${formData.fullName || 'Student'}, Main Level: ${formData.mainLevel}, Format: Small Group Lessons (90 min).`;
     const textAr = `مرحباً فريق قبول أكاديمية English Zone، أود التسجيل في الأكاديمية. الاسم: ${formData.fullName || 'طالب'}، المستوى الرئيسي: ${formData.mainLevel}، نظام الحصص: دورات المجموعات (90 دقيقة).`;
-    const encoded = encodeURIComponent(language === 'ar' ? textAr : textEn);
-    return `${OFFICIAL_CONTACTS.whatsapp}?text=${encoded}`;
+    return whatsappWithText(contacts.whatsapp, language === 'ar' ? textAr : textEn);
   };
 
   return (
@@ -132,6 +133,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
             {/* Direct WhatsApp button */}
             <div className="pt-4 space-y-3">
+              {contacts.whatsapp && (
               <a
                 href={generateWhatsAppLink()}
                 target="_blank"
@@ -141,17 +143,20 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                 <Phone className="w-4 h-4" />
                 <span>{t.register.whatsappDirect}</span>
               </a>
+              )}
 
               {formData.mainLevel === 'needs_test' && (
                 <div className="pt-2">
+                  {contacts.placementTestUrl && (
                   <a
-                    href={EF_SET_PLACEMENT_TEST_URL}
+                    href={contacts.placementTestUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block px-6 py-2.5 rounded-xl text-xs font-semibold text-[#0A192F] bg-[#FAF8F5] border border-[#D4AF37] hover:bg-[#D4AF37]/10"
                   >
                     {t.hero.ctaTest}
                   </a>
+                  )}
                 </div>
               )}
             </div>
@@ -185,6 +190,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                 </div>
               </div>
 
+              {contacts.whatsapp && (
               <a
                 href={generateWhatsAppLink()}
                 target="_blank"
@@ -194,6 +200,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                 <span>WhatsApp</span>
                 <ArrowRight className={`w-3.5 h-3.5 ${language === 'ar' ? 'rotate-180' : ''}`} />
               </a>
+              )}
             </div>
 
             <div className="relative text-center">
@@ -305,8 +312,9 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F]">
                     {t.register.levelLabel} *
                   </label>
+                  {contacts.placementTestUrl && (
                   <a
-                    href={EF_SET_PLACEMENT_TEST_URL}
+                    href={contacts.placementTestUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-[#AA820A] font-semibold hover:underline flex items-center gap-1"
@@ -314,6 +322,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>{t.hero.ctaTest}</span>
                   </a>
+                  )}
                 </div>
                 <p className="text-[11px] text-gray-500 mb-4">
                   {t.register.levelHint}
