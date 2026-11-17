@@ -53,6 +53,11 @@ service cloud.firestore {
       );
     }
 
+    // مجموعة الطالب الحالي من وثيقته في users (فارغة إن لم تُحدد)
+    function myGroupId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('groupId', '');
+    }
+
     function isValidId(id) {
       return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
@@ -114,7 +119,8 @@ service cloud.firestore {
         isValidId(requestId) &&
         request.resource.data.keys().hasOnly([
           'id', 'fullName', 'age', 'country', 'whatsappNumber', 'email',
-          'mainLevel', 'learningGoal', 'learningFormat', 'notes', 'status', 'submittedAt'
+          'mainLevel', 'learningGoal', 'learningFormat', 'notes', 'status', 'submittedAt',
+          'type', 'selectedTrack', 'currentEnglishLevel', 'timestamp'
         ]) &&
         request.resource.data.fullName is string && request.resource.data.fullName.size() <= 100 &&
         request.resource.data.email is string && request.resource.data.email.size() <= 150 &&
@@ -144,8 +150,13 @@ service cloud.firestore {
     }
 
     // --- English Zone Stars Audit Log ---
+    // الطالب يرى سجله، وسجل مجموعته فقط (where groupId == مجموعته)
     match /points_log/{pointsId} {
-      allow get, list: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher());
+      allow get, list: if isSignedIn() && (
+        resource.data.studentId == request.auth.uid ||
+        isTeacher() ||
+        (myGroupId() != '' && resource.data.groupId == myGroupId())
+      );
       allow create, update, delete: if isTeacher();
     }
 
@@ -216,9 +227,61 @@ service cloud.firestore {
     }
 
     match /feedback_screenshots/{screenshotId} {
-      allow get, list: if resource.data.isPublished == true || isAdmin();      allow create: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
+      allow get, list: if resource.data.isPublished == true || isAdmin();
+      allow create: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
       allow update: if isAdmin() && isValidId(screenshotId) && isValidFeedbackScreenshot(request.resource.data);
       allow delete: if isAdmin();
+    }
+
+    // --- Study groups (المجموعات) ---
+    match /groups/{groupId} {
+      allow get, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- Group leaderboard: الاسم والنقاط فقط لكل طالب، يراها زملاء المجموعة ---
+    match /group_members/{memberId} {
+      allow get, list: if isSignedIn() && (
+        memberId == request.auth.uid ||
+        isTeacher() ||
+        (myGroupId() != '' && resource.data.groupId == myGroupId())
+      );
+      allow write: if isAdmin();
+    }
+
+    // --- Rating criteria (معايير التقييم) ---
+    match /rating_criteria/{criterionId} {
+      allow get, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- Pricing (الأسعار) ---
+    match /pricing_levels/{levelId} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+
+    match /pricing_stages/{stageId} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+
+    // --- Blog (الزائر يرى المنشور فقط) ---
+    match /blog_posts/{postId} {
+      allow get, list: if resource.data.isPublished == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // --- Contact form messages (نموذج راسلنا): أي زائر يرسل، والأدمن فقط يقرأ ---
+    match /contact_messages/{messageId} {
+      allow create: if isValidId(messageId) &&
+        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt']) &&
+        request.resource.data.status == 'new' &&
+        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 100 &&
+        request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 150 &&
+        request.resource.data.subject is string && request.resource.data.subject.size() <= 200 &&
+        request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 3000;
+      allow get, list, update, delete: if isAdmin();
     }
 
     // --- Connection test collection: read for signed-in users, write for admins only ---
