@@ -42,6 +42,7 @@ import { AdminStudentsManager } from '../../components/admin/AdminStudentsManage
 import { AdminStarsLedger } from '../../components/admin/AdminStarsLedger';
 import { AdminBlogManager } from '../../components/admin/AdminBlogManager';
 import { AdminCourseMaterials } from '../../components/admin/AdminCourseMaterials';
+import { studentHubService, isSafeUrl } from '../../services/studentHubService';
 import { groupService } from '../../services/groupService';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
@@ -141,6 +142,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const [newCourseDescAr, setNewCourseDescAr] = useState('');
   const [newCourseLevel, setNewCourseLevel] = useState('B1');
   const [newCourseFormat, setNewCourseFormat] = useState<'individual' | 'group' | 'both'>('both');
+  // روابط المنهج عند الإضافة: كتاب PDF وصوتيات وفيديو
+  const [newCoursePdf, setNewCoursePdf] = useState('');
+  const [newCourseAudio, setNewCourseAudio] = useState('');
+  const [newCourseVideo, setNewCourseVideo] = useState('');
+  const [materialsKey, setMaterialsKey] = useState(0);
 
   // English Club
   const [clubSettings, setClubSettings] = useState<EnglishClubSettings>(DEFAULT_ENGLISH_CLUB_SETTINGS);
@@ -289,6 +295,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
   const handleCreateCourse = async () => {
     if (!newCourseTitleEn.trim() && !newCourseTitleAr.trim()) return;
+    const linkInputs: { url: string; type: 'book' | 'audio' | 'video'; ar: string }[] = [
+      { url: newCoursePdf, type: 'book', ar: 'كتاب المنهج (PDF)' },
+      { url: newCourseAudio, type: 'audio', ar: 'الملفات الصوتية' },
+      { url: newCourseVideo, type: 'video', ar: 'الفيديوهات' }
+    ];
+    const badLink = linkInputs.find((l) => l.url.trim() && !isSafeUrl(l.url));
+    if (badLink) {
+      notify(tr('Links must start with https://', `رابط «${badLink.ar}» يجب أن يبدأ بـ https://`), 5000, true);
+      return;
+    }
     setIsCmsSaving(true);
     try {
       const course: DynamicCourseItem = {
@@ -304,6 +320,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
       };
       await contentManagementService.saveCourse(course);
       setCoursesList((prev) => [...prev, course]);
+      const links = linkInputs.filter((l) => l.url.trim()).map((l) => ({ label: l.ar, url: l.url.trim(), type: l.type }));
+      if (links.length) {
+        try {
+          await studentHubService.saveMaterials({ courseId: course.id, courseTitleAr: course.titleAr, courseTitleEn: course.titleEn, level: course.level, links });
+          setMaterialsKey((k) => k + 1);
+        } catch (err: any) {
+          notify(tr('Course added, but links failed: ', 'أُضيف المنهج لكن تعذر حفظ الروابط: ') + (err?.code || ''), 6000, true);
+        }
+      }
+      setNewCoursePdf('');
+      setNewCourseAudio('');
+      setNewCourseVideo('');
       setNewCourseTitleEn('');
       setNewCourseTitleAr('');
       setNewCourseDescEn('');
@@ -1221,6 +1249,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                       </select>
                     </div>
                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className={labelCls}>{tr('Curriculum PDF link', 'رابط المنهج (PDF)')}</label>
+                      <input type="url" dir="ltr" placeholder="https://drive.google.com/..." value={newCoursePdf} onChange={(e) => setNewCoursePdf(e.target.value)} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>{tr('Audio link', 'رابط الصوتيات')}</label>
+                      <input type="url" dir="ltr" placeholder="https://drive.google.com/..." value={newCourseAudio} onChange={(e) => setNewCourseAudio(e.target.value)} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>{tr('Videos link', 'رابط الفيديوهات')}</label>
+                      <input type="url" dir="ltr" placeholder="https://..." value={newCourseVideo} onChange={(e) => setNewCourseVideo(e.target.value)} className={inputCls} />
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-gray-500">
+                    {tr(
+                      'Optional. Use Google Drive links shared as "Anyone with the link". Students of the same level see them in their dashboard.',
+                      'اختيارية. استعملي روابط درايف بمشاركة «أي شخص لديه الرابط». يراها طلاب المستوى نفسه في لوحتهم، وتستطيعين إضافة روابط أخرى لاحقًا من «روابط المناهج للطلاب» في الأسفل.'
+                    )}
+                  </p>
                   <div className="flex justify-end">
                     <button onClick={handleCreateCourse} disabled={(!newCourseTitleEn.trim() && !newCourseTitleAr.trim()) || isCmsSaving} className={primaryBtn}>
                       <Plus className="w-4 h-4 text-[#D4AF37]" />
@@ -1261,7 +1309,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                   )}
                 </div>
 
-                <AdminCourseMaterials courses={coursesList} isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />
+                <AdminCourseMaterials key={materialsKey} courses={coursesList} isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />
               </div>
             )}
 
