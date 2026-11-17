@@ -18,3 +18,5 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bunx vite build
+      - name: Type check (report only)
+        run: bunx tsc --noEmit -p tsconfig.json || true
