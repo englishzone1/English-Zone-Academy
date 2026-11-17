@@ -439,10 +439,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   };
 
   const handleApprove = async (regId: string) => {
+    const reg = registrations.find((r) => r.id === regId);
+    if (!reg) return;
     try {
-      await studentDataService.updateRegistrationStatus(regId, 'approved', adminName);
+      // طلبات نادي الإنجليزية لا تحتاج حساب طالب
+      if ((reg as any).type === 'english_club') {
+        await studentDataService.updateRegistrationStatus(regId, 'approved', adminName);
+        setRegistrations((prev) => prev.map((r) => (r.id === regId ? { ...r, status: 'approved' as const } : r)));
+        notify(tr(`Registration ${regId} approved.`, `تم قبول الطلب ${regId}.`), 4000);
+        return;
+      }
+
+      // ربط الطلب بحساب الطالب الذي يحمل نفس البريد
+      const uid = await studentDataService.linkRegistrationToStudent(reg);
+      if (!uid) {
+        notify(
+          tr(
+            `No student account uses ${reg.email}. Ask the student to create an account with this exact email, then press Approve again.`,
+            `لا يوجد حساب طالب بالبريد ${reg.email}. اطلب من الطالب إنشاء حساب بنفس البريد تمامًا، ثم اضغط قبول مرة أخرى.`
+          ),
+          9000,
+          true
+        );
+        return;
+      }
+
+      await studentDataService.updateRegistrationStatus(regId, 'approved', adminName, uid);
       setRegistrations((prev) => prev.map((r) => (r.id === regId ? { ...r, status: 'approved' as const } : r)));
-      notify(tr(`Registration ${regId} approved.`, `تم قبول الطلب ${regId}.`), 4000);
+      notify(
+        tr(
+          'Request approved and linked to the student account. Now open the Students tab, set the course, and change the subscription to Active.',
+          'تم قبول الطلب وربطه بحساب الطالب. افتح الآن تبويب الطلاب، وحدد الدورة، وغيّر حالة الاشتراك إلى نشط.'
+        ),
+        9000
+      );
+      setActiveTab('students');
     } catch (err) {
       console.error('Error approving registration:', err);
       notify(tr(`Error approving ${regId}.`, `تعذر قبول الطلب ${regId}.`), 5000, true);
