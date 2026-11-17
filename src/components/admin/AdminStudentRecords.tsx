@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Trash2 } from 'lucide-react';
-import { studentHubService, AttendanceRecord } from '../../services/studentHubService';
+import { studentHubService, AttendanceRecord, HomeworkResult } from '../../services/studentHubService';
 
 interface Props {
   studentId: string;
   isAr: boolean;
   onNotice: (message: string) => void;
+  teacherScope?: string; // معرّف المعلم في وضع المعلم
 }
 
 const inputCls = 'w-full px-3 py-2 rounded-xl border border-gray-300 text-xs bg-white';
@@ -13,7 +14,8 @@ const btn = 'px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-50';
 const today = () => new Date().toISOString().slice(0, 10);
 
 // تسجيل الواجبات والحضور لطالب واحد؛ منها يُحسب التقرير الشهري في لوحة الطالب
-export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice }) => {
+export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice, teacherScope }) => {
+  const [online, setOnline] = useState<HomeworkResult[]>([]);
   const tr = (en: string, ar: string) => (isAr ? ar : en);
 
   const [homework, setHomework] = useState<any[]>([]);
@@ -34,6 +36,10 @@ export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice
     } catch (err) {
       console.error(err);
     }
+    studentHubService
+      .getHomeworkResultsFor(studentId, teacherScope)
+      .then(setOnline)
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {
@@ -74,6 +80,27 @@ export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice
 
   return (
     <>
+      {/* Interactive homework results */}
+      <div className="border-t border-gray-100 pt-4 space-y-2">
+        <h4 className="font-bold text-sm text-[#0A192F]">{tr('Interactive homework & tests', 'نتائج الواجبات والاختبارات التفاعلية')}</h4>
+        {online.length === 0 ? (
+          <p className="text-[11px] text-gray-400">{tr('No results yet.', 'لا توجد نتائج بعد.')}</p>
+        ) : (
+          <div className="space-y-1 max-h-48 overflow-y-auto">
+            {online.slice(0, 30).map((r) => (
+              <div key={r.id} className="flex items-center justify-between gap-2 text-[11px] px-3 py-1.5 rounded-lg bg-[#FAF8F5]">
+                <span>
+                  {r.createdAt.slice(0, 10)} • {r.title}
+                </span>
+                <b className={r.percent >= 70 ? 'text-emerald-700' : r.percent >= 50 ? 'text-amber-700' : 'text-red-600'}>
+                  {r.score}/{r.total} ({r.percent}%)
+                </b>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Homework */}
       <div className="border-t border-gray-100 pt-4 space-y-3">
         <h4 className="font-bold text-sm text-[#0A192F]">{tr('Homework', 'الواجبات')}</h4>

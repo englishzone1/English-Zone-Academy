@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, ClipboardCheck, CalendarCheck, GraduationCap, Sparkles } from 'lucide-react';
-import { studentHubService, AttendanceRecord } from '../../services/studentHubService';
+import { ChevronLeft, ChevronRight, ClipboardCheck, CalendarCheck, GraduationCap, Sparkles, BookOpenCheck } from 'lucide-react';
+import { studentHubService, AttendanceRecord, HomeworkResult } from '../../services/studentHubService';
 import { PASS_MARK } from '../../services/groupService';
 
 interface Props {
@@ -18,12 +18,17 @@ const inMonth = (value: string | undefined, key: string) => !!value && String(va
 export const StudentMonthlyReport: React.FC<Props> = ({ uid, isAr, homework, grades, pointsLog }) => {
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
   const [offset, setOffset] = useState(0); // 0 = هذا الشهر، -1 = الشهر الماضي...
+  const [online, setOnline] = useState<HomeworkResult[]>([]);
 
   useEffect(() => {
     studentHubService
       .getAttendanceFor(uid)
       .then(setAttendance)
       .catch((err) => console.error('Error loading attendance:', err));
+    studentHubService
+      .getMyHomeworkResults(uid)
+      .then(setOnline)
+      .catch((err) => console.error('Error loading homework results:', err));
   }, [uid]);
 
   const now = new Date();
@@ -44,8 +49,11 @@ export const StudentMonthlyReport: React.FC<Props> = ({ uid, isAr, homework, gra
   const pts = pointsLog.filter((p) => inMonth(p.timestamp, key));
   const ptsTotal = pts.reduce((a, p) => a + (Number(p.amount) || 0), 0);
 
+  const on = online.filter((r) => inMonth(r.createdAt, key));
+  const onAvg = on.length ? Math.round(on.reduce((a, r) => a + (r.percent || 0), 0) / on.length) : undefined;
+
   const pct = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 100) : undefined);
-  const noData = hw.length === 0 && att.length === 0 && gr.length === 0 && pts.length === 0;
+  const noData = hw.length === 0 && att.length === 0 && gr.length === 0 && pts.length === 0 && on.length === 0;
 
   const Card = ({
     icon: Icon,
@@ -119,6 +127,12 @@ export const StudentMonthlyReport: React.FC<Props> = ({ uid, isAr, homework, gra
             title={isAr ? 'درجات الاختبارات' : 'Test scores'}
             main={grAvg !== undefined ? `${grAvg}%` : dash}
             sub={gr.length ? (isAr ? `نجح في ${grPassed} من ${gr.length}` : `Passed ${grPassed} of ${gr.length}`) : undefined}
+          />
+          <Card
+            icon={BookOpenCheck}
+            title={isAr ? 'الواجبات التفاعلية' : 'Interactive homework'}
+            main={onAvg !== undefined ? `${onAvg}%` : dash}
+            sub={on.length ? (isAr ? `${on.length} درس واختبار` : `${on.length} lessons & tests`) : undefined}
           />
           <Card
             icon={Sparkles}

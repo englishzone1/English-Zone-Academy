@@ -779,7 +779,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
               </button>
             </div>
 
-            <AdminStudentRecords studentId={selected.id} isAr={isAr} onNotice={onNotice} />
+            <AdminStudentRecords studentId={selected.id} isAr={isAr} onNotice={onNotice} teacherScope={teacherMode ? firebaseUser?.uid : undefined} />
           </div>
         </div>
       )}

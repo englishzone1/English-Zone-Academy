@@ -361,6 +361,31 @@ service cloud.firestore {
     }
 
 
+    // --- Interactive homework site results (موقع الواجبات التفاعلية) ---
+    match /homework_results/{resultId} {
+      allow create: if isSignedIn() && isValidId(resultId) &&
+        request.resource.data.keys().hasOnly(['id', 'studentId', 'studentName', 'groupId', 'teacherId', 'kind', 'itemId', 'title', 'score', 'total', 'percent', 'createdAt']) &&
+        request.resource.data.studentId == request.auth.uid &&
+        (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', '')) &&
+        request.resource.data.kind in ['lesson', 'test', 'exam'] &&
+        request.resource.data.score is number && request.resource.data.total is number &&
+        request.resource.data.total > 0 && request.resource.data.total <= 500 &&
+        request.resource.data.score >= 0 && request.resource.data.score <= request.resource.data.total &&
+        request.resource.data.title is string && request.resource.data.title.size() <= 150;
+      allow get, list: if isAdmin() ||
+        (isSignedIn() && resource.data.studentId == request.auth.uid) ||
+        (isTeacherDoc() && resource.data.teacherId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // تقدّم الطالب في موقع الواجبات (لاسترجاعه من أي جهاز)
+    match /homework_progress/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) &&
+        request.resource.data.keys().hasOnly(['json', 'updatedAt']) &&
+        request.resource.data.json is string && request.resource.data.json.size() <= 200000;
+    }
+
     // --- Connection test collection: read for signed-in users, write for admins only ---
     match /test/{docId} {
       allow read: if isSignedIn();

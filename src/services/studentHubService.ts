@@ -4,6 +4,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   limit,
   orderBy,
@@ -67,6 +68,23 @@ export interface StudentMessage {
   studentId?: string;
   reply?: string;
   repliedAt?: string;
+}
+
+/* ------------------------------ Interactive homework results ------------------------------ */
+
+export interface HomeworkResult {
+  id: string;
+  studentId: string;
+  studentName: string;
+  groupId?: string;
+  teacherId?: string;
+  kind: 'lesson' | 'test' | 'exam';
+  itemId: string;
+  title: string;
+  score: number;
+  total: number;
+  percent: number;
+  createdAt: string;
 }
 
 /* ------------------------------ Community ------------------------------ */
@@ -227,6 +245,64 @@ export const studentHubService = {
       repliedAt: new Date().toISOString(),
       status: 'replied'
     });
+  },
+
+  /* ---------- Interactive homework site (EFHOMEWORK) ---------- */
+  async saveHomeworkResult(p: Omit<HomeworkResult, 'id' | 'percent' | 'createdAt'>): Promise<void> {
+    const id = newId('HWR');
+    const total = Math.max(0, Math.round(p.total));
+    const score = Math.max(0, Math.min(total, Math.round(p.score)));
+    await setDoc(
+      doc(db, 'homework_results', id),
+      clean({
+        id,
+        studentId: p.studentId,
+        studentName: p.studentName.slice(0, 100),
+        groupId: p.groupId || undefined,
+        teacherId: p.teacherId || undefined,
+        kind: p.kind,
+        itemId: p.itemId.slice(0, 80),
+        title: p.title.slice(0, 150),
+        score,
+        total,
+        percent: total ? Math.round((score / total) * 100) : 0,
+        createdAt: new Date().toISOString()
+      })
+    );
+  },
+
+  async getMyHomeworkResults(studentId: string): Promise<HomeworkResult[]> {
+    const snap = await getDocs(query(collection(db, 'homework_results'), where('studentId', '==', studentId)));
+    return snap.docs
+      .map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult))
+      .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  },
+
+  // للمعلم: يجب تمرير معرّفه حتى تسمح القواعد بالقراءة
+  async getHomeworkResultsFor(studentId: string, teacherId?: string): Promise<HomeworkResult[]> {
+    const q = teacherId
+      ? query(collection(db, 'homework_results'), where('studentId', '==', studentId), where('teacherId', '==', teacherId))
+      : query(collection(db, 'homework_results'), where('studentId', '==', studentId));
+    const snap = await getDocs(q);
+    return snap.docs
+      .map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult))
+      .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  },
+
+  async saveHomeworkProgress(uid: string, data: Record<string, string>): Promise<void> {
+    const json = JSON.stringify(data || {});
+    if (json.length > 200000) return;
+    await setDoc(doc(db, 'homework_progress', uid), { json, updatedAt: new Date().toISOString() });
+  },
+
+  async getHomeworkProgress(uid: string): Promise<Record<string, string>> {
+    const snap = await getDoc(doc(db, 'homework_progress', uid));
+    if (!snap.exists()) return {};
+    try {
+      return JSON.parse(String((snap.data() as any).json || '{}'));
+    } catch {
+      return {};
+    }
   },
 
   /* ---------- Community ---------- */

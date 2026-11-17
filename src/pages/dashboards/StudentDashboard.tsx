@@ -681,7 +681,15 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         )}
 
         {/* TAB 4: HOMEWORK & GRADES */}
-        {activeTab === 'homework' && <HomeworkPlatform isAr={isAr} />}
+        {activeTab === 'homework' && (
+          <HomeworkPlatform
+            isAr={isAr}
+            uid={firebaseUser.uid}
+            name={student.fullName || ''}
+            groupId={(student as any).groupId}
+            teacherId={(student as any).teacherId}
+          />
+        )}
         {activeTab === 'homework' && (
           <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
             <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
