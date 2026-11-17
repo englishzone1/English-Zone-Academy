@@ -3,7 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
-import { EF_SET_PLACEMENT_TEST_URL } from '../../data/academyData';
+import { useAcademySettings, whatsappDisplay } from '../../hooks/useAcademySettings';
 import { 
   Menu, 
   X, 
@@ -25,6 +25,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
+  const contacts = useAcademySettings();
   const { t, language } = useLanguage();
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -59,11 +60,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
   const moreLinks = [
     { id: 'english-club', label: t.nav.englishClub, icon: MessageSquare, badge: 'New' },
-    { id: 'placement-test', label: t.nav.placementTest, icon: Sparkles, badge: 'Free', externalUrl: EF_SET_PLACEMENT_TEST_URL },
+    { id: 'placement-test', label: t.nav.placementTest, icon: Sparkles, badge: 'Free', externalUrl: contacts.placementTestUrl },
     { id: 'faq', label: t.nav.faq, icon: HelpCircle },
     { id: 'testimonials', label: t.nav.testimonials, icon: UserCheck },
     { id: 'blog', label: t.nav.blog, icon: FileText },
-  ];
+  ].filter((l) => l.id !== 'placement-test' || !!contacts.placementTestUrl);
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
@@ -83,8 +84,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             <span className="text-gray-400">{t.brand.onlineOnlyBadge}</span>
           </div>
           <div className="flex items-center gap-4">
+            {contacts.placementTestUrl && (
             <a
-              href={EF_SET_PLACEMENT_TEST_URL}
+              href={contacts.placementTestUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#F3E5AB] hover:text-[#D4AF37] transition-colors flex items-center gap-1 font-medium"
@@ -92,16 +94,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
               <span>{t.hero.ctaTest}</span>
             </a>
+            )}
             <span className="text-gray-500">|</span>
+            {contacts.whatsapp && (
             <a 
-              href="https://wa.me/84326853884" 
+              href={contacts.whatsapp}
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-[#25D366] transition-colors flex items-center gap-1"
             >
               <Phone className="w-3 h-3 text-[#25D366]" />
-              <span>+84 326 853 884</span>
+              <span>{whatsappDisplay(contacts.whatsapp)}</span>
             </a>
+            )}
           </div>
         </div>
       </div>
@@ -270,8 +275,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             >
               {t.nav.register}
             </button>
+            {contacts.placementTestUrl && (
             <a
-              href={EF_SET_PLACEMENT_TEST_URL}
+              href={contacts.placementTestUrl}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setIsMobileMenuOpen(false)}
@@ -280,6 +286,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
               {t.nav.placementTest}
             </a>
+            )}
           </div>
 
           <div className="border-t border-white/10 pt-2 space-y-1">
