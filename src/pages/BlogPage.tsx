@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { BLOG_POSTS } from '../data/academyData';
 import { BlogPost } from '../types';
 import { contentManagementService } from '../services/contentManagementService';
 import { BookOpen, Clock, Calendar, ArrowRight, X } from 'lucide-react';
@@ -12,14 +11,17 @@ interface BlogPageProps {
 export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
   const { t, language } = useLanguage();
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  // نبدأ بالمقالات الثابتة حتى لا تظهر الصفحة فارغة أثناء التحميل
-  const [posts, setPosts] = useState<BlogPost[]>(BLOG_POSTS);
+  // المقالات المنشورة من لوحة الإدارة فقط
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     contentManagementService.getPublishedBlogPosts().then(remote => {
-      // إذا نشر المالك مقالات من لوحة الإدارة نعرضها، وإلا نبقى على المقالات الثابتة
-      if (!cancelled && remote.length > 0) setPosts(remote);
+      if (!cancelled) {
+        setPosts(remote);
+        setLoading(false);
+      }
     });
     return () => {
       cancelled = true;
@@ -44,6 +46,12 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {!loading && posts.length === 0 && (
+          <div className="p-10 rounded-3xl bg-white border border-gray-200 text-center text-sm text-gray-500">
+            {language === 'ar' ? 'لا توجد مقالات منشورة بعد.' : 'No articles have been published yet.'}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {posts.map((post) => (
             <article 

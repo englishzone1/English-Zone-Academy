@@ -40,6 +40,7 @@ import {
 import { AdminReviewsManager } from '../../components/admin/AdminReviewsManager';
 import { AdminStudentsManager } from '../../components/admin/AdminStudentsManager';
 import { AdminStarsLedger } from '../../components/admin/AdminStarsLedger';
+import { AdminBlogManager } from '../../components/admin/AdminBlogManager';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -47,6 +48,7 @@ interface AdminDashboardProps {
 
 type TabId =
   | 'overview'
+  | 'blog'
   | 'registrations'
   | 'students'
   | 'feedback_reviews'
@@ -502,6 +504,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
     { id: 'feedback_reviews', labelEn: 'Student Reviews Gallery', labelAr: 'آراء وتقييمات الطلاب' },
     { id: 'content_cms', labelEn: 'Content & Curricula', labelAr: 'إدارة المحتوى والمناهج' },
+    { id: 'blog', labelEn: 'Blog', labelAr: 'المدونة' },
     { id: 'pricing', labelEn: 'Tuition & Stages', labelAr: 'الأسعار والمراحل' },
     { id: 'english_club', labelEn: 'English Club Config', labelAr: 'إعدادات نادي الإنجليزية' },
     { id: 'stars_audit', labelEn: 'Stars Audit Ledger', labelAr: 'سجل تدقيق النجوم' },
@@ -837,6 +840,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* STARS AUDIT */}
         {activeTab === 'stars_audit' && <AdminStarsLedger onNotice={(msg) => notify(msg, 4000)} />}
+
+        {/* BLOG */}
+        {activeTab === 'blog' && <AdminBlogManager onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* ACADEMY SETTINGS */}
         {activeTab === 'settings' && (
