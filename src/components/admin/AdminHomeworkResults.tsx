@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Star, FileText, Mic } from 'lucide-react';
+import { RefreshCw, Star, FileText, Mic, Download, Trash2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { studentHubService, HomeworkResult } from '../../services/studentHubService';
@@ -103,6 +103,73 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
       .sort((a, b) => b.last.localeCompare(a.last));
   }, [filtered]);
 
+  // تحميل النتائج كملف يفتح في Excel (CSV بترميز UTF-8)
+  const exportExcel = () => {
+    const cell = (v: any) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const head = [
+      tr('Student', 'الطالب'),
+      tr('Group', 'المجموعة'),
+      tr('Type', 'النوع'),
+      tr('Title', 'العنوان'),
+      tr('Score', 'الدرجة'),
+      tr('Out of', 'من'),
+      tr('Percent', 'النسبة'),
+      tr('Speaking', 'المحادثة'),
+      tr('Strengths', 'نقاط القوة'),
+      tr('Weaknesses', 'نقاط الضعف'),
+      tr('Date', 'التاريخ')
+    ];
+    const rows = filtered.map((r) => [
+      r.studentName,
+      groupName(r.groupId),
+      kindLabel(r.kind),
+      r.title,
+      r.score,
+      r.total,
+      `${r.percent}%`,
+      r.speakingScore !== undefined ? `${r.speakingScore}/${r.speakingMax}` : '',
+      (r.strengths || []).join(' • '),
+      (r.weaknesses || []).join(' • '),
+      new Date(r.createdAt).toLocaleString(isAr ? 'ar' : 'en')
+    ]);
+    const csv = '\uFEFF' + [head, ...rows].map((row) => row.map(cell).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `english-zone-results-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  };
+
+  // حذف التسجيلات التي وُضعت درجتها ومضى عليها أكثر من 30 يومًا (للإدارة)
+  const oldGraded = useMemo(() => {
+    const limit = Date.now() - 30 * 24 * 3600 * 1000;
+    return items.filter((r) => (r.audioCount || 0) > 0 && r.speakingScore !== undefined && new Date(r.createdAt).getTime() < limit);
+  }, [items]);
+
+  const cleanOldAudio = async () => {
+    if (!oldGraded.length) {
+      onNotice(tr('No graded recordings older than 30 days.', 'لا توجد تسجيلات مصحّحة أقدم من 30 يومًا.'));
+      return;
+    }
+    if (!window.confirm(tr(`Delete ${oldGraded.length} graded recordings older than 30 days? Grades stay.`, `حذف تسجيلات ${oldGraded.length} نتيجة مصحّحة أقدم من 30 يومًا؟ الدرجات تبقى محفوظة.`))) return;
+    setBusy('clean');
+    let done = 0;
+    for (const r of oldGraded) {
+      try {
+        await studentHubService.deleteHomeworkAudio(r.id, r.audioCount || 0);
+        done++;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    setBusy('');
+    onNotice(tr(`Deleted recordings of ${done} results.`, `تم حذف تسجيلات ${done} نتيجة.`));
+    load();
+  };
+
   const kindLabel = (k: string) => (k === 'exam' ? tr('Final exam', 'اختبار نهائي') : k === 'test' ? tr('Unit test', 'اختبار وحدة') : tr('Lesson', 'درس'));
   const groupName = (id?: string) => groups.find((g) => g.id === id)?.name || '';
   const sel = 'px-3 py-2 rounded-xl border border-gray-300 text-xs bg-white';
@@ -119,10 +186,27 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
             )}
           </p>
         </div>
-        <button onClick={load} className="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold flex items-center gap-1.5 self-start">
-          <RefreshCw className="w-4 h-4" />
-          {tr('Refresh', 'تحديث')}
-        </button>
+        <div className="flex flex-wrap gap-2 self-start">
+          <button onClick={exportExcel} disabled={!filtered.length} className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+            <Download className="w-4 h-4" />
+            {tr('Download Excel', 'تحميل Excel')}
+          </button>
+          {!teacherMode && (
+            <button
+              onClick={cleanOldAudio}
+              disabled={busy === 'clean'}
+              title={tr('Graded recordings older than 30 days', 'التسجيلات المصحّحة الأقدم من 30 يومًا')}
+              className="px-3 py-2 rounded-xl border border-red-200 text-red-600 text-xs font-bold flex items-center gap-1.5 disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4" />
+              {tr(`Clean old recordings (${oldGraded.length})`, `حذف التسجيلات القديمة (${oldGraded.length})`)}
+            </button>
+          )}
+          <button onClick={load} className="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold flex items-center gap-1.5">
+            <RefreshCw className="w-4 h-4" />
+            {tr('Refresh', 'تحديث')}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">

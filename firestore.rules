@@ -381,8 +381,13 @@ service cloud.firestore {
         (isSignedIn() && resource.data.studentId == request.auth.uid) ||
         (isTeacherDoc() && resource.data.teacherId == request.auth.uid);
       // الإدارة أو معلم الطالب: النجوم الممنوحة ودرجة المحادثة فقط
-      allow update: if (isAdmin() || (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid)) &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax']) &&
+      // والإدارة وحدها تسجّل حذف التسجيلات الصوتية (audioCount = 0)
+      allow update: if (
+          (isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax', 'audioCount', 'audioDeleted'])) ||
+          (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax']))
+        ) &&
+        request.resource.data.get('audioCount', 0) <= resource.data.get('audioCount', 0) &&
         request.resource.data.get('starsGiven', 0) is number && request.resource.data.get('starsGiven', 0) >= 0 && request.resource.data.get('starsGiven', 0) <= 10 &&
         request.resource.data.get('speakingScore', 0) is number && request.resource.data.get('speakingScore', 0) >= 0 &&
         request.resource.data.get('speakingScore', 0) <= request.resource.data.get('speakingMax', 100) && request.resource.data.get('speakingMax', 0) <= 100;

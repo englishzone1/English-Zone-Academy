@@ -92,6 +92,7 @@ export interface HomeworkResult {
   weaknesses?: string[];
   hasAnswers?: boolean;
   audioCount?: number;
+  audioDeleted?: boolean;
   // درجة المحادثة التي تضعها المعلمة بعد سماع التسجيلات
   speakingScore?: number;
   speakingMax?: number;
@@ -376,6 +377,18 @@ export const studentHubService = {
       }
     }
     return out;
+  },
+
+  // حذف تسجيلات المحادثة لتوفير مساحة قاعدة البيانات (للإدارة)
+  async deleteHomeworkAudio(id: string, count: number): Promise<void> {
+    for (let i = 0; i < count; i++) {
+      try {
+        await deleteDoc(doc(db, 'homework_audio', `${id}_${i}`));
+      } catch {
+        // المستند غير موجود
+      }
+    }
+    await updateDoc(doc(db, 'homework_results', id), { audioCount: 0, audioDeleted: true });
   },
 
   // درجة المحادثة من المعلمة

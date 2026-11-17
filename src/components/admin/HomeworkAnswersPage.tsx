@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, CheckCircle2, XCircle, Mic, Save } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Mic, Save, Trash2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { studentHubService, HomeworkResult, HomeworkAnswer, HomeworkAudio } from '../../services/studentHubService';
@@ -18,6 +18,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const staff = isAdmin || isSuperAdmin || isTeacher;
+  const admin = isAdmin || isSuperAdmin;
 
   const [result, setResult] = useState<HomeworkResult | null>(null);
   const [answers, setAnswers] = useState<HomeworkAnswer[]>([]);
@@ -80,6 +81,22 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
       setNote(tr('Speaking grade saved.', 'تم حفظ درجة المحادثة.'));
     } catch (err: any) {
       setNote(`${tr('Could not save:', 'تعذّر الحفظ:')} ${err?.code || err?.message || ''}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteAudio = async () => {
+    if (!result) return;
+    if (!window.confirm(tr('Delete these recordings permanently? The speaking grade stays.', 'حذف التسجيلات نهائيًا؟ درجة المحادثة تبقى محفوظة.'))) return;
+    setSaving(true);
+    try {
+      await studentHubService.deleteHomeworkAudio(result.id, result.audioCount || 0);
+      setAudio([]);
+      setResult({ ...result, audioCount: 0, audioDeleted: true });
+      setNote(tr('Recordings deleted.', 'تم حذف التسجيلات.'));
+    } catch (err: any) {
+      setNote(`${tr('Could not delete:', 'تعذّر الحذف:')} ${err?.code || err?.message || ''}`);
     } finally {
       setSaving(false);
     }
@@ -159,6 +176,18 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
             </div>
           </div>
 
+          {result.audioDeleted && (
+            <div className={`${box} text-xs text-gray-500 flex items-center gap-2`}>
+              <Mic className="w-4 h-4 text-[#D4AF37]" />
+              {tr('The speaking recordings were deleted after grading to save space.', 'حُذفت تسجيلات المحادثة بعد التقييم لتوفير المساحة.')}
+              {result.speakingScore !== undefined && (
+                <b className="text-[#0A192F]">
+                  {tr('Grade', 'الدرجة')}: {result.speakingScore}/{result.speakingMax}
+                </b>
+              )}
+            </div>
+          )}
+
           {(audio.length > 0 || !!result.audioCount) && (
             <div className={`${box} space-y-3`}>
               <h2 className="font-bold text-[#0A192F] flex items-center gap-2">
@@ -189,6 +218,18 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                   </button>
                   {note && <span className="text-xs text-gray-600">{note}</span>}
                 </div>
+              )}
+              {admin && audio.length > 0 && (
+                <button
+                  onClick={deleteAudio}
+                  disabled={saving}
+                  className="text-xs font-bold text-red-600 flex items-center gap-1 disabled:opacity-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {result.speakingScore !== undefined
+                    ? tr('Delete recordings (grade saved)', 'حذف التسجيلات (الدرجة محفوظة)')
+                    : tr('Delete recordings', 'حذف التسجيلات')}
+                </button>
               )}
             </div>
           )}
