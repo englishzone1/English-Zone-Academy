@@ -21,6 +21,9 @@ import {
   PointsEntry
 } from '../../services/groupService';
 import { db } from '../../services/firebase';
+import { StudentMonthlyReport } from '../../components/student/StudentMonthlyReport';
+import { StudentCourseMaterials, StudentLibrary, StudentMessages, StudentFeedback } from '../../components/student/StudentHubPanels';
+import { CommunityFeed } from '../../components/community/CommunityFeed';
 
 interface StudentDashboardProps {
   navigate: (route: string) => void;
@@ -31,7 +34,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
   const { user, firebaseUser, hasProfile, isLoading: isAuthLoading, logout } = useAuth();
   const isAr = language === 'ar';
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'group' | 'stars' | 'curriculum' | 'homework' | 'subscription'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'group' | 'community' | 'stars' | 'curriculum' | 'library' | 'homework' | 'messages' | 'feedback' | 'subscription'>('overview');
   const [homeworkList, setHomeworkList] = useState<HomeworkRecord[]>([]);
   const [pointsLog, setPointsLog] = useState<PointsLogRecord[]>([]);
   const [gradesList, setGradesList] = useState<GradeRecord[]>([]);
@@ -319,9 +322,13 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
           {[
             { id: 'overview', labelEn: 'Overview & Lessons', labelAr: 'نظرة عامة والدروس' },
             { id: 'group', labelEn: 'My Group', labelAr: 'مجموعتي' },
+            { id: 'community', labelEn: 'Community', labelAr: 'مجتمع English Zone' },
             { id: 'stars', labelEn: 'English Zone Stars', labelAr: 'نجوم التحفيز ونقاطي' },
             { id: 'curriculum', labelEn: 'Curriculum & Stages', labelAr: 'المنهج والمراحل' },
+            { id: 'library', labelEn: 'Library', labelAr: 'المكتبة' },
             { id: 'homework', labelEn: 'Homework & Tests', labelAr: 'الواجبات والاختبارات' },
+            { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
+            { id: 'feedback', labelEn: 'My Feedback', labelAr: 'رأيي' },
             { id: 'subscription', labelEn: 'Tuition & Invoices', labelAr: 'الاشتراك والفواتير' }
           ].map((tab) => (
             <button
@@ -439,38 +446,13 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
 
             <div className="lg:col-span-4 space-y-6">
 
-              <div className="bg-gradient-to-br from-[#0A192F] via-[#102445] to-[#0A192F] text-white rounded-3xl p-6 sm:p-8 border border-[#D4AF37]/50 shadow-xl space-y-4 text-center">
-                <div className="flex justify-center">
-                  <EnglishZoneEmblem sizeClass="w-16 h-16" glow={true} />
-                </div>
-
-                <h3 className="font-serif-luxury font-bold text-xl text-[#F3E5AB]">
-                  {isAr ? 'بطاقة الطالب' : 'Student Academic Pass'}
-                </h3>
-
-                <p className="text-xs text-gray-300 leading-relaxed">
-                  {student.fullName}
-                  {level ? ` • ${isAr ? 'المستوى' : 'Level'} ${level}` : ''}
-                </p>
-
-                <div className="pt-2 grid grid-cols-2 gap-2 text-xs">
-                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-gray-400 block text-[10px]">{isAr ? 'نجم الأسبوع' : 'Star of Week'}</span>
-                    <span className="font-bold text-base text-[#D4AF37]">{student.starOfTheWeekCount || 0}</span>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-gray-400 block text-[10px]">{isAr ? 'نجم الشهر' : 'Star of Month'}</span>
-                    <span className="font-bold text-base text-[#D4AF37]">{student.starOfTheMonthCount || 0}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => navigate('certificates')}
-                  className="w-full py-2.5 rounded-xl text-xs font-bold bg-[#D4AF37] text-[#0A192F] hover:bg-[#F3E5AB] transition-colors"
-                >
-                  {isAr ? 'استعراض الشهادات' : 'View Verified Certificates'}
-                </button>
-              </div>
+              <StudentMonthlyReport
+                uid={firebaseUser.uid}
+                isAr={isAr}
+                homework={homeworkList}
+                grades={gradesList}
+                pointsLog={pointsLog}
+              />
 
               <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-3">
                 <h4 className="font-serif-luxury font-bold text-sm text-[#0A192F]">
@@ -607,6 +589,22 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
           </div>
         )}
 
+        {/* TAB: COMMUNITY */}
+        {activeTab === 'community' && (
+          <CommunityFeed uid={firebaseUser.uid} name={student.fullName || ''} role="student" isAr={isAr} />
+        )}
+
+        {/* TAB: LIBRARY */}
+        {activeTab === 'library' && <StudentLibrary isAr={isAr} />}
+
+        {/* TAB: MESSAGES */}
+        {activeTab === 'messages' && (
+          <StudentMessages uid={firebaseUser.uid} name={student.fullName || ''} email={student.email || firebaseUser.email || ''} isAr={isAr} />
+        )}
+
+        {/* TAB: FEEDBACK */}
+        {activeTab === 'feedback' && <StudentFeedback name={student.fullName || ''} level={level} isAr={isAr} />}
+
         {/* TAB 2: STARS */}
         {activeTab === 'stars' && (
           <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
@@ -674,6 +672,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                 <h4 className="font-bold text-lg text-[#0A192F] mt-1">{formatLabel || notSet}</h4>
               </div>
             </div>
+            <StudentCourseMaterials level={level} isAr={isAr} />
           </div>
         )}
 

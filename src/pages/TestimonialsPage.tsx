@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
+import { studentHubService } from '../services/studentHubService';
 import { useLanguage } from '../context/LanguageContext';
 import { StudentReviewsSection } from '../components/reviews/StudentReviewsSection';
 
@@ -8,10 +10,41 @@ interface TestimonialsPageProps {
 
 export const TestimonialsPage: React.FC<TestimonialsPageProps> = ({ navigate }) => {
   const { t, language } = useLanguage();
+  // آراء الطلاب المكتوبة التي وافقت عليها الإدارة
+  const [written, setWritten] = useState<any[]>([]);
+  useEffect(() => {
+    studentHubService
+      .getApprovedTestimonials()
+      .then(setWritten)
+      .catch((err) => console.error('Error loading testimonials:', err));
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
       <StudentReviewsSection showHeader={true} />
+
+      {written.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {written.map((w) => (
+              <div key={w.id} className="bg-white rounded-3xl p-6 border border-[#D4AF37]/30 shadow-sm space-y-3">
+                <div className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <Star key={n} className={`w-4 h-4 ${n <= (w.rating || 0) ? 'text-[#D4AF37] fill-current' : 'text-gray-200'}`} />
+                  ))}
+                </div>
+                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                  {(language === 'ar' ? w.quoteAr : w.quoteEn) || w.quoteAr || w.quoteEn}
+                </p>
+                <div className="text-xs font-bold text-[#0A192F]">
+                  {(language === 'ar' ? w.studentNameAr : w.studentNameEn) || w.studentNameAr}
+                  {w.level ? <span className="text-gray-400 font-normal"> • {w.level}</span> : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Call to join */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">

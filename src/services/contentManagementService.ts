@@ -57,7 +57,7 @@ export interface LibraryBookMaterial {
   id: string;
   titleEn: string;
   titleAr: string;
-  category: 'curriculum' | 'reading' | 'grammar' | 'vocabulary';
+  category: 'magazine' | 'curriculum' | 'reading' | 'grammar' | 'vocabulary';
   level: string;
   downloadUrl?: string;
   fileSizeMb?: number;

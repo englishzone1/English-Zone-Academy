@@ -58,6 +58,18 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('groupId', '');
     }
 
+    // وثيقة الطالب الحالي في users
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // طالب اشتراكه مفعّل
+    function isActiveStudent() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        myProfile().get('subscriptionStatus', '') == 'active';
+    }
+
     function isValidId(id) {
       return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
@@ -272,17 +284,67 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // --- Contact form messages (نموذج راسلنا): أي زائر يرسل، والأدمن فقط يقرأ ---
+    // --- Contact messages: زائر من صفحة التواصل، أو طالب من لوحته (ويرى رسائله وردود الإدارة) ---
     match /contact_messages/{messageId} {
       allow create: if isValidId(messageId) &&
-        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt']) &&
+        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt', 'studentId']) &&
         request.resource.data.status == 'new' &&
+        (!('studentId' in request.resource.data) || (isSignedIn() && request.resource.data.studentId == request.auth.uid)) &&
         request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 100 &&
         request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 150 &&
         request.resource.data.subject is string && request.resource.data.subject.size() <= 200 &&
         request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 3000;
-      allow get, list, update, delete: if isAdmin();
+      allow get, list: if isAdmin() || (isSignedIn() && resource.data.studentId == request.auth.uid);
+      allow update, delete: if isAdmin();
     }
+
+    // --- Attendance (الحضور): الطالب يقرأ حضوره فقط ---
+    match /attendance/{recordId} {
+      allow get, list: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher());
+      allow create, update, delete: if isTeacher();
+    }
+
+    // --- Course materials (روابط المنهج): لطلاب نفس المستوى المفعّلين فقط ---
+    match /course_materials/{courseId} {
+      allow get, list: if isTeacher() || (isActiveStudent() && resource.data.level == myProfile().get('mainLevel', ''));
+      allow write: if isAdmin();
+    }
+
+    // --- English Zone community (مجتمع الطلاب) ---
+    match /community_posts/{postId} {
+      allow get, list: if isAdmin() || isActiveStudent();
+
+      allow create: if (isAdmin() || isActiveStudent()) &&
+        isValidId(postId) &&
+        request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'text', 'imageDataUrl', 'audioDataUrl', 'videoUrl', 'likes', 'createdAt']) &&
+        request.resource.data.authorId == request.auth.uid &&
+        (request.resource.data.authorRole == 'student' || (request.resource.data.authorRole == 'admin' && isAdmin())) &&
+        request.resource.data.likes.size() == 0 &&
+        request.resource.data.text is string && request.resource.data.text.size() <= 3000 &&
+        (!('imageDataUrl' in request.resource.data) || (request.resource.data.imageDataUrl is string && request.resource.data.imageDataUrl.size() <= 750000)) &&
+        (!('audioDataUrl' in request.resource.data) || (request.resource.data.audioDataUrl is string && request.resource.data.audioDataUrl.size() <= 750000)) &&
+        (!('videoUrl' in request.resource.data) || (request.resource.data.videoUrl is string && request.resource.data.videoUrl.size() <= 500));
+
+      // الإعجاب: يضيف أو يحذف المستخدم معرّفه فقط
+      allow update: if (isAdmin() || isActiveStudent()) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
+        request.resource.data.likes.toSet().difference(resource.data.likes.toSet()).hasOnly([request.auth.uid]) &&
+        resource.data.likes.toSet().difference(request.resource.data.likes.toSet()).hasOnly([request.auth.uid]);
+
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.authorId == request.auth.uid);
+
+      match /comments/{commentId} {
+        allow get, list: if isAdmin() || isActiveStudent();
+        allow create: if (isAdmin() || isActiveStudent()) &&
+          isValidId(commentId) &&
+          request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'text', 'createdAt']) &&
+          request.resource.data.authorId == request.auth.uid &&
+          (request.resource.data.authorRole == 'student' || (request.resource.data.authorRole == 'admin' && isAdmin())) &&
+          request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000;
+        allow delete: if isAdmin() || (isSignedIn() && resource.data.authorId == request.auth.uid);
+      }
+    }
+
 
     // --- Connection test collection: read for signed-in users, write for admins only ---
     match /test/{docId} {

@@ -97,6 +97,8 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
 
   useEffect(() => {
     load();
+    // تحديث لوحات المجموعات التي يراها الطلاب تلقائيًا عند فتح هذا التبويب
+    groupService.syncAllMembers().catch((err) => console.error('Group boards sync failed:', err));
   }, []);
 
   /* ------------------------------ Ledger data ------------------------------ */

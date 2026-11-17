@@ -11,6 +11,7 @@ import { db } from '../../services/firebase';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { groupService, StudyGroup, RatingCriterion, PASS_MARK } from '../../services/groupService';
+import { AdminStudentRecords } from './AdminStudentRecords';
 
 interface AdminStudentsManagerProps {
   onNotice: (message: string) => void;
@@ -735,6 +736,8 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                 {isAr ? 'تسجيل الدرجة' : 'Record grade'}
               </button>
             </div>
+
+            <AdminStudentRecords studentId={selected.id} isAr={isAr} onNotice={onNotice} />
           </div>
         </div>
       )}

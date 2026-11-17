@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { Mail, Trash2, CheckCircle } from 'lucide-react';
 import { db } from '../../services/firebase';
+import { studentHubService } from '../../services/studentHubService';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface Props {
@@ -14,8 +15,10 @@ interface ContactMessage {
   email: string;
   subject?: string;
   message: string;
-  status: 'new' | 'read';
+  status: 'new' | 'read' | 'replied';
   submittedAt: string;
+  studentId?: string;
+  reply?: string;
 }
 
 // رسائل نموذج "راسلنا" في صفحة التواصل
@@ -26,6 +29,20 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice }) => {
 
   const [items, setItems] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [replies, setReplies] = useState<Record<string, string>>({});
+
+  const sendReply = async (m: ContactMessage) => {
+    const text = (replies[m.id] || '').trim();
+    if (!text) return;
+    try {
+      await studentHubService.replyToMessage(m.id, text);
+      setItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, reply: text, status: 'replied' } : x)));
+      setReplies((prev) => ({ ...prev, [m.id]: '' }));
+      onNotice(tr('Reply sent. The student sees it in their dashboard.', 'تم إرسال الرد، ويراه الطالب في لوحته.'));
+    } catch (err: any) {
+      onNotice(`${tr('Could not send:', 'تعذر الإرسال:')} ${err?.code || ''}`);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -91,6 +108,9 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice }) => {
                     <span className="px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[10px] font-bold">{tr('New', 'جديدة')}</span>
                   )}
                   <span className="font-bold text-xs text-[#0A192F]">{m.name}</span>
+                  {m.studentId && (
+                    <span className="px-2 py-0.5 rounded-full bg-[#0A192F] text-[#F3E5AB] text-[10px] font-bold">{tr('Student', 'طالب')}</span>
+                  )}
                   <a href={`mailto:${m.email}`} className="text-[11px] text-[#AA820A] underline" dir="ltr">
                     {m.email}
                   </a>
@@ -99,6 +119,24 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice }) => {
               </div>
               {m.subject && <div className="text-xs font-semibold text-gray-700">{m.subject}</div>}
               <p className="text-xs text-gray-600 whitespace-pre-line">{m.message}</p>
+              {m.reply && (
+                <div className="p-3 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/40 text-xs">
+                  <b className="text-[#AA820A]">{tr('Your reply:', 'ردك:')}</b> <span className="whitespace-pre-line">{m.reply}</span>
+                </div>
+              )}
+              {m.studentId && (
+                <div className="flex items-center gap-2">
+                  <input
+                    value={replies[m.id] || ''}
+                    onChange={(e) => setReplies((prev) => ({ ...prev, [m.id]: e.target.value }))}
+                    placeholder={tr('Write a reply the student will see...', 'اكتب ردًا يراه الطالب في لوحته...')}
+                    className="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-xs"
+                  />
+                  <button onClick={() => sendReply(m)} className="px-3 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB]">
+                    {tr('Send reply', 'إرسال الرد')}
+                  </button>
+                </div>
+              )}
               <div className="flex justify-end gap-2">
                 <a
                   href={`mailto:${m.email}?subject=${encodeURIComponent(m.subject || 'English Zone Academy')}`}

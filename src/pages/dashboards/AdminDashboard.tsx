@@ -41,6 +41,9 @@ import { AdminReviewsManager } from '../../components/admin/AdminReviewsManager'
 import { AdminStudentsManager } from '../../components/admin/AdminStudentsManager';
 import { AdminStarsLedger } from '../../components/admin/AdminStarsLedger';
 import { AdminBlogManager } from '../../components/admin/AdminBlogManager';
+import { AdminCourseMaterials } from '../../components/admin/AdminCourseMaterials';
+import { groupService } from '../../services/groupService';
+import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
 
 interface AdminDashboardProps {
@@ -51,6 +54,7 @@ type TabId =
   | 'overview'
   | 'blog'
   | 'messages'
+  | 'community'
   | 'registrations'
   | 'students'
   | 'feedback_reviews'
@@ -72,12 +76,17 @@ const thCls = 'py-3 px-4';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const { language } = useLanguage();
-  const { user, logout } = useAuth();
+  const { user, logout, firebaseUser } = useAuth();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const adminName = user?.fullName || tr('Super Administrator', 'المدير العام');
 
   const [activeTab, setActiveTab] = useState<TabId>('overview');
+
+  // عند فتح لوحة الإدارة: تحديث لوحات المجموعات التي يراها الطلاب (الاسم والنقاط)
+  useEffect(() => {
+    groupService.syncAllMembers().catch((err) => console.error('Group boards sync failed:', err));
+  }, []);
   const [registrations, setRegistrations] = useState<RegistrationRequest[]>([]);
   const [usersList, setUsersList] = useState<UserProfile[]>([]);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -199,7 +208,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const statusLabel = (s: string) =>
     s === 'approved' ? tr('Approved', 'مقبول') : s === 'rejected' ? tr('Rejected', 'مرفوض') : tr('Pending', 'قيد المراجعة');
   const categoryLabel = (c: string) =>
-    c === 'curriculum'
+    c === 'magazine'
+      ? tr('Monthly Magazine', 'المجلة الشهرية')
+      : c === 'curriculum'
       ? tr('Curriculum Textbook', 'كتاب منهج')
       : c === 'reading'
       ? tr('Graded Reader', 'قراءة مبسطة')
@@ -505,6 +516,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'registrations', labelEn: `Registrations (${pendingRegistrations.length} Pending)`, labelAr: `طلبات التسجيل (${pendingRegistrations.length})` },
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
     { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
+    { id: 'community', labelEn: 'Community', labelAr: 'مجتمع الطلاب' },
     { id: 'feedback_reviews', labelEn: 'Student Reviews Gallery', labelAr: 'آراء وتقييمات الطلاب' },
     { id: 'content_cms', labelEn: 'Content & Curricula', labelAr: 'إدارة المحتوى والمناهج' },
     { id: 'blog', labelEn: 'Blog', labelAr: 'المدونة' },
@@ -849,6 +861,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* CONTACT MESSAGES */}
         {activeTab === 'messages' && <AdminMessagesManager onNotice={(msg) => notify(msg, 4000)} />}
+
+        {/* COMMUNITY */}
+        {activeTab === 'community' && firebaseUser && (
+          <CommunityFeed uid={firebaseUser.uid} name={tr('English Zone Academy', 'أكاديمية English Zone')} role="admin" isAr={isAr} />
+        )}
 
         {/* ACADEMY SETTINGS */}
         {activeTab === 'settings' && (
@@ -1216,6 +1233,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                     ))
                   )}
                 </div>
+
+                <AdminCourseMaterials courses={coursesList} isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />
               </div>
             )}
 
@@ -1239,7 +1258,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                     <div>
                       <label className={labelCls}>{tr('Category', 'التصنيف')}</label>
                       <select value={newBookCategory} onChange={(e) => setNewBookCategory(e.target.value as any)} className={inputCls}>
-                        {['curriculum', 'reading', 'grammar', 'vocabulary'].map((c) => (
+                        {['magazine', 'curriculum', 'reading', 'grammar', 'vocabulary'].map((c) => (
                           <option key={c} value={c}>{categoryLabel(c)}</option>
                         ))}
                       </select>
