@@ -1,0 +1,20 @@
+# التقاط صور الموقع للإعلان (يعمل يدويًا أو عند الرفع إلى فرع shots)
+name: Site screenshots
+on:
+  push:
+    branches: [shots]
+  workflow_dispatch:
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm i playwright@1 --no-audit --no-fund && npx playwright install --with-deps chromium
+      - run: cp tools/screenshots.cjs /tmp/pw/ && cd /tmp/pw && node screenshots.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shots
+          path: /tmp/pw/shots
