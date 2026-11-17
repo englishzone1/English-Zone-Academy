@@ -17,7 +17,7 @@ const kindLabel = (k: string, isAr: boolean) =>
 // الموقع المضمّن يرسل النتائج والتقدّم، فتُحفظ هنا باسم الطالب وتظهر للإدارة والمعلم.
 export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, teacherId }) => {
   // موقع الواجبات صار جزءًا من المنصة نفسها، ولا يُفتح إلا من هنا
-  const homeworkUrl = '/homework/index.html';
+  const homeworkUrl = '/homework/';
   const [tall, setTall] = useState(false);
   const [results, setResults] = useState<HomeworkResult[]>([]);
   const [savedNote, setSavedNote] = useState('');
