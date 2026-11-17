@@ -26,6 +26,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
   const [kindFilter, setKindFilter] = useState<'all' | 'lesson' | 'test'>('all');
   const [view, setView] = useState<'latest' | 'students'>('latest');
   const [busy, setBusy] = useState('');
+  const [loadError, setLoadError] = useState('');
 
   // اقتراح النجوم حسب النسبة: 90%+ ثلاث نجوم، 70%+ نجمتان، 50%+ نجمة
   const suggest = (p: number) => (p >= 90 ? 3 : p >= 70 ? 2 : p >= 50 ? 1 : 0);
@@ -55,6 +56,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
 
   const load = async () => {
     setLoading(true);
+    setLoadError('');
     try {
       const uid = firebaseUser?.uid || '';
       const [r, g] = await Promise.all([
@@ -64,7 +66,9 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
       setItems(r);
       setGroups(g);
     } catch (err: any) {
-      onNotice(`${tr('Could not load results:', 'تعذر تحميل النتائج:')} ${err?.code || ''}`);
+      const code = err?.code || err?.message || '';
+      setLoadError(code);
+      onNotice(`${tr('Could not load results:', 'تعذر تحميل النتائج:')} ${code}`);
     } finally {
       setLoading(false);
     }
@@ -145,6 +149,15 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
 
       {loading ? (
         <div className="p-8 text-center text-xs text-gray-500">{tr('Loading...', 'جارٍ التحميل...')}</div>
+      ) : loadError ? (
+        <div className="p-6 text-center text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-2xl">
+          {loadError.includes('permission')
+            ? tr(
+                'The database refused to show results: publish the latest Firestore rules (firestore-rules-full.txt), then press Refresh.',
+                'قاعدة البيانات رفضت عرض النتائج: انشري ملف القواعد الأخير (firestore-rules-full.txt) ثم اضغطي «تحديث».'
+              )
+            : `${tr('Could not load results:', 'تعذر تحميل النتائج:')} ${loadError}`}
+        </div>
       ) : filtered.length === 0 ? (
         <div className="p-8 text-center text-xs text-gray-500 bg-[#FAF8F5] rounded-2xl">{tr('No results yet.', 'لا توجد نتائج بعد.')}</div>
       ) : view === 'latest' ? (
