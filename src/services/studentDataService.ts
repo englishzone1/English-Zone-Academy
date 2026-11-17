@@ -159,19 +159,65 @@ export const studentDataService = {
 
   /**
    * Public Student Application submission (Writes to registration_requests with status 'pending')
+   * الحقول مطابقة لقواعد Firestore (submittedAt وليس createdAt)، ورقم الطلب هو نفسه معرّف الوثيقة
    */
   async submitRegistration(data: Omit<RegistrationRequest, 'id' | 'status' | 'createdAt'>): Promise<string> {
-    const path = 'registration_requests';
+    const requestId = `EZ-REG-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+    const path = `registration_requests/${requestId}`;
     try {
-      const docRef = await addDoc(collection(db, path), {
-        ...data,
+      await setDoc(doc(db, 'registration_requests', requestId), {
+        id: requestId,
+        fullName: data.fullName,
+        age: data.age ?? '',
+        country: data.country ?? '',
+        whatsappNumber: data.whatsappNumber,
+        email: data.email,
+        mainLevel: data.mainLevel,
+        learningGoal: data.learningGoal ?? '',
+        learningFormat: data.learningFormat,
+        notes: data.notes ?? '',
         status: 'pending',
-        createdAt: new Date().toISOString()
+        submittedAt: new Date().toISOString()
       });
-      return docRef.id;
+      return requestId;
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, path);
+      throw err;
     }
+  },
+
+  /**
+   * Admins only: find the student account (users) with the same email as the request,
+   * and copy the request data into it. Returns the student's uid, or null if no account exists.
+   */
+  async linkRegistrationToStudent(reg: RegistrationRequest): Promise<string | null> {
+    const email = String(reg.email || '').trim();
+    if (!email) return null;
+    const candidates = Array.from(new Set([email, email.toLowerCase()]));
+    let found: { id: string; data: any } | null = null;
+    for (const e of candidates) {
+      const snap = await getDocs(query(collection(db, 'users'), where('email', '==', e)));
+      const hit = snap.docs.find((d) => (d.data() as any).role === 'student' || !(d.data() as any).role);
+      if (hit) {
+        found = { id: hit.id, data: hit.data() };
+        break;
+      }
+    }
+    if (!found) return null;
+
+    const updates: Record<string, any> = {
+      registrationRequestId: reg.id,
+      updatedAt: new Date().toISOString()
+    };
+    // ننسخ فقط ما كتبه الطالب في الطلب، ولا نكتب فوق قيم وضعتها الإدارة
+    if (reg.whatsappNumber && !found.data.phone) updates.phone = reg.whatsappNumber;
+    if (reg.country && !found.data.country) updates.country = reg.country;
+    if (reg.age && !found.data.age) updates.age = reg.age;
+    if (reg.learningFormat && !found.data.learningFormat) updates.learningFormat = reg.learningFormat;
+    if (reg.mainLevel && reg.mainLevel !== 'needs_test' && !found.data.mainLevel) updates.mainLevel = reg.mainLevel;
+
+    await updateDoc(doc(db, 'users', found.id), updates);
+    return found.id;
   },
 
   /**
@@ -190,13 +236,19 @@ export const studentDataService = {
   /**
    * Update application status (Admins only)
    */
-  async updateRegistrationStatus(requestId: string, status: 'approved' | 'rejected', reviewer: string): Promise<void> {
+  async updateRegistrationStatus(
+    requestId: string,
+    status: 'approved' | 'rejected',
+    reviewer: string,
+    linkedUserId?: string
+  ): Promise<void> {
     const path = `registration_requests/${requestId}`;
     try {
       await updateDoc(doc(db, 'registration_requests', requestId), {
         status,
         reviewedAt: new Date().toISOString(),
-        reviewedBy: reviewer
+        reviewedBy: reviewer,
+        ...(linkedUserId ? { linkedUserId } : {})
       });
     } catch (err) {
       handleFirestoreError(err, OperationType.UPDATE, path);
