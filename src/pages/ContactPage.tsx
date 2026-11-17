@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { OFFICIAL_CONTACTS } from '../data/academyData';
+import { useAcademySettings, whatsappDisplay, handleFromUrl } from '../hooks/useAcademySettings';
 import { 
   Phone, 
   Mail, 
@@ -20,6 +20,7 @@ interface ContactPageProps {
 }
 
 export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
+  const contacts = useAcademySettings();
   const { t, language } = useLanguage();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,71 +36,72 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
     setFormSubmitted(true);
   };
 
+  // القنوات تظهر فقط إذا كان رابطها محفوظًا في إعدادات الأكاديمية
   const contactChannels = [
     {
       title: t.contact.whatsappCardTitle,
-      value: '+84 326 853 884',
+      value: whatsappDisplay(contacts.whatsapp),
       sub: t.contact.whatsappCardDesc,
-      href: OFFICIAL_CONTACTS.whatsapp,
+      href: contacts.whatsapp,
       icon: Phone,
       color: '#25D366',
       isOfficial: true
     },
     {
       title: t.contact.emailCardTitle,
-      value: OFFICIAL_CONTACTS.email,
+      value: contacts.email,
       sub: language === 'ar' ? 'الرد الأكاديمي خلال 24 ساعة' : 'Academic response within 24 hours',
-      href: `mailto:${OFFICIAL_CONTACTS.email}`,
+      href: contacts.email ? `mailto:${contacts.email}` : '',
       icon: Mail,
       color: '#D4AF37',
       isOfficial: true
     },
     {
       title: t.contact.youtubeCardTitle,
-      value: '@englishzonewithamal',
+      value: handleFromUrl(contacts.youtube),
       sub: t.contact.youtubeCardDesc,
-      href: OFFICIAL_CONTACTS.youtube,
+      href: contacts.youtube,
       icon: Youtube,
       color: '#FF0000',
       isOfficial: true
     },
     {
       title: t.contact.instagramCardTitle,
-      value: '@englishzoneabc',
+      value: handleFromUrl(contacts.instagram),
       sub: t.contact.instagramCardDesc,
-      href: OFFICIAL_CONTACTS.instagram,
+      href: contacts.instagram,
       icon: Instagram,
       color: '#E4405F',
       isOfficial: true
     },
     {
       title: t.contact.discordCardTitle,
-      value: 'English Zone Student Club',
+      value: 'Discord',
       sub: t.contact.discordCardDesc,
-      href: OFFICIAL_CONTACTS.discord,
+      href: contacts.discord,
       icon: MessageSquare,
       color: '#5865F2',
       isOfficial: true
     },
     {
-      title: 'Facebook Page',
-      value: language === 'ar' ? 'موضع رابط فيسبوك (قيد الإعداد)' : 'Facebook Channel (Placeholder)',
-      sub: language === 'ar' ? 'رابط قابل للتعديل من لوحة الإدارة' : 'Editable link managed by admin',
-      href: '#',
+      title: 'Facebook',
+      value: handleFromUrl(contacts.facebook),
+      sub: language === 'ar' ? 'صفحة الأكاديمية على فيسبوك' : 'Academy Facebook page',
+      href: contacts.facebook,
       icon: Globe,
       color: '#1877F2',
-      isPlaceholder: true
+      isOfficial: true
     },
     {
-      title: 'Telegram Channel',
-      value: language === 'ar' ? 'قناة تيليجرام (قيد الإعداد)' : 'Telegram Channel (Placeholder)',
-      sub: language === 'ar' ? 'رابط قابل للتعديل من لوحة الإدارة' : 'Editable link managed by admin',
-      href: '#',
+      title: 'Telegram',
+      value: handleFromUrl(contacts.telegram),
+      sub: language === 'ar' ? 'قناة الأكاديمية على تيليجرام' : 'Academy Telegram channel',
+      href: contacts.telegram,
       icon: Globe,
       color: '#229ED9',
-      isPlaceholder: true
+      isOfficial: true
     }
-  ];
+  ].filter((c) => !!c.href) as any[];
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] py-12">
@@ -210,8 +212,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
               </div>
             </div>
 
+            {contacts.whatsapp && (
             <a
-              href={OFFICIAL_CONTACTS.whatsapp}
+              href={contacts.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-3.5 rounded-xl font-bold text-sm bg-[#25D366] text-white hover:bg-[#1EBE5D] transition-colors flex items-center justify-center gap-2 shadow-lg"
@@ -219,6 +222,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
               <Phone className="w-4 h-4" />
               <span>{language === 'ar' ? 'محادثة فورية على الواتساب' : 'Chat on WhatsApp Now'}</span>
             </a>
+            )}
           </div>
 
           {/* Academic Inquiry Form */}
