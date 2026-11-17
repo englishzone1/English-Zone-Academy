@@ -28,6 +28,19 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   const progressTimer = useRef<number | null>(null);
   const valid = true;
 
+  // ملء الشاشة: تثبيت الصفحة خلفها، والخروج بزر Esc
+  useEffect(() => {
+    if (!tall) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setTall(false);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [tall]);
+
   const loadResults = () =>
     studentHubService
       .getMyHomeworkResults(uid)
@@ -105,7 +118,13 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#D4AF37]/40 shadow-sm space-y-4">
+      <div
+        className={
+          tall
+            ? 'fixed inset-0 z-[100] bg-white p-2 sm:p-3 flex flex-col gap-2'
+            : 'bg-white rounded-3xl p-4 sm:p-6 border border-[#D4AF37]/40 shadow-sm space-y-4'
+        }
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F] flex items-center gap-2">
             <BookOpenCheck className="w-5 h-5 text-[#D4AF37]" />
@@ -117,11 +136,11 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
               className="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 flex items-center gap-1.5"
             >
               {tall ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-              {tall ? (isAr ? 'تصغير' : 'Smaller') : isAr ? 'تكبير' : 'Bigger'}
+              {tall ? (isAr ? 'خروج من ملء الشاشة' : 'Exit full screen') : isAr ? 'ملء الشاشة' : 'Full screen'}
             </button>
           </div>
         </div>
-        <p className="text-[11px] text-gray-500">
+        <p className={`text-[11px] text-gray-500 ${tall ? 'hidden' : ''}`}>
           {preview
             ? isAr
               ? 'معاينة للإدارة: تستطيعين تصفّح الواجبات والاختبارات وتجربتها كما يراها الطالب، ونتائجك هنا لا تُحفظ.'
@@ -139,13 +158,13 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         {saveError && (
           <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold">{saveError}</div>
         )}
-        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-[#FAF8F5]">
+        <div className={`rounded-2xl overflow-hidden border border-gray-200 bg-[#FAF8F5] ${tall ? 'flex-1 min-h-0' : ''}`}>
           <iframe
             ref={frameRef}
             src={homeworkUrl}
             title={isAr ? 'الواجبات والاختبارات' : 'Homework and tests'}
             className="w-full block"
-            style={{ height: tall ? '92vh' : '75vh' }}
+            style={{ height: tall ? '100%' : '75vh' }}
             allow="autoplay; fullscreen; clipboard-write"
             allowFullScreen
             onLoad={() => window.setTimeout(greet, 600)}
