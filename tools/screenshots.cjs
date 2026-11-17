@@ -15,8 +15,8 @@ const devices = [
     await ctx.addInitScript(() => localStorage.setItem('english_zone_lang', 'ar'));
     const page = await ctx.newPage();
     for (const p of pages) {
-      await page.goto(`${BASE}#/${p}`, { waitUntil: 'networkidle', timeout: 60000 });
-      await page.waitForTimeout(3500);
+      await page.goto(`${BASE}#/${p}`, { waitUntil: 'load', timeout: 60000 });
+      await page.waitForTimeout(5000);
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({ path: `shots/${d.name}-${p}.png` });
       await page.screenshot({ path: `shots/${d.name}-${p}-full.png`, fullPage: true });
