@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { feedbackReviewsService } from '../../services/feedbackReviewsService';
-import { PUBLISHED_FEEDBACK_SCREENSHOTS } from '../../data/publishedReviewsData';
 import { FeedbackScreenshot, ReviewCategory } from '../../types/reviews';
 import {
   MessageSquareQuote,
@@ -30,7 +29,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
   className = ''
 }) => {
   const { t, language, dir } = useLanguage();
-  const [reviews, setReviews] = useState<FeedbackScreenshot[]>(PUBLISHED_FEEDBACK_SCREENSHOTS);
+  const [reviews, setReviews] = useState<FeedbackScreenshot[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | ReviewCategory>('all');
   const [showAll, setShowAll] = useState(!previewLimit);

@@ -199,58 +199,37 @@ function sanitizeFirestorePayload(item: FeedbackScreenshot): Record<string, unkn
 
 export const feedbackReviewsService = {
   /**
-   * Public read: returns all published static assets merged with any published
-   * Firestore feedback_screenshots records (sorted by orderIndex).
+   * Public read: only screenshots published from the admin panel (feedback_screenshots).
+   * لا تُدمج أي لقطات ثابتة من الكود
    */
   async getPublishedScreenshots(): Promise<FeedbackScreenshot[]> {
-    const mergedMap = new Map<string, FeedbackScreenshot>();
-    PUBLISHED_FEEDBACK_SCREENSHOTS.forEach((item) => {
-      if (item.isPublished) {
-        mergedMap.set(item.id, item);
-      }
-    });
-
-    if (!db) {
-      return Array.from(mergedMap.values()).sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
-    }
-
+    if (!db) return [];
     try {
       const q = query(collection(db, COLLECTION_NAME), where('isPublished', '==', true));
       const snap = await getDocs(q);
-      snap.docs.forEach((d) => {
-        const docItem = { id: d.id, ...(d.data() as Omit<FeedbackScreenshot, 'id'>) };
-        mergedMap.set(docItem.id, docItem);
-      });
+      return snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as Omit<FeedbackScreenshot, 'id'>) }))
+        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
     } catch (err) {
-      console.warn('Error loading Firestore published feedback screenshots (using published assets):', err);
+      console.warn('Error loading published feedback screenshots:', err);
+      return [];
     }
-
-    return Array.from(mergedMap.values()).sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
   },
 
   /**
-   * Admin read: fetches all feedback screenshots from Firestore and merges any
-   * published built-in screenshots not yet overridden in Firestore.
+   * Admin read: all screenshots saved in Firestore (published and hidden).
+   * اللقطات الموجودة في الكود تظهر في اللوحة كزر استيراد فقط حتى تُستورد
    */
   async getAllScreenshotsForAdmin(): Promise<FeedbackScreenshot[]> {
-    const mergedMap = new Map<string, FeedbackScreenshot>();
-    PUBLISHED_FEEDBACK_SCREENSHOTS.forEach((item) => {
-      mergedMap.set(item.id, item);
-    });
-
-    if (!db) {
-      return Array.from(mergedMap.values()).sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
-    }
-
+    if (!db) return [];
     try {
       const snap = await getDocs(collection(db, COLLECTION_NAME));
-      snap.docs.forEach((d) => {
-        const docItem = { id: d.id, ...(d.data() as Omit<FeedbackScreenshot, 'id'>) };
-        mergedMap.set(docItem.id, docItem);
-      });
-      return Array.from(mergedMap.values()).sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+      return snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as Omit<FeedbackScreenshot, 'id'>) }))
+        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
     } catch (err) {
       handleFirestoreError(err, OperationType.LIST, COLLECTION_NAME);
+      return [];
     }
   },
 

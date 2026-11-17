@@ -138,8 +138,8 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
         const asset = unimportedAttached[i];
         setUploadProgress(
           isArabic
-            ? `جاري استيراد المسودة ${i + 1} من ${unimportedAttached.length}...`
-            : `Importing draft ${i + 1} of ${unimportedAttached.length}...`
+            ? `جاري استيراد اللقطة ${i + 1} من ${unimportedAttached.length}...`
+            : `Importing screenshot ${i + 1} of ${unimportedAttached.length}...`
         );
         const optimizedDataUrl = await optimizeFeedbackImage(asset.path);
         currentOrder += 1;
@@ -150,7 +150,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
           captionEn: '',
           captionAr: '',
           orderIndex: currentOrder,
-          isPublished: false, // STRICT PRIVACY: Draft only until masked & published by admin
+          isPublished: true, // كانت منشورة في الموقع، فتبقى منشورة بعد الاستيراد ويمكن إخفاؤها
           hasPrivacyMask: false,
           createdAt: new Date().toISOString(),
           createdBy: user?.fullName || 'Super Administrator'
@@ -162,8 +162,8 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
       await loadAll();
       notify(
         isArabic
-          ? `تم استيراد ${count} لقطة شاشة كمسودات غير منشورة. راجعها وأخفِ أي أسماء أو صور شخصية قبل النشر.`
-          : `Imported ${count} screenshots as Private Unpublished Drafts. Redact personal names/avatars before publishing.`
+          ? `تم استيراد ${count} لقطة، وهي منشورة كما كانت. يمكنك الآن إخفاء أو حذف أو تعديل أي منها.`
+          : `Imported ${count} screenshots, published as before. You can now hide, delete or edit any of them.`
       );
     } catch (err) {
       console.error('Failed importing attached screenshots:', err);
@@ -414,13 +414,13 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
             <div>
               <h4 className="font-bold text-sm text-[#F3E5AB]">
                 {isArabic
-                  ? `يتوفر ${unimportedAttached.length} لقطة شاشة مرفقة جاهزة للاستيراد كمسودات خاصة`
-                  : `${unimportedAttached.length} Attached Screenshots Ready to Import as Private Drafts`}
+                  ? `يوجد ${unimportedAttached.length} لقطة رأي قديمة في الكود لا تظهر في الموقع حتى تستوردها`
+                  : `${unimportedAttached.length} older review screenshots are not shown on the site until imported`}
               </h4>
               <p className="text-xs text-gray-300 mt-0.5">
                 {isArabic
-                  ? 'سيتم استيرادها كمسودات مخفية تماماً عن الزوار لتتمكن من إخفاء الأسماء أو الصور الشخصية قبل نشرها.'
-                  : 'They will be imported strictly as unpublished private drafts so you can mask names/avatars before publishing.'}
+                  ? 'اضغط استيراد مرة واحدة لتصبح تحت تحكمك: تظهر في الموقع، وتستطيع إخفاء أو حذف أي منها.'
+                  : 'Import once to manage them: they appear on the site and you can hide or delete any of them.'}
               </p>
             </div>
           </div>
@@ -431,8 +431,8 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
             className="px-4 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#0A192F] hover:brightness-105 disabled:opacity-50 whitespace-nowrap shadow-md"
           >
             {isArabic
-              ? `استيراد (${unimportedAttached.length}) كمسودات`
-              : `Import (${unimportedAttached.length}) Drafts`}
+              ? `استيراد (${unimportedAttached.length})`
+              : `Import (${unimportedAttached.length})`}
           </button>
         </div>
       )}
