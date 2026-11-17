@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Star } from 'lucide-react';
+import { RefreshCw, Star, FileText, Mic } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { studentHubService, HomeworkResult } from '../../services/studentHubService';
@@ -170,11 +170,45 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                 <div className="text-gray-600 mt-0.5">
                   {r.title} <span className="text-gray-400">• {kindLabel(r.kind)} • {new Date(r.createdAt).toLocaleString(isAr ? 'ar' : 'en', { dateStyle: 'medium', timeStyle: 'short' })}</span>
                 </div>
+                {!!r.sections?.length && (
+                  <div className="flex flex-wrap gap-1 mt-1.5" dir="ltr">
+                    {r.sections.map((s) => (
+                      <span key={s.name} className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${color(s.n ? Math.round((s.ok / s.n) * 100) : 0)}`}>
+                        {s.name} {s.ok}/{s.n}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {!!r.strengths?.length && (
+                  <div className="mt-1 text-[11px] text-emerald-700">
+                    <b>{tr('Strengths:', 'نقاط القوة:')}</b> <span dir="ltr">{r.strengths.join(' • ')}</span>
+                  </div>
+                )}
+                {!!r.weaknesses?.length && (
+                  <div className="text-[11px] text-red-600">
+                    <b>{tr('Weaknesses:', 'نقاط الضعف:')}</b> <span dir="ltr">{r.weaknesses.join(' • ')}</span>
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap ${color(r.percent)}`}>
                   {r.score}/{r.total} ({r.percent}%)
                 </span>
+                {!!r.audioCount && (
+                  <span className="px-2 py-1 rounded-lg bg-[#F3E5AB]/50 text-[#0A192F] font-bold whitespace-nowrap flex items-center gap-1">
+                    <Mic className="w-3.5 h-3.5" />
+                    {r.speakingScore !== undefined ? `${r.speakingScore}/${r.speakingMax}` : tr('to grade', 'بانتظار درجتك')}
+                  </span>
+                )}
+                {(r.hasAnswers || !!r.audioCount) && (
+                  <button
+                    onClick={() => window.open(`/#/hw-answers/${r.id}`, '_blank')}
+                    className="px-2.5 py-1 rounded-lg border border-[#0A192F] text-[#0A192F] font-bold whitespace-nowrap flex items-center gap-1"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    {tr('Answers', 'الإجابات')}
+                  </button>
+                )}
                 {r.starsGiven ? (
                   <span className="px-2.5 py-1 rounded-lg bg-[#F3E5AB]/50 text-[#8a6d10] font-bold whitespace-nowrap flex items-center gap-1">
                     <Star className="w-3.5 h-3.5 fill-current" />

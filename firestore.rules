@@ -364,7 +364,8 @@ service cloud.firestore {
     // --- Interactive homework site results (موقع الواجبات التفاعلية) ---
     match /homework_results/{resultId} {
       allow create: if isSignedIn() && isValidId(resultId) &&
-        request.resource.data.keys().hasOnly(['id', 'studentId', 'studentName', 'groupId', 'teacherId', 'kind', 'itemId', 'title', 'score', 'total', 'percent', 'createdAt']) &&
+        request.resource.data.keys().hasOnly(['id', 'studentId', 'studentName', 'groupId', 'teacherId', 'kind', 'itemId', 'title', 'score', 'total', 'percent', 'createdAt', 'sections', 'strengths', 'weaknesses', 'hasAnswers', 'audioCount']) &&
+        (!('audioCount' in request.resource.data) || (request.resource.data.audioCount is int && request.resource.data.audioCount >= 0 && request.resource.data.audioCount <= 10)) &&
         request.resource.data.studentId == request.auth.uid &&
         (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', '')) &&
         request.resource.data.kind in ['lesson', 'test', 'exam'] &&
@@ -375,14 +376,43 @@ service cloud.firestore {
       allow get, list: if isAdmin() ||
         (isSignedIn() && resource.data.studentId == request.auth.uid) ||
         (isTeacherDoc() && resource.data.teacherId == request.auth.uid);
-      // الإدارة أو معلم الطالب يسجّلان النجوم الممنوحة لهذه النتيجة فقط
+      // الإدارة أو معلم الطالب: النجوم الممنوحة ودرجة المحادثة فقط
       allow update: if (isAdmin() || (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid)) &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven']) &&
-        request.resource.data.starsGiven is number && request.resource.data.starsGiven >= 0 && request.resource.data.starsGiven <= 10;
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax']) &&
+        request.resource.data.get('starsGiven', 0) is number && request.resource.data.get('starsGiven', 0) >= 0 && request.resource.data.get('starsGiven', 0) <= 10 &&
+        request.resource.data.get('speakingScore', 0) is number && request.resource.data.get('speakingScore', 0) >= 0 &&
+        request.resource.data.get('speakingScore', 0) <= request.resource.data.get('speakingMax', 100) && request.resource.data.get('speakingMax', 0) <= 100;
       allow delete: if isAdmin();
     }
 
     // تقدّم الطالب في موقع الواجبات (لاسترجاعه من أي جهاز)
+    // إجابات الطالب في الدرس أو الاختبار (مستند لكل نتيجة)
+    match /homework_answers/{resultId} {
+      allow create: if isSignedIn() && isValidId(resultId) &&
+        request.resource.data.keys().hasOnly(['studentId', 'teacherId', 'json', 'createdAt']) &&
+        request.resource.data.studentId == request.auth.uid &&
+        (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', '')) &&
+        request.resource.data.json is string && request.resource.data.json.size() <= 650000;
+      allow get: if isAdmin() ||
+        (isSignedIn() && resource.data.studentId == request.auth.uid) ||
+        (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // تسجيلات المحادثة الصوتية (مستند لكل تسجيل)
+    match /homework_audio/{audioId} {
+      allow create: if isSignedIn() && isValidId(audioId) &&
+        request.resource.data.keys().hasOnly(['studentId', 'teacherId', 'resultId', 'idx', 'task', 'data', 'createdAt']) &&
+        request.resource.data.studentId == request.auth.uid &&
+        (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', '')) &&
+        request.resource.data.data is string && request.resource.data.data.size() <= 950000 &&
+        request.resource.data.data.matches('^data:audio/.*');
+      allow get: if isAdmin() ||
+        (isSignedIn() && resource.data.studentId == request.auth.uid) ||
+        (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
     match /homework_progress/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow create, update: if isOwner(userId) &&

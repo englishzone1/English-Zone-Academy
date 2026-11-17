@@ -196,6 +196,18 @@ details[open]>summary{border-radius:12px 12px 0 0}
 .lesson .ar{display:block;direction:rtl;text-align:right;font-size:1.05rem;margin:2px 0}
 .cvar{font-size:1.15rem;font-weight:600;margin-top:4px;text-align:right}
 .lesson .badge{float:right;font-style:normal;font-size:.8rem;font-weight:700;background:rgba(255,255,255,.92);color:#1f7040;border-radius:12px;padding:2px 10px;margin-top:-2px}
+.q{font-size:.97rem;line-height:2}
+.item{padding:9px 0}
+main{max-width:920px}
+.q input.w{width:min(24em,62%)}
+.q input,.q select{font-size:15px;padding:3px 7px}
+@media(max-width:600px){.q input,.q select{font-size:16px}.q input.w{width:min(24em,100%)}}
+.rec{margin:6px 0 10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.recb{background:#1b5faa;color:#fff;border:0;border-radius:20px;padding:6px 16px;font-weight:700;font-size:.85rem;cursor:pointer}
+.recb.on{background:#c62828}
+.recs{font-size:.85rem;color:#5b6a7c}
+.rec audio{height:34px;max-width:100%}
+.wl{margin:2px 0}.wl.ok{color:#1e7a46}.wl.no{color:#b3261e}
 </style>
 </head>
 <body>
@@ -817,7 +829,94 @@ function renderTest(){
   const T=TCUR;
   $(`examBody`).innerHTML=`<div class="tcover" dir="rtl"><b>${T.ar||T.title}</b><div>أجيبي عن كل الأسئلة ثم اضغطي «تسليم الاختبار» في آخر الصفحة. لا تظهر النتيجة إلا بعد التسليم.</div><div>الطالبة: ${student&&student.name?student.name:``}</div></div><div id="tsecs"></div><p id="exwarn" class="fb no hidden" dir="rtl"></p><button class="btn all" id="exsub">تسليم الاختبار ✅</button>`;
   build($(`tsecs`),T.parts,true);
+  REC=[]; RECNOW=null;
+  document.querySelectorAll(`#tsecs ol.spk`).forEach(ol=>[...ol.children].forEach(li=>{ const i=REC.length; REC.push(null); li.appendChild(recUI(i,li.textContent)); }));
   $(`exsub`).onclick=submitTest;
+}
+/* ---------- التسجيل الصوتي في جزء المحادثة ---------- */
+let REC=[], RECNOW=null; const RECMAX=90;
+function recUI(i,task){
+  const d=document.createElement(`div`); d.className=`rec`; d.dir=`rtl`;
+  const b=document.createElement(`button`); b.type=`button`; b.className=`recb`; b.textContent=`🎙️ سجّلي إجابتك`;
+  const st=document.createElement(`span`); st.className=`recs`;
+  const au=document.createElement(`audio`); au.controls=true; au.className=`hidden`;
+  d.append(b,st,au);
+  b.onclick=async()=>{
+    if(RECNOW&&RECNOW.i===i){ RECNOW.mr.stop(); return; }
+    if(RECNOW){ st.textContent=`أوقفي التسجيل الآخر أولًا.`; return; }
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){ st.textContent=`هذا المتصفح لا يدعم التسجيل الصوتي، جرّبي Chrome.`; return; }
+    let stream; try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ st.textContent=`اسمحي للموقع باستخدام الميكروفون ثم اضغطي مرة أخرى.`; return; }
+    const mt=[`audio/webm;codecs=opus`,`audio/webm`,`audio/mp4`,`audio/ogg;codecs=opus`].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||``;
+    let mr; try{ mr=new MediaRecorder(stream,Object.assign({audioBitsPerSecond:24000},mt?{mimeType:mt}:{})); }catch(e){ mr=new MediaRecorder(stream); }
+    const ch=[]; mr.ondataavailable=e=>{ if(e.data&&e.data.size) ch.push(e.data); };
+    let sec=0; const tm=setInterval(()=>{ sec++; st.textContent=`⏺️ جارٍ التسجيل ${sec} ث – اضغطي «إيقاف» عند الانتهاء`; if(sec>=RECMAX&&mr.state!==`inactive`) mr.stop(); },1000);
+    mr.onstop=()=>{ clearInterval(tm); stream.getTracks().forEach(t=>t.stop()); RECNOW=null; b.classList.remove(`on`);
+      const blob=new Blob(ch,{type:mr.mimeType||mt||`audio/webm`}); REC[i]={blob,task:String(task).trim().slice(0,300),sec};
+      au.src=URL.createObjectURL(blob); au.classList.remove(`hidden`); b.textContent=`🔁 إعادة التسجيل`; st.textContent=`✅ تم التسجيل (${sec} ث)`; };
+    RECNOW={i,mr}; mr.start(1000); b.classList.add(`on`); b.textContent=`⏹️ إيقاف`; st.textContent=`⏺️ جارٍ التسجيل…`;
+  };
+  return d;
+}
+const blobURL=b=>new Promise(res=>{ try{ const f=new FileReader(); f.onload=()=>res(String(f.result||``)); f.onerror=()=>res(``); f.readAsDataURL(b); }catch(e){ res(``); } });
+
+/* ---------- تصحيح الكتابة تلقائيًا حسب صحة الجمل ---------- */
+const WVERB=/\b(am|is|are|was|were|be|been|have|has|had|do|does|did|can|could|will|would|should|must|go|goes|went|like|likes|liked|love|loves|loved|live|lives|work|works|play|plays|want|wants|eat|eats|ate|drink|drinks|drank|watch|watches|study|studies|get|gets|got|make|makes|made|see|sees|saw|visit|visits|stay|stays|travel|travels|come|comes|came|take|takes|took|read|reads|write|writes|wrote|speak|speaks|spoke|need|needs|know|knows|knew|think|thinks|thought|enjoy|enjoys|help|helps|start|starts|finish|finishes|feel|feels|felt|buy|buys|bought|swim|swims|swam|walk|walks|cook|cooks|meet|meets|met|wear|wears|wore|leave|leaves|left|listen|listens|teach|teaches|taught|sleep|sleeps|slept|use|uses|hate|hates|prefer|prefers|open|opens|close|closes|run|runs|ran|sit|sat|stand|give|gave|tell|told|say|said|find|found)\b|\b[a-z]{3,}(ed|ing)\b|('m|'s|'re|'ve|'ll|'d)\b/;
+const WAUX=new Set([`does`,`do`,`did`,`can`,`will`,`would`,`could`,`should`,`must`,`to`,`doesn't`,`don't`,`didn't`,`can't`,`won't`,`cannot`,`let`,`make`,`help`,`and`,`or`]);
+const WBASE=`have|do|go|like|love|live|work|play|want|eat|drink|watch|study|get|make|see|come|take|write|speak|need|know|think|enjoy|help|start|finish|feel|buy|swim|walk|cook|meet|wear|leave|listen|teach|sleep|use|visit|stay|travel|hate|prefer`;
+const WINFL=/\b(doesn't|does not|don't|do not|didn't|did not|can't|cannot|can|will|won't|to) (likes|lives|works|plays|wants|eats|drinks|watches|studies|goes|has|does|went|ate|drank|saw|had|was|were|came|took|made|got|wrote|spoke|bought|swam|met|wore|taught|slept|visited|played|watched|worked|lived|liked|studied|stayed|cooked|walked|travelled|traveled|felt|loves|loved|needs|needed|enjoys|enjoyed)\b/;
+function s3(v){ return v===`have`?`has`:v===`do`?`does`:v===`go`?`goes`:/(ch|sh|s|x|o)$/.test(v)?v+`es`:/[^aeiou]y$/.test(v)?v.slice(0,-1)+`ies`:v+`s`; }
+function sentIssues(raw,short){
+  const t=norm(raw), w=t.split(/\s+/).filter(Boolean), out=[];
+  if(!t) return [`لم تكتبي شيئًا.`];
+  if(!short&&w.length<3) out.push(`الجملة قصيرة: اكتبي ثلاث كلمات على الأقل.`);
+  if(!plaus(t)) out.push(`فيها كلمة غير صحيحة أو حروف غير إنجليزية.`);
+  if(!short&&!WVERB.test(t)) out.push(`ينقصها فعل، مثل: is / am / like / went.`);
+  if(/\b(i (is|are)|(he|she|it) (are|am|were)|(you|we|they) (is|am|was))\b/.test(t)) out.push(`الفعل لا يناسب الفاعل: I am، he / she / it is، you / we / they are.`);
+  const m=t.match(new RegExp(`(?:^|(\\S+) )(he|she|it) (${WBASE})\\b`)); if(m&&!WAUX.has(m[1]||``)) out.push(`مع ${m[2]} نضيف s للفعل في المضارع: ${m[2]} ${s3(m[3])}.`);
+  const k=t.match(WINFL); if(k) out.push(`بعد ${k[1]} يأتي الفعل في أصله بلا s وبلا ماضٍ (مثل: ${k[1]} go).`);
+  if(/\b(i am|i'm|you are|we are|they are|he is|she is|you're|we're|they're|he's|she's) (go|work|play|want|eat|drink|watch|study|live|have|write|speak|swim|cook|walk|visit|stay|travel|need)\b/.test(t)) out.push(`لا نجمع am / is / are مع الفعل الأصلي: I work أو I am working.`);
+  if(/\ba [aeio][a-z]/.test(t)) out.push(`نستخدم an قبل الكلمة التي تبدأ بحرف متحرك (an apple).`);
+  if(/\ban [b-df-gj-np-tv-z][a-z]/.test(t)) out.push(`نستخدم a قبل الكلمة التي تبدأ بحرف ساكن (a book).`);
+  if(/\b([a-z]+) \1\b/.test(t)&&!/\b(that that|had had)\b/.test(t)) out.push(`فيها كلمة مكررة.`);
+  return out;
+}
+function gradeWriting(raw){
+  const text=String(raw||``).trim(), max=5;
+  const ss=text.split(/(?<=[.!?])\s+|\n+/).map(x=>x.trim()).filter(x=>/[a-z]/i.test(x));
+  const lines=ss.map(x=>{ const iss=sentIssues(x,false); return {s:x,ok:!iss.length,why:iss[0]||``}; });
+  const good=lines.filter(l=>l.ok).length, score=Math.min(max,good);
+  const tips=[]; if(ss.some(x=>/^[a-z]/.test(x))) tips.push(`ابدئي كل جملة بحرف كبير.`); if(/(^|\s)i(\s|')/.test(text)) tips.push(`اكتبي I كبيرة دائمًا.`); if(ss.length&&!/[.!?]$/.test(ss[ss.length-1])) tips.push(`ضعي نقطة في آخر الجملة.`);
+  return {score,max,lines,tips,count:ss.length};
+}
+function wNote(g){
+  if(!g.count) return `✍️ لم تكتبي شيئًا في هذا السؤال (0 / ${g.max}).`;
+  let h=`✍️ درجة الكتابة: ${g.score} / ${g.max} (كل جملة صحيحة بدرجة، حتى ${g.max} جمل)\n`;
+  h+=g.lines.map(l=>(l.ok?`✅ `:`❌ `)+l.s+(l.ok?``:` ← ${l.why}`)).join(`\n`);
+  if(g.count<g.max) h+=`\n📌 اكتبي ${g.max} جمل صحيحة على الأقل لتأخذي الدرجة كاملة.`;
+  if(g.tips.length) h+=`\n💡 ${g.tips.join(` `)}`;
+  return h;
+}
+
+/* ---------- ملخّص النتيجة والإجابات للمنصة ---------- */
+function qText(r){ const qc=r.querySelector(`.q`).cloneNode(true); qc.querySelectorAll(`.n,.chk,select,input,textarea,.cor,img,.emo,.ovw,.rec`).forEach(x=>x.remove()); return qc.textContent.replace(/\s+/g,` `).trim().slice(0,240); }
+function rowGot(r){ return r.got!=null?r.got:(r.isOk?1:0); }
+function rowMax(r){ return r.marks||1; }
+function collectAnswers(rows){
+  return rows.map(r=>{ const f=[...r.querySelectorAll(`input,select,textarea`)]; const it=r.itRef||{};
+    return {s:String(r.secRef&&r.secRef.name||``).slice(0,60), e:String(r.exRef&&r.exRef.t||``).replace(/<[^>]+>/g,``).slice(0,140), q:qText(r),
+      a:f.map(x=>x.value.trim()).join(` / `).slice(0,2000), c:r.isFree?``:String(it.ans||f.map(x=>String(x.dataset.a||``).split(`|`)[0]).join(` / `)).slice(0,240),
+      g:rowGot(r), m:rowMax(r), n:String(r.fbNote||``).slice(0,1500)}; });
+}
+function summarize(rows){
+  const secs=[]; rows.forEach(r=>{ const nm=String(r.secRef&&r.secRef.name||``); let g=secs.find(x=>x.name===nm); if(!g){ g={name:nm,ok:0,n:0,rv:String(r.secRef&&r.secRef.review||``)}; secs.push(g); } g.ok+=rowGot(r); g.n+=rowMax(r); });
+  const label=g=>(g.rv&&!/^(Words and phrases|Useful phrases)$/i.test(g.rv)?g.rv:g.name).slice(0,80);
+  return {sections:secs.map(g=>({name:g.name.slice(0,60),ok:g.ok,n:g.n})), strengths:secs.filter(g=>g.n&&g.ok/g.n>=0.8).map(label).slice(0,12), weaknesses:secs.filter(g=>g.n&&g.ok/g.n<0.8).map(label).slice(0,12)};
+}
+async function ezSendTest(rows,ok,n){
+  const extra=Object.assign(summarize(rows),{answers:collectAnswers(rows)}); const audio=[];
+  for(let i=0;i<REC.length;i++){ const x=REC[i]; if(!x) continue; const u=await blobURL(x.blob); if(u&&u.length<=900000) audio.push({i,task:x.task,data:u}); }
+  extra.audio=audio;
+  ezResult(`test`,TCUR.id||TCUR.title,TCUR.title,ok,n,extra);
 }
 function testRows(){ return [...document.querySelectorAll(`#tsecs .item`)].filter(r=>!r.isX); }
 function submitTest(){
@@ -837,16 +936,25 @@ function gradeTest(){
     if(ok){ fb.className=`fb ok`; fb.textContent=`أحسنتِ! 🌟 إجابة صحيحة، استمري في التميّز! ❤️`; }
     else { fb.className=`fb no`; fb.textContent=`❌ إجابة خاطئة. الإجابة الصحيحة: ${ans}\n💡 ${it.ea||(r.exRef&&r.exRef.ea)||`راجعي القاعدة في الدرس.`}`; }
   });
-  all.filter(r=>r.isFree).forEach(r=>{ const f=[...r.querySelectorAll(`input,select,textarea`)]; const ok=evalRow(r,r.itRef,f); const fb=r.fbEl; fb.classList.remove(`hidden`); fb.dir=`rtl`; fb.className=ok?`fb ok`:`fb try`; fb.textContent=ok?`📝 إجابتك مكتوبة بشكل سليم، وتصحّحها المعلمة.`:`📝 هذا السؤال تصحّحه المعلمة. ${VAL[r.itRef.v]?VAL[r.itRef.v].m:`اكتبي جملة كاملة بالإنجليزية.`}`; });
+  all.filter(r=>r.isFree).forEach(r=>{ const f=[...r.querySelectorAll(`input,select,textarea`)]; const fb=r.fbEl; fb.classList.remove(`hidden`); fb.dir=`rtl`;
+    const ta=f.find(x=>x.tagName===`TEXTAREA`);
+    if(ta){ const g=gradeWriting(ta.value); r.marks=g.max; r.got=g.score; r.isOk=g.score===g.max; r.fbNote=wNote(g); fb.className=g.score===g.max?`fb ok`:g.score?`fb try`:`fb no`; fb.textContent=r.fbNote; ta.classList.toggle(`good`,g.score===g.max); return; }
+    const okV=evalRow(r,r.itRef,f); const iss=f.filter(x=>x.tagName!==`SELECT`).map(x=>sentIssues(x.value,true)).flat(); const ok=okV&&!iss.length;
+    r.marks=1; r.got=ok?1:0; r.isOk=ok; f.forEach(x=>{ x.classList.toggle(`good`,ok); x.classList.toggle(`bad`,!ok); });
+    r.fbNote=ok?`✅ إجابة صحيحة ومكتوبة بشكل سليم.`:`❌ ${iss[0]||(VAL[r.itRef.v]?VAL[r.itRef.v].m:`اكتبي جملة كاملة صحيحة بالإنجليزية.`)}${r.itRef.sample?`\n💡 مثال: ${r.itRef.sample}`:``}`;
+    fb.className=ok?`fb ok`:`fb no`; fb.textContent=r.fbNote; });
+  if(RECNOW) try{ RECNOW.mr.stop(); }catch(e){}
+  document.querySelectorAll(`#tsecs .recb`).forEach(b=>b.disabled=true);
   document.querySelectorAll(`#tsecs input,#tsecs select,#tsecs textarea`).forEach(x=>x.disabled=true);
-  const ok=rows.filter(r=>r.isOk).length, n=rows.length, pct=n?Math.round(ok/n*100):0;
-  ezResult(`test`,TCUR.id||TCUR.title,TCUR.title,ok,n);
+  const graded=all; const ok=graded.reduce((a,r)=>a+rowGot(r),0), n=graded.reduce((a,r)=>a+rowMax(r),0), pct=n?Math.round(ok/n*100):0;
+  const nrec=REC.filter(Boolean).length;
+  setTimeout(()=>ezSendTest(graded,ok,n),400);
   const msg=pct>=90?`عمل ممتاز! 🏆`:pct>=70?`عمل جيد! ⭐`:pct>=50?`مقبول – واصلي التدريب. 👍`:`تحتاجين مزيدًا من التدريب – راجعي الدروس. 💪`;
-  const secs=[]; rows.forEach(r=>{ let g=secs.find(x=>x.s===r.secRef); if(!g){ g={s:r.secRef,n:0,ok:0}; secs.push(g); } g.n++; if(r.isOk) g.ok++; });
-  let h=`<div class="scorebox" dir="rtl"><div>درجتك في الأجزاء التي تُصحَّح تلقائيًا</div><div class="big">${ok} / ${n}</div><div>${pct}% – ${msg}</div></div>`;
+  const secs=[]; graded.forEach(r=>{ let g=secs.find(x=>x.s===r.secRef); if(!g){ g={s:r.secRef,n:0,ok:0}; secs.push(g); } g.n+=rowMax(r); g.ok+=rowGot(r); });
+  let h=`<div class="scorebox" dir="rtl"><div>درجتك</div><div class="big">${ok} / ${n}</div><div>${pct}% – ${msg}</div></div>`;
   h+=secs.map(g=>`<div class="panel"><b>${g.s.name}</b>: ${g.ok} / ${g.n}<div class="bar"><i style="width:${g.ok/g.n*100}%"></i></div></div>`).join(``);
   const nf=all.filter(r=>r.isFree).length;
-  if(nf||TCUR.parts.some(p=>p.speak)) h+=`<div class="panel work" dir="rtl">📝 ${nf?`أسئلة الكتابة (${nf}) تصحّحها المعلمة. `:``}${TCUR.parts.some(p=>p.speak)?`وجزء المحادثة (Speaking) يكون مع المعلمة في الصف.`:``}${nf?`<br><button class="gonext" id="cpw">📋 نسخ إجاباتي في الكتابة لإرسالها للمعلمة</button>`:``}</div>`;
+  if(TCUR.parts.some(p=>p.speak)) h+=`<div class="panel work" dir="rtl">🎙️ ${nrec?`أُرسلت تسجيلاتك الصوتية (${nrec}) في جزء المحادثة، وتضيف المعلمة درجتها بعد الاستماع.`:`لم تسجّلي إجاباتك في جزء المحادثة.`}</div>`;
   h+=lessonReport(rows);
   h+=`<div class="exbtns"><button class="btn" id="exretake">إعادة الاختبار</button><button class="btn" id="exback">العودة إلى الاختبارات</button></div><h3 style="color:var(--blue-d)" dir="rtl">مراجعة إجاباتك (تحت كل سؤال)</h3>`;
   const res=document.createElement(`div`); res.id=`tres`; res.innerHTML=h; $(`examBody`).prepend(res);
@@ -1189,7 +1297,7 @@ function updLesson(){
     dn.classList.remove(`hidden`);
     const pct=Math.round(ok/n*100), star=pct>=90?`🏆`:pct>=70?`⭐`:`👍`;
     dn.innerHTML=`<div class="dn" dir="rtl"><div class="dnb">${star}</div><b>أحسنتِ يا ${student&&student.name?student.name:``}! أنهيتِ هذا الدرس.</b><div>درجتك: ${ok} / ${n} (${pct}%)</div>${pct<70?`<div>راجعي الأسئلة الخاطئة ثم أعيدي الدرس.</div>`:``}</div>`+lessonReport(rows);
-    if(!REPSHOWN){ REPSHOWN=true; setTimeout(()=>dn.scrollIntoView({behavior:`smooth`,block:`start`}),300); setTimeout(()=>ezResult(`lesson`,CURCARD,$(`ltitle`).textContent,ok,n),50); }
+    if(!REPSHOWN){ REPSHOWN=true; setTimeout(()=>dn.scrollIntoView({behavior:`smooth`,block:`start`}),300); setTimeout(()=>ezResult(`lesson`,CURCARD,$(`ltitle`).textContent,ok,n,Object.assign(summarize(rows),{answers:collectAnswers(rows)})),50); }
     try{ const D=getDone(); if(!D[CURCARD]||D[CURCARD].s<ok){ D[CURCARD]={s:ok,t:n}; localStorage.setItem(doneKey(),JSON.stringify(D)); } }catch(e){}
   } else dn.classList.add(`hidden`);
 }
@@ -1258,7 +1366,7 @@ const EZ_HOST = window.parent !== window ? window.parent : (window.opener || nul
 const EZ_EMBED = !!EZ_HOST;
 function ezPost(msg){ if(!EZ_EMBED) return; try{ EZ_HOST.postMessage(Object.assign({source:`ez-homework`},msg),`*`); }catch(e){} }
 function ezProgress(){ const d={}; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf(`ez_`)===0) d[k]=localStorage.getItem(k); } }catch(e){} ezPost({type:`progress`,data:d}); }
-function ezResult(kind,id,title,score,total){ ezPost({type:`result`,kind:kind,id:String(id||title||``).slice(0,80),title:String(title||``).slice(0,150),score:score,total:total}); ezProgress(); }
+function ezResult(kind,id,title,score,total,extra){ ezPost({type:`result`,kind:kind,id:String(id||title||``).slice(0,80),title:String(title||``).slice(0,150),score:score,total:total,extra:extra||{}}); ezProgress(); }
 window.addEventListener(`message`,ev=>{
   if(!EZ_HOST||ev.source!==EZ_HOST) return;
   const m=ev.data||{}; if(m.source!==`ez-platform`) return;
@@ -1307,6 +1415,7 @@ function build(root,secs,exam){
             q.appendChild(sel);
           }
         });
+        [...q.childNodes].filter(x=>x.nodeName==="BR").forEach(br=>{ let n=br.nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling; if(n&&n.nodeName==="INPUT"&&!n.closest(".ovl")) br.replaceWith(document.createTextNode(" ")); });
         const b = document.createElement("button"); b.type="button"; b.className="chk"; b.textContent="Check Answer";
         const fb = document.createElement("div"); fb.className="fb hidden";
         b.onclick = ()=>check(row,it,s.review,ex); if(exam) b.style.display="none"; if(it.x){ b.style.display="none"; row.isX=1; row.classList.add("xm"); } if(it.free) row.isFree=1;
@@ -1429,7 +1538,7 @@ $("cPE3").onclick = ()=>openLesson("Practical English 3: What time is it?",LESSO
 $("c6A").onclick = ()=>openLesson("6A: Old friends?",LESSON_6A,"lvl2");
 $("c6B").onclick = ()=>openLesson("6B: Good morning, goodnight",LESSON_6B,"lvl2");
 TQ.c=(s,o,a,ea)=>{ const parts=s.split(`___`), p=[]; parts.forEach((x,i)=>{ if(x) p.push(x); if(i<parts.length-1) p.push({sel:o[Array.isArray(a)?a[i]:a],o:o}); }); return {p,ea}; };
-const SPEAK=(tasks)=>({name:`Speaking`, speak:1, ex:[{t:`Speaking (with your teacher)`, ins:`<div dir="rtl">🗣️ هذا الجزء يكون مع المعلمة في الصف، ولا يُصحَّح هنا.</div><ol style="direction:ltr;text-align:left">${tasks.map(x=>`<li>${x}</li>`).join(``)}</ol>`, items:[]}]});
+const SPEAK=(tasks)=>({name:`Speaking`, speak:1, ex:[{t:`Speaking (record your answers)`, ins:`<div dir="rtl">🎙️ سجّلي إجابتك عن كل سؤال بصوتك (حتى دقيقة ونصف لكل سؤال). تستمع المعلمة إلى تسجيلك وتضع درجته.</div><ol class="spk" style="direction:ltr;text-align:left">${tasks.map(x=>`<li>${x}</li>`).join(``)}</ol>`, items:[]}]});
 const AUD=(n)=>`audio/${n}.mp3`;
 const ORD=[``,`الأولى`,`الثانية`,`الثالثة`,`الرابعة`,`الخامسة`,`السادسة`,`السابعة`,`الثامنة`,`التاسعة`,`العاشرة`,`الحادية عشرة`,`الثانية عشرة`];
 const VAL2={

@@ -18,6 +18,7 @@ import { CourseDetailsPage } from './pages/CourseDetailsPage';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { LoginPage } from './pages/LoginPage';
 import { HomeworkPlatform } from './components/student/HomeworkPlatform';
+import { HomeworkAnswersPage } from './components/admin/HomeworkAnswersPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { EnglishClubPage } from './pages/EnglishClubPage';
 import { StudentDashboard } from './pages/dashboards/StudentDashboard';
@@ -185,6 +186,11 @@ function MainApp() {
         return <AvatarStudioPage navigate={navigate} />;
 
       default:
+        if (currentRoute.startsWith('hw-answers/')) {
+          if (isLoading) return <LoadingScreen />;
+          if (!isAuthenticated) return <LoginPage navigate={navigate} targetRedirect={currentRoute} />;
+          return <HomeworkAnswersPage resultId={currentRoute.replace('hw-answers/', '')} navigate={navigate} />;
+        }
         if (currentRoute.startsWith('course/')) {
           const courseId = currentRoute.replace('course/', '');
           return <CourseDetailsPage courseId={courseId} navigate={navigate} />;

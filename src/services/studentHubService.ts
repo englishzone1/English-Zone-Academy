@@ -86,6 +86,32 @@ export interface HomeworkResult {
   percent: number;
   createdAt: string;
   starsGiven?: number;
+  // ملخص لكل جزء ونقاط القوة والضعف
+  sections?: { name: string; ok: number; n: number }[];
+  strengths?: string[];
+  weaknesses?: string[];
+  hasAnswers?: boolean;
+  audioCount?: number;
+  // درجة المحادثة التي تضعها المعلمة بعد سماع التسجيلات
+  speakingScore?: number;
+  speakingMax?: number;
+}
+
+export interface HomeworkAnswer {
+  s: string; // الجزء
+  e: string; // التمرين
+  q: string; // السؤال
+  a: string; // إجابة الطالب
+  c: string; // الإجابة الصحيحة
+  g: number; // الدرجة
+  m: number; // من
+  n?: string; // ملاحظة التصحيح
+}
+
+export interface HomeworkAudio {
+  idx: number;
+  task: string;
+  data: string;
 }
 
 /* ------------------------------ Community ------------------------------ */
@@ -249,8 +275,25 @@ export const studentHubService = {
   },
 
   /* ---------- Interactive homework site (EFHOMEWORK) ---------- */
-  async saveHomeworkResult(p: Omit<HomeworkResult, 'id' | 'percent' | 'createdAt'>): Promise<void> {
+  async saveHomeworkResult(
+    p: Omit<HomeworkResult, 'id' | 'percent' | 'createdAt' | 'hasAnswers' | 'audioCount'>,
+    extra: { answers?: HomeworkAnswer[]; audio?: { task: string; data: string }[] } = {}
+  ): Promise<string> {
     const id = newId('HWR');
+    const strList = (a: any, max: number) => (Array.isArray(a) ? a.slice(0, max).map((x) => String(x).slice(0, 80)) : undefined);
+    const sections = Array.isArray(p.sections)
+      ? p.sections.slice(0, 20).map((x) => ({ name: String(x.name || '').slice(0, 60), ok: Math.max(0, Number(x.ok) || 0), n: Math.max(0, Number(x.n) || 0) }))
+      : undefined;
+    // الإجابات: مستند منفصل، مع حد لحجمه
+    let answers = Array.isArray(extra.answers) ? extra.answers.slice(0, 400) : [];
+    let json = JSON.stringify(answers);
+    while (json.length > 600000 && answers.length) {
+      answers = answers.slice(0, Math.floor(answers.length * 0.8));
+      json = JSON.stringify(answers);
+    }
+    const audio = (Array.isArray(extra.audio) ? extra.audio : [])
+      .filter((a) => typeof a?.data === 'string' && a.data.startsWith('data:audio/') && a.data.length <= 900000)
+      .slice(0, 10);
     const total = Math.max(0, Math.round(p.total));
     const score = Math.max(0, Math.min(total, Math.round(p.score)));
     await setDoc(
@@ -267,9 +310,62 @@ export const studentHubService = {
         score,
         total,
         percent: total ? Math.round((score / total) * 100) : 0,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        sections,
+        strengths: strList(p.strengths, 12),
+        weaknesses: strList(p.weaknesses, 12),
+        hasAnswers: answers.length > 0,
+        audioCount: audio.length
       })
     );
+    const base = { studentId: p.studentId, teacherId: p.teacherId || undefined, createdAt: new Date().toISOString() };
+    if (answers.length) {
+      try {
+        await setDoc(doc(db, 'homework_answers', id), clean({ ...base, json }));
+      } catch (err) {
+        console.error('Could not save answers:', err);
+      }
+    }
+    for (let i = 0; i < audio.length; i++) {
+      try {
+        await setDoc(doc(db, 'homework_audio', `${id}_${i}`), clean({ ...base, resultId: id, idx: i, task: String(audio[i].task || '').slice(0, 300), data: audio[i].data }));
+      } catch (err) {
+        console.error('Could not save recording:', err);
+      }
+    }
+    return id;
+  },
+
+  async getHomeworkResult(id: string): Promise<HomeworkResult | null> {
+    const snap = await getDoc(doc(db, 'homework_results', id));
+    return snap.exists() ? ({ ...(snap.data() as any), id: snap.id } as HomeworkResult) : null;
+  },
+
+  async getHomeworkAnswers(id: string): Promise<HomeworkAnswer[]> {
+    const snap = await getDoc(doc(db, 'homework_answers', id));
+    if (!snap.exists()) return [];
+    try {
+      return JSON.parse(String((snap.data() as any).json || '[]'));
+    } catch {
+      return [];
+    }
+  },
+
+  async getHomeworkAudio(id: string, count: number): Promise<HomeworkAudio[]> {
+    const out: HomeworkAudio[] = [];
+    for (let i = 0; i < count; i++) {
+      const snap = await getDoc(doc(db, 'homework_audio', `${id}_${i}`));
+      if (snap.exists()) {
+        const d = snap.data() as any;
+        out.push({ idx: i, task: String(d.task || ''), data: String(d.data || '') });
+      }
+    }
+    return out;
+  },
+
+  // درجة المحادثة من المعلمة
+  async gradeHomeworkSpeaking(id: string, score: number, max: number): Promise<void> {
+    await updateDoc(doc(db, 'homework_results', id), { speakingScore: score, speakingMax: max });
   },
 
   // يسجّل أن النجوم مُنحت لهذه النتيجة حتى لا تُمنح مرتين

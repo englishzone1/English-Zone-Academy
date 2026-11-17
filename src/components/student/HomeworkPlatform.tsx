@@ -85,6 +85,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         const total = Number(m.total);
         if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0) return;
         try {
+          const ex = m.extra && typeof m.extra === 'object' ? m.extra : {};
           await studentHubService.saveHomeworkResult({
             studentId: uid,
             studentName: name,
@@ -94,8 +95,11 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
             itemId: String(m.id || m.title || ''),
             title: String(m.title || ''),
             score,
-            total
-          });
+            total,
+            sections: Array.isArray(ex.sections) ? ex.sections : undefined,
+            strengths: Array.isArray(ex.strengths) ? ex.strengths : undefined,
+            weaknesses: Array.isArray(ex.weaknesses) ? ex.weaknesses : undefined
+          }, { answers: Array.isArray(ex.answers) ? ex.answers : [], audio: Array.isArray(ex.audio) ? ex.audio : [] });
           setSaveError('');
           setSavedNote(isAr ? `تم حفظ نتيجتك: ${m.title} (${score}/${total})` : `Result saved: ${m.title} (${score}/${total})`);
           window.setTimeout(() => setSavedNote(''), 5000);
@@ -138,7 +142,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
           src={homeworkUrl}
           title={isAr ? 'الواجبات والاختبارات' : 'Homework and tests'}
           className="w-full flex-1 block border-0"
-          allow="autoplay; fullscreen; clipboard-write"
+          allow="autoplay; fullscreen; clipboard-write; microphone"
           allowFullScreen
           onLoad={() => window.setTimeout(() => greet(), 600)}
         />
@@ -198,7 +202,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
             title={isAr ? 'الواجبات والاختبارات' : 'Homework and tests'}
             className="w-full block"
             style={{ height: tall ? '92vh' : '75vh' }}
-            allow="autoplay; fullscreen; clipboard-write"
+            allow="autoplay; fullscreen; clipboard-write; microphone"
             allowFullScreen
             onLoad={() => window.setTimeout(() => greet(), 600)}
           />
