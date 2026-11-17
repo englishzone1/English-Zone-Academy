@@ -263,17 +263,6 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
                         </div>
                       </div>
 
-                      {item.individualPrice !== undefined && (
-                        <div className="flex items-center justify-between gap-3 mt-3 pt-2.5 border-t border-[#D4AF37]/20 text-xs">
-                          <span className="font-semibold text-[#0A192F]">{language === 'ar' ? 'خاص (فردي)' : 'Private 1-on-1'}</span>
-                          <span dir="ltr" className="font-bold text-[#0A192F]">
-                            {item.individualOriginal !== undefined && (
-                              <span className="text-gray-400 line-through font-normal mr-1.5">${item.individualOriginal}</span>
-                            )}
-                            {item.individualVaries ? (language === 'ar' ? 'من ' : 'from ') : ''}${item.individualPrice}
-                          </span>
-                        </div>
-                      )}
                     </div>
                   </div>
 
