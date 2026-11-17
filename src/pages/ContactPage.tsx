@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAcademySettings, whatsappDisplay, handleFromUrl } from '../hooks/useAcademySettings';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import { 
   Phone, 
   Mail, 
@@ -30,10 +32,37 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
+
+  // الرسالة تُحفظ في contact_messages وتظهر في لوحة الإدارة (تبويب الرسائل)
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
-    setFormSubmitted(true);
+    setSending(true);
+    setSendError('');
+    try {
+      const id = `MSG-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+      await setDoc(doc(db, 'contact_messages', id), {
+        id,
+        name: formData.name.trim().slice(0, 100),
+        email: formData.email.trim().slice(0, 150),
+        subject: formData.subject.trim().slice(0, 200),
+        message: formData.message.trim().slice(0, 3000),
+        status: 'new',
+        submittedAt: new Date().toISOString()
+      });
+      setFormSubmitted(true);
+    } catch (err) {
+      console.error('Contact message error:', err);
+      setSendError(
+        language === 'ar'
+          ? 'تعذر إرسال الرسالة. حاول مرة أخرى أو تواصل معنا عبر واتساب.'
+          : 'Your message could not be sent. Please try again or contact us on WhatsApp.'
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   // القنوات تظهر فقط إذا كان رابطها محفوظًا في إعدادات الأكاديمية
@@ -317,12 +346,19 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
                   ></textarea>
                 </div>
 
+                {sendError && (
+                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold text-center">
+                    {sendError}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl font-bold text-sm bg-[#0A192F] text-white hover:bg-[#162B4D] transition-colors flex items-center justify-center gap-2"
+                  disabled={sending}
+                  className="w-full py-3 rounded-xl font-bold text-sm bg-[#0A192F] text-white hover:bg-[#162B4D] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   <Send className="w-4 h-4 text-[#D4AF37]" />
-                  <span>{t.contact.formSend}</span>
+                  <span>{sending ? (language === 'ar' ? 'جارٍ الإرسال...' : 'Sending...') : t.contact.formSend}</span>
                 </button>
               </form>
             )}

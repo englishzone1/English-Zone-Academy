@@ -41,6 +41,7 @@ import { AdminReviewsManager } from '../../components/admin/AdminReviewsManager'
 import { AdminStudentsManager } from '../../components/admin/AdminStudentsManager';
 import { AdminStarsLedger } from '../../components/admin/AdminStarsLedger';
 import { AdminBlogManager } from '../../components/admin/AdminBlogManager';
+import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -49,6 +50,7 @@ interface AdminDashboardProps {
 type TabId =
   | 'overview'
   | 'blog'
+  | 'messages'
   | 'registrations'
   | 'students'
   | 'feedback_reviews'
@@ -502,6 +504,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'overview', labelEn: 'Overview & Metrics', labelAr: 'الإحصائيات العامة' },
     { id: 'registrations', labelEn: `Registrations (${pendingRegistrations.length} Pending)`, labelAr: `طلبات التسجيل (${pendingRegistrations.length})` },
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
+    { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
     { id: 'feedback_reviews', labelEn: 'Student Reviews Gallery', labelAr: 'آراء وتقييمات الطلاب' },
     { id: 'content_cms', labelEn: 'Content & Curricula', labelAr: 'إدارة المحتوى والمناهج' },
     { id: 'blog', labelEn: 'Blog', labelAr: 'المدونة' },
@@ -843,6 +846,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* BLOG */}
         {activeTab === 'blog' && <AdminBlogManager onNotice={(msg) => notify(msg, 4000)} />}
+
+        {/* CONTACT MESSAGES */}
+        {activeTab === 'messages' && <AdminMessagesManager onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* ACADEMY SETTINGS */}
         {activeTab === 'settings' && (
