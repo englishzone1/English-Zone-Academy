@@ -3,7 +3,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
-import { studentDataService, PointsLogRecord } from '../../services/studentDataService';
+import { studentDataService } from '../../services/studentDataService';
 import { STAGE_PRICING_TABLE } from '../../data/academyData';
 import { EnglishZoneEmblem } from '../../components/common/Logo';
 import { UserProfile, RegistrationRequest } from '../../types/auth';
@@ -39,6 +39,7 @@ import {
 } from '../../services/contentManagementService';
 import { AdminReviewsManager } from '../../components/admin/AdminReviewsManager';
 import { AdminStudentsManager } from '../../components/admin/AdminStudentsManager';
+import { AdminStarsLedger } from '../../components/admin/AdminStarsLedger';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -131,8 +132,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const [settings, setSettings] = useState<AcademySettings | null>(null);
   const [isSettingsSaving, setIsSettingsSaving] = useState(false);
 
-  // Stars log
-  const [pointsLog, setPointsLog] = useState<PointsLogRecord[]>([]);
 
   useEffect(() => {
     const fetchRegs = async () => {
@@ -185,21 +184,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     fetchCms();
   }, []);
 
-  useEffect(() => {
-    if (activeTab !== 'stars_audit') return;
-    const fetchLog = async () => {
-      try {
-        const snap = await getDocs(collection(db, 'points_log'));
-        const rows = snap.docs.map((d) => ({ ...(d.data() as any), id: d.id } as PointsLogRecord));
-        rows.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
-        setPointsLog(rows);
-      } catch (err) {
-        console.error('Error fetching points_log:', err);
-        notify(tr('Could not load the stars log (check Firestore rules).', 'تعذر تحميل سجل النجوم (تحقق من قواعد Firestore).'), 5000, true);
-      }
-    };
-    fetchLog();
-  }, [activeTab]);
 
   const students = usersList.filter((u) => u.role === 'student');
   const teachers = usersList.filter((u) => u.role === 'teacher');
@@ -818,48 +802,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         )}
 
         {/* STARS AUDIT */}
-        {activeTab === 'stars_audit' && (
-          <div className={cardCls}>
-            <div>
-              <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
-                {tr('Stars Audit Ledger', 'سجل تدقيق النجوم')}
-              </h2>
-              <p className="text-xs text-gray-500">
-                {tr('Every star added to or removed from a student, newest first.', 'كل نجمة أُضيفت أو خُصمت من أي طالب، الأحدث أولًا.')}
-              </p>
-            </div>
-            {pointsLog.length === 0 ? (
-              <div className={emptyCls}>{tr('No star transactions recorded yet.', 'لا توجد عمليات نجوم مسجلة بعد.')}</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left rtl:text-right border-collapse text-xs sm:text-sm">
-                  <thead>
-                    <tr className="bg-[#FAF8F5] text-xs font-semibold text-gray-500 border-b border-gray-200">
-                      <th className={thCls}>{tr('Date', 'التاريخ')}</th>
-                      <th className={thCls}>{tr('Student', 'الطالب')}</th>
-                      <th className={thCls}>{tr('Stars', 'النجوم')}</th>
-                      <th className={thCls}>{tr('Reason', 'السبب')}</th>
-                      <th className={thCls}>{tr('By', 'بواسطة')}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {pointsLog.map((p) => (
-                      <tr key={p.id} className="hover:bg-[#FAF8F5]">
-                        <td className="py-2.5 px-4 text-gray-500">{p.timestamp ? new Date(p.timestamp).toLocaleString() : ''}</td>
-                        <td className="py-2.5 px-4 font-bold text-[#0A192F]">{studentName(p.studentId)}</td>
-                        <td className={`py-2.5 px-4 font-bold ${p.amount < 0 ? 'text-red-600' : 'text-[#AA820A]'}`}>
-                          {p.amount > 0 ? `+${p.amount}` : p.amount}
-                        </td>
-                        <td className="py-2.5 px-4 text-gray-600">{p.reason}</td>
-                        <td className="py-2.5 px-4 text-gray-500">{p.awardedBy}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
+        {activeTab === 'stars_audit' && <AdminStarsLedger onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* ACADEMY SETTINGS */}
         {activeTab === 'settings' && (
