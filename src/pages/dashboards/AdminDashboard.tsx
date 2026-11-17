@@ -111,6 +111,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const [newOfferDescEn, setNewOfferDescEn] = useState('');
   const [newOfferDescAr, setNewOfferDescAr] = useState('');
   const [newOfferValidUntil, setNewOfferValidUntil] = useState('');
+  const [newOfferCode, setNewOfferCode] = useState('');
 
   // New course form
   const [newCourseTitleEn, setNewCourseTitleEn] = useState('');
@@ -371,6 +372,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         descriptionEn: newOfferDescEn.trim(),
         descriptionAr: newOfferDescAr.trim(),
         validUntil: newOfferValidUntil,
+        promoCode: newOfferCode.trim() || undefined,
         isActive: true
       };
       await contentManagementService.saveOffer(offer);
@@ -382,6 +384,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
       setNewOfferDescEn('');
       setNewOfferDescAr('');
       setNewOfferValidUntil('');
+      setNewOfferCode('');
       notify(tr('Offer added.', 'تمت إضافة العرض.'));
     } catch (err) {
       console.error('Error adding offer:', err);
@@ -1328,6 +1331,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                     <div>
                       <label className={labelCls}>{tr('Valid until', 'ساري حتى')}</label>
                       <input type="date" value={newOfferValidUntil} onChange={(e) => setNewOfferValidUntil(e.target.value)} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>{tr('Promo code (optional)', 'رمز القسيمة (اختياري)')}</label>
+                      <input type="text" dir="ltr" value={newOfferCode} onChange={(e) => setNewOfferCode(e.target.value)} className={inputCls} />
                     </div>
                   </div>
                   <div className="flex justify-end">

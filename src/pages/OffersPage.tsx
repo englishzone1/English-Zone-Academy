@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { contentManagementService, DynamicPromotionOffer } from '../services/contentManagementService';
 import { useLanguage } from '../context/LanguageContext';
 import { Tag, Sparkles, Check, ArrowRight, Gift, Calendar, Copy, CheckCheck } from 'lucide-react';
 
@@ -16,28 +17,30 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
     setTimeout(() => setCopiedCode(null), 2500);
   };
 
-  const offers = [
-    {
-      id: 'package-15',
-      title: t.offers.packageDiscountTitle,
-      desc: t.offers.packageDiscountDesc,
-      discount: '15% OFF',
-      code: t.offers.packageDiscountCode,
-      badge: language === 'ar' ? 'باقة المرحلة الكاملة' : 'Stage Bundle',
-      terms: language === 'ar' ? 'ينطبق عند حجز مرحلة كاملة (شهران) مقدماً' : 'Applies to complete 2-month stage enrollments',
-      color: 'gold'
-    },
-    {
-      id: 'promo-10',
-      title: t.offers.promoDiscountTitle,
-      desc: t.offers.promoDiscountDesc,
-      discount: '10% OFF',
-      code: t.offers.promoDiscountCode,
-      badge: language === 'ar' ? 'للطلاب الجدد' : 'New Students',
-      terms: language === 'ar' ? 'خصم فوري على الشهر الأول من أي برنامج' : 'Immediate discount on your first month',
-      color: 'navy'
-    }
-  ];
+  // العروض المنشورة من لوحة الإدارة فقط (promotions_offers)، ويُخفى العرض بعد تاريخ انتهائه
+  const [offersRaw, setOffersRaw] = useState<DynamicPromotionOffer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    contentManagementService
+      .getOffers()
+      .then((list) => setOffersRaw(list || []))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const isAr = language === 'ar';
+  const offers = offersRaw
+    .filter((o) => o.isActive && (!o.validUntil || o.validUntil >= today))
+    .map((o) => ({
+      id: o.id,
+      title: (isAr ? o.titleAr : o.titleEn) || o.titleAr || o.titleEn,
+      desc: (isAr ? o.descriptionAr : o.descriptionEn) || o.descriptionAr || o.descriptionEn,
+      discount: o.discountPercentage ? (isAr ? `خصم ${o.discountPercentage}%` : `${o.discountPercentage}% OFF`) : '',
+      code: (o.promoCode || '').trim(),
+      badge: (isAr ? o.badgeAr : o.badgeEn) || o.badgeAr || o.badgeEn,
+      terms: o.validUntil ? (isAr ? `ساري حتى ${o.validUntil}` : `Valid until ${o.validUntil}`) : ''
+    }));
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] py-12">
@@ -56,6 +59,12 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        {!loading && offers.length === 0 && (
+          <div className="p-10 rounded-3xl bg-white border border-gray-200 text-center text-sm text-gray-500">
+            {isAr ? 'لا توجد عروض حاليًا.' : 'There are no offers at the moment.'}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {offers.map((offer) => (
             <div
@@ -64,10 +73,14 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
-                    <Gift className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>{offer.badge}</span>
-                  </span>
+                  {offer.badge ? (
+                    <span className="px-3 py-1 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
+                      <Gift className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span>{offer.badge}</span>
+                    </span>
+                  ) : (
+                    <span />
+                  )}
                   <span className="font-serif-luxury font-bold text-2xl text-[#D4AF37]">
                     {offer.discount}
                   </span>
@@ -81,8 +94,8 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
                   {offer.desc}
                 </p>
 
-                {/* Promo Code Box */}
-                <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 flex items-center justify-between mb-4">
+                {offer.code && (
+                                <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 flex items-center justify-between mb-4">
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block font-semibold">
                       {language === 'ar' ? 'رمز القسيمة' : 'Promo Code'}
@@ -108,11 +121,14 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
                     )}
                   </button>
                 </div>
+                )}
 
-                <div className="text-xs text-gray-400 flex items-center gap-1.5 mb-6">
-                  <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>{offer.terms}</span>
-                </div>
+                {offer.terms && (
+                  <div className="text-xs text-gray-400 flex items-center gap-1.5 mb-6">
+                    <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span>{offer.terms}</span>
+                  </div>
+                )}
               </div>
 
               <button

@@ -75,6 +75,7 @@ export interface DynamicPromotionOffer {
   descriptionEn: string;
   descriptionAr: string;
   validUntil: string;
+  promoCode?: string;
   isActive: boolean;
 }
 
