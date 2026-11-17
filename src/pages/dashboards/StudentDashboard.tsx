@@ -11,7 +11,8 @@ import {
   TimetableRecord
 } from '../../services/studentDataService';
 import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle } from 'lucide-react';
-import { OFFICIAL_CONTACTS } from '../../data/academyData';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 
 interface StudentDashboardProps {
   navigate: (route: string) => void;
@@ -27,6 +28,17 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
   const [pointsLog, setPointsLog] = useState<PointsLogRecord[]>([]);
   const [gradesList, setGradesList] = useState<GradeRecord[]>([]);
   const [timetable, setTimetable] = useState<TimetableRecord[]>([]);
+  // رابط واتساب من إعدادات الأكاديمية في لوحة الإدارة فقط (لا قيمة ثابتة)
+  const [whatsappLink, setWhatsappLink] = useState('');
+
+  useEffect(() => {
+    getDoc(doc(db, 'academy_settings', 'main'))
+      .then((snap) => {
+        const link = snap.exists() ? String((snap.data() as any).whatsapp || '').trim() : '';
+        setWhatsappLink(link);
+      })
+      .catch(() => setWhatsappLink(''));
+  }, []);
 
   // The student dashboard opens only after the academy sets subscriptionStatus = 'active'
   const isActive =
@@ -113,8 +125,9 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
           </div>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            {whatsappLink && (
             <a
-              href={`${OFFICIAL_CONTACTS.whatsapp}?text=${encodeURIComponent(`Hello Admissions, I have created my English Zone account (${firebaseUser.email}, UID: ${firebaseUser.uid}). Please activate my student profile.`)}`}
+              href={`${whatsappLink}${whatsappLink.includes('?') ? '&' : '?'}text=${encodeURIComponent(`Hello Admissions, I have created my English Zone account (${firebaseUser.email}, UID: ${firebaseUser.uid}). Please activate my student profile.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#1EBE5D] transition-colors flex items-center justify-center gap-2 shadow"
@@ -122,6 +135,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
               <Phone className="w-4 h-4" />
               <span>{isAr ? 'تواصل عبر واتساب للتفعيل' : 'Contact via WhatsApp'}</span>
             </a>
+            )}
 
             <button
               onClick={async () => {
