@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ExternalLink, Maximize2, Minimize2, BookOpenCheck, CheckCircle2 } from 'lucide-react';
-import { useAcademySettings } from '../../hooks/useAcademySettings';
+import { Maximize2, Minimize2, BookOpenCheck, CheckCircle2 } from 'lucide-react';
 import { studentHubService, HomeworkResult } from '../../services/studentHubService';
 
 interface Props {
@@ -17,13 +16,14 @@ const kindLabel = (k: string, isAr: boolean) =>
 // منصة الواجبات والاختبارات التفاعلية داخل لوحة الطالب.
 // الموقع المضمّن يرسل النتائج والتقدّم، فتُحفظ هنا باسم الطالب وتظهر للإدارة والمعلم.
 export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, teacherId }) => {
-  const { homeworkUrl } = useAcademySettings();
+  // موقع الواجبات صار جزءًا من المنصة نفسها، ولا يُفتح إلا من هنا
+  const homeworkUrl = '/homework/index.html';
   const [tall, setTall] = useState(false);
   const [results, setResults] = useState<HomeworkResult[]>([]);
   const [savedNote, setSavedNote] = useState('');
   const frameRef = useRef<HTMLIFrameElement | null>(null);
   const progressTimer = useRef<number | null>(null);
-  const valid = !!homeworkUrl && /^https:\/\//i.test(homeworkUrl);
+  const valid = true;
 
   const loadResults = () =>
     studentHubService
@@ -107,21 +107,12 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
               {tall ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
               {tall ? (isAr ? 'تصغير' : 'Smaller') : isAr ? 'تكبير' : 'Bigger'}
             </button>
-            <a
-              href={homeworkUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 flex items-center gap-1.5"
-            >
-              <ExternalLink className="w-4 h-4" />
-              {isAr ? 'صفحة كاملة' : 'Full page'}
-            </a>
           </div>
         </div>
         <p className="text-[11px] text-gray-500">
           {isAr
-            ? 'حلّ الدروس والاختبارات هنا داخل لوحتك حتى تُحفظ نتائجك ويراها معلمك. الفتح في صفحة كاملة لا يحفظ النتائج.'
-            : 'Solve lessons and tests here inside your dashboard so your results are saved for your teacher. The full page does not save results.'}
+            ? 'نتائجك وتقدّمك تُحفظ تلقائيًا باسمك ويراها معلمك.'
+            : 'Your results and progress are saved automatically for your teacher.'}
         </p>
         {savedNote && (
           <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5">
