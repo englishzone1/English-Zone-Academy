@@ -48,17 +48,16 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
   }, [initialLevel]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName || !formData.whatsappNumber || !formData.email) return;
 
     setIsSubmitting(true);
+    setSubmitError('');
     try {
-      const generatedId = `EZ-REG-${Math.floor(100000 + Math.random() * 900000)}`;
-      setSubmissionId(generatedId);
-
-      await studentDataService.submitRegistration({
+      const savedId = await studentDataService.submitRegistration({
         fullName: formData.fullName.trim(),
         age: formData.age ? String(formData.age) : '',
         country: formData.country.trim(),
@@ -70,11 +69,16 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
         notes: formData.notes
       } as any);
 
+      setSubmissionId(savedId);
       setIsSubmitted(true);
     } catch (err) {
       console.error('Registration submission error:', err);
-      // Fallback submission ID display
-      setIsSubmitted(true);
+      // لا نعرض نجاحًا وهميًا: الطلب لم يُحفظ
+      setSubmitError(
+        language === 'ar'
+          ? 'تعذر إرسال الطلب. حاول مرة أخرى أو تواصل معنا عبر واتساب.'
+          : 'Your application could not be sent. Please try again or contact us on WhatsApp.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -394,13 +398,20 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                 ></textarea>
               </div>
 
+              {submitError && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold text-center">
+                  {submitError}
+                </div>
+              )}
+
               {/* Submit CTA */}
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] hover:shadow-xl shadow-[#D4AF37]/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                disabled={isSubmitting}
+                className="disabled:opacity-60 w-full py-4 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] hover:shadow-xl shadow-[#D4AF37]/20 transition-all active:scale-95 flex items-center justify-center gap-2"
               >
                 <Send className="w-5 h-5" />
-                <span>{t.register.submitBtn}</span>
+                <span>{isSubmitting ? (language === 'ar' ? 'جارٍ الإرسال...' : 'Sending...') : t.register.submitBtn}</span>
               </button>
 
             </form>
