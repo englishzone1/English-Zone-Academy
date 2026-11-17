@@ -125,7 +125,7 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
     { id: 'look', ar: 'الشخصية', en: 'Character', icon: User },
     { id: 'hair', ar: female ? 'الحجاب والشعر' : 'الشعر', en: female ? 'Hijab & hair' : 'Hair', icon: Scissors },
     { id: 'outfit', ar: 'الملابس', en: 'Outfits', icon: Shirt },
-    { id: 'colors', ar: 'الألوان والخلفية', en: 'Colors', icon: Palette }
+    { id: 'colors', ar: 'الخلفية', en: 'Background', icon: Palette }
   ];
 
   return (
@@ -193,14 +193,14 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
 
           {/* Controls */}
           <div className="lg:col-span-7 bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="flex overflow-x-auto border-b border-gray-100">
+            <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-gray-100">
               {tabs.map((t) => {
                 const Icon = t.icon;
                 return (
                   <button
                     key={t.id}
                     onClick={() => setTab(t.id)}
-                    className={`flex-1 min-w-[110px] px-4 py-3.5 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 ${
+                    className={`px-3 py-3.5 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 ${
                       tab === t.id ? 'border-[#D4AF37] text-[#0A192F]' : 'border-transparent text-gray-500'
                     }`}
                   >
@@ -313,17 +313,22 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
                       </button>
                     ))}
                   </div>
-                </>
-              )}
-
-              {tab === 'colors' && (
-                <>
-                  <Section title={tr('Main color', 'اللون الأساسي للملابس')}>
+                  <Section title={tr('Clothes color', 'لون الملابس')}>
                     <Swatches colors={FABRIC_COLORS} value={a.outfitColor} onPick={(c) => set({ outfitColor: c })} />
                   </Section>
                   <Section title={tr('Second color (skirt, trousers, details)', 'اللون الثاني (التنورة، البنطال، التفاصيل)')}>
                     <Swatches colors={FABRIC_COLORS} value={a.accentColor} onPick={(c) => set({ accentColor: c })} />
                   </Section>
+                  {female && a.hijab !== 'none' && (
+                    <Section title={tr('Hijab color', 'لون الحجاب')}>
+                      <Swatches colors={FABRIC_COLORS} value={a.hijabColor} onPick={(c) => set({ hijabColor: c })} />
+                    </Section>
+                  )}
+                </>
+              )}
+
+              {tab === 'colors' && (
+                <>
                   <Section title={tr('Background', 'الخلفية')}>
                     <Swatches colors={BACKGROUNDS} value={a.bg} onPick={(c) => set({ bg: c })} />
                   </Section>
