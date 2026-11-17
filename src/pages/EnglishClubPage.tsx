@@ -4,7 +4,7 @@ import { englishClubService } from '../services/englishClubService';
 import { EnglishClubSettings } from '../types/englishClub';
 import { JoinClubModal } from '../components/englishClub/JoinClubModal';
 import { EnglishZoneEmblem } from '../components/common/Logo';
-import { OFFICIAL_CONTACTS } from '../data/academyData';
+import { useAcademySettings } from '../hooks/useAcademySettings';
 import { 
   Sparkles, 
   Clock, 
@@ -32,6 +32,7 @@ interface EnglishClubPageProps {
 const OFFICIAL_ENGLISH_CLUB_IMAGE = '/assets/aistudio/file_00000000258081f4b09279610d241227_e69634ba.png';
 
 export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) => {
+  const contacts = useAcademySettings();
   const { language, t } = useLanguage();
   const c = t.englishClub;
 
@@ -488,8 +489,9 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                 <span>{c.joinCta}</span>
               </button>
 
+              {contacts.whatsapp && (
               <a
-                href={`${OFFICIAL_CONTACTS.whatsapp}?text=${encodeURIComponent(
+                href={`${contacts.whatsapp}?text=${encodeURIComponent(
                   'Hello English Zone Academy! I am inquiring about joining the English Club conversation sessions.'
                 )}`}
                 target="_blank"
@@ -499,6 +501,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                 <Phone className="w-4 h-4 text-[#25D366]" />
                 <span>{language === 'ar' ? 'استفسار عبر الواتساب' : 'WhatsApp Inquiry'}</span>
               </a>
+              )}
             </div>
 
           </div>
