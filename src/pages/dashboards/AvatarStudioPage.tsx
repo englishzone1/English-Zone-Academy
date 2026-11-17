@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { EZAvatar } from '../../components/avatar/EZAvatar';
+import { AvatarRenderer } from '../../components/avatar/AvatarRenderer';
+import { squarePhoto } from '../../services/studentHubService';
 import {
   EZAvatarConfig,
   Gender,
@@ -19,7 +21,7 @@ import {
   MALE_OUTFITS,
   FEMALE_OUTFITS
 } from '../../components/avatar/ezAvatar';
-import { ArrowLeft, Save, Dices, RotateCcw, User, Scissors, Shirt, Palette, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Save, Dices, RotateCcw, User, Scissors, Shirt, Palette, CheckCircle2, Sparkles, Camera, Trash2 } from 'lucide-react';
 
 interface AvatarStudioPageProps {
   navigate: (route: string) => void;
@@ -145,7 +147,7 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
             <p className="text-sm text-gray-500 mt-1">{tr('Design your character, then save.', 'صمّم شخصيتك ثم اضغط حفظ.')}</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => set(randomAvatar(a.gender))} className="px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-xs font-bold flex items-center gap-1.5">
+            <button onClick={() => set({ ...randomAvatar(a.gender), photo: a.photo, mode: 'cartoon' })} className="px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-xs font-bold flex items-center gap-1.5">
               <Dices className="w-4 h-4 text-[#AA820A]" />
               {tr('Random', 'عشوائي')}
             </button>
@@ -172,9 +174,65 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
               <EZAvatar config={a} view="full" size={260} />
             </div>
             <div className="flex items-center justify-center gap-3">
-              <EZAvatar config={a} view="head" size={64} />
+              <AvatarRenderer config={a} size={64} />
               <span className="text-[11px] text-gray-500">{tr('How others see you in the community', 'هكذا يظهر أفاتارك للآخرين في المجتمع')}</span>
             </div>
+            {/* Profile photo */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
+              <h4 className="text-xs font-bold text-[#0A192F] flex items-center gap-1.5">
+                <Camera className="w-4 h-4 text-[#AA820A]" />
+                {tr('My profile photo', 'صورتي الشخصية')}
+              </h4>
+              <div className="flex items-center gap-3">
+                {a.photo ? (
+                  <img src={a.photo} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]" />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-gray-100 border border-dashed border-gray-300" />
+                )}
+                <label className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold cursor-pointer">
+                  {a.photo ? tr('Change photo', 'تغيير الصورة') : tr('Upload photo', 'رفع صورة')}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      try {
+                        set({ photo: await squarePhoto(f), mode: 'photo' });
+                      } catch {
+                        setStatus('error');
+                      }
+                    }}
+                  />
+                </label>
+                {a.photo && (
+                  <button onClick={() => set({ photo: '', mode: 'cartoon' })} className="p-2 text-gray-400 hover:text-red-600" title={tr('Remove', 'حذف')}>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              {a.photo && (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => set({ mode: 'photo' })}
+                    className={`py-2 rounded-xl text-[11px] font-bold border ${a.mode === 'photo' ? 'bg-[#D4AF37] text-[#0A192F] border-[#D4AF37]' : 'bg-white text-gray-600 border-gray-200'}`}
+                  >
+                    {tr('Show my photo', 'أظهر صورتي')}
+                  </button>
+                  <button
+                    onClick={() => set({ mode: 'cartoon' })}
+                    className={`py-2 rounded-xl text-[11px] font-bold border ${a.mode !== 'photo' ? 'bg-[#D4AF37] text-[#0A192F] border-[#D4AF37]' : 'bg-white text-gray-600 border-gray-200'}`}
+                  >
+                    {tr('Show my avatar', 'أظهر الأفاتار')}
+                  </button>
+                </div>
+              )}
+              <p className="text-[10px] text-gray-400">
+                {tr('Remember to press Save. Your choice appears everywhere on the site.', 'لا تنسَ الضغط على حفظ. ما تختاره يظهر في كل مكان في الموقع.')}
+              </p>
+            </div>
+
             {/* Gender */}
             <div className="grid grid-cols-2 gap-2">
               {(['female', 'male'] as Gender[]).map((g) => (

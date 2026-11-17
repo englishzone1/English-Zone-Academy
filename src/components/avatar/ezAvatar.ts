@@ -19,6 +19,8 @@ export interface EZAvatarConfig {
   glasses: 'none' | 'round' | 'square';
   cap: boolean;
   bg: string;
+  photo?: string; // صورة شخصية مضغوطة (data URL)
+  mode?: 'cartoon' | 'photo';
 }
 
 export const SKINS = ['#F9DCC8', '#F1C6A3', '#E2AC7E', '#C98E5E', '#A26B42', '#6E4428'];

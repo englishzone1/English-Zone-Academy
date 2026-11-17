@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Save, Trash2, Eye, EyeOff, Pencil, X, Download } from 'lucide-react';
+import { Plus, Save, Trash2, Eye, EyeOff, Pencil, X, Download, Image as ImageIcon } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { contentManagementService, BlogPostRecord } from '../../services/contentManagementService';
+import { compressImage } from '../../services/studentHubService';
 
 interface Props {
   onNotice: (message: string) => void;
@@ -193,7 +194,45 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
             {field('categoryEn', 'التصنيف بالإنجليزية', 'Category (English)')}
             {field('readTime', 'مدة القراءة (مثال: 5 دقائق)', 'Read time (e.g. 5 min)')}
             {field('publishDate', 'تاريخ النشر', 'Publish date', { type: 'date' })}
-            <div className="sm:col-span-2">{field('imageUrl', 'رابط صورة المقال (اختياري)', 'Image link (optional)')}</div>
+            <div className="sm:col-span-2 space-y-2">
+              <label className={labelCls}>{tr('Post image (optional)', 'صورة المقال (اختياري)')}</label>
+              <div className="flex flex-wrap items-center gap-3">
+                {draft.imageUrl && <img src={draft.imageUrl} alt="" className="h-20 rounded-xl border border-gray-200 object-cover" />}
+                <label className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold cursor-pointer flex items-center gap-1.5">
+                  <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
+                  {draft.imageUrl ? tr('Change image', 'تغيير الصورة') : tr('Upload image', 'رفع صورة')}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      try {
+                        set({ imageUrl: await compressImage(f, 1200) });
+                      } catch {
+                        onNotice(tr('This image is too large.', 'الصورة كبيرة جدًا.'));
+                      }
+                    }}
+                  />
+                </label>
+                {draft.imageUrl && (
+                  <button onClick={() => set({ imageUrl: '' })} className="text-xs font-bold text-red-600">
+                    {tr('Remove image', 'حذف الصورة')}
+                  </button>
+                )}
+              </div>
+              {!draft.imageUrl.startsWith('data:') && (
+                <input
+                  type="text"
+                  dir="ltr"
+                  value={draft.imageUrl}
+                  onChange={(e) => set({ imageUrl: e.target.value })}
+                  placeholder={tr('...or paste an image link', '...أو الصق رابط صورة')}
+                  className={inputCls}
+                />
+              )}
+            </div>
           </div>
           <label className="flex items-center gap-2 text-xs font-bold text-[#0A192F]">
             <input type="checkbox" checked={draft.isPublished} onChange={(e) => set({ isPublished: e.target.checked })} />

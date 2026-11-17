@@ -308,6 +308,26 @@ export const compressImage = (file: File, maxSide = 1280): Promise<string> =>
     img.src = url;
   });
 
+// صورة شخصية مربعة صغيرة (قص من الوسط) لتُحفظ داخل ملف المستخدم
+export const squarePhoto = (file: File, side = 192): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const s = Math.min(img.width, img.height);
+      const canvas = document.createElement('canvas');
+      canvas.width = side;
+      canvas.height = side;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas not supported'));
+      ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, side, side);
+      resolve(canvas.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = () => reject(new Error('Could not read image'));
+    img.src = url;
+  });
+
 export const blobToDataUrl = (blob: Blob): Promise<string> =>
   new Promise((resolve, reject) => {
     const r = new FileReader();

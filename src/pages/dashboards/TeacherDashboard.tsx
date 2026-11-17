@@ -7,6 +7,9 @@ import { AdminStudentsManager } from '../../components/admin/AdminStudentsManage
 import { AdminStarsLedger } from '../../components/admin/AdminStarsLedger';
 import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
+import { AvatarRenderer } from '../../components/avatar/AvatarRenderer';
+import { toEZAvatar } from '../../components/avatar/ezAvatar';
+import { squarePhoto } from '../../services/studentHubService';
 
 interface TeacherDashboardProps {
   navigate: (route: string) => void;
@@ -17,7 +20,7 @@ type Tab = 'students' | 'ledger' | 'messages' | 'community';
 // لوحة المعلم: طلاب مجموعاته فقط، بدون صلاحيات الإدارة
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) => {
   const { language } = useLanguage();
-  const { user, firebaseUser, logout } = useAuth();
+  const { user, firebaseUser, logout, saveAvatarConfig } = useAuth();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [tab, setTab] = useState<Tab>('students');
@@ -40,7 +43,32 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="bg-white rounded-3xl p-6 border border-[#D4AF37]/30 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <EnglishZoneEmblem sizeClass="w-14 h-14" glow={false} />
+            <label className="relative cursor-pointer group" title={tr('Change my photo', 'تغيير صورتي')}>
+              {(user as any)?.avatarConfig?.photo ? (
+                <AvatarRenderer config={(user as any).avatarConfig} size={56} />
+              ) : (
+                <EnglishZoneEmblem sizeClass="w-14 h-14" glow={false} />
+              )}
+              <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[9px] font-bold">
+                {tr('Photo', 'صورة')}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  try {
+                    const photo = await squarePhoto(f);
+                    await saveAvatarConfig({ ...toEZAvatar((user as any)?.avatarConfig), photo, mode: 'photo' } as any);
+                    notify(tr('Photo saved.', 'تم حفظ صورتك.'));
+                  } catch {
+                    notify(tr('Could not save the photo.', 'تعذر حفظ الصورة.'));
+                  }
+                }}
+              />
+            </label>
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#AA820A]">{tr('Teacher portal', 'بوابة المعلم')}</span>
               <h1 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{user?.fullName}</h1>
@@ -85,7 +113,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
         {tab === 'ledger' && <AdminStarsLedger onNotice={notify} teacherMode />}
         {tab === 'messages' && <AdminMessagesManager onNotice={notify} teacherMode />}
         {tab === 'community' && firebaseUser && (
-          <CommunityFeed uid={firebaseUser.uid} name={user?.fullName || tr('Teacher', 'معلم')} role="teacher" isAr={isAr} />
+          <CommunityFeed uid={firebaseUser.uid} name={user?.fullName || tr('Teacher', 'معلم')} role="teacher" isAr={isAr} avatar={(user as any)?.avatarConfig} />
         )}
       </div>
     </div>

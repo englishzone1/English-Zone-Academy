@@ -9,7 +9,7 @@ import {
   isSafeUrl,
   MAX_MEDIA_CHARS
 } from '../../services/studentHubService';
-import { EZAvatar } from '../avatar/EZAvatar';
+import { AvatarRenderer } from '../avatar/AvatarRenderer';
 import { EnglishZoneEmblem } from '../common/Logo';
 
 interface Props {
@@ -152,7 +152,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }
         authorId: uid,
         authorName: name,
         authorRole: role,
-        authorAvatar: role === 'student' && avatar ? avatar : undefined,
+        authorAvatar: role !== 'admin' && avatar ? avatar : undefined,
         text: text.trim().slice(0, 3000),
         imageDataUrl: image || undefined,
         audioDataUrl: audio || undefined,
@@ -216,7 +216,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }
         authorId: uid,
         authorName: name,
         authorRole: role,
-        authorAvatar: role === 'student' && avatar ? avatar : undefined,
+        authorAvatar: role !== 'admin' && avatar ? avatar : undefined,
         text: commentText
       });
       setCommentText('');
@@ -250,10 +250,10 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }
     ) : null;
 
   const Face = ({ r, cfg, size }: { r: string; cfg?: any; size: number }) =>
-    r !== 'student' ? (
+    r === 'admin' || (r === 'teacher' && !cfg) ? (
       <EnglishZoneEmblem sizeClass={size > 30 ? 'w-10 h-10' : 'w-7 h-7'} glow={false} />
     ) : (
-      <EZAvatar config={cfg} view="head" size={size} />
+      <AvatarRenderer config={cfg} size={size} />
     );
 
   const when = (iso: string) => (iso ? new Date(iso).toLocaleString(isAr ? 'ar' : 'en', { dateStyle: 'medium', timeStyle: 'short' }) : '');
