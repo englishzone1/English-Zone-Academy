@@ -24,6 +24,59 @@ const pricesText = (cards: LevelPriceCard[], isAr: boolean): string => {
     .join('\n');
 };
 
+// تطبيع بسيط للعربية للمطابقة بين رسالة الزائرة والأسئلة
+const normAr = (t: string) =>
+  t
+    .toLowerCase()
+    .replace(/[\u064B-\u0652\u0640]/g, '')
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ');
+const STOP = new Set(['اريد', 'ما', 'هي', 'هو', 'كيف', 'كم', 'هل', 'في', 'من', 'عن', 'على', 'الى', 'لي', 'ان', 'او']);
+const words = (t: string) =>
+  normAr(t)
+    .split(/\s+/)
+    .map((w) => w.replace(/^(وال|بال|لل|ال|و)/, ''))
+    .filter((w) => w.length >= 3 && !STOP.has(w));
+
+// مواضيع بكلماتها المختلفة (سجّل/التسجيل/اشتراك…)
+const TOPICS: [string, RegExp][] = [
+  ['reg', /سجل|سجيل|اشترك|انضم|register|sign ?up|join/],
+  ['price', /سعر|اسعار|تكلف|رسوم|بكم|price|cost|fee/],
+  ['level', /مستوي|مستوى|cefr|level/],
+  ['time', /موعد|مواعيد|وقت|اوقات|جدول|دوام|schedule|time/],
+  ['cert', /شهاد|certif/],
+  ['pay', /دفع|ادفع|مقدم|قسط|pay/],
+  ['live', /مباشر|اونلاين|live|online/],
+  ['group', /مجموع|group/],
+  ['hw', /واجب|اختبار|homework|test/],
+  ['login', /دخول|ادخل|كلمه المرور|login|password/],
+  ['active', /تفعيل|يفعل|مفعل|activ/]
+];
+const tags = (t: string) => new Set(TOPICS.filter(([, re]) => re.test(normAr(t))).map(([k]) => k));
+
+// أقرب سؤال لرسالة الزائرة في Tawk (مثل زر «الأسعار»)
+const bestMatch = (msg: string, list: ChatFaq[]): ChatFaq | null => {
+  const mw = words(msg);
+  const mt = tags(msg);
+  if (!mw.length && !mt.size) return null;
+  let best: ChatFaq | null = null;
+  let score = 0;
+  list.forEach((f) => {
+    const qw = words(f.questionAr + ' ' + (f.questionEn || ''));
+    const qt = tags(f.questionAr + ' ' + (f.questionEn || ''));
+    const sc =
+      [...mt].filter((t) => qt.has(t)).length * 2 +
+      mw.filter((w) => qw.some((q) => q.startsWith(w.slice(0, 4)) || w.startsWith(q.slice(0, 4)))).length;
+    if (sc > score) {
+      score = sc;
+      best = f;
+    }
+  });
+  return best;
+};
+
 // مساعد آلي مجاني: أزرار أسئلة جاهزة من لوحة الإدارة، وزر للمحادثة الحقيقية عبر Tawk
 export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   const { language } = useLanguage();
@@ -37,6 +90,38 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
 
   useEffect(() => {
     if (!hidden) chatFaqService.getActive().then(setFaqs);
+  }, [hidden]);
+
+  // عندما تكتب الزائرة في Tawk (أو تضغط زرًا مقترحًا) يظهر الجواب فورًا من المساعد
+  const faqsRef = useRef<ChatFaq[]>([]);
+  faqsRef.current = faqs;
+  const cardsRef = useRef(cards);
+  cardsRef.current = cards;
+  useEffect(() => {
+    if (hidden) return;
+    const w = window as any;
+    w.Tawk_API = w.Tawk_API || {};
+    const prev = w.Tawk_API.onChatMessageVisitor;
+    w.Tawk_API.onChatMessageVisitor = (message: any) => {
+      if (typeof prev === 'function') prev(message);
+      const text = String(message?.message ?? message ?? '');
+      const f = bestMatch(text, faqsRef.current);
+      if (!f) return;
+      const ans = f.answerAr.split(PRICES_TOKEN).join(pricesText(cardsRef.current, true));
+      setMsgs((m) => [...m, { from: 'me', text: f.questionAr }, { from: 'bot', text: ans }]);
+      setOpen(true);
+      // على الجوال تغطي نافذة Tawk الشاشة، فنصغّرها ليظهر الجواب
+      if (window.innerWidth < 640) {
+        try {
+          w.Tawk_API.minimize?.();
+        } catch {
+          // ignore
+        }
+      }
+    };
+    return () => {
+      w.Tawk_API.onChatMessageVisitor = prev;
+    };
   }, [hidden]);
 
   useEffect(() => {
