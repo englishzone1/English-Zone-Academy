@@ -161,6 +161,19 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
     }
   };
 
+  const [syncing, setSyncing] = useState(false);
+  const handleSyncBoards = async () => {
+    setSyncing(true);
+    try {
+      const n = await groupService.syncAllMembers();
+      onNotice(tr(`Student group boards updated (${n} students).`, `تم تحديث لوحات المجموعات للطلاب (${n} طالب).`));
+    } catch (err) {
+      fail(err, 'تعذر التحديث:', 'Could not update:');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   /* ------------------------------ Criteria handlers ------------------------------ */
 
   const handleSeedCriteria = async () => {
@@ -381,6 +394,19 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
           {/* ---------------- GROUPS ---------------- */}
           {subTab === 'groups' && (
             <div className="space-y-6">
+              <div className="p-4 rounded-2xl border border-gray-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <p className="text-xs text-gray-600">
+                  {tr(
+                    'Students see their group board (names and points only). It updates automatically; press this once now, and again if a board looks wrong.',
+                    'يرى كل طالب لوحة مجموعته (الأسماء والنقاط فقط). تتحدث تلقائيًا، اضغط هذا الزر مرة واحدة الآن، ثم عند الحاجة فقط.'
+                  )}
+                </p>
+                <button onClick={handleSyncBoards} disabled={syncing} className={primaryBtn}>
+                  <Save className="w-4 h-4 text-[#D4AF37]" />
+                  <span>{syncing ? tr('Updating...', 'جارٍ التحديث...') : tr('Update student boards', 'تحديث لوحات الطلاب')}</span>
+                </button>
+              </div>
+
               <div className="p-5 rounded-2xl border border-[#D4AF37]/40 bg-[#FAF8F5] space-y-4">
                 <h4 className="font-bold text-xs text-[#0A192F]">{editingGroupId ? tr('Edit group', 'تعديل المجموعة') : tr('New group', 'مجموعة جديدة')}</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
