@@ -559,7 +559,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { key: 'facebook', labelEn: 'Facebook link', labelAr: 'رابط فيسبوك' },
     { key: 'telegram', labelEn: 'Telegram link', labelAr: 'رابط تيليغرام' },
     { key: 'placementTestUrl', labelEn: 'Placement test link', labelAr: 'رابط اختبار تحديد المستوى' },
-    { key: 'tawkUrl', labelEn: 'Tawk.to chat link (Direct Chat Link)', labelAr: 'رابط محادثة Tawk.to (Direct Chat Link)' }
+    { key: 'tawkUrl', labelEn: 'Tawk.to chat link (Direct Chat Link)', labelAr: 'رابط محادثة Tawk.to (Direct Chat Link)' },
+    { key: 'homeworkUrl', labelEn: 'Interactive homework & tests site link', labelAr: 'رابط منصة الواجبات والاختبارات التفاعلية' }
   ];
 
   const updateTrack = (key: string, patch: Record<string, any>) => {

@@ -102,6 +102,7 @@ export interface BlogPostRecord extends BlogPost {
 export interface AcademySettings extends SocialLinks {
   placementTestUrl: string;
   tawkUrl?: string; // رابط المحادثة المباشرة من Tawk.to
+  homeworkUrl?: string; // رابط منصة الواجبات والاختبارات التفاعلية
   registrationOpen: boolean;
   updatedAt?: string;
 }

@@ -14,6 +14,7 @@ export interface PublicAcademySettings {
   telegram: string;
   placementTestUrl: string;
   tawkUrl: string;
+  homeworkUrl: string;
 }
 
 const EMPTY: PublicAcademySettings = {
@@ -25,7 +26,8 @@ const EMPTY: PublicAcademySettings = {
   facebook: '',
   telegram: '',
   placementTestUrl: '',
-  tawkUrl: ''
+  tawkUrl: '',
+  homeworkUrl: ''
 };
 
 // قيمة صالحة فقط: نص غير فارغ وليس "#"
@@ -52,7 +54,8 @@ const loadSettings = (): Promise<PublicAcademySettings> => {
           facebook: clean(d.facebook),
           telegram: clean(d.telegram),
           placementTestUrl: clean(d.placementTestUrl),
-          tawkUrl: clean(d.tawkUrl)
+          tawkUrl: clean(d.tawkUrl),
+          homeworkUrl: clean(d.homeworkUrl)
         };
       })
       .catch((err) => {
