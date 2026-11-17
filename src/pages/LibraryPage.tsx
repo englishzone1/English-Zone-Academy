@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Newspaper } from 'lucide-react';
+import { BookOpen, Newspaper, Gift } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { studentHubService } from '../services/studentHubService';
 
 // صفحة عامة: المواد والمجلة التي نشرتها الأكاديمية «للعامة»
-export const LibraryPage: React.FC = () => {
+export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
+  const { isAuthenticated } = useAuth();
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    studentHubService
-      .getPublicLibrary()
+    (isAuthenticated ? studentHubService.getMembersLibrary().catch(() => studentHubService.getPublicLibrary()) : studentHubService.getPublicLibrary())
       .then(setItems)
       .catch((err) => console.error('Error loading library:', err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [isAuthenticated]);
 
   const mags = items.filter((b) => b.category === 'magazine');
   const books = items.filter((b) => b.category !== 'magazine');
@@ -34,6 +35,21 @@ export const LibraryPage: React.FC = () => {
         <h1 className="font-serif-luxury font-bold text-3xl text-[#0A192F]">{isAr ? 'المكتبة والمجلة' : 'Library & Magazine'}</h1>
         <p className="text-sm text-gray-500">{isAr ? 'مواد ومجلة English Zone Academy المتاحة للجميع' : 'English Zone Academy materials and magazine, free for everyone'}</p>
       </div>
+
+      {!isAuthenticated && (
+        <div className="bg-gradient-to-r from-[#0A192F] to-[#102445] text-white rounded-3xl p-5 sm:p-6 border border-[#D4AF37]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <Gift className="w-7 h-7 text-[#D4AF37] shrink-0" />
+            <div>
+              <b className="text-[#F3E5AB]">{isAr ? 'كتب ومواد إضافية مجانًا' : 'More free books and materials'}</b>
+              <p className="text-xs text-gray-300 mt-1">{isAr ? 'أنشئي حسابًا مجانيًا في دقيقة لتفتحي المواد المخصّصة للأعضاء.' : 'Create a free account in a minute to unlock members-only materials.'}</p>
+            </div>
+          </div>
+          <button onClick={() => navigate('join')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-sm font-bold whitespace-nowrap">
+            {isAr ? 'سجّلي مجانًا' : 'Join free'}
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <p className="text-center text-xs text-gray-500">{isAr ? 'جارٍ التحميل...' : 'Loading...'}</p>

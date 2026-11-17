@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Trash2, Download, BookOpen, Newspaper, Globe, GraduationCap, EyeOff } from 'lucide-react';
+import { Plus, Trash2, Download, BookOpen, Newspaper, Globe, GraduationCap, EyeOff, UserPlus } from 'lucide-react';
 import { contentManagementService, LibraryBookMaterial, LibraryAudience, audienceOf } from '../../services/contentManagementService';
 import { isSafeUrl } from '../../services/studentHubService';
 
@@ -14,6 +14,7 @@ const labelCls = 'block text-[11px] font-bold text-gray-600 mb-1';
 
 const AUD: { id: LibraryAudience; ar: string; en: string; icon: any; on: string }[] = [
   { id: 'public', ar: 'للعامة', en: 'Public', icon: Globe, on: 'bg-emerald-600 text-white' },
+  { id: 'members', ar: 'للمسجّلين مجانًا', en: 'Free members', icon: UserPlus, on: 'bg-[#D4AF37] text-[#0A192F]' },
   { id: 'students', ar: 'للطلاب فقط', en: 'Students only', icon: GraduationCap, on: 'bg-[#0A192F] text-[#F3E5AB]' },
   { id: 'hidden', ar: 'مخفية', en: 'Hidden', icon: EyeOff, on: 'bg-gray-500 text-white' }
 ];
@@ -213,8 +214,8 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
         </div>
         <p className="text-[11px] text-gray-500">
           {tr(
-            'Public: shown on the website Library page and to students. Students only: shown in the student dashboard. Hidden: only you see it.',
-            '«للعامة»: تظهر في صفحة «المكتبة والمجلة» في الموقع وللطلاب. «للطلاب فقط»: تظهر في لوحة الطالب فقط. «مخفية»: لا يراها إلا أنتِ.'
+            'Public: everyone. Free members: anyone with a free account (and students). Students only: enrolled students. Hidden: only you.',
+            '«للعامة»: يراها كل زائر. «للمسجّلين مجانًا»: تُفتح لمن ينشئ حسابًا مجانيًا (والطلاب أيضًا). «للطلاب فقط»: في لوحة الطالب المشترك. «مخفية»: لا يراها إلا أنتِ.'
           )}
         </p>
       </div>

@@ -214,12 +214,20 @@ export const studentHubService = {
   async getPublishedLibrary(): Promise<any[]> {
     let docs: any[];
     try {
-      const snap = await getDocs(query(collection(db, 'library_materials'), where('audience', 'in', ['public', 'students'])));
+      const snap = await getDocs(query(collection(db, 'library_materials'), where('audience', 'in', ['public', 'members', 'students'])));
       docs = snap.docs.map((d) => ({ ...(d.data() as any), id: d.id }));
     } catch {
       docs = await this.getPublicLibrary();
     }
     return docs
+      .sort((a, b) => String(b.addedAt || '').localeCompare(String(a.addedAt || '')));
+  },
+
+  // للحساب المجاني (زائر مسجّل): للعامة + للمسجّلين
+  async getMembersLibrary(): Promise<any[]> {
+    const snap = await getDocs(query(collection(db, 'library_materials'), where('audience', 'in', ['public', 'members'])));
+    return snap.docs
+      .map((d) => ({ ...(d.data() as any), id: d.id }))
       .sort((a, b) => String(b.addedAt || '').localeCompare(String(a.addedAt || '')));
   },
 

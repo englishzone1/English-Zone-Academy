@@ -51,6 +51,7 @@ import { AdminTeachersManager } from '../../components/admin/AdminTeachersManage
 import { AdminHomeworkResults } from '../../components/admin/AdminHomeworkResults';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 import { AdminChatFaq } from '../../components/admin/AdminChatFaq';
+import { AdminVisitors } from '../../components/admin/AdminVisitors';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
 interface AdminDashboardProps {
@@ -62,6 +63,7 @@ type TabId =
   | 'hwresults'
   | 'homework'
   | 'assistant'
+  | 'visitors'
   | 'teachers'
   | 'blog'
   | 'messages'
@@ -217,7 +219,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   }, []);
 
 
-  const students = usersList.filter((u) => u.role === 'student');
+  // الزائر صاحب الحساب المجاني لا يُعدّ طالبًا حتى يُفعَّل اشتراكه
+  const isFreeVisitor = (u: any) => u.accountType === 'visitor' && String(u.subscriptionStatus || '') !== 'active';
+  const students = usersList.filter((u) => u.role === 'student' && !isFreeVisitor(u));
+  const visitorsCount = usersList.filter(isFreeVisitor).length;
   const teachers = usersList.filter((u) => u.role === 'teacher');
   const pendingRegistrations = registrations.filter((r) => r.status === 'pending');
 
@@ -556,6 +561,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'overview', labelEn: 'Overview & Metrics', labelAr: 'الإحصائيات العامة' },
     { id: 'registrations', labelEn: `Registrations (${pendingRegistrations.length} Pending)`, labelAr: `طلبات التسجيل (${pendingRegistrations.length})` },
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
+    { id: 'visitors', labelEn: `Free accounts (${visitorsCount})`, labelAr: `الزوار المسجّلون (${visitorsCount})` },
     { id: 'homework', labelEn: 'Homework & tests', labelAr: 'الواجبات والاختبارات' },
     { id: 'hwresults', labelEn: 'Homework results', labelAr: 'نتائج الواجبات' },
     { id: 'teachers', labelEn: 'Teachers', labelAr: 'المعلمون' },
@@ -926,6 +932,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* HOMEWORK RESULTS */}
         {activeTab === 'hwresults' && <AdminHomeworkResults onNotice={(msg) => notify(msg, 4000)} />}
+
+        {/* FREE ACCOUNTS */}
+        {activeTab === 'visitors' && <AdminVisitors users={usersList} isAr={isAr} />}
 
         {/* AUTO ASSISTANT */}
         {activeTab === 'assistant' && <AdminChatFaq onNotice={(msg) => notify(msg, 4000)} />}

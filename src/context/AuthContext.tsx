@@ -25,6 +25,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   adminLogin: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   registerStudentAccount: (email: string, password: string, fullName: string) => Promise<{ success: boolean; message?: string }>;
+  registerVisitor: (p: { email?: string; password?: string; name: string; phone?: string; google?: boolean }) => Promise<{ success: boolean; code?: string }>;
+  isVisitor: boolean;
   loginWithGoogle: () => Promise<{ success: boolean; code?: string }>;
   adminLoginWithGoogle: () => Promise<{ success: boolean; code?: string }>;
   logout: () => Promise<void>;
@@ -38,6 +40,28 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// بيانات «حساب زائر مجاني» تُحفظ مؤقتًا قبل الدخول، ثم تُستعمل عند إنشاء الملف
+const VISITOR_KEY = 'ez_visitor_signup';
+const readVisitorSignup = (): { name?: string; phone?: string } | null => {
+  try {
+    const raw = localStorage.getItem(VISITOR_KEY);
+    if (!raw) return null;
+    const v = JSON.parse(raw);
+    // صالحة لمدة ساعة فقط
+    if (!v || Date.now() - Number(v.at || 0) > 3600 * 1000) return null;
+    return v;
+  } catch {
+    return null;
+  }
+};
+const clearVisitorSignup = () => {
+  try {
+    localStorage.removeItem(VISITOR_KEY);
+  } catch {
+    // ignore
+  }
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
@@ -114,10 +138,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         if (!isTeacherAccount) {
           try {
+            const vs = readVisitorSignup();
             const createdProfile: UserProfile = {
               id: fbUser.uid,
               email: fbUser.email,
-              fullName: fbUser.displayName || fbUser.email.split('@')[0],
+              fullName: (vs?.name || '').trim().slice(0, 100) || fbUser.displayName || fbUser.email.split('@')[0],
+              ...(vs ? { accountType: 'visitor' as const } : {}),
+              ...(vs?.phone ? { phone: String(vs.phone).trim().slice(0, 30) } : {}),
               role: 'student',
               points: 0,
               starOfTheWeekCount: 0,
@@ -133,6 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
+      clearVisitorSignup();
       if (resolvedProfile) {
         setUser(resolvedProfile);
         setHasProfile(true);
@@ -401,6 +429,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   /**
    * Register a new student account using Firebase Authentication
    */
+  // حساب زائر مجاني: بالبريد وكلمة المرور أو بحساب Google
+  const registerVisitor = async (p: { email?: string; password?: string; name: string; phone?: string; google?: boolean }): Promise<{ success: boolean; code?: string }> => {
+    setAuthError(null);
+    try {
+      localStorage.setItem(VISITOR_KEY, JSON.stringify({ name: p.name, phone: p.phone || '', at: Date.now() }));
+    } catch {
+      // ignore
+    }
+    try {
+      if (p.google) {
+        const fbUser = await googleSignIn();
+        if (!fbUser) return { success: false, code: 'redirect' };
+        setFirebaseUser(fbUser);
+        await fetchProfile(fbUser);
+        return { success: true };
+      }
+      const cred = await createUserWithEmailAndPassword(auth, String(p.email || '').trim(), String(p.password || ''));
+      setFirebaseUser(cred.user);
+      await fetchProfile(cred.user);
+      return { success: true };
+    } catch (err: any) {
+      clearVisitorSignup();
+      return { success: false, code: err?.code || 'unknown' };
+    }
+  };
+
   const registerStudentAccount = async (
     email: string, 
     password: string, 
@@ -516,6 +570,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         adminLogin,
         registerStudentAccount,
+        registerVisitor,
+        isVisitor: !!user && (user as any).accountType === 'visitor' && String((user as any).subscriptionStatus || '') !== 'active',
         loginWithGoogle,
         adminLoginWithGoogle,
         logout,

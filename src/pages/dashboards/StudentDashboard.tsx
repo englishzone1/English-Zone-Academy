@@ -25,6 +25,7 @@ import { StudentMonthlyReport } from '../../components/student/StudentMonthlyRep
 import { StudentCourseMaterials, StudentLibrary, StudentMessages, StudentFeedback } from '../../components/student/StudentHubPanels';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
+import { VisitorDashboard } from '../../components/student/VisitorDashboard';
 
 interface StudentDashboardProps {
   navigate: (route: string) => void;
@@ -117,6 +118,22 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
   if (!firebaseUser) {
     navigate('login');
     return null;
+  }
+
+  // حساب زائر مجاني: صفحة الكتب المجانية ودعوة للاشتراك
+  if (!isActive && hasProfile && (user as any)?.accountType === 'visitor') {
+    return (
+      <VisitorDashboard
+        isAr={isAr}
+        name={(user as any)?.fullName || ''}
+        whatsapp={whatsappLink}
+        navigate={navigate}
+        onLogout={async () => {
+          await logout();
+          navigate('home');
+        }}
+      />
+    );
   }
 
   // Waiting for the academy: no profile yet, or subscription not activated

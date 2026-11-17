@@ -23,6 +23,8 @@ export interface UserProfile {
   assignedGroupId?: string;
   subscriptionStatus?: 'active' | 'pending' | 'due' | 'expired';
   monthlyTuitionUSD?: number;
+  // حساب زائر مجاني (ليس طالبًا مشتركًا بعد)
+  accountType?: 'visitor';
   avatarConfig?: AvatarConfiguration;
   createdAt: string;
 }

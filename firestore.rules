@@ -97,8 +97,9 @@ service cloud.firestore {
           'id', 'email', 'fullName', 'role', 'phone', 'country', 'age',
           'avatarUrl', 'avatarConfig', 'createdAt', 'points', 'mainLevel',
           'currentStage', 'subscriptionStatus', 'learningFormat',
-          'starOfTheWeekCount', 'starOfTheMonthCount'
-        ])
+          'starOfTheWeekCount', 'starOfTheMonthCount', 'accountType'
+        ]) &&
+        (!('accountType' in request.resource.data) || request.resource.data.accountType == 'visitor')
       );
 
       // المعلم يغيّر نقاط طلابه فقط
@@ -199,10 +200,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // المكتبة والمجلة: «للعامة» يراها الجميع، و«للطلاب» للطلاب المفعّلين والمعلمين، و«مخفية» للإدارة
+    // المكتبة والمجلة: «للعامة» يراها الجميع، «للمسجّلين» لكل حساب، «للطلاب» للطلاب المفعّلين والمعلمين، و«مخفية» للإدارة
     match /library_materials/{materialId} {
+      // «members»: لكل من سجّل حسابًا مجانيًا (زائر أو طالب)
       allow get, list: if resource.data.get('audience', '') == 'public' || isAdmin() || isTeacher() ||
-        (isActiveStudent() && resource.data.get('audience', '') in ['public', 'students']);
+        (isSignedIn() && resource.data.get('audience', '') in ['public', 'members']) ||
+        (isActiveStudent() && resource.data.get('audience', '') in ['public', 'members', 'students']);
       allow write: if isAdmin();
     }
 

@@ -4,7 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import { useAcademySettings, whatsappDisplay } from '../../hooks/useAcademySettings';
-import { 
+import {
+  Gift, 
   Menu, 
   X, 
   Sparkles, 
@@ -65,6 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
     { id: 'testimonials', label: t.nav.testimonials, icon: UserCheck },
     { id: 'blog', label: t.nav.blog, icon: FileText },
     { id: 'library', label: language === 'ar' ? 'المكتبة والمجلة' : 'Library & Magazine', icon: BookOpen },
+    ...(user ? [] : [{ id: 'join', label: language === 'ar' ? 'حساب مجاني' : 'Free account', icon: Gift, badge: 'Free' }]),
   ].filter((l) => l.id !== 'placement-test' || !!contacts.placementTestUrl);
 
   return (

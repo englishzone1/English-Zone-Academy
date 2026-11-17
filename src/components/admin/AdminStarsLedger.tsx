@@ -88,7 +88,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
         const us = await getDocs(collection(db, 'users'));
         us.forEach((d) => {
           const data = d.data() as any;
-          if (data.role === 'student') st.push({ ...data, id: d.id });
+          if (data.role === 'student' && !(data.accountType === 'visitor' && String(data.subscriptionStatus || '') !== 'active')) st.push({ ...data, id: d.id });
         });
         setTeachers(await groupService.getTeachers());
       }
