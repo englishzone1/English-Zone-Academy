@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { LEVEL_GROUP_PRICING } from '../data/academyData';
+import { usePricing } from '../hooks/usePricing';
 import { CEFRLevel } from '../types';
 import { 
   Check, 
@@ -20,7 +20,9 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
   const { t, language, dir } = useLanguage();
   const [levelFilter, setLevelFilter] = useState<'ALL' | CEFRLevel>('ALL');
 
-  const filteredLevels = LEVEL_GROUP_PRICING.filter((item) => {
+  const { cards: levelCards, loading: pricingLoading } = usePricing();
+
+  const filteredLevels = levelCards.filter((item) => {
     if (levelFilter === 'ALL') return true;
     return item.level === levelFilter;
   });
@@ -43,7 +45,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
 
         {/* Level Quick Filter */}
         <div className="flex items-center justify-center flex-wrap gap-2 mt-8">
-          {(['ALL', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const).map((lvl) => (
+          {(['ALL', ...levelCards.map((c) => c.level)] as ('ALL' | CEFRLevel)[]).map((lvl) => (
             <button
               key={lvl}
               onClick={() => setLevelFilter(lvl)}
@@ -53,7 +55,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                   : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
               }`}
             >
-              {lvl === 'ALL' ? (language === 'ar' ? 'جميع المستويات (6)' : 'All 6 Levels') : `Level ${lvl}`}
+              {lvl === 'ALL' ? (language === 'ar' ? `جميع المستويات (${levelCards.length})` : `All Levels (${levelCards.length})`) : `Level ${lvl}`}
             </button>
           ))}
         </div>
@@ -118,6 +120,13 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
         </div>
 
         {/* 6 SEPARATE LEVEL-BASED PRICING CARDS */}
+        {!pricingLoading && levelCards.length === 0 && (
+          <div className="mb-6 p-8 rounded-3xl bg-white border border-gray-200 text-center text-sm text-gray-500">
+            {language === 'ar'
+              ? 'الأسعار غير منشورة حاليًا. تواصل معنا لمعرفة الرسوم.'
+              : 'Prices are not published at the moment. Please contact us for tuition details.'}
+          </div>
+        )}
         <div className={`grid gap-6 ${
           filteredLevels.length === 1
             ? 'grid-cols-1 max-w-md mx-auto'
@@ -144,9 +153,11 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                       </span>
                     </div>
                   </div>
-                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#FAF8F5] text-[#AA820A] border border-[#D4AF37]/40">
-                    {item.durationMonths} {language === 'ar' ? 'أشهر' : 'Months'}
-                  </span>
+                  {item.durationMonths !== undefined && (
+                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#FAF8F5] text-[#AA820A] border border-[#D4AF37]/40">
+                      {item.durationMonths} {language === 'ar' ? 'أشهر' : 'Months'}
+                    </span>
+                  )}
                 </div>
 
                 {/* Format Info */}
@@ -169,21 +180,28 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                 <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/35 mb-6">
                   <div className="flex items-baseline justify-between gap-3 flex-wrap">
                     <div>
-                      <span className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold block">
-                        {t.pricing.originalPrice}
-                      </span>
-                      <span className="text-xl font-semibold text-gray-400 line-through inline-block mt-1" dir="ltr">
-                        ${item.originalPrice}
-                      </span>
+                      {item.groupOriginal !== undefined && (
+                        <>
+                          <span className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold block">
+                            {t.pricing.originalPrice}
+                          </span>
+                          <span className="text-xl font-semibold text-gray-400 line-through inline-block mt-1" dir="ltr">
+                            ${item.groupOriginal}
+                          </span>
+                        </>
+                      )}
                     </div>
 
                     <div className="text-end">
                       <span className="text-[11px] uppercase tracking-wider text-[#AA820A] font-bold block">
-                        {t.pricing.monthlyPrice}
+                        {language === 'ar' ? 'جماعي' : 'Group'} • {t.pricing.monthlyPrice}
                       </span>
                       <div className="inline-flex items-baseline gap-1 px-3 py-1 rounded-xl bg-[#0A192F] text-[#F3E5AB] mt-1 shadow-sm">
+                        {item.groupVaries && (
+                          <span className="text-xs text-gray-300 font-normal">{language === 'ar' ? 'من' : 'from'}</span>
+                        )}
                         <span className="font-serif-luxury font-bold text-3xl" dir="ltr">
-                          ${item.offerPrice}
+                          ${item.groupPrice}
                         </span>
                         <span className="text-xs text-gray-300 font-normal">
                           {t.programs.perMonth}
@@ -192,12 +210,17 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                     </div>
                   </div>
 
-                  <span
-                    className="block text-xs font-semibold text-[#AA820A] mt-3 pt-2.5 border-t border-[#D4AF37]/20 text-center"
-                    dir="rtl"
-                  >
-                    {item.priceNoteAr}
-                  </span>
+                  {item.individualPrice !== undefined && (
+                    <div className="flex items-center justify-between gap-3 mt-3 pt-2.5 border-t border-[#D4AF37]/20 text-xs">
+                      <span className="font-semibold text-[#0A192F]">{language === 'ar' ? 'خاص (فردي)' : 'Private 1-on-1'}</span>
+                      <span dir="ltr" className="font-bold text-[#0A192F]">
+                        {item.individualOriginal !== undefined && (
+                          <span className="text-gray-400 line-through font-normal mr-1.5">${item.individualOriginal}</span>
+                        )}
+                        {item.individualVaries ? (language === 'ar' ? 'من ' : 'from ') : ''}${item.individualPrice}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
