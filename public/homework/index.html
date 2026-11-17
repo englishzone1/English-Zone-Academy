@@ -225,7 +225,8 @@ details[open]>summary{border-radius:12px 12px 0 0}
     <button class="lesson hub" id="cHW">📘 Homework &amp; Reviews<b class="ar">الواجبات والمراجعات</b><span>Lessons, practical English and reviews – Level 1, 2 and 3</span></button>
     <button class="lesson hub tst" id="cTS">📝 Unit Tests<b class="ar">اختبارات الوحدات</b><span>File tests and progress tests – Level 1, 2 and 3</span></button>
     <button class="lesson exam" id="cPT1">📊 Progress Test: Units 1–6<b class="ar">الاختبار المرحلي للوحدات من الأولى إلى السادسة</b><span>Grammar, vocabulary, pronunciation, practical English, reading, writing and listening</span></button>
-    <button class="lesson exam" id="cEX">🏆 Final exam<b class="ar">الاختبار النهائي</b><span>End of course test</span></button>
+    <button class="lesson exam" id="cPT2">📊 Progress Test: Units 7–12<b class="ar">الاختبار المرحلي للوحدات من السابعة إلى الثانية عشرة</b><span>Grammar, vocabulary, pronunciation, practical English, reading, writing and listening</span></button>
+    <button class="lesson exam" id="cEX">🏆 Final exam<b class="ar">الاختبار النهائي الشامل</b><span>End of course test – all units</span></button>
   </section>
   <section id="hwLevels" class="hidden">
     <button class="back" id="backHW">⬅ Back</button>
@@ -239,7 +240,7 @@ details[open]>summary{border-radius:12px 12px 0 0}
     <h2>Unit Tests <span class="arh">اختبارات الوحدات</span></h2>
     <button class="lesson" id="tL1">Tests – A1 level 1<span>File Tests 1–4</span></button>
     <button class="lesson" id="tL2">Tests – A1 level 2<span>File Tests 5–8</span></button>
-    <button class="lesson" id="tL3">Tests – A1 level 3<span>File Tests 9–12 and Progress Test Units 7–12</span></button>
+    <button class="lesson" id="tL3">Tests – A1 level 3<span>File Tests 9–12</span></button>
   </section>
   <section id="tests1" class="hidden"><button class="back" id="backT1">⬅ Back to Tests</button><h2>Tests – A1 level 1</h2><div class="tlist" data-lv="1"></div></section>
   <section id="tests2" class="hidden"><button class="back" id="backT2">⬅ Back to Tests</button><h2>Tests – A1 level 2</h2><div class="tlist" data-lv="2"></div></section>
@@ -2261,7 +2262,7 @@ const FT12={id:`FT12`,lv:3,cls:`u12`,title:`File Test 12`,ar:`اختبار ال�
  SPEAK([`Ask your partner: Where did you go on your last holiday? Who did you go with? When did you go? How did you travel? How many days or weeks did you stay there?`,`Ask your partner about Anwar's last holiday: where, who with, when, how long, what he did.`,`Answer your partner's questions about Cheryl: Yellowstone National Park in the United States, with two friends (Dina and Amanda), in May, six days, went camping.`])
 ]};
 
-const PT2={id:`PT2`,lv:3,cls:`exam`,title:`Progress Test: Units 7–12`,ar:`الاختبار المرحلي للوحدات من السابعة إلى الثانية عشرة`,sub:`Grammar, vocabulary, pronunciation, practical English, reading, writing and listening`,parts:[
+const PT2={id:`PT2`,lv:0,cls:`exam`,title:`Progress Test: Units 7–12`,ar:`الاختبار المرحلي للوحدات من السابعة إلى الثانية عشرة`,sub:`Grammar, vocabulary, pronunciation, practical English, reading, writing and listening`,parts:[
  {name:`Grammar`, review:`Grammar: Units 7–12`, ex:[
   {t:`1. Choose A, B, or C to complete the sentences.`, ins:`Example: Tania went to the park yesterday.`, ea:`راجعي: المضارع المستمر، وwas / were، والماضي البسيط، وlike + ing، وcan / can't، وترتيب السؤال.`, items:[
    TQ.mc(`What are you ___ at the moment?`,[`do`,`doing`,`did`],1),
@@ -2481,6 +2482,7 @@ $("cTS").onclick = ()=>show("tsLevels"); $("backTS").onclick = ()=>show("levels"
 document.querySelectorAll(".tlist").forEach(box=>{ const lv=+box.dataset.lv; TESTS.filter(t=>t.lv===lv).forEach(t=>{ const b=document.createElement("button"); b.className="lesson "+(t.cls||"exam"); b.id="t_"+t.id; b.innerHTML=`${t.title}<b class="ar">${t.ar}</b><span>${t.sub||""}</span>`; b.onclick = t.parts ? ()=>openTest(t,"tests"+lv) : ()=>{ b.querySelector("span").textContent="Coming soon..."; }; box.appendChild(b); }); });
 $("cEX").onclick = ()=>{ const t=TESTS.find(x=>x.id==="END"); if(t&&t.parts) openTest(t,"levels"); else $("cEX").querySelector("span").textContent="Coming soon..."; };
 $("cPT1").onclick = ()=>{ const t=TESTS.find(x=>x.id==="PT1"); if(t&&t.parts) openTest(t,"levels"); };
+$("cPT2").onclick = ()=>{ const t=TESTS.find(x=>x.id==="PT2"); if(t&&t.parts) openTest(t,"levels"); };
 $("backEx").onclick = ()=>show(TBACK);
 document.getElementById("hlogo").src = IMG.logo; document.getElementById("llogo").src = IMG.logo;
 build();
