@@ -317,6 +317,12 @@ export const contentManagementService = {
     return rows.sort((a, b) => a.stage.localeCompare(b.stage));
   },
 
+  // هل حُفظت الأسعار في قاعدة البيانات؟ (الموقع لا يعرض إلا المحفوظ)
+  async hasSavedStagePricing(): Promise<boolean> {
+    const rows = await readCollection<StagePricing>('pricing_stages');
+    return rows.some((r) => typeof r.groupPrice === 'number' && r.groupPrice > 0);
+  },
+
   async saveLevelPricing(p: LevelGroupPricing): Promise<void> {
     const database = requireDb();
     await setDoc(doc(database, 'pricing_levels', p.level), clean(p), { merge: true });

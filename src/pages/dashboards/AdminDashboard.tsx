@@ -156,6 +156,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
   // Pricing
   const [stageRows, setStageRows] = useState<StagePricing[]>(STAGE_PRICING_TABLE);
+  const [pricingPublished, setPricingPublished] = useState(true);
   const [isPricingSaving, setIsPricingSaving] = useState(false);
 
   // Academy settings
@@ -203,6 +204,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         setOffersList(ofs);
         setTestimonialsList(tms);
         setStageRows(stg);
+        contentManagementService.hasSavedStagePricing().then(setPricingPublished).catch(() => setPricingPublished(false));
         setSettings(cfg);
       } catch (err) {
         console.error('Error fetching CMS data:', err);
@@ -272,7 +274,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     setIsPricingSaving(true);
     try {
       await Promise.all(stageRows.map((r) => contentManagementService.saveStagePricing(r)));
-      notify(tr('Pricing saved.', 'تم حفظ الأسعار.'));
+      setPricingPublished(true);
+      notify(tr('Pricing saved and published on the website.', 'تم حفظ الأسعار ونشرها في الموقع.'));
     } catch (err) {
       console.error('Error saving pricing:', err);
       notify(tr('Failed to save pricing.', 'تعذر حفظ الأسعار.'), 5000, true);
@@ -863,22 +866,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
               </button>
             </div>
 
+            {!pricingPublished && (
+              <div className="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+                {tr(
+                  'These prices are not published yet. Review them, then press "Save Pricing" to show them on the website.',
+                  'هذه الأسعار غير منشورة بعد في الموقع. راجعيها ثم اضغطي «حفظ الأسعار» لتظهر للزوار.'
+                )}
+              </div>
+            )}
             <div className="overflow-x-auto">
               <table className="w-full text-left rtl:text-right border-collapse text-xs sm:text-sm">
                 <thead>
                   <tr className="bg-[#FAF8F5] text-xs font-semibold text-gray-500 border-b border-gray-200">
                     <th className={thCls}>{tr('Stage', 'المرحلة')}</th>
-                    <th className={thCls}>{tr('Individual (now)', 'فردي (الحالي)')}</th>
-                    <th className={thCls}>{tr('Individual (original)', 'فردي (الأصلي)')}</th>
                     <th className={thCls}>{tr('Group (now)', 'جماعي (الحالي)')}</th>
-                    <th className={thCls}>{tr('Group (original)', 'جماعي (الأصلي)')}</th>
+                    <th className={thCls}>{tr('Group (original, optional)', 'جماعي (قبل الخصم، اختياري)')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {stageRows.map((row) => (
                     <tr key={row.stage} className="hover:bg-[#FAF8F5]">
                       <td className="py-2 px-4 font-mono font-bold text-[#0A192F]">{row.stage}</td>
-                      {(['individualCurrent', 'individualOriginal', 'groupPrice', 'groupOriginalPrice'] as (keyof StagePricing)[]).map((f) => (
+                      {(['groupPrice', 'groupOriginalPrice'] as (keyof StagePricing)[]).map((f) => (
                         <td key={f} className="py-2 px-4">
                           <input
                             type="number"
@@ -893,6 +902,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                   ))}
                 </tbody>
               </table>
+            </div>
+            <div className="flex justify-end pt-4">
+              <button onClick={handleSavePricing} disabled={isPricingSaving} className={primaryBtn}>
+                <Save className="w-4 h-4 text-[#D4AF37]" />
+                <span>{isPricingSaving ? tr('Saving...', 'جارٍ الحفظ...') : tr('Save Pricing', 'حفظ الأسعار')}</span>
+              </button>
             </div>
           </div>
         )}
