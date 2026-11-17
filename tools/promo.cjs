@@ -23,7 +23,7 @@ h1{font-weight:800;line-height:1.25}
 .phone{position:absolute;border-radius:54px;background:#0b0b0b;padding:14px;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 2px rgba(212,175,55,.35)}
 .phone .scr{width:100%;height:100%;border-radius:42px;overflow:hidden;background:#fff}
 .phone .scr img{width:100%;display:block}
-.phone:after{content:'';position:absolute;top:24px;left:50%;transform:translateX(-50%);width:110px;height:28px;border-radius:20px;background:#0b0b0b}
+.phone:after{content:'';position:absolute;top:22px;left:50%;transform:translateX(-50%);width:84px;height:22px;border-radius:16px;background:#0b0b0b}
 .laptop{position:absolute}
 .laptop .lid{border-radius:22px 22px 0 0;background:#111;padding:16px 16px 18px;box-shadow:0 40px 90px rgba(0,0,0,.5),0 0 0 2px rgba(212,175,55,.3)}
 .laptop .lid .scr{border-radius:8px;overflow:hidden;background:#fff}
@@ -61,39 +61,39 @@ const posts = [
     need: ['mobile-curriculum.png', 'desktop-curriculum.png'],
     body: () => `
       <div class="dots"></div><div class="glow" style="bottom:-200px;right:-160px"></div>
-      <div style="position:absolute;top:90px;right:70px;left:520px">
+      <div style="position:absolute;top:400px;right:70px;left:540px">
         <span class="badge">المنهج الدراسي</span>
         <h1 style="font-size:66px;margin-top:28px">من <span class="gold">A1</span> إلى <span class="gold">C2</span></h1>
         <p class="sub" style="font-size:32px;margin-top:22px">6 مستويات و18 مرحلة، خطة واضحة لكل طالب، ومواد المنهج من كتب وصوتيات وفيديو داخل لوحة الطالب.</p>
-        <div style="margin-top:40px"><span class="url" style="font-size:24px">${URL_TEXT}</span></div>
       </div>
-      ${phone('mobile-curriculum.png', 80, 150, 400)}`
+      <div style="position:absolute;bottom:60px;left:0;right:0;text-align:center"><span class="url" style="font-size:28px">${URL_TEXT}</span></div>
+      ${phone('mobile-curriculum.png', 90, 170, 420)}`
   },
   {
     name: '03-reviews',
     need: ['mobile-testimonials.png'],
     body: () => `
       <div class="dots"></div><div class="glow" style="top:-160px;right:-120px"></div>
-      <div style="position:absolute;top:90px;left:70px;right:520px">
+      <div style="position:absolute;top:400px;left:70px;right:540px">
         <span class="badge">آراء حقيقية</span>
         <h1 style="font-size:66px;margin-top:28px">طلابنا <span class="gold">يتحدثون</span></h1>
         <p class="sub" style="font-size:32px;margin-top:22px">لقطات حقيقية من تجارب طلابنا وأولياء الأمور مع أكاديمية English Zone.</p>
-        <div style="margin-top:40px"><span class="url" style="font-size:24px">${URL_TEXT}</span></div>
       </div>
-      ${phone('mobile-testimonials.png', 600, 150, 400)}`
+      <div style="position:absolute;bottom:60px;left:0;right:0;text-align:center"><span class="url" style="font-size:28px">${URL_TEXT}</span></div>
+      ${phone('mobile-testimonials.png', 570, 170, 420)}`
   },
   {
     name: '04-pricing',
     need: ['mobile-pricing.png'],
     body: () => `
       <div class="dots"></div><div class="glow" style="bottom:-200px;left:-160px"></div>
-      <div style="position:absolute;top:90px;right:70px;left:520px">
+      <div style="position:absolute;top:400px;right:70px;left:540px">
         <span class="badge">الأسعار</span>
         <h1 style="font-size:66px;margin-top:28px">ادفع <span class="gold">شهريًا</span></h1>
         <p class="sub" style="font-size:32px;margin-top:22px">لكل مستوى سعر شهري واضح، بدون التزام بالدفع لستة أشهر مقدمًا.</p>
-        <div style="margin-top:40px"><span class="url" style="font-size:24px">${URL_TEXT}</span></div>
       </div>
-      ${phone('mobile-pricing.png', 80, 150, 400)}`
+      <div style="position:absolute;bottom:60px;left:0;right:0;text-align:center"><span class="url" style="font-size:28px">${URL_TEXT}</span></div>
+      ${phone('mobile-pricing.png', 90, 170, 420)}`
   },
   {
     name: '05-avatar',
@@ -118,8 +118,8 @@ const posts = [
         <h1 style="font-size:72px;margin-top:28px">ابدأ رحلتك <span class="gold">الآن</span></h1>
         <p class="sub" style="font-size:32px;margin-top:18px">سجّل من الموقع، أو انضم إلى نادي المحادثة الإنجليزية</p>
       </div>
-      ${phone('mobile-register.png', 130, 400, 380)}
-      ${phone('mobile-english-club.png', 570, 440, 380)}`
+      ${phone('mobile-register.png', 130, 380, 380)}
+      ${phone('mobile-english-club.png', 570, 420, 380)}`
   }
 ];
 
