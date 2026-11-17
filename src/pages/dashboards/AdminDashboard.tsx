@@ -47,6 +47,7 @@ import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
 import { AdminTeachersManager } from '../../components/admin/AdminTeachersManager';
 import { AdminHomeworkResults } from '../../components/admin/AdminHomeworkResults';
+import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -55,6 +56,7 @@ interface AdminDashboardProps {
 type TabId =
   | 'overview'
   | 'hwresults'
+  | 'homework'
   | 'teachers'
   | 'blog'
   | 'messages'
@@ -519,6 +521,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'overview', labelEn: 'Overview & Metrics', labelAr: 'الإحصائيات العامة' },
     { id: 'registrations', labelEn: `Registrations (${pendingRegistrations.length} Pending)`, labelAr: `طلبات التسجيل (${pendingRegistrations.length})` },
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
+    { id: 'homework', labelEn: 'Homework & tests', labelAr: 'الواجبات والاختبارات' },
     { id: 'hwresults', labelEn: 'Homework results', labelAr: 'نتائج الواجبات' },
     { id: 'teachers', labelEn: 'Teachers', labelAr: 'المعلمون' },
     { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
@@ -874,6 +877,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* HOMEWORK RESULTS */}
         {activeTab === 'hwresults' && <AdminHomeworkResults onNotice={(msg) => notify(msg, 4000)} />}
+
+        {/* HOMEWORK SITE (preview) */}
+        {activeTab === 'homework' && firebaseUser && (
+          <HomeworkPlatform isAr={isAr} uid={firebaseUser.uid} name={adminName} preview />
+        )}
 
         {/* COMMUNITY */}
         {activeTab === 'community' && firebaseUser && (

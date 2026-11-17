@@ -85,6 +85,7 @@ export interface HomeworkResult {
   total: number;
   percent: number;
   createdAt: string;
+  starsGiven?: number;
 }
 
 /* ------------------------------ Community ------------------------------ */
@@ -269,6 +270,11 @@ export const studentHubService = {
         createdAt: new Date().toISOString()
       })
     );
+  },
+
+  // يسجّل أن النجوم مُنحت لهذه النتيجة حتى لا تُمنح مرتين
+  async markHomeworkStars(id: string, stars: number): Promise<void> {
+    await updateDoc(doc(db, 'homework_results', id), { starsGiven: stars });
   },
 
   async getMyHomeworkResults(studentId: string): Promise<HomeworkResult[]> {

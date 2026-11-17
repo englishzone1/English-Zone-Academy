@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Star } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { studentHubService, HomeworkResult } from '../../services/studentHubService';
@@ -15,7 +15,7 @@ const color = (p: number) => (p >= 70 ? 'bg-emerald-50 text-emerald-700' : p >= 
 // نتائج الواجبات والاختبارات من موقع الواجبات التفاعلي: تصل مباشرة عند حلّ الطالب
 export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = false }) => {
   const { language } = useLanguage();
-  const { firebaseUser } = useAuth();
+  const { firebaseUser, user } = useAuth();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
 
@@ -25,6 +25,33 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
   const [groupFilter, setGroupFilter] = useState('all');
   const [kindFilter, setKindFilter] = useState<'all' | 'lesson' | 'test'>('all');
   const [view, setView] = useState<'latest' | 'students'>('latest');
+  const [busy, setBusy] = useState('');
+
+  // اقتراح النجوم حسب النسبة: 90%+ ثلاث نجوم، 70%+ نجمتان، 50%+ نجمة
+  const suggest = (p: number) => (p >= 90 ? 3 : p >= 70 ? 2 : p >= 50 ? 1 : 0);
+
+  const giveStars = async (r: HomeworkResult, amount: number) => {
+    if (amount <= 0 || r.starsGiven) return;
+    setBusy(r.id);
+    try {
+      await groupService.awardStars({
+        studentId: r.studentId,
+        studentName: r.studentName,
+        groupId: r.groupId,
+        amount,
+        reason: `${tr('Homework', 'واجب')}: ${r.title} (${r.score}/${r.total})`,
+        awardedBy: user?.fullName || tr('Administration', 'الإدارة'),
+        asTeacher: teacherMode
+      });
+      await studentHubService.markHomeworkStars(r.id, amount);
+      setItems((prev) => prev.map((x) => (x.id === r.id ? { ...x, starsGiven: amount } : x)));
+      onNotice(tr(`+${amount} stars for ${r.studentName}.`, `تم منح ${amount} نجوم لـ ${r.studentName}.`));
+    } catch (err: any) {
+      onNotice(`${tr('Could not give stars:', 'تعذّر منح النجوم:')} ${err?.code || err?.message || ''}`);
+    } finally {
+      setBusy('');
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -131,9 +158,32 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                   {r.title} <span className="text-gray-400">• {kindLabel(r.kind)} • {new Date(r.createdAt).toLocaleString(isAr ? 'ar' : 'en', { dateStyle: 'medium', timeStyle: 'short' })}</span>
                 </div>
               </div>
-              <span className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap ${color(r.percent)}`}>
-                {r.score}/{r.total} ({r.percent}%)
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap ${color(r.percent)}`}>
+                  {r.score}/{r.total} ({r.percent}%)
+                </span>
+                {r.starsGiven ? (
+                  <span className="px-2.5 py-1 rounded-lg bg-[#F3E5AB]/50 text-[#8a6d10] font-bold whitespace-nowrap flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    {tr(`${r.starsGiven} given`, `مُنحت ${r.starsGiven}`)}
+                  </span>
+                ) : (
+                  [1, 2, 3].map((n) => (
+                    <button
+                      key={n}
+                      disabled={busy === r.id}
+                      onClick={() => giveStars(r, n)}
+                      title={tr(`Give ${n} stars`, `امنحي ${n} نجوم`)}
+                      className={`px-2 py-1 rounded-lg border text-[11px] font-bold flex items-center gap-0.5 disabled:opacity-50 ${
+                        n === suggest(r.percent) ? 'border-[#D4AF37] bg-[#F3E5AB]/40 text-[#0A192F]' : 'border-gray-200 bg-white text-gray-500'
+                      }`}
+                    >
+                      +{n}
+                      <Star className="w-3 h-3" />
+                    </button>
+                  ))
+                )}
+              </div>
             </div>
           ))}
         </div>

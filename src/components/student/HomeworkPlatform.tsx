@@ -8,6 +8,8 @@ interface Props {
   name: string;
   groupId?: string;
   teacherId?: string;
+  // معاينة للإدارة: تعرض الموقع نفسه بلا حفظ نتائج
+  preview?: boolean;
 }
 
 const kindLabel = (k: string, isAr: boolean) =>
@@ -15,12 +17,13 @@ const kindLabel = (k: string, isAr: boolean) =>
 
 // منصة الواجبات والاختبارات التفاعلية داخل لوحة الطالب.
 // الموقع المضمّن يرسل النتائج والتقدّم، فتُحفظ هنا باسم الطالب وتظهر للإدارة والمعلم.
-export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, teacherId }) => {
+export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, teacherId, preview = false }) => {
   // موقع الواجبات صار جزءًا من المنصة نفسها، ولا يُفتح إلا من هنا
   const homeworkUrl = '/homework/';
   const [tall, setTall] = useState(false);
   const [results, setResults] = useState<HomeworkResult[]>([]);
   const [savedNote, setSavedNote] = useState('');
+  const [saveError, setSaveError] = useState('');
   const frameRef = useRef<HTMLIFrameElement | null>(null);
   const progressTimer = useRef<number | null>(null);
   const valid = true;
@@ -32,14 +35,14 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
       .catch((err) => console.error('Error loading homework results:', err));
 
   useEffect(() => {
-    loadResults();
-  }, [uid]);
+    if (!preview) loadResults();
+  }, [uid, preview]);
 
   // إرسال اسم الطالب وتقدّمه المحفوظ إلى الموقع المضمّن
   const greet = async () => {
     const win = frameRef.current?.contentWindow;
     if (!win) return;
-    try {
+    if (!preview) try {
       const data = await studentHubService.getHomeworkProgress(uid);
       if (Object.keys(data).length) win.postMessage({ source: 'ez-platform', type: 'restore', data }, '*');
     } catch (err) {
@@ -56,6 +59,11 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
       if (m.source !== 'ez-homework') return;
       if (m.type === 'ready') {
         greet();
+      } else if (preview) {
+        if (m.type === 'result') {
+          setSavedNote(isAr ? `معاينة: ${m.title} (${m.score}/${m.total}) – لا تُحفظ نتائج الإدارة` : `Preview: ${m.title} (${m.score}/${m.total}) – not saved`);
+          window.setTimeout(() => setSavedNote(''), 6000);
+        }
       } else if (m.type === 'result' && ['lesson', 'test', 'exam'].includes(m.kind)) {
         const score = Number(m.score);
         const total = Number(m.total);
@@ -72,11 +80,15 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
             score,
             total
           });
+          setSaveError('');
           setSavedNote(isAr ? `تم حفظ نتيجتك: ${m.title} (${score}/${total})` : `Result saved: ${m.title} (${score}/${total})`);
           window.setTimeout(() => setSavedNote(''), 5000);
           loadResults();
-        } catch (err) {
+        } catch (err: any) {
           console.error('Error saving homework result:', err);
+          setSaveError(
+            (isAr ? 'لم تُحفظ النتيجة، أخبري المعلمة بهذا الخطأ: ' : 'Result was not saved, tell your teacher: ') + (err?.code || err?.message || '')
+          );
         }
       } else if (m.type === 'progress' && m.data && typeof m.data === 'object') {
         if (progressTimer.current) window.clearTimeout(progressTimer.current);
@@ -87,7 +99,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
     };
     window.addEventListener('message', onMsg);
     return () => window.removeEventListener('message', onMsg);
-  }, [valid, uid, name, groupId, teacherId]);
+  }, [valid, uid, name, groupId, teacherId, preview]);
 
   if (!valid) return null;
 
@@ -110,15 +122,22 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
           </div>
         </div>
         <p className="text-[11px] text-gray-500">
-          {isAr
-            ? 'نتائجك وتقدّمك تُحفظ تلقائيًا باسمك ويراها معلمك.'
-            : 'Your results and progress are saved automatically for your teacher.'}
+          {preview
+            ? isAr
+              ? 'معاينة للإدارة: تستطيعين تصفّح الواجبات والاختبارات وتجربتها كما يراها الطالب، ونتائجك هنا لا تُحفظ.'
+              : 'Admin preview: browse and try everything as students see it; your answers are not saved.'
+            : isAr
+              ? 'نتائجك وتقدّمك تُحفظ تلقائيًا باسمك ويراها معلمك.'
+              : 'Your results and progress are saved automatically for your teacher.'}
         </p>
         {savedNote && (
           <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4" />
             {savedNote}
           </div>
+        )}
+        {saveError && (
+          <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold">{saveError}</div>
         )}
         <div className="rounded-2xl overflow-hidden border border-gray-200 bg-[#FAF8F5]">
           <iframe
@@ -134,7 +153,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         </div>
       </div>
 
-      {results.length > 0 && (
+      {!preview && results.length > 0 && (
         <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200 shadow-sm space-y-3">
           <h3 className="font-bold text-sm text-[#0A192F]">{isAr ? 'نتائجي في الواجبات التفاعلية' : 'My interactive results'}</h3>
           <div className="space-y-2">
