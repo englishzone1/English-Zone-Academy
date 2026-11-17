@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TawkChat } from './components/common/TawkChat';
+import { ChatAssistant } from './components/common/ChatAssistant';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
@@ -239,6 +240,13 @@ function MainApp() {
       </main>
       <Footer navigate={navigate} />
       <TawkChat hidden={['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
+      <ChatAssistant
+        hidden={
+          ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) ||
+          currentRoute.startsWith('hw-answers/') ||
+          (currentRoute === 'portal' && (isAdmin || isTeacher || isSuperAdmin))
+        }
+      />
     </div>
   );
 }

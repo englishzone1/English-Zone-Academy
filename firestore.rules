@@ -413,6 +413,15 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // المساعد الآلي في الموقع: يقرؤه الجميع، وتكتبه الإدارة
+    match /chat_faq/{faqId} {
+      allow get, list: if true;
+      allow write: if isAdmin() && isValidId(faqId) &&
+        request.resource.data.questionAr is string && request.resource.data.questionAr.size() <= 200 &&
+        request.resource.data.answerAr is string && request.resource.data.answerAr.size() <= 3000;
+      allow delete: if isAdmin();
+    }
+
     match /homework_progress/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow create, update: if isOwner(userId) &&

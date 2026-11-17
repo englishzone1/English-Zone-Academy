@@ -48,6 +48,7 @@ import { AdminMessagesManager } from '../../components/admin/AdminMessagesManage
 import { AdminTeachersManager } from '../../components/admin/AdminTeachersManager';
 import { AdminHomeworkResults } from '../../components/admin/AdminHomeworkResults';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
+import { AdminChatFaq } from '../../components/admin/AdminChatFaq';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -57,6 +58,7 @@ type TabId =
   | 'overview'
   | 'hwresults'
   | 'homework'
+  | 'assistant'
   | 'teachers'
   | 'blog'
   | 'messages'
@@ -525,6 +527,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'hwresults', labelEn: 'Homework results', labelAr: 'نتائج الواجبات' },
     { id: 'teachers', labelEn: 'Teachers', labelAr: 'المعلمون' },
     { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
+    { id: 'assistant', labelEn: 'Auto assistant', labelAr: 'المساعد الآلي' },
     { id: 'community', labelEn: 'Community', labelAr: 'مجتمع الطلاب' },
     { id: 'feedback_reviews', labelEn: 'Student Reviews Gallery', labelAr: 'آراء وتقييمات الطلاب' },
     { id: 'content_cms', labelEn: 'Content & Curricula', labelAr: 'إدارة المحتوى والمناهج' },
@@ -877,6 +880,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* HOMEWORK RESULTS */}
         {activeTab === 'hwresults' && <AdminHomeworkResults onNotice={(msg) => notify(msg, 4000)} />}
+
+        {/* AUTO ASSISTANT */}
+        {activeTab === 'assistant' && <AdminChatFaq onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* HOMEWORK SITE (preview) */}
         {activeTab === 'homework' && firebaseUser && (
