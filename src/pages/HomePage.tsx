@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import {
   PROGRAM_CATEGORIES,
-  CEFR_LEVELS_INFO,
-  EF_SET_PLACEMENT_TEST_URL
+  CEFR_LEVELS_INFO
 } from '../data/academyData';
+import { useAcademySettings } from '../hooks/useAcademySettings';
 import { CEFRLevel } from '../types';
 import {
   Sparkles,
@@ -30,6 +30,7 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
+  const contacts = useAcademySettings();
   const { t, language, dir } = useLanguage();
   const [isPackageExpanded, setIsPackageExpanded] = useState(false);
 
@@ -67,8 +68,9 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 <span>{t.hero.ctaJoin}</span>
               </button>
 
+              {contacts.placementTestUrl && (
               <a
-                href={EF_SET_PLACEMENT_TEST_URL}
+                href={contacts.placementTestUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-7 py-4 rounded-xl font-semibold text-base border-2 border-[#D4AF37]/60 text-[#F3E5AB] hover:bg-[#D4AF37]/15 hover:border-[#D4AF37] transition-all flex items-center justify-center gap-2"
@@ -77,6 +79,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 <span>{t.hero.ctaTest}</span>
                 <ExternalLink className="w-4 h-4 text-[#D4AF37]" />
               </a>
+              )}
 
               <button
                 onClick={() => navigate('programs')}
@@ -128,8 +131,9 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             </div>
 
             <div className="pt-4 border-t border-gray-100">
+              {contacts.placementTestUrl && (
               <a
-                href={EF_SET_PLACEMENT_TEST_URL}
+                href={contacts.placementTestUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={t.features.placementAriaLabel}
@@ -138,6 +142,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 <span>{t.features.placementCta}</span>
                 <ExternalLink className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
               </a>
+              )}
             </div>
           </div>
 
@@ -417,8 +422,9 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               <ArrowRight className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
             </button>
 
+            {contacts.placementTestUrl && (
             <a
-              href={EF_SET_PLACEMENT_TEST_URL}
+              href={contacts.placementTestUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={t.features.placementAriaLabel}
@@ -428,6 +434,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               <span>{t.hero.ctaTest}</span>
               <ExternalLink className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
             </a>
+            )}
           </div>
         </div>
       </section>
