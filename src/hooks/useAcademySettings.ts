@@ -13,6 +13,7 @@ export interface PublicAcademySettings {
   facebook: string;
   telegram: string;
   placementTestUrl: string;
+  tawkUrl: string;
 }
 
 const EMPTY: PublicAcademySettings = {
@@ -23,7 +24,8 @@ const EMPTY: PublicAcademySettings = {
   discord: '',
   facebook: '',
   telegram: '',
-  placementTestUrl: ''
+  placementTestUrl: '',
+  tawkUrl: ''
 };
 
 // قيمة صالحة فقط: نص غير فارغ وليس "#"
@@ -49,7 +51,8 @@ const loadSettings = (): Promise<PublicAcademySettings> => {
           discord: clean(d.discord),
           facebook: clean(d.facebook),
           telegram: clean(d.telegram),
-          placementTestUrl: clean(d.placementTestUrl)
+          placementTestUrl: clean(d.placementTestUrl),
+          tawkUrl: clean(d.tawkUrl)
         };
       })
       .catch((err) => {

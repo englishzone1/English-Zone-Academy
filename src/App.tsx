@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { TawkChat } from './components/common/TawkChat';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
@@ -197,6 +198,7 @@ function MainApp() {
         {renderCurrentPage()}
       </main>
       <Footer navigate={navigate} />
+      <TawkChat hidden={['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
     </div>
   );
 }
