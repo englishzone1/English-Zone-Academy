@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { GoogleSignInButton, OrDivider, googleErrorMessage } from '../components/common/GoogleSignInButton';
 import { useAuth } from '../context/AuthContext';
 import { Logo } from '../components/common/Logo';
 import { 
@@ -21,7 +22,7 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }) => {
   const { t, language } = useLanguage();
-  const { login, registerStudentAccount, user } = useAuth();
+  const { login, registerStudentAccount, user, loginWithGoogle } = useAuth();
   
   const [authMode, setAuthMode] = useState<'signin' | 'activate'>('signin');
   const [email, setEmail] = useState('');
@@ -30,6 +31,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleGoogle = async () => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setIsLoading(true);
+    const res = await loginWithGoogle();
+    setIsLoading(false);
+    if (res.success) {
+      navigate(targetRedirect || 'portal');
+    } else {
+      const msg = googleErrorMessage(res.code, language === 'ar');
+      if (msg) setErrorMsg(msg);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,6 +149,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
           </div>
 
           {/* Form */}
+          <div className="space-y-4 mb-4">
+            <GoogleSignInButton onClick={handleGoogle} disabled={isLoading} isAr={language === 'ar'} />
+            <OrDivider isAr={language === 'ar'} />
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-4">
             {authMode === 'activate' && (
               <div>

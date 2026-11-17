@@ -1,9 +1,13 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { 
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   User as FirebaseUser
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -21,6 +25,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   adminLogin: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   registerStudentAccount: (email: string, password: string, fullName: string) => Promise<{ success: boolean; message?: string }>;
+  loginWithGoogle: () => Promise<{ success: boolean; code?: string }>;
+  adminLoginWithGoogle: () => Promise<{ success: boolean; code?: string }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
   saveAvatarConfig: (config: AvatarConfiguration) => Promise<void>;
@@ -42,6 +48,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdminDocSuper, setIsAdminDocSuper] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  // أثناء محاولة دخول الأدمن بجوجل لا نُنشئ ملف طالب تلقائيًا
+  const adminAttemptRef = useRef(false);
 
   // Helper to fetch user profile document and custom claims
   const fetchProfile = async (fbUser: FirebaseUser) => {
@@ -97,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // حساب دخول بلا وثيقة في users (مثلًا فشل حفظها لحظة التسجيل): ننشئها الآن بحالة pending
-      if (!resolvedProfile && !adminDocExists && !tokenClaims.role && fbUser.email) {
+      if (!resolvedProfile && !adminDocExists && !tokenClaims.role && fbUser.email && !adminAttemptRef.current) {
         let isTeacherAccount = false;
         try {
           isTeacherAccount = (await getDoc(doc(db, 'teachers', fbUser.uid))).exists();
@@ -144,6 +152,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setHasProfile(false);
     }
   };
+
+  useEffect(() => {
+    // إكمال الدخول بجوجل إن تم بالتحويل بدل النافذة المنبثقة
+    getRedirectResult(auth).catch((err) => console.error('Google redirect sign-in failed:', err));
+  }, []);
 
   useEffect(() => {
     // Listen for permanent Firebase Authentication state
@@ -226,6 +239,72 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setAuthError(userMessage);
       return { success: false, message: userMessage };
+    }
+  };
+
+  /**
+   * الدخول بحساب جوجل (Gmail). يعمل على الكمبيوتر والهاتف، ومنه الآيفون.
+   * إن لم يكن للطالب ملف بعد، يُنشأ تلقائيًا بحالة "بانتظار التفعيل".
+   */
+  const googleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    try {
+      return (await signInWithPopup(auth, provider)).user;
+    } catch (err: any) {
+      // بعض المتصفحات تمنع النافذة المنبثقة: نكمل بالتحويل للصفحة
+      if (err?.code === 'auth/popup-blocked' || err?.code === 'auth/operation-not-supported-in-this-environment') {
+        await signInWithRedirect(auth, provider);
+        return null;
+      }
+      throw err;
+    }
+  };
+
+  const loginWithGoogle = async (): Promise<{ success: boolean; code?: string }> => {
+    setAuthError(null);
+    try {
+      const fbUser = await googleSignIn();
+      if (!fbUser) return { success: false, code: 'redirect' };
+      setFirebaseUser(fbUser);
+      await fetchProfile(fbUser);
+      return { success: true };
+    } catch (err: any) {
+      console.error('Google sign-in failed:', err);
+      return { success: false, code: err?.code || 'unknown' };
+    }
+  };
+
+  const adminLoginWithGoogle = async (): Promise<{ success: boolean; code?: string }> => {
+    setAuthError(null);
+    adminAttemptRef.current = true;
+    try {
+      const fbUser = await googleSignIn();
+      if (!fbUser) return { success: false, code: 'redirect' };
+      const claims = (await fbUser.getIdTokenResult(true)).claims || {};
+      const claimRole = (claims.role as string) || '';
+      const isClaimAdmin = ['super-admin', 'super_admin', 'admin'].includes(claimRole) || claims.admin === true;
+      let adminDocExists = false;
+      try {
+        adminDocExists = (await getDoc(doc(db, 'admins', fbUser.uid))).exists();
+      } catch {
+        adminDocExists = false;
+      }
+      if (!isClaimAdmin && !adminDocExists) {
+        await signOut(auth);
+        setFirebaseUser(null);
+        setUser(null);
+        return { success: false, code: 'not-admin' };
+      }
+      setCustomClaims(claims);
+      setFirebaseUser(fbUser);
+      await fetchProfile(fbUser);
+      return { success: true };
+    } catch (err: any) {
+      console.error('Google admin sign-in failed:', err);
+      return { success: false, code: err?.code || 'unknown' };
+    } finally {
+      adminAttemptRef.current = false;
     }
   };
 
@@ -437,6 +516,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         adminLogin,
         registerStudentAccount,
+        loginWithGoogle,
+        adminLoginWithGoogle,
         logout,
         updateProfile,
         saveAvatarConfig,

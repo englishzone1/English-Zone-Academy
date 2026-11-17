@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { GoogleSignInButton, OrDivider, googleErrorMessage } from '../components/common/GoogleSignInButton';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { Logo, EnglishZoneEmblem } from '../components/common/Logo';
@@ -29,7 +30,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
   targetRedirect = 'admin-dashboard' 
 }) => {
   const { language } = useLanguage();
-  const { adminLogin, isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
+  const { adminLogin, adminLoginWithGoogle, isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'signin' | 'bootstrap'>('signin');
   const [email, setEmail] = useState('');
@@ -70,6 +71,21 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
       navigate(targetRedirect);
     }
   }, [isAuthenticated, isAdmin, isSuperAdmin, navigate, targetRedirect]);
+
+  const handleAdminGoogle = async () => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setIsLoading(true);
+    const res = await adminLoginWithGoogle();
+    setIsLoading(false);
+    if (res.success) {
+      setSuccessMsg(language === 'ar' ? 'تم التحقق من الصلاحيات الإدارية بنجاح. جاري الدخول...' : 'Administrative authorization verified. Redirecting to console...');
+      setTimeout(() => navigate(targetRedirect), 800);
+    } else {
+      const msg = googleErrorMessage(res.code, language === 'ar');
+      if (msg) setErrorMsg(msg);
+    }
+  };
 
   const handleAdminSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,6 +196,12 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
 
         {/* TAB 1: REGULAR ADMIN SIGN IN */}
         {activeTab === 'signin' && (
+          <>
+          <div className="space-y-4 mb-4">
+            <GoogleSignInButton onClick={handleAdminGoogle} disabled={isLoading} isAr={language === 'ar'} dark />
+            <OrDivider isAr={language === 'ar'} dark />
+          </div>
+
           <form onSubmit={handleAdminSignIn} className="space-y-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-1.5">
@@ -244,6 +266,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
               </p>
             </div>
           </form>
+          </>
         )}
 
         {/* TAB 2: FIRST SUPER ADMIN INITIALIZATION */}
