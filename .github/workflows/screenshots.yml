@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: check-homework
+        run: |
+          curl -s -o /tmp/hw.html -w "status %{http_code} size %{size_download}\n" https://english-zone-academy.englishzoneabc123.workers.dev/homework/index.html
+          grep -c "window.self === window.top" /tmp/hw.html || true
+          grep -c 'id="sn"' /tmp/hw.html || true
+          exit 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
