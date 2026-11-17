@@ -209,11 +209,24 @@ export const studentHubService = {
   },
 
   /* ---------- Library (published books & magazine) ---------- */
+  // للطالب: كل ما ليس مخفيًا (للعامة + للطلاب)
   async getPublishedLibrary(): Promise<any[]> {
-    const snap = await getDocs(collection(db, 'library_materials'));
+    let docs: any[];
+    try {
+      const snap = await getDocs(query(collection(db, 'library_materials'), where('audience', 'in', ['public', 'students'])));
+      docs = snap.docs.map((d) => ({ ...(d.data() as any), id: d.id }));
+    } catch {
+      docs = await this.getPublicLibrary();
+    }
+    return docs
+      .sort((a, b) => String(b.addedAt || '').localeCompare(String(a.addedAt || '')));
+  },
+
+  // للزوار: المواد المنشورة للعامة فقط
+  async getPublicLibrary(): Promise<any[]> {
+    const snap = await getDocs(query(collection(db, 'library_materials'), where('audience', '==', 'public')));
     return snap.docs
       .map((d) => ({ ...(d.data() as any), id: d.id }))
-      .filter((b) => b.isPublic)
       .sort((a, b) => String(b.addedAt || '').localeCompare(String(a.addedAt || '')));
   },
 

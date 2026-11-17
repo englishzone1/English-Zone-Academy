@@ -9,6 +9,7 @@ import { EnglishZoneEmblem } from '../../components/common/Logo';
 import { UserProfile, RegistrationRequest } from '../../types/auth';
 import { StagePricing } from '../../types';
 import {
+  Newspaper,
   CheckCircle2,
   XCircle,
   LogOut,
@@ -50,6 +51,7 @@ import { AdminTeachersManager } from '../../components/admin/AdminTeachersManage
 import { AdminHomeworkResults } from '../../components/admin/AdminHomeworkResults';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 import { AdminChatFaq } from '../../components/admin/AdminChatFaq';
+import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -108,7 +110,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   };
 
   // CMS state
-  const [cmsSubTab, setCmsSubTab] = useState<'sections' | 'courses' | 'books' | 'offers' | 'testimonials'>('sections');
+  const [cmsSubTab, setCmsSubTab] = useState<'sections' | 'courses' | 'books' | 'magazine' | 'offers' | 'testimonials'>('sections');
   const [websiteSections, setWebsiteSections] = useState<WebsiteSectionContent[]>([]);
   const [coursesList, setCoursesList] = useState<DynamicCourseItem[]>([]);
   const [libraryBooks, setLibraryBooks] = useState<LibraryBookMaterial[]>([]);
@@ -577,6 +579,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'sections', labelEn: 'Sections', labelAr: 'الأقسام', icon: FileText },
     { id: 'courses', labelEn: 'Curricula', labelAr: 'المناهج', icon: Layers },
     { id: 'books', labelEn: 'Library Books', labelAr: 'مكتبة الكتب', icon: BookOpen },
+    { id: 'magazine', labelEn: 'Magazine', labelAr: 'مجلة الأكاديمية', icon: Newspaper },
     { id: 'offers', labelEn: 'Offers', labelAr: 'العروض', icon: Tag },
     { id: 'testimonials', labelEn: 'Testimonials', labelAr: 'الآراء', icon: MessageSquare }
   ];
@@ -1314,88 +1317,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             )}
 
             {/* Books */}
-            {cmsSubTab === 'books' && (
-              <div className="space-y-6">
-                <div className={boxCls}>
-                  <h4 className="font-bold text-xs text-[#0A192F] flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-[#AA820A]" />
-                    <span>{tr('Add Library Material', 'إضافة مادة إلى المكتبة')}</span>
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className={labelCls}>{tr('Title (EN)', 'العنوان (EN)')}</label>
-                      <input type="text" value={newBookTitleEn} onChange={(e) => setNewBookTitleEn(e.target.value)} className={inputCls} />
-                    </div>
-                    <div>
-                      <label className={labelCls}>{tr('Title (AR)', 'العنوان (AR)')}</label>
-                      <input type="text" dir="rtl" value={newBookTitleAr} onChange={(e) => setNewBookTitleAr(e.target.value)} className={inputCls} />
-                    </div>
-                    <div>
-                      <label className={labelCls}>{tr('Category', 'التصنيف')}</label>
-                      <select value={newBookCategory} onChange={(e) => setNewBookCategory(e.target.value as any)} className={inputCls}>
-                        {['magazine', 'curriculum', 'reading', 'grammar', 'vocabulary'].map((c) => (
-                          <option key={c} value={c}>{categoryLabel(c)}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className={labelCls}>{tr('Level', 'المستوى')}</label>
-                      <select value={newBookLevel} onChange={(e) => setNewBookLevel(e.target.value)} className={inputCls}>
-                        <option value="All Levels">{tr('All Levels', 'كل المستويات')}</option>
-                        {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((lvl) => (
-                          <option key={lvl} value={lvl}>{lvl}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className={labelCls}>{tr('Download link (PDF)', 'رابط التحميل (PDF)')}</label>
-                      <input type="text" dir="ltr" placeholder="https://..." value={newBookUrl} onChange={(e) => setNewBookUrl(e.target.value)} className={`${inputCls} font-mono`} />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-2">
-                    <label className="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
-                      <input type="checkbox" checked={newBookIsPublic} onChange={(e) => setNewBookIsPublic(e.target.checked)} className="rounded" />
-                      <span>{tr('Available to all registered students', 'متاح لجميع الطلاب المسجلين')}</span>
-                    </label>
-                    <button onClick={handleCreateBook} disabled={(!newBookTitleEn.trim() && !newBookTitleAr.trim()) || isCmsSaving} className={primaryBtn}>
-                      <Plus className="w-4 h-4 text-[#D4AF37]" />
-                      <span>{tr('Add Material', 'إضافة المادة')}</span>
-                    </button>
-                  </div>
-                </div>
+            {cmsSubTab === 'books' && <AdminLibraryManager kind="library" isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
 
-                <div className="space-y-3">
-                  <span className="text-xs font-bold text-gray-700">{tr(`Library (${libraryBooks.length})`, `المكتبة (${libraryBooks.length})`)}</span>
-                  {libraryBooks.length === 0 ? (
-                    <div className={emptyCls}>{tr('No library materials yet.', 'لا توجد مواد في المكتبة بعد.')}</div>
-                  ) : (
-                    libraryBooks.map((book) => (
-                      <div key={book.id} className="p-4 rounded-xl border border-gray-200 bg-white flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                          <BookOpen className="w-5 h-5 text-[#AA820A]" />
-                          <div>
-                            <span className="font-bold text-xs text-[#0A192F] block">{isAr ? book.titleAr : book.titleEn}</span>
-                            <span className="text-[11px] text-gray-500">
-                              {categoryLabel(book.category)} • {book.level} • {book.isPublic ? tr('Public', 'عام') : tr('Protected', 'محمي')}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {book.downloadUrl && (
-                            <a href={book.downloadUrl} target="_blank" rel="noreferrer" className="p-2 text-gray-400 hover:text-[#0A192F] rounded-lg" title={tr('Open', 'فتح')}>
-                              <Download className="w-4 h-4" />
-                            </a>
-                          )}
-                          <button onClick={() => handleDeleteBook(book.id)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg" title={tr('Delete', 'حذف')}>
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Magazine */}
+            {cmsSubTab === 'magazine' && <AdminLibraryManager kind="magazine" isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
 
             {/* Offers */}
             {cmsSubTab === 'offers' && (

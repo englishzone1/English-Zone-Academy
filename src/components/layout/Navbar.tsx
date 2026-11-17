@@ -64,6 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
     { id: 'faq', label: t.nav.faq, icon: HelpCircle },
     { id: 'testimonials', label: t.nav.testimonials, icon: UserCheck },
     { id: 'blog', label: t.nav.blog, icon: FileText },
+    { id: 'library', label: language === 'ar' ? 'المكتبة والمجلة' : 'Library & Magazine', icon: BookOpen },
   ].filter((l) => l.id !== 'placement-test' || !!contacts.placementTestUrl);
 
   return (

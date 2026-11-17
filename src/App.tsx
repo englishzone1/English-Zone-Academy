@@ -18,6 +18,7 @@ import { BlogPage } from './pages/BlogPage';
 import { CourseDetailsPage } from './pages/CourseDetailsPage';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { LoginPage } from './pages/LoginPage';
+import { LibraryPage } from './pages/LibraryPage';
 import { HomeworkPlatform } from './components/student/HomeworkPlatform';
 import { HomeworkAnswersPage } from './components/admin/HomeworkAnswersPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
@@ -136,6 +137,8 @@ function MainApp() {
         return <FAQPage navigate={navigate} />;
       case 'testimonials':
         return <TestimonialsPage navigate={navigate} />;
+      case 'library':
+        return <LibraryPage />;
       case 'blog':
         return <BlogPage navigate={navigate} />;
       case 'english-club':

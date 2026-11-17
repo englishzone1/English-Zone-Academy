@@ -63,7 +63,19 @@ export interface LibraryBookMaterial {
   fileSizeMb?: number;
   isPublic: boolean;
   addedAt: string;
+  // لمن تظهر: للعامة (صفحة المكتبة في الموقع + الطلاب)، للطلاب فقط، أو مخفية
+  audience?: LibraryAudience;
+  // للمجلة: رقم العدد/الشهر، ونبذة، وصورة الغلاف
+  issue?: string;
+  description?: string;
+  coverUrl?: string;
 }
+
+export type LibraryAudience = 'public' | 'students' | 'hidden';
+
+// المواد القديمة بلا audience: «متاح للطلاب» أو مخفية
+export const audienceOf = (b: Pick<LibraryBookMaterial, 'audience' | 'isPublic'>): LibraryAudience =>
+  b.audience || (b.isPublic ? 'students' : 'hidden');
 
 export interface DynamicPromotionOffer {
   id: string;

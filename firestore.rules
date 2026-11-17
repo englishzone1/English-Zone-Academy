@@ -199,8 +199,10 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // المكتبة والمجلة: «للعامة» يراها الجميع، و«للطلاب» للطلاب المفعّلين والمعلمين، و«مخفية» للإدارة
     match /library_materials/{materialId} {
-      allow get, list: if true;
+      allow get, list: if resource.data.get('audience', '') == 'public' || isAdmin() || isTeacher() ||
+        (isActiveStudent() && resource.data.get('audience', '') in ['public', 'students']);
       allow write: if isAdmin();
     }
 
