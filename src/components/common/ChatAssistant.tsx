@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Bot, X, MessageCircle, RotateCcw } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-import { useAcademySettings } from '../../hooks/useAcademySettings';
+import { useAcademySettings, whatsappWithText } from '../../hooks/useAcademySettings';
 import { usePricing, LevelPriceCard } from '../../hooks/usePricing';
 import { chatFaqService, ChatFaq, PRICES_TOKEN } from '../../services/chatFaqService';
 
@@ -81,7 +81,7 @@ const bestMatch = (msg: string, list: ChatFaq[]): ChatFaq | null => {
 export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   const { language } = useLanguage();
   const isAr = language === 'ar';
-  const { tawkUrl } = useAcademySettings();
+  const { tawkUrl, whatsapp } = useAcademySettings();
   const { cards } = usePricing();
   const [open, setOpen] = useState(false);
   const [faqs, setFaqs] = useState<ChatFaq[]>([]);
@@ -138,7 +138,17 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
 
   const ask = (f: ChatFaq) => setMsgs((m) => [...m, { from: 'me', text: q(f) }, { from: 'bot', text: a(f) }]);
 
+  // التواصل مع شخص حقيقي: Tawk إن كان مربوطًا، وإلا واتساب من إعدادات الأكاديمية
+  const canTalk = !!tawkUrl || !!whatsapp;
   const talk = () => {
+    if (!tawkUrl && whatsapp) {
+      const last = [...msgs].reverse().find((m) => m.from === 'me');
+      const text = isAr
+        ? `مرحبًا English Zone، لدي سؤال${last ? `: ${last.text}` : ''}`
+        : `Hello English Zone, I have a question${last ? `: ${last.text}` : ''}`;
+      window.open(whatsappWithText(whatsapp, text), '_blank');
+      return;
+    }
     const api = (window as any).Tawk_API;
     try {
       api?.showWidget?.();
@@ -200,10 +210,10 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
             <div ref={endRef} />
           </div>
 
-          {tawkUrl && (
+          {canTalk && (
             <button onClick={talk} className="m-3 mt-2 py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold flex items-center justify-center gap-1.5">
               <MessageCircle className="w-4 h-4" />
-              {isAr ? 'تحدثي مع الأكاديمية' : 'Talk to the academy'}
+              {!tawkUrl ? (isAr ? 'تحدثي معنا على واتساب' : 'Chat with us on WhatsApp') : isAr ? 'تحدثي مع الأكاديمية' : 'Talk to the academy'}
             </button>
           )}
         </div>
