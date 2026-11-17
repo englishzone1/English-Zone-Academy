@@ -17,6 +17,7 @@ import { BlogPage } from './pages/BlogPage';
 import { CourseDetailsPage } from './pages/CourseDetailsPage';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { LoginPage } from './pages/LoginPage';
+import { HomeworkPlatform } from './components/student/HomeworkPlatform';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { EnglishClubPage } from './pages/EnglishClubPage';
 import { StudentDashboard } from './pages/dashboards/StudentDashboard';
@@ -75,7 +76,8 @@ const UnauthorizedScreen: React.FC<{ navigate: (route: string) => void; required
 };
 
 function MainApp() {
-  const { user, isAuthenticated, isLoading, isTeacher, isSuperAdmin, isAdmin } = useAuth();
+  const { language } = useLanguage();
+  const { user, firebaseUser, isAuthenticated, isLoading, isTeacher, isSuperAdmin, isAdmin } = useAuth();
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
     const hash = window.location.hash.replace(/^#\/?/, '');
     return hash || 'home';
@@ -190,6 +192,38 @@ function MainApp() {
         return <HomePage navigate={navigate} />;
     }
   };
+
+  // صفحة الواجبات الكاملة: تملأ الشاشة بلا شريط علوي ولا تذييل، وتحفظ النتائج باسم الطالب
+  if (currentRoute === 'homework') {
+    if (isLoading) return <LoadingScreen />;
+    if (!isAuthenticated || !firebaseUser || !user) return <LoginPage navigate={navigate} targetRedirect="homework" />;
+    const u: any = user;
+    const staff = isSuperAdmin || isAdmin || isTeacher;
+    if (!staff && String(u.subscriptionStatus || '').toLowerCase() !== 'active') {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center bg-[#FAF8F5]">
+          <p className="text-sm font-bold text-[#0A192F]">
+            {language === 'ar' ? 'الواجبات تفتح بعد تفعيل اشتراكك من الأكاديمية.' : 'Homework opens after the academy activates your subscription.'}
+          </p>
+          <button onClick={() => navigate('portal')} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+            {language === 'ar' ? 'العودة إلى لوحتي' : 'Back to my dashboard'}
+          </button>
+        </div>
+      );
+    }
+    return (
+      <HomeworkPlatform
+        full
+        preview={staff}
+        isAr={language === 'ar'}
+        uid={firebaseUser.uid}
+        name={u.fullName || ''}
+        groupId={staff ? undefined : u.groupId}
+        teacherId={staff ? undefined : u.teacherId}
+        onBack={() => navigate('portal')}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">

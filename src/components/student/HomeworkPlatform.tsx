@@ -10,6 +10,9 @@ interface Props {
   teacherId?: string;
   // معاينة للإدارة: تعرض الموقع نفسه بلا حفظ نتائج
   preview?: boolean;
+  // صفحة كاملة: الواجبات تملأ الشاشة كلها في تبويب مستقل
+  full?: boolean;
+  onBack?: () => void;
 }
 
 const kindLabel = (k: string, isAr: boolean) =>
@@ -17,7 +20,7 @@ const kindLabel = (k: string, isAr: boolean) =>
 
 // منصة الواجبات والاختبارات التفاعلية داخل لوحة الطالب.
 // الموقع المضمّن يرسل النتائج والتقدّم، فتُحفظ هنا باسم الطالب وتظهر للإدارة والمعلم.
-export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, teacherId, preview = false }) => {
+export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, teacherId, preview = false, full = false, onBack }) => {
   // موقع الواجبات صار جزءًا من المنصة نفسها، ولا يُفتح إلا من هنا
   const homeworkUrl = '/homework/';
   const [tall, setTall] = useState(false);
@@ -29,11 +32,10 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   const popupRef = useRef<Window | null>(null);
 
   const openFull = () => {
-    const w = window.open(homeworkUrl, 'ez-homework');
-    if (w) {
-      popupRef.current = w;
-      w.focus();
-    }
+    // تبويب جديد فيه المنصة نفسها بصفحة الواجبات الكاملة، فتُحفظ النتائج منه مباشرة
+    const w = window.open('/#/homework', '_blank');
+    if (w) w.focus();
+    else window.location.hash = '#/homework';
   };
   const progressTimer = useRef<number | null>(null);
   const valid = true;
@@ -116,6 +118,33 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   }, [valid, uid, name, groupId, teacherId, preview]);
 
   if (!valid) return null;
+
+  if (full) {
+    return (
+      <div className="fixed inset-0 flex flex-col bg-[#FAF8F5]">
+        <div className="h-9 shrink-0 flex items-center justify-between gap-2 px-3 bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+          <span className="flex items-center gap-1.5 truncate">
+            <BookOpenCheck className="w-4 h-4 shrink-0" />
+            {saveError ? <span className="text-red-300">{saveError}</span> : savedNote || 'English Zone'}
+          </span>
+          {onBack && (
+            <button onClick={onBack} className="px-2 py-1 rounded-lg border border-[#F3E5AB]/40 whitespace-nowrap">
+              {isAr ? 'العودة إلى لوحتي' : 'Back to my dashboard'}
+            </button>
+          )}
+        </div>
+        <iframe
+          ref={frameRef}
+          src={homeworkUrl}
+          title={isAr ? 'الواجبات والاختبارات' : 'Homework and tests'}
+          className="w-full flex-1 block border-0"
+          allow="autoplay; fullscreen; clipboard-write"
+          allowFullScreen
+          onLoad={() => window.setTimeout(() => greet(), 600)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
