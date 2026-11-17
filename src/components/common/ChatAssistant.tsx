@@ -94,6 +94,8 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   const [input, setInput] = useState('');
   const [form, setForm] = useState<null | { name: string; contact: string; message: string }>(null);
   const [sending, setSending] = useState(false);
+  // فقاعة «أهلًا بكم» فوق زر المساعد
+  const [hello, setHello] = useState(true);
   const [faqs, setFaqs] = useState<ChatFaq[]>([]);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -380,6 +382,18 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
               )}
             </div>
           </div>
+        </div>
+      )}
+      {!open && hello && (
+        <div className="mb-2 relative w-max max-w-[220px] px-3.5 py-2 rounded-2xl rounded-bl-sm bg-white border border-[#D4AF37] shadow-lg text-xs font-bold text-[#0A192F] animate-bounce [animation-iteration-count:3]">
+          <button onClick={() => setOpen(true)}>{isAr ? 'أهلًا بكم 👋' : 'Hello 👋'}</button>
+          <button
+            onClick={() => setHello(false)}
+            aria-label={isAr ? 'إخفاء' : 'Hide'}
+            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center"
+          >
+            <X className="w-3 h-3" />
+          </button>
         </div>
       )}
       <button
