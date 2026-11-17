@@ -125,7 +125,7 @@ export const StudentLibrary: React.FC<{ isAr: boolean }> = ({ isAr }) => {
 
 /* ------------------------------ Messages with the academy ------------------------------ */
 
-export const StudentMessages: React.FC<{ uid: string; name: string; email: string; isAr: boolean }> = ({ uid, name, email, isAr }) => {
+export const StudentMessages: React.FC<{ uid: string; name: string; email: string; isAr: boolean; teacherId?: string }> = ({ uid, name, email, isAr, teacherId }) => {
   const [items, setItems] = useState<StudentMessage[]>([]);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
@@ -147,7 +147,7 @@ export const StudentMessages: React.FC<{ uid: string; name: string; email: strin
     setSending(true);
     setStatus('');
     try {
-      await studentHubService.sendStudentMessage({ studentId: uid, name, email, subject, message });
+      await studentHubService.sendStudentMessage({ studentId: uid, name, email, subject, message, teacherId });
       setSubject('');
       setMessage('');
       setStatus(isAr ? 'تم إرسال رسالتك.' : 'Your message was sent.');

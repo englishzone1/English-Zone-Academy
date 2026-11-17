@@ -45,6 +45,7 @@ import { AdminCourseMaterials } from '../../components/admin/AdminCourseMaterial
 import { groupService } from '../../services/groupService';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
+import { AdminTeachersManager } from '../../components/admin/AdminTeachersManager';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -52,6 +53,7 @@ interface AdminDashboardProps {
 
 type TabId =
   | 'overview'
+  | 'teachers'
   | 'blog'
   | 'messages'
   | 'community'
@@ -515,6 +517,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'overview', labelEn: 'Overview & Metrics', labelAr: 'الإحصائيات العامة' },
     { id: 'registrations', labelEn: `Registrations (${pendingRegistrations.length} Pending)`, labelAr: `طلبات التسجيل (${pendingRegistrations.length})` },
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
+    { id: 'teachers', labelEn: 'Teachers', labelAr: 'المعلمون' },
     { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
     { id: 'community', labelEn: 'Community', labelAr: 'مجتمع الطلاب' },
     { id: 'feedback_reviews', labelEn: 'Student Reviews Gallery', labelAr: 'آراء وتقييمات الطلاب' },
@@ -861,6 +864,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* CONTACT MESSAGES */}
         {activeTab === 'messages' && <AdminMessagesManager onNotice={(msg) => notify(msg, 4000)} />}
+
+        {/* TEACHERS */}
+        {activeTab === 'teachers' && <AdminTeachersManager onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* COMMUNITY */}
         {activeTab === 'community' && firebaseUser && (

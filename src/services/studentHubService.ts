@@ -75,7 +75,7 @@ export interface CommunityPost {
   id: string;
   authorId: string;
   authorName: string;
-  authorRole: 'student' | 'admin';
+  authorRole: 'student' | 'admin' | 'teacher';
   text: string;
   imageDataUrl?: string;
   audioDataUrl?: string;
@@ -89,7 +89,7 @@ export interface CommunityComment {
   id: string;
   authorId: string;
   authorName: string;
-  authorRole: 'student' | 'admin';
+  authorRole: 'student' | 'admin' | 'teacher';
   authorAvatar?: any;
   text: string;
   createdAt: string;
@@ -199,7 +199,7 @@ export const studentHubService = {
   },
 
   /* ---------- Messages between student and academy ---------- */
-  async sendStudentMessage(p: { studentId: string; name: string; email: string; subject: string; message: string }): Promise<void> {
+  async sendStudentMessage(p: { studentId: string; name: string; email: string; subject: string; message: string; teacherId?: string }): Promise<void> {
     const id = newId('MSG');
     await setDoc(doc(db, 'contact_messages', id), {
       id,
@@ -209,7 +209,8 @@ export const studentHubService = {
       message: p.message.trim().slice(0, 3000),
       status: 'new',
       submittedAt: new Date().toISOString(),
-      studentId: p.studentId
+      studentId: p.studentId,
+      ...(p.teacherId ? { teacherId: p.teacherId } : {})
     });
   },
 

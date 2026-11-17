@@ -12,9 +12,12 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { groupService, StudyGroup, RatingCriterion, PASS_MARK } from '../../services/groupService';
 import { AdminStudentRecords } from './AdminStudentRecords';
+import { AvatarRenderer } from '../avatar/AvatarRenderer';
 
 interface AdminStudentsManagerProps {
   onNotice: (message: string) => void;
+  // وضع المعلم: يرى طلاب مجموعاته فقط، ويقيّمهم دون تعديل بيانات الاشتراك
+  teacherMode?: boolean;
 }
 
 interface StudentRow {
@@ -102,9 +105,9 @@ const numberOrDelete = (value: string, min?: number, max?: number) => {
 
 const inputCls = 'w-full px-3 py-2 rounded-xl border border-gray-300 text-xs bg-white';
 
-export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNotice }) => {
+export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNotice, teacherMode = false }) => {
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, firebaseUser } = useAuth();
   const isAr = language === 'ar';
   const adminName = user?.fullName || (isAr ? 'المدير' : 'Administrator');
 
@@ -129,12 +132,16 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
     if (showSpinner) setLoading(true);
     setLoadError(null);
     try {
-      const snap = await getDocs(collection(db, 'users'));
       const rows: StudentRow[] = [];
-      snap.forEach((d) => {
-        const data = d.data() as any;
-        if (data.role === 'student') rows.push({ ...data, id: d.id });
-      });
+      if (teacherMode) {
+        (await groupService.getTeacherStudents(firebaseUser?.uid || '')).forEach((u) => rows.push(u));
+      } else {
+        const snap = await getDocs(collection(db, 'users'));
+        snap.forEach((d) => {
+          const data = d.data() as any;
+          if (data.role === 'student') rows.push({ ...data, id: d.id });
+        });
+      }
       rows.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
       setStudents(rows);
     } catch (err: any) {
@@ -158,7 +165,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
     }
 
     try {
-      setGroups(await groupService.getGroups());
+      setGroups(teacherMode ? await groupService.getTeacherGroups(firebaseUser?.uid || '') : await groupService.getGroups());
       setCriteria(await groupService.getCriteria());
     } catch (err) {
       console.error('Error loading groups/criteria:', err);
@@ -239,7 +246,8 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         amount,
         reason,
         criterionId,
-        awardedBy: adminName
+        awardedBy: adminName,
+        asTeacher: teacherMode
       });
       onNotice(
         isAr
@@ -323,10 +331,14 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
-            {isAr ? 'إدارة الطلاب' : 'Students Management'}
+            {teacherMode ? (isAr ? 'طلابي' : 'My Students') : isAr ? 'إدارة الطلاب' : 'Students Management'}
           </h2>
           <p className="text-xs text-gray-500">
-            {isAr
+            {teacherMode
+              ? isAr
+                ? 'طلاب مجموعاتك فقط: سجّل لهم النجوم والدرجات والواجبات والحضور.'
+                : 'Students of your groups only: record stars, grades, homework and attendance.'
+              : isAr
               ? 'لا تظهر للطالب لوحته إلا بعد أن تفعّل اشتراكه وتحدد مستواه ودورته.'
               : 'Students see their dashboard only after you activate them and set their level and course.'}
           </p>
@@ -402,7 +414,9 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                 key={s.id}
                 className="p-4 rounded-xl border border-gray-200 bg-[#FAF8F5] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
               >
-                <div className="min-w-0">
+                <div className="min-w-0 flex items-start gap-3">
+                  <AvatarRenderer config={(s as any).avatarConfig} size={44} />
+                  <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold text-sm text-[#0A192F]">{s.fullName || '—'}</span>
                     <span
@@ -426,6 +440,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                     {' • '}
                     {s.points || 0} {isAr ? 'نجمة' : 'stars'}
                   </div>
+                  </div>
                 </div>
                 <button
                   onClick={() => openStudent(s)}
@@ -446,10 +461,13 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
+              <div className="min-w-0 flex items-center gap-3">
+                <AvatarRenderer config={(selected as any).avatarConfig} size={56} />
+                <div className="min-w-0">
                 <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F]">{selected.fullName || '—'}</h3>
                 <p className="text-[11px] text-gray-500 break-all">{selected.email}</p>
                 <p className="text-[10px] text-gray-400 font-mono break-all">{selected.id}</p>
+                </div>
               </div>
               <button
                 onClick={() => setSelectedId(null)}
@@ -459,6 +477,8 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
               </button>
             </div>
 
+            {!teacherMode && (
+              <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-[11px] font-bold text-gray-600 mb-1">
@@ -635,6 +655,28 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
               <Save className="w-4 h-4 text-[#D4AF37]" />
               <span>{saving ? (isAr ? 'جارٍ الحفظ...' : 'Saving...') : isAr ? 'حفظ بيانات الطالب' : 'Save student'}</span>
             </button>
+
+              </>
+            )}
+
+            {!teacherMode && (selected as any).role !== 'teacher' && (
+              <button
+                onClick={async () => {
+                  if (!window.confirm(isAr ? `تحويل ${selected.fullName || ''} إلى معلم؟ سيخرج من قائمة الطلاب.` : 'Make this account a teacher?')) return;
+                  try {
+                    await groupService.makeTeacher(selected);
+                    onNotice(isAr ? 'أصبح الحساب معلمًا. اربطه بمجموعته من سجل النجوم > المجموعات.' : 'Account is now a teacher. Assign a group in Stars Ledger > Groups.');
+                    setSelectedId(null);
+                    await load(false);
+                  } catch (err: any) {
+                    onNotice((isAr ? 'تعذّر التحويل: ' : 'Failed: ') + errText(err));
+                  }
+                }}
+                className="w-full py-2 rounded-xl border border-dashed border-[#D4AF37] text-xs font-bold text-[#0A192F] hover:bg-[#FAF8F5]"
+              >
+                {isAr ? 'تعيين هذا الحساب كمعلم' : 'Make this account a teacher'}
+              </button>
+            )}
 
             {/* Rating */}
             <div className="border-t border-gray-100 pt-4 space-y-3">

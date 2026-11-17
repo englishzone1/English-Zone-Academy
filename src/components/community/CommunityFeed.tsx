@@ -15,7 +15,7 @@ import { EnglishZoneEmblem } from '../common/Logo';
 interface Props {
   uid: string;
   name: string;
-  role: 'student' | 'admin';
+  role: 'student' | 'admin' | 'teacher';
   isAr: boolean;
   avatar?: any;
 }
@@ -238,7 +238,11 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }
   };
 
   const AuthorBadge = ({ r }: { r: string }) =>
-    r === 'admin' ? (
+    r === 'teacher' ? (
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0A192F] text-[10px] font-bold">
+        {tr('Teacher', 'معلم')}
+      </span>
+    ) : r === 'admin' ? (
       <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#0A192F] text-[#F3E5AB] text-[10px] font-bold">
         <ShieldCheck className="w-3 h-3 text-[#D4AF37]" />
         {tr('Academy', 'الأكاديمية')}
@@ -246,7 +250,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }
     ) : null;
 
   const Face = ({ r, cfg, size }: { r: string; cfg?: any; size: number }) =>
-    r === 'admin' ? (
+    r !== 'student' ? (
       <EnglishZoneEmblem sizeClass={size > 30 ? 'w-10 h-10' : 'w-7 h-7'} glow={false} />
     ) : (
       <EZAvatar config={cfg} view="head" size={size} />

@@ -3,6 +3,8 @@ import { collection, getDocs } from 'firebase/firestore';
 import { Plus, Trash2, Save, ChevronDown, ChevronUp, Crown } from 'lucide-react';
 import { db } from '../../services/firebase';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
+import { AvatarRenderer } from '../avatar/AvatarRenderer';
 import {
   groupService,
   startOfWeek,
@@ -10,11 +12,13 @@ import {
   StudyGroup,
   RatingCriterion,
   PointsEntry,
-  GradeEntry
+  GradeEntry,
+  TeacherAccount
 } from '../../services/groupService';
 
 interface Props {
   onNotice: (message: string) => void;
+  teacherMode?: boolean;
 }
 
 interface StudentLite {
@@ -32,7 +36,9 @@ const labelCls = 'block text-[11px] font-bold text-gray-600 mb-1';
 const primaryBtn =
   'px-4 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] flex items-center gap-1.5 disabled:opacity-50';
 
-export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
+export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = false }) => {
+  const { firebaseUser } = useAuth();
+  const [teachers, setTeachers] = useState<TeacherAccount[]>([]);
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
@@ -68,18 +74,24 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
     setLoading(true);
     setLoadError(null);
     try {
-      const [g, c, l, gr, us] = await Promise.all([
-        groupService.getGroups(),
+      const uid = firebaseUser?.uid || '';
+      const [g, c, l, gr] = await Promise.all([
+        teacherMode ? groupService.getTeacherGroups(uid) : groupService.getGroups(),
         groupService.getCriteria(),
         groupService.getPointsLog(),
-        groupService.getGrades(),
-        getDocs(collection(db, 'users'))
+        groupService.getGrades()
       ]);
       const st: StudentLite[] = [];
-      us.forEach((d) => {
-        const data = d.data() as any;
-        if (data.role === 'student') st.push({ ...data, id: d.id });
-      });
+      if (teacherMode) {
+        (await groupService.getTeacherStudents(uid)).forEach((u) => st.push(u));
+      } else {
+        const us = await getDocs(collection(db, 'users'));
+        us.forEach((d) => {
+          const data = d.data() as any;
+          if (data.role === 'student') st.push({ ...data, id: d.id });
+        });
+        setTeachers(await groupService.getTeachers());
+      }
       setGroups(g);
       setCriteria(c);
       setLog(l);
@@ -98,7 +110,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
   useEffect(() => {
     load();
     // تحديث لوحات المجموعات التي يراها الطلاب تلقائيًا عند فتح هذا التبويب
-    groupService.syncAllMembers().catch((err) => console.error('Group boards sync failed:', err));
+    if (!teacherMode) groupService.syncAllMembers().catch((err) => console.error('Group boards sync failed:', err));
   }, []);
 
   /* ------------------------------ Ledger data ------------------------------ */
@@ -140,12 +152,15 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
         id: editingGroupId || undefined,
         name: groupName.trim(),
         level: groupLevel || undefined,
-        teacherName: groupTeacher.trim() || undefined,
+        teacherId: groupTeacher || '',
+        teacherName: teachers.find((t) => t.id === groupTeacher)?.fullName || '',
         createdAt: groups.find((g) => g.id === editingGroupId)?.createdAt
       });
       onNotice(tr('Group saved.', 'تم حفظ المجموعة.'));
       resetGroupForm();
       await load();
+      // ربط طلاب المجموعة بمعلمها
+      groupService.syncAllMembers().catch((err) => console.error(err));
     } catch (err) {
       fail(err, 'تعذر حفظ المجموعة:', 'Could not save group:');
     }
@@ -233,7 +248,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
     { id: 'ledger', en: 'Ledger by group', ar: 'السجل حسب المجموعة' },
     { id: 'groups', en: 'Manage groups', ar: 'إدارة المجموعات' },
     { id: 'criteria', en: 'Rating criteria', ar: 'معايير التقييم' }
-  ];
+  ].filter((t) => !teacherMode || t.id === 'ledger') as any;
 
   const StarCard = ({ title, row, value }: { title: string; row: { s: StudentLite } | null; value?: number }) => (
     <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/40">
@@ -335,7 +350,10 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
                           <div className="flex items-center gap-3 min-w-0">
                             <span className="w-7 h-7 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
                             <div className="min-w-0">
-                              <div className="font-bold text-sm text-[#0A192F] truncate">{r.s.fullName || '—'}</div>
+                              <div className="font-bold text-sm text-[#0A192F] truncate flex items-center gap-2">
+                                <AvatarRenderer config={(r.s as any).avatarConfig} size={30} />
+                                {r.s.fullName || '—'}
+                              </div>
                               <div className="text-[11px] text-gray-500">
                                 {tr('This week', 'هذا الأسبوع')}: {r.week} • {tr('This month', 'هذا الشهر')}: {r.month}
                               </div>
@@ -426,8 +444,18 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
                     </select>
                   </div>
                   <div>
-                    <label className={labelCls}>{tr('Instructor (optional)', 'المعلم (اختياري)')}</label>
-                    <input type="text" value={groupTeacher} onChange={(e) => setGroupTeacher(e.target.value)} className={inputCls} />
+                    <label className={labelCls}>{tr('Teacher', 'المعلم')}</label>
+                    <select value={groupTeacher} onChange={(e) => setGroupTeacher(e.target.value)} className={inputCls}>
+                      <option value="">{tr('— None —', '— بدون معلم —')}</option>
+                      {teachers.map((t) => (
+                        <option key={t.id} value={t.id}>{t.fullName || t.email}</option>
+                      ))}
+                    </select>
+                    {teachers.length === 0 && (
+                      <p className="text-[10px] text-gray-400 mt-1">
+                        {tr('Add teachers from the Teachers tab first.', 'أضف المعلمين أولًا من تبويب المعلمين.')}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex justify-end gap-2">
@@ -463,7 +491,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice }) => {
                             setEditingGroupId(g.id);
                             setGroupName(g.name);
                             setGroupLevel(g.level || '');
-                            setGroupTeacher(g.teacherName || '');
+                            setGroupTeacher(g.teacherId || '');
                           }}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200"
                         >

@@ -84,7 +84,7 @@ service cloud.firestore {
     // --- Users Profiles ---
     match /users/{userId} {
       allow get: if isOwner(userId) || isTeacher() || isAdmin();
-      allow list: if isAdmin() || (isTeacher() && resource.data.assignedTeacherId == request.auth.uid);
+      allow list: if isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid);
 
       allow create: if isAdmin() || (
         isOwner(userId) &&
@@ -101,7 +101,11 @@ service cloud.firestore {
         ])
       );
 
+      // المعلم يغيّر نقاط طلابه فقط
       allow update: if isAdmin() || (
+        isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points', 'updatedAt'])
+      ) || (
         isOwner(userId) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'fullName', 'phone', 'country', 'age', 'avatarUrl', 'avatarConfig', 'updatedAt'
@@ -258,7 +262,10 @@ service cloud.firestore {
         isTeacher() ||
         (myGroupId() != '' && resource.data.groupId == myGroupId())
       );
-      allow write: if isAdmin();
+      allow write: if isAdmin() || (
+        isTeacherDoc() && request.resource != null &&
+        get(/databases/$(database)/documents/groups/$(request.resource.data.groupId)).data.get('teacherId', '') == request.auth.uid
+      );
     }
 
     // --- Rating criteria (معايير التقييم) ---
@@ -287,15 +294,23 @@ service cloud.firestore {
     // --- Contact messages: زائر من صفحة التواصل، أو طالب من لوحته (ويرى رسائله وردود الإدارة) ---
     match /contact_messages/{messageId} {
       allow create: if isValidId(messageId) &&
-        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt', 'studentId']) &&
+        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt', 'studentId', 'teacherId']) &&
+        (!('teacherId' in request.resource.data) || (isSignedIn() && request.resource.data.teacherId == myProfile().get('teacherId', ''))) &&
         request.resource.data.status == 'new' &&
         (!('studentId' in request.resource.data) || (isSignedIn() && request.resource.data.studentId == request.auth.uid)) &&
         request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 100 &&
         request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 150 &&
         request.resource.data.subject is string && request.resource.data.subject.size() <= 200 &&
         request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 3000;
-      allow get, list: if isAdmin() || (isSignedIn() && resource.data.studentId == request.auth.uid);
-      allow update, delete: if isAdmin();
+      allow get, list: if isAdmin() ||
+        (isSignedIn() && resource.data.studentId == request.auth.uid) ||
+        (isTeacherDoc() && resource.data.teacherId == request.auth.uid);
+      // المعلم يرد على رسائل طلاب مجموعاته فقط
+      allow update: if isAdmin() || (
+        isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reply', 'repliedAt', 'status'])
+      );
+      allow delete: if isAdmin();
     }
 
     // --- Attendance (الحضور): الطالب يقرأ حضوره فقط ---
@@ -312,13 +327,13 @@ service cloud.firestore {
 
     // --- English Zone community (مجتمع الطلاب) ---
     match /community_posts/{postId} {
-      allow get, list: if isAdmin() || isActiveStudent();
+      allow get, list: if isTeacher() || isActiveStudent();
 
-      allow create: if (isAdmin() || isActiveStudent()) &&
+      allow create: if (isTeacher() || isActiveStudent()) &&
         isValidId(postId) &&
         request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'authorAvatar', 'text', 'imageDataUrl', 'audioDataUrl', 'videoUrl', 'likes', 'createdAt']) &&
         request.resource.data.authorId == request.auth.uid &&
-        (request.resource.data.authorRole == 'student' || (request.resource.data.authorRole == 'admin' && isAdmin())) &&
+        (request.resource.data.authorRole == 'student' || (request.resource.data.authorRole == 'admin' && isAdmin()) || (request.resource.data.authorRole == 'teacher' && isTeacher())) &&
         request.resource.data.likes.size() == 0 &&
         request.resource.data.text is string && request.resource.data.text.size() <= 3000 &&
         (!('imageDataUrl' in request.resource.data) || (request.resource.data.imageDataUrl is string && request.resource.data.imageDataUrl.size() <= 750000)) &&
@@ -326,7 +341,7 @@ service cloud.firestore {
         (!('videoUrl' in request.resource.data) || (request.resource.data.videoUrl is string && request.resource.data.videoUrl.size() <= 500));
 
       // الإعجاب: يضيف أو يحذف المستخدم معرّفه فقط
-      allow update: if (isAdmin() || isActiveStudent()) &&
+      allow update: if (isTeacher() || isActiveStudent()) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
         request.resource.data.likes.toSet().difference(resource.data.likes.toSet()).hasOnly([request.auth.uid]) &&
         resource.data.likes.toSet().difference(request.resource.data.likes.toSet()).hasOnly([request.auth.uid]);
@@ -334,12 +349,12 @@ service cloud.firestore {
       allow delete: if isAdmin() || (isSignedIn() && resource.data.authorId == request.auth.uid);
 
       match /comments/{commentId} {
-        allow get, list: if isAdmin() || isActiveStudent();
-        allow create: if (isAdmin() || isActiveStudent()) &&
+        allow get, list: if isTeacher() || isActiveStudent();
+        allow create: if (isTeacher() || isActiveStudent()) &&
           isValidId(commentId) &&
           request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'authorAvatar', 'text', 'createdAt']) &&
           request.resource.data.authorId == request.auth.uid &&
-          (request.resource.data.authorRole == 'student' || (request.resource.data.authorRole == 'admin' && isAdmin())) &&
+          (request.resource.data.authorRole == 'student' || (request.resource.data.authorRole == 'admin' && isAdmin()) || (request.resource.data.authorRole == 'teacher' && isTeacher())) &&
           request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000;
         allow delete: if isAdmin() || (isSignedIn() && resource.data.authorId == request.auth.uid);
       }

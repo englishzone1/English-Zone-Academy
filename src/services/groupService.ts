@@ -2,6 +2,7 @@ import {
   collection,
   doc,
   getDoc,
+  updateDoc,
   getDocs,
   setDoc,
   deleteDoc,
@@ -20,6 +21,14 @@ export interface StudyGroup {
   name: string;
   level?: string;
   teacherName?: string;
+  teacherId?: string; // معلم المجموعة (حساب من مجموعة teachers)
+  createdAt: string;
+}
+
+export interface TeacherAccount {
+  id: string;
+  fullName: string;
+  email: string;
   createdAt: string;
 }
 
@@ -116,11 +125,58 @@ export const groupService = {
     const batch = writeBatch(db);
     const members = await getDocs(query(collection(db, 'users'), where('groupId', '==', id)));
     members.forEach((d) => {
-      batch.update(d.ref, { groupId: deleteField() });
+      batch.update(d.ref, { groupId: deleteField(), teacherId: deleteField() });
       batch.delete(doc(db, 'group_members', d.id));
     });
     batch.delete(doc(db, 'groups', id));
     await batch.commit();
+  },
+
+  // ---- Teachers ----
+  async getTeachers(): Promise<TeacherAccount[]> {
+    const snap = await getDocs(collection(db, 'teachers'));
+    return snap.docs
+      .map((d) => ({ ...(d.data() as any), id: d.id } as TeacherAccount))
+      .sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''));
+  },
+
+  // تحويل حساب موجود إلى معلم (الحساب يُنشأ أولًا بالتسجيل العادي أو بجوجل)
+  async makeTeacher(u: { id: string; fullName?: string; email?: string }): Promise<void> {
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'teachers', u.id), {
+      id: u.id,
+      fullName: u.fullName || '',
+      email: u.email || '',
+      createdAt: new Date().toISOString()
+    });
+    batch.update(doc(db, 'users', u.id), {
+      role: 'teacher',
+      groupId: deleteField(),
+      teacherId: deleteField(),
+      updatedAt: new Date().toISOString()
+    });
+    batch.delete(doc(db, 'group_members', u.id));
+    await batch.commit();
+  },
+
+  async removeTeacher(id: string): Promise<void> {
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'teachers', id));
+    batch.update(doc(db, 'users', id), { role: 'student', updatedAt: new Date().toISOString() });
+    const owned = await getDocs(query(collection(db, 'groups'), where('teacherId', '==', id)));
+    owned.forEach((g) => batch.update(g.ref, { teacherId: deleteField(), teacherName: deleteField() }));
+    await batch.commit();
+  },
+
+  // مجموعات المعلم وطلابه فقط
+  async getTeacherGroups(teacherId: string): Promise<StudyGroup[]> {
+    const snap = await getDocs(query(collection(db, 'groups'), where('teacherId', '==', teacherId)));
+    return snap.docs.map((d) => ({ ...(d.data() as any), id: d.id } as StudyGroup)).sort((a, b) => a.name.localeCompare(b.name));
+  },
+
+  async getTeacherStudents(teacherId: string): Promise<any[]> {
+    const snap = await getDocs(query(collection(db, 'users'), where('teacherId', '==', teacherId)));
+    return snap.docs.map((d) => ({ ...(d.data() as any), id: d.id })).filter((u) => u.role === 'student');
   },
 
   // ---- Rating criteria ----
@@ -159,6 +215,7 @@ export const groupService = {
     reason: string;
     criterionId?: string;
     awardedBy: string;
+    asTeacher?: boolean;
   }): Promise<void> {
     const batch = writeBatch(db);
     const logRef = doc(collection(db, 'points_log'));
@@ -182,7 +239,7 @@ export const groupService = {
     });
     await batch.commit();
     try {
-      await groupService.syncMember(p.studentId);
+      await groupService.syncMember(p.studentId, { asTeacher: p.asTeacher });
     } catch (err) {
       console.error('Could not update group board:', err);
     }
@@ -190,10 +247,21 @@ export const groupService = {
 
   // ---- Group board (group_members) ----
   // ينسخ اسم الطالب ونقاطه ومجموعته من users إلى group_members، أو يحذفه إن لم تكن له مجموعة
-  async syncMember(studentId: string): Promise<void> {
+  async syncMember(studentId: string, opts: { asTeacher?: boolean } = {}): Promise<void> {
     const snap = await getDoc(doc(db, 'users', studentId));
     const data = snap.exists() ? (snap.data() as any) : null;
     const ref = doc(db, 'group_members', studentId);
+    // معلم الطالب = معلم مجموعته (الأدمن فقط يغيّره)
+    if (!opts.asTeacher && data && data.role === 'student') {
+      let teacherId = '';
+      if (data.groupId) {
+        const g = await getDoc(doc(db, 'groups', data.groupId));
+        teacherId = g.exists() ? String((g.data() as any).teacherId || '') : '';
+      }
+      if ((data.teacherId || '') !== teacherId) {
+        await updateDoc(doc(db, 'users', studentId), { teacherId: teacherId ? teacherId : deleteField() });
+      }
+    }
     if (!data || data.role !== 'student' || !data.groupId) {
       await deleteDoc(ref);
       return;
@@ -210,14 +278,23 @@ export const groupService = {
 
   // يعيد بناء لوحات كل المجموعات من بيانات الطلاب (زر المزامنة في اللوحة)
   async syncAllMembers(): Promise<number> {
-    const [usersSnap, boardSnap] = await Promise.all([
+    const [usersSnap, boardSnap, groupsSnap] = await Promise.all([
       getDocs(collection(db, 'users')),
-      getDocs(collection(db, 'group_members'))
+      getDocs(collection(db, 'group_members')),
+      getDocs(collection(db, 'groups'))
     ]);
+    const teacherOf = new Map<string, string>();
+    groupsSnap.forEach((g) => teacherOf.set(g.id, String((g.data() as any).teacherId || '')));
     const ops: ((b: ReturnType<typeof writeBatch>) => void)[] = [];
     const keep = new Set<string>();
     usersSnap.forEach((d) => {
       const data = d.data() as any;
+      if (data.role === 'student') {
+        const t = data.groupId ? teacherOf.get(data.groupId) || '' : '';
+        if ((data.teacherId || '') !== t) {
+          ops.push((b) => b.update(d.ref, { teacherId: t ? t : deleteField() }));
+        }
+      }
       if (data.role === 'student' && data.groupId) {
         keep.add(d.id);
         ops.push((b) =>

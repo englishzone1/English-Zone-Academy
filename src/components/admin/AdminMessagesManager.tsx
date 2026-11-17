@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { Mail, Trash2, CheckCircle } from 'lucide-react';
 import { db } from '../../services/firebase';
 import { studentHubService } from '../../services/studentHubService';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
+import { AvatarRenderer } from '../avatar/AvatarRenderer';
+import { groupService } from '../../services/groupService';
 
 interface Props {
   onNotice: (message: string) => void;
+  // وضع المعلم: رسائل طلاب مجموعاته فقط
+  teacherMode?: boolean;
 }
 
 interface ContactMessage {
@@ -22,7 +27,9 @@ interface ContactMessage {
 }
 
 // رسائل نموذج "راسلنا" في صفحة التواصل
-export const AdminMessagesManager: React.FC<Props> = ({ onNotice }) => {
+export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = false }) => {
+  const { firebaseUser } = useAuth();
+  const [avatars, setAvatars] = useState<Record<string, any>>({});
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
@@ -47,7 +54,21 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice }) => {
   const load = async () => {
     setLoading(true);
     try {
-      const snap = await getDocs(collection(db, 'contact_messages'));
+      const uid = firebaseUser?.uid || '';
+      const snap = await getDocs(
+        teacherMode
+          ? query(collection(db, 'contact_messages'), where('teacherId', '==', uid))
+          : collection(db, 'contact_messages')
+      );
+      // أفاتار كل طالب بجانب رسالته
+      try {
+        const people = teacherMode
+          ? await groupService.getTeacherStudents(uid)
+          : (await getDocs(collection(db, 'users'))).docs.map((d) => ({ ...(d.data() as any), id: d.id }));
+        setAvatars(Object.fromEntries(people.filter((p: any) => p.avatarConfig).map((p: any) => [p.id, p.avatarConfig])));
+      } catch {
+        // الأفاتار اختياري
+      }
       setItems(
         snap.docs
           .map((d) => ({ ...(d.data() as any), id: d.id } as ContactMessage))
@@ -104,6 +125,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice }) => {
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
+                  {m.studentId && <AvatarRenderer config={avatars[m.studentId]} size={30} />}
                   {m.status === 'new' && (
                     <span className="px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[10px] font-bold">{tr('New', 'جديدة')}</span>
                   )}
@@ -151,9 +173,11 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice }) => {
                     <span>{tr('Mark as read', 'تمت القراءة')}</span>
                   </button>
                 )}
-                <button onClick={() => remove(m)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg" title={tr('Delete', 'حذف')}>
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {!teacherMode && (
+                  <button onClick={() => remove(m)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg" title={tr('Delete', 'حذف')}>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
           ))}
