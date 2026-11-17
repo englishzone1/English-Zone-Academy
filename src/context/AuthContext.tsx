@@ -96,6 +96,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
+      // حساب دخول بلا وثيقة في users (مثلًا فشل حفظها لحظة التسجيل): ننشئها الآن بحالة pending
+      if (!resolvedProfile && !adminDocExists && !tokenClaims.role && fbUser.email) {
+        let isTeacherAccount = false;
+        try {
+          isTeacherAccount = (await getDoc(doc(db, 'teachers', fbUser.uid))).exists();
+        } catch {
+          // الطالب لا يملك صلاحية قراءة teachers، وهذا متوقع
+        }
+        if (!isTeacherAccount) {
+          try {
+            const createdProfile: UserProfile = {
+              id: fbUser.uid,
+              email: fbUser.email,
+              fullName: fbUser.displayName || fbUser.email.split('@')[0],
+              role: 'student',
+              points: 0,
+              starOfTheWeekCount: 0,
+              starOfTheMonthCount: 0,
+              subscriptionStatus: 'pending',
+              createdAt: new Date().toISOString()
+            };
+            await setDoc(doc(db, 'users', fbUser.uid), createdProfile);
+            resolvedProfile = createdProfile;
+          } catch (createErr) {
+            console.error('Could not create missing student profile:', createErr);
+          }
+        }
+      }
+
       if (resolvedProfile) {
         setUser(resolvedProfile);
         setHasProfile(true);
