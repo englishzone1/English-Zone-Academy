@@ -214,11 +214,13 @@ service cloud.firestore {
     match /testimonials/{testimonialId} {
       allow get, list: if resource.data.isApproved == true || isAdmin();
 
-      allow create: if isSignedIn() &&
+      // فقط طالب مشترك (اشتراكه مفعّل) يكتب تقييمًا باسمه، فيظهر «تقييم موثّق»
+      allow create: if isActiveStudent() &&
         request.resource.data.isApproved == false &&
+        request.resource.data.studentId == request.auth.uid &&
         request.resource.data.keys().hasOnly([
           'id', 'studentNameEn', 'studentNameAr', 'roleEn', 'roleAr',
-          'level', 'quoteEn', 'quoteAr', 'rating', 'isApproved', 'submittedAt'
+          'level', 'quoteEn', 'quoteAr', 'rating', 'isApproved', 'submittedAt', 'studentId'
         ]) &&
         request.resource.data.rating >= 1 && request.resource.data.rating <= 5 &&
         request.resource.data.quoteEn is string && request.resource.data.quoteEn.size() <= 1000;

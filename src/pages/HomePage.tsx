@@ -22,6 +22,7 @@ import {
 import { EnglishZoneEmblem } from '../components/common/Logo';
 import { EnglishClubHomeSection } from '../components/englishClub/EnglishClubHomeSection';
 import { StudentReviewsSection } from '../components/reviews/StudentReviewsSection';
+import { VerifiedTestimonials } from '../components/reviews/VerifiedTestimonials';
 
 interface HomePageProps {
   navigate: (
@@ -454,6 +455,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
 
       {/* STUDENT REVIEWS & FEEDBACK GALLERY */}
       <StudentReviewsSection previewLimit={6} />
+      <VerifiedTestimonials limit={3} title />
     </div>
   );
 };

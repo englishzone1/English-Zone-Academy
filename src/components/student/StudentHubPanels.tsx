@@ -210,7 +210,7 @@ export const StudentMessages: React.FC<{ uid: string; name: string; email: strin
 
 /* ------------------------------ Student feedback (testimonial) ------------------------------ */
 
-export const StudentFeedback: React.FC<{ name: string; level?: string; isAr: boolean }> = ({ name, level, isAr }) => {
+export const StudentFeedback: React.FC<{ uid: string; name: string; level?: string; isAr: boolean }> = ({ uid, name, level, isAr }) => {
   const [text, setText] = useState('');
   const [rating, setRating] = useState(5);
   const [sending, setSending] = useState(false);
@@ -221,7 +221,7 @@ export const StudentFeedback: React.FC<{ name: string; level?: string; isAr: boo
     setSending(true);
     setStatus('');
     try {
-      await studentHubService.submitTestimonial({ name, level, text, rating });
+      await studentHubService.submitTestimonial({ studentId: uid, name, level, text, rating });
       setText('');
       setStatus(
         isAr

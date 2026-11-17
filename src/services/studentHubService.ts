@@ -231,7 +231,7 @@ export const studentHubService = {
   },
 
   /* ---------- Testimonials (student feedback, needs admin approval) ---------- */
-  async submitTestimonial(p: { name: string; level?: string; text: string; rating: number }): Promise<void> {
+  async submitTestimonial(p: { studentId: string; name: string; level?: string; text: string; rating: number }): Promise<void> {
     const id = newId('REV');
     const text = p.text.trim().slice(0, 1000);
     await setDoc(doc(db, 'testimonials', id), {
@@ -245,6 +245,8 @@ export const studentHubService = {
       quoteAr: text,
       rating: Math.max(1, Math.min(5, Math.round(p.rating))),
       isApproved: false,
+      // معرّف الطالب المشترك: يثبت أن التقييم موثّق
+      studentId: p.studentId,
       submittedAt: new Date().toISOString()
     });
   },

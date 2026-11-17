@@ -607,7 +607,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         )}
 
         {/* TAB: FEEDBACK */}
-        {activeTab === 'feedback' && <StudentFeedback name={student.fullName || ''} level={level} isAr={isAr} />}
+        {activeTab === 'feedback' && <StudentFeedback uid={firebaseUser.uid} name={student.fullName || ''} level={level} isAr={isAr} />}
 
         {/* TAB 2: STARS */}
         {activeTab === 'stars' && (

@@ -1429,6 +1429,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-xs text-[#0A192F]">{isAr ? test.studentNameAr : test.studentNameEn}</span>
                             <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-mono">{test.level}</span>
+                            {(test as any).studentId && (
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">{tr('Verified student', 'طالب مشترك')}</span>
+                            )}
                             <div className="flex items-center text-[#D4AF37]">
                               {[...Array(test.rating || 5)].map((_, i) => (
                                 <Star key={i} className="w-3 h-3 fill-current" />
