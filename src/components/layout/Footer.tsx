@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { Logo } from '../common/Logo';
 import { useAcademySettings, whatsappDisplay } from '../../hooks/useAcademySettings';
+import { useSiteSection } from '../../hooks/useSiteContent';
 import { 
   Mail, 
   Phone, 
@@ -21,6 +22,7 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ navigate }) => {
   const contacts = useAcademySettings();
   const { t, language } = useLanguage();
+  const accreditation = useSiteSection('footer_accreditation', language);
 
   const handleNav = (route: string) => {
     navigate(route);
@@ -234,6 +236,10 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
           </div>
 
         </div>
+
+        {accreditation && (
+          <p className="pt-6 text-xs text-gray-400 text-center leading-relaxed whitespace-pre-line">{accreditation}</p>
+        )}
 
         {/* Bottom copyright & disclaimer */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">

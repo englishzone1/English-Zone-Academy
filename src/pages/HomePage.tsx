@@ -5,6 +5,7 @@ import {
   CEFR_LEVELS_INFO
 } from '../data/academyData';
 import { useAcademySettings } from '../hooks/useAcademySettings';
+import { useSiteSection } from '../hooks/useSiteContent';
 import { CEFRLevel } from '../types';
 import {
   Sparkles,
@@ -32,6 +33,9 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
   const contacts = useAcademySettings();
   const { t, language, dir } = useLanguage();
+  const heroAnnouncement = useSiteSection('hero_announcement', language);
+  const methodologyIntro = useSiteSection('methodology_intro', language);
+  const placementNotice = useSiteSection('placement_notice', language);
   const [isPackageExpanded, setIsPackageExpanded] = useState(false);
 
   return (
@@ -43,6 +47,11 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto space-y-6">
+            {heroAnnouncement && (
+              <div className="mx-auto max-w-2xl px-4 py-2.5 rounded-2xl bg-[#D4AF37] text-[#0A192F] text-sm font-bold shadow-lg whitespace-pre-line">
+                {heroAnnouncement}
+              </div>
+            )}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#162B4D] border border-[#D4AF37]/40 text-[#F3E5AB] text-xs sm:text-sm font-semibold tracking-wide shadow-sm">
               <EnglishZoneEmblem sizeClass="w-4 h-4" glow={false} showBevelBorder={false} />
               <span>{t.hero.badge}</span>
@@ -126,7 +135,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               </h3>
 
               <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-7">
-                {t.features.placementDesc}
+                {placementNotice || t.features.placementDesc}
               </p>
             </div>
 
@@ -358,6 +367,10 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               <p className="text-gray-200 text-sm sm:text-base leading-relaxed">
                 {t.brand.subSlogan}
               </p>
+
+              {methodologyIntro && (
+                <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{methodologyIntro}</p>
+              )}
 
               <blockquote className="border-l-4 rtl:border-l-0 rtl:border-r-4 border-[#D4AF37] pl-4 rtl:pl-0 rtl:pr-4 italic text-base sm:text-lg text-[#F3E5AB] font-serif-luxury leading-relaxed">
                 {t.founder.quote}

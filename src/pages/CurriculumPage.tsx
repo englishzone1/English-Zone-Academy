@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { CEFR_LEVELS_INFO, CURRICULUM_PREVIEW } from '../data/academyData';
 import { CEFRLevel, StageId } from '../types';
+import { usePublishedCourses } from '../hooks/useSiteContent';
 import { 
   BookOpen, 
   MessageSquare, 
@@ -37,48 +38,12 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
   // Find curriculum data or generate structured curriculum for the selected stage
   const existingStage = CURRICULUM_PREVIEW.find((s) => s.stageId === activeStageId);
 
-  // Fallback realistic academic syllabus for any stage
-  const displayUnits = existingStage?.units || [
-    {
-      unitNumber: 1,
-      titleEn: `Unit 1: ${activeStageId} Linguistic Mastery & Discourse`,
-      titleAr: `الوحدة 1: ${activeStageId} التمكن اللغوي وإدارة الحوار`,
-      grammarEn: `Targeted ${activeLevel} grammatical structures, syntactic variety, and sentence coordination.`,
-      grammarAr: `تراكيب نحوية مستهدفة لمستوى ${activeLevel} مع تنوع الصياغة وتناسق الجمل.`,
-      vocabularyEn: `150+ high-frequency lexical chunks, idiomatic collocations, and contextual phrasing.`,
-      vocabularyAr: `أكثر من 150 مفردة وتعبير اصطلاحي دارج في سياقات المحادثة الحقيقية.`,
-      skillsEn: `Advanced listening comprehension, rapid reading analysis, and authentic oral synthesis.`,
-      skillsAr: `استيعاب سمعي متقدم، تحليل سريع للنصوص، وتوليد لغوي شفهي طبيعي.`,
-      speakingActivityEn: `Live simulated communicative task with peer collaboration and instructor debrief.`,
-      speakingActivityAr: `مهمة تواصلية تفاعلية حية مع الزملاء ومراجعة تفصيلية من المعلم.`
-    },
-    {
-      unitNumber: 2,
-      titleEn: `Unit 2: ${activeStageId} Real-World Interaction & Fluency`,
-      titleAr: `الوحدة 2: ${activeStageId} التفاعل الواقعي وسلاسة التحدث`,
-      grammarEn: `Complex clause linkages, conditional phrasing, and temporal flow.`,
-      grammarAr: `ربط الجمل المعقدة، التعبيرات الشرطية، وتناسق الأبعاد الزمنية.`,
-      vocabularyEn: `Professional and conversational vocabulary tailored to international contexts.`,
-      vocabularyAr: `مفردات مهنية وحوارية منتقاة بعناية للسياقات الدولية والتواصلية.`,
-      skillsEn: `Idiomatic expression, natural intonation contours, and reduced hesitation pauses.`,
-      skillsAr: `استخدام التعابير الاصطلاحية، تحسين النبرة الصوتية، وتقليص فترات التردد.`,
-      speakingActivityEn: `Guided debate and spontaneous storytelling challenge.`,
-      speakingActivityAr: `مناظرة موجهة وتحدي التحدث العفوي والتعبير عن المواقف.`
-    },
-    {
-      unitNumber: 3,
-      titleEn: `Unit 3: ${activeStageId} Review & Stage Assessment`,
-      titleAr: `الوحدة 3: ${activeStageId} المراجعة الشاملة والتقييم المرحلي`,
-      grammarEn: `Consolidation of all stage grammatical points with error correction clinic.`,
-      grammarAr: `تثبيت كافة القواعد المدروسة بالمرحلة مع عيادة لمعالجة الأخطاء الشائعة.`,
-      vocabularyEn: `Active retrieval practice and themed speed-vocabulary rounds.`,
-      vocabularyAr: `تمارين استرجاع نشطة وجولات سريعة لتثبيت المفردات واستخدامها.`,
-      skillsEn: `Comprehensive oral evaluation and written communicative output.`,
-      skillsAr: `تقييم شفهي شامل وتقديم مخرجات كتابية تواصلية دقيقة.`,
-      speakingActivityEn: `Formal Stage Completion Presentation and Oral Interview.`,
-      speakingActivityAr: `عرض تقديمي رسمي لإتمام المرحلة ومقابلة شفهية مع المعلم.`
-    }
-  ];
+  // محتوى المرحلة كما هو موجود فقط؛ لا توجد وحدات مولّدة تلقائيًا
+  const displayUnits = existingStage?.units || [];
+
+  // المناهج التي تنشرها من لوحة الإدارة لهذا المستوى
+  const publishedCourses = usePublishedCourses();
+  const levelCourses = publishedCourses.filter((c) => !c.level || c.level === activeLevel);
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] py-12">
@@ -202,6 +167,34 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
           </div>
         </div>
 
+        {levelCourses.length > 0 && (
+          <div className="mb-10 space-y-4">
+            <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F] flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-[#D4AF37]" />
+              <span>{language === 'ar' ? `المناهج المتاحة للمستوى ${activeLevel}` : `Available Curricula for ${activeLevel}`}</span>
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {levelCourses.map((c) => (
+                <div key={c.id} className="bg-white rounded-2xl p-5 border border-[#D4AF37]/30 shadow-sm space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-bold text-[#0A192F]">{(language === 'ar' ? c.titleAr : c.titleEn) || c.titleAr || c.titleEn}</span>
+                    {c.durationMonths ? (
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#FAF8F5] text-[#AA820A] border border-[#D4AF37]/40 whitespace-nowrap">
+                        {c.durationMonths} {language === 'ar' ? 'أشهر' : 'months'}
+                      </span>
+                    ) : null}
+                  </div>
+                  {((language === 'ar' ? c.descriptionAr : c.descriptionEn) || c.descriptionAr || c.descriptionEn) && (
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      {(language === 'ar' ? c.descriptionAr : c.descriptionEn) || c.descriptionAr || c.descriptionEn}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Stage Units Detailed Accordion / Cards */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
@@ -211,10 +204,20 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
                 {language === 'ar' ? `محتوى وحدات المرحلة ${activeStageId}` : `Units & Syllabus for Stage ${activeStageId}`}
               </span>
             </h3>
-            <span className="text-xs font-semibold text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200">
-              {displayUnits.length} {language === 'ar' ? 'وحدات دراسية مكثفة' : 'Core Units'}
-            </span>
+            {displayUnits.length > 0 && (
+              <span className="text-xs font-semibold text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200">
+                {displayUnits.length} {language === 'ar' ? 'وحدات دراسية مكثفة' : 'Core Units'}
+              </span>
+            )}
           </div>
+
+          {displayUnits.length === 0 && (
+            <div className="p-8 rounded-3xl bg-white border border-gray-200 text-center text-sm text-gray-500">
+              {language === 'ar'
+                ? 'تفاصيل وحدات هذه المرحلة غير منشورة بعد.'
+                : 'The unit details for this stage have not been published yet.'}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 gap-6">
             {displayUnits.map((unit) => (
