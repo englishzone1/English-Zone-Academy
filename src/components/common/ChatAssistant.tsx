@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Bot, X, MessageCircle, RotateCcw } from 'lucide-react';
+import { Bot, X, MessageCircle, RotateCcw, Send, Mail } from 'lucide-react';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../../services/firebase';
+import { useAuth } from '../../context/AuthContext';
+import { studentHubService } from '../../services/studentHubService';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAcademySettings, whatsappWithText } from '../../hooks/useAcademySettings';
 import { usePricing, LevelPriceCard } from '../../hooks/usePricing';
@@ -8,13 +12,15 @@ import { chatFaqService, ChatFaq, PRICES_TOKEN } from '../../services/chatFaqSer
 interface Msg {
   from: 'bot' | 'me';
   text: string;
+  // أزرار تظهر تحت رسالة المساعد عندما لا يجد جوابًا
+  offer?: boolean;
 }
 
 const pricesText = (cards: LevelPriceCard[], isAr: boolean): string => {
   if (!cards.length)
     return isAr
-      ? 'الأسعار غير منشورة حاليًا. اضغطي «تحدثي مع الأكاديمية» ونرسلها لكِ.'
-      : 'Prices are not published right now. Tap “Talk to the academy” and we will send them to you.';
+      ? 'الأسعار غير منشورة حاليًا. اضغطي «واتساب» أو «رسالة للأكاديمية» في الأسفل ونرسلها لكِ.'
+      : 'Prices are not published right now. Tap WhatsApp or “Message the academy” below and we will send them.';
   return cards
     .map((c) => {
       const from = c.groupVaries ? (isAr ? 'من ' : 'from ') : '';
@@ -84,6 +90,10 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   const { tawkUrl, whatsapp } = useAcademySettings();
   const { cards } = usePricing();
   const [open, setOpen] = useState(false);
+  const { user, firebaseUser, isStudent } = useAuth();
+  const [input, setInput] = useState('');
+  const [form, setForm] = useState<null | { name: string; contact: string; message: string }>(null);
+  const [sending, setSending] = useState(false);
   const [faqs, setFaqs] = useState<ChatFaq[]>([]);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -128,7 +138,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [msgs, open]);
 
-  if (hidden || faqs.length === 0) return null;
+  if (hidden) return null;
 
   const q = (f: ChatFaq) => (!isAr && f.questionEn ? f.questionEn : f.questionAr);
   const a = (f: ChatFaq) => {
@@ -138,17 +148,36 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
 
   const ask = (f: ChatFaq) => setMsgs((m) => [...m, { from: 'me', text: q(f) }, { from: 'bot', text: a(f) }]);
 
-  // التواصل مع شخص حقيقي: Tawk إن كان مربوطًا، وإلا واتساب من إعدادات الأكاديمية
-  const canTalk = !!tawkUrl || !!whatsapp;
-  const talk = () => {
-    if (!tawkUrl && whatsapp) {
-      const last = [...msgs].reverse().find((m) => m.from === 'me');
-      const text = isAr
-        ? `مرحبًا English Zone، لدي سؤال${last ? `: ${last.text}` : ''}`
-        : `Hello English Zone, I have a question${last ? `: ${last.text}` : ''}`;
-      window.open(whatsappWithText(whatsapp, text), '_blank');
-      return;
-    }
+  const lastQuestion = () => [...msgs].reverse().find((m) => m.from === 'me')?.text || '';
+
+  // سؤال مكتوب: جواب جاهز إن وُجد، وإلا عرض طرق التواصل
+  const submitTyped = () => {
+    const text = input.trim();
+    if (!text) return;
+    setInput('');
+    const f = bestMatch(text, faqs);
+    setMsgs((m) => [
+      ...m,
+      { from: 'me', text },
+      f
+        ? { from: 'bot', text: a(f) }
+        : {
+            from: 'bot',
+            text: isAr
+              ? 'لم أجد جوابًا جاهزًا لسؤالك 🌷 اختاري كيف تريدين التواصل مع الأكاديمية:'
+              : "I don't have a ready answer for that 🌷 Choose how to reach the academy:",
+            offer: true
+          }
+    ]);
+  };
+
+  const openWhatsapp = () => {
+    const last = lastQuestion();
+    const text = isAr ? `مرحبًا English Zone، لدي سؤال${last ? `: ${last}` : ''}` : `Hello English Zone, I have a question${last ? `: ${last}` : ''}`;
+    window.open(whatsappWithText(whatsapp, text), '_blank');
+  };
+
+  const openTawk = () => {
     const api = (window as any).Tawk_API;
     try {
       api?.showWidget?.();
@@ -159,14 +188,98 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
     }
   };
 
+  const loggedStudent = !!firebaseUser && !!user && isStudent;
+
+  // رسالة داخل المنصة: تظهر في لوحة الإدارة ← الرسائل، والطالب يرى الرد في لوحته
+  const startMessage = async () => {
+    const last = lastQuestion();
+    if (loggedStudent) {
+      setSending(true);
+      try {
+        await studentHubService.sendStudentMessage({
+          studentId: firebaseUser!.uid,
+          name: (user as any).fullName || firebaseUser!.email || 'Student',
+          email: (user as any).email || firebaseUser!.email || '',
+          subject: isAr ? 'سؤال من المساعد' : 'Question from the assistant',
+          message: last || (isAr ? 'أريد التواصل مع الأكاديمية.' : 'I would like to contact the academy.'),
+          teacherId: (user as any).teacherId || undefined
+        });
+        setMsgs((m) => [
+          ...m,
+          {
+            from: 'bot',
+            text: isAr
+              ? 'وصلت رسالتك للأكاديمية ✅ ستجدين الرد في لوحتك ← تبويب «الرسائل».'
+              : 'Your message reached the academy ✅ You will find the reply in your dashboard → Messages.'
+          }
+        ]);
+      } catch (err: any) {
+        setMsgs((m) => [...m, { from: 'bot', text: (isAr ? 'تعذّر إرسال الرسالة: ' : 'Could not send: ') + (err?.code || '') }]);
+      } finally {
+        setSending(false);
+      }
+      return;
+    }
+    setForm({ name: '', contact: '', message: last });
+  };
+
+  const sendVisitorMessage = async () => {
+    if (!form) return;
+    if (!form.name.trim() || !form.contact.trim() || !form.message.trim()) return;
+    setSending(true);
+    try {
+      const id = `MSG-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+      await setDoc(doc(db, 'contact_messages', id), {
+        id,
+        name: form.name.trim().slice(0, 100),
+        email: form.contact.trim().slice(0, 150),
+        subject: isAr ? 'سؤال من المساعد' : 'Question from the assistant',
+        message: form.message.trim().slice(0, 3000),
+        status: 'new',
+        submittedAt: new Date().toISOString()
+      });
+      setForm(null);
+      setMsgs((m) => [
+        ...m,
+        { from: 'bot', text: isAr ? 'وصلت رسالتك ✅ سنرد عليكِ على بريدك أو رقمك في أقرب وقت.' : 'Message received ✅ We will reply to your email or number soon.' }
+      ]);
+    } catch (err: any) {
+      setMsgs((m) => [...m, { from: 'bot', text: (isAr ? 'تعذّر إرسال الرسالة: ' : 'Could not send: ') + (err?.code || '') }]);
+    } finally {
+      setSending(false);
+    }
+  };
+
   const greeting = isAr
-    ? 'أهلًا بكِ في English Zone Academy 🌟\nاختاري سؤالك وسأجيبك فورًا:'
-    : 'Welcome to English Zone Academy 🌟\nChoose your question and I will answer right away:';
+    ? 'أهلًا بكِ في English Zone Academy 🌟\nاختاري سؤالك أو اكتبيه، وسأجيبك فورًا:'
+    : 'Welcome to English Zone Academy 🌟\nChoose or type your question and I will answer right away:';
+
+  const offerButtons = (
+    <div className="flex flex-wrap gap-1.5 mt-2">
+      {whatsapp && (
+        <button onClick={openWhatsapp} className="px-3 py-1.5 rounded-full bg-[#25D366] text-white text-[11px] font-bold flex items-center gap-1">
+          <MessageCircle className="w-3.5 h-3.5" />
+          {isAr ? 'واتساب' : 'WhatsApp'}
+        </button>
+      )}
+      <button onClick={startMessage} disabled={sending} className="px-3 py-1.5 rounded-full bg-[#0A192F] text-[#F3E5AB] text-[11px] font-bold flex items-center gap-1 disabled:opacity-50">
+        <Mail className="w-3.5 h-3.5" />
+        {isAr ? 'رسالة للأكاديمية' : 'Message the academy'}
+      </button>
+      {tawkUrl && (
+        <button onClick={openTawk} className="px-3 py-1.5 rounded-full border border-[#0A192F] text-[#0A192F] text-[11px] font-bold">
+          {isAr ? 'محادثة مباشرة' : 'Live chat'}
+        </button>
+      )}
+    </div>
+  );
+
+  const inp = 'w-full px-2.5 py-1.5 rounded-lg border border-gray-300 text-xs bg-white';
 
   return (
     <div className="fixed bottom-5 left-5 z-[60]" dir={isAr ? 'rtl' : 'ltr'}>
       {open && (
-        <div className="mb-3 w-[min(360px,calc(100vw-2.5rem))] h-[min(520px,calc(100vh-7rem))] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
+        <div className="mb-3 w-[min(360px,calc(100vw-2.5rem))] h-[min(560px,calc(100vh-7rem))] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
           <div className="bg-[#0A192F] text-[#F3E5AB] px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2 font-bold text-sm">
               <Bot className="w-5 h-5" />
@@ -174,7 +287,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
             </div>
             <div className="flex items-center gap-1">
               {msgs.length > 0 && (
-                <button onClick={() => setMsgs([])} title={isAr ? 'من جديد' : 'Restart'} className="p-1.5 rounded-lg hover:bg-white/10">
+                <button onClick={() => { setMsgs([]); setForm(null); }} title={isAr ? 'من جديد' : 'Restart'} className="p-1.5 rounded-lg hover:bg-white/10">
                   <RotateCcw className="w-4 h-4" />
                 </button>
               )}
@@ -194,28 +307,79 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
                 }`}
               >
                 {m.text}
+                {m.offer && i === msgs.length - 1 && !form && offerButtons}
               </div>
             ))}
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {faqs.map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => ask(f)}
-                  className="px-3 py-1.5 rounded-full border border-[#D4AF37] bg-white text-[11px] font-bold text-[#0A192F] hover:bg-[#F3E5AB]/40"
-                >
-                  {q(f)}
-                </button>
-              ))}
-            </div>
+
+            {form && (
+              <div className="p-2.5 rounded-2xl bg-white border border-[#D4AF37] space-y-1.5">
+                <p className="text-[11px] font-bold text-[#0A192F]">{isAr ? 'اكتبي بياناتك لنرد عليكِ:' : 'Your details so we can reply:'}</p>
+                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={isAr ? 'اسمك' : 'Your name'} className={inp} />
+                <input value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} placeholder={isAr ? 'بريدك أو رقم واتساب' : 'Email or WhatsApp number'} className={inp} />
+                <textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={2} placeholder={isAr ? 'رسالتك' : 'Your message'} className={inp} />
+                <div className="flex gap-1.5">
+                  <button onClick={sendVisitorMessage} disabled={sending} className="flex-1 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-[11px] font-bold disabled:opacity-50">
+                    {sending ? '...' : isAr ? 'إرسال' : 'Send'}
+                  </button>
+                  <button onClick={() => setForm(null)} className="px-3 py-1.5 rounded-lg border border-gray-200 text-[11px]">
+                    {isAr ? 'إلغاء' : 'Cancel'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {faqs.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {faqs.map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => ask(f)}
+                    className="px-3 py-1.5 rounded-full border border-[#D4AF37] bg-white text-[11px] font-bold text-[#0A192F] hover:bg-[#F3E5AB]/40"
+                  >
+                    {q(f)}
+                  </button>
+                ))}
+              </div>
+            )}
             <div ref={endRef} />
           </div>
 
-          {canTalk && (
-            <button onClick={talk} className="m-3 mt-2 py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold flex items-center justify-center gap-1.5">
-              <MessageCircle className="w-4 h-4" />
-              {!tawkUrl ? (isAr ? 'تحدثي معنا على واتساب' : 'Chat with us on WhatsApp') : isAr ? 'تحدثي مع الأكاديمية' : 'Talk to the academy'}
-            </button>
-          )}
+          <div className="border-t border-gray-100 p-2.5 space-y-2">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                submitTyped();
+              }}
+              className="flex gap-1.5"
+            >
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={isAr ? 'اكتبي سؤالك هنا…' : 'Type your question…'}
+                className="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-xs"
+              />
+              <button type="submit" className="px-3 rounded-xl bg-[#0A192F] text-[#F3E5AB]" aria-label={isAr ? 'إرسال' : 'Send'}>
+                <Send className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
+              </button>
+            </form>
+            <div className="flex items-center justify-center gap-3 text-[11px]">
+              {whatsapp && (
+                <button onClick={openWhatsapp} className="font-bold text-[#128C7E] flex items-center gap-1">
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  {isAr ? 'واتساب' : 'WhatsApp'}
+                </button>
+              )}
+              <button onClick={startMessage} disabled={sending} className="font-bold text-[#0A192F] flex items-center gap-1 disabled:opacity-50">
+                <Mail className="w-3.5 h-3.5" />
+                {isAr ? 'رسالة للأكاديمية' : 'Message the academy'}
+              </button>
+              {tawkUrl && (
+                <button onClick={openTawk} className="font-bold text-gray-600">
+                  {isAr ? 'محادثة مباشرة' : 'Live chat'}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       )}
       <button
