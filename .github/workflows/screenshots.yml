@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 22
       - run: mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm i playwright@1 --no-audit --no-fund && npx playwright install --with-deps chromium
-      - run: cp -r tools /tmp/pw/ && cp tools/pricetext.cjs /tmp/pw/ && cd /tmp/pw && node pricetext.cjs
+      - run: cp -r tools /tmp/pw/ && cp tools/screenshots.cjs tools/promo.cjs /tmp/pw/ && cd /tmp/pw && node screenshots.cjs && node promo.cjs
       # الصور تُحفظ في فرع منفصل اسمه shots-output
       - run: |
           cd /tmp/pw/shots
