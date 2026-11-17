@@ -289,6 +289,17 @@ export const studentHubService = {
       .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
   },
 
+  // كل النتائج: للإدارة، أو لطلاب المعلم فقط
+  async getAllHomeworkResults(teacherId?: string): Promise<HomeworkResult[]> {
+    const q = teacherId
+      ? query(collection(db, 'homework_results'), where('teacherId', '==', teacherId))
+      : collection(db, 'homework_results');
+    const snap = await getDocs(q);
+    return snap.docs
+      .map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult))
+      .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  },
+
   async saveHomeworkProgress(uid: string, data: Record<string, string>): Promise<void> {
     const json = JSON.stringify(data || {});
     if (json.length > 200000) return;

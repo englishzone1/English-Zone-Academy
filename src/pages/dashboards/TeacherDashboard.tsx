@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { LogOut, Users, Star, MessageSquare, Globe2 } from 'lucide-react';
+import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { EnglishZoneEmblem } from '../../components/common/Logo';
 import { AdminStudentsManager } from '../../components/admin/AdminStudentsManager';
 import { AdminStarsLedger } from '../../components/admin/AdminStarsLedger';
 import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
+import { AdminHomeworkResults } from '../../components/admin/AdminHomeworkResults';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { AvatarRenderer } from '../../components/avatar/AvatarRenderer';
 import { toEZAvatar } from '../../components/avatar/ezAvatar';
@@ -15,7 +16,7 @@ interface TeacherDashboardProps {
   navigate: (route: string) => void;
 }
 
-type Tab = 'students' | 'ledger' | 'messages' | 'community';
+type Tab = 'students' | 'results' | 'ledger' | 'messages' | 'community';
 
 // لوحة المعلم: طلاب مجموعاته فقط، بدون صلاحيات الإدارة
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) => {
@@ -33,6 +34,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
 
   const tabs: { id: Tab; ar: string; en: string; icon: any }[] = [
     { id: 'students', ar: 'طلابي', en: 'My students', icon: Users },
+    { id: 'results', ar: 'نتائج الواجبات', en: 'Homework results', icon: BookOpenCheck },
     { id: 'ledger', ar: 'سجل النجوم', en: 'Stars ledger', icon: Star },
     { id: 'messages', ar: 'رسائل الطلاب', en: 'Messages', icon: MessageSquare },
     { id: 'community', ar: 'مجتمع الطلاب', en: 'Community', icon: Globe2 }
@@ -87,7 +89,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
           {tabs.map((t) => {
             const Icon = t.icon;
             return (
@@ -110,6 +112,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
         )}
 
         {tab === 'students' && <AdminStudentsManager onNotice={notify} teacherMode />}
+        {tab === 'results' && <AdminHomeworkResults onNotice={notify} teacherMode />}
         {tab === 'ledger' && <AdminStarsLedger onNotice={notify} teacherMode />}
         {tab === 'messages' && <AdminMessagesManager onNotice={notify} teacherMode />}
         {tab === 'community' && firebaseUser && (

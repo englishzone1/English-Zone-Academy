@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, ClipboardCheck, CalendarCheck, GraduationCap, Sparkles, BookOpenCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ClipboardCheck, CalendarCheck, GraduationCap, Sparkles } from 'lucide-react';
 import { studentHubService, AttendanceRecord, HomeworkResult } from '../../services/studentHubService';
 import { PASS_MARK } from '../../services/groupService';
 
@@ -36,24 +36,41 @@ export const StudentMonthlyReport: React.FC<Props> = ({ uid, isAr, homework, gra
   const key = monthKey(monthDate);
   const monthLabel = monthDate.toLocaleDateString(isAr ? 'ar' : 'en', { month: 'long', year: 'numeric' });
 
-  const hw = homework.filter((h) => inMonth(h.dueDate || h.createdAt, key));
-  const hwDone = hw.filter((h) => h.status === 'submitted' || h.status === 'graded').length;
+  // نتائج موقع الواجبات التفاعلي في هذا الشهر (أفضل محاولة لكل درس أو اختبار)
+  const best = new Map<string, HomeworkResult>();
+  online
+    .filter((r) => inMonth(r.createdAt, key))
+    .forEach((r) => {
+      const k = `${r.kind}:${r.itemId}`;
+      const prev = best.get(k);
+      if (!prev || r.percent > prev.percent) best.set(k, r);
+    });
+  const onLessons = [...best.values()].filter((r) => r.kind === 'lesson');
+  const onTests = [...best.values()].filter((r) => r.kind !== 'lesson');
+
+  // الواجبات = ما سجّله المعلم + الدروس المحلولة في الموقع
+  const hwManual = homework.filter((h) => inMonth(h.dueDate || h.createdAt, key));
+  const hwManualDone = hwManual.filter((h) => h.status === 'submitted' || h.status === 'graded').length;
+  const hw = { length: hwManual.length + onLessons.length };
+  const hwDone = hwManualDone + onLessons.length;
 
   const att = attendance.filter((a) => inMonth(a.date, key));
   const attPresent = att.filter((a) => a.present).length;
 
-  const gr = grades.filter((g) => inMonth(g.date, key));
-  const grAvg = gr.length ? Math.round(gr.reduce((a, g) => a + (Number(g.score) || 0), 0) / gr.length) : undefined;
-  const grPassed = gr.filter((g) => (Number(g.score) || 0) >= PASS_MARK).length;
+  // الاختبارات = درجات المعلم + اختبارات الموقع (بالنسبة المئوية)
+  const scores = [
+    ...grades.filter((g) => inMonth(g.date, key)).map((g) => Number(g.score) || 0),
+    ...onTests.map((r) => r.percent || 0)
+  ];
+  const gr = { length: scores.length };
+  const grAvg = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : undefined;
+  const grPassed = scores.filter((x) => x >= PASS_MARK).length;
 
   const pts = pointsLog.filter((p) => inMonth(p.timestamp, key));
   const ptsTotal = pts.reduce((a, p) => a + (Number(p.amount) || 0), 0);
 
-  const on = online.filter((r) => inMonth(r.createdAt, key));
-  const onAvg = on.length ? Math.round(on.reduce((a, r) => a + (r.percent || 0), 0) / on.length) : undefined;
-
   const pct = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 100) : undefined);
-  const noData = hw.length === 0 && att.length === 0 && gr.length === 0 && pts.length === 0 && on.length === 0;
+  const noData = hw.length === 0 && att.length === 0 && gr.length === 0 && pts.length === 0;
 
   const Card = ({
     icon: Icon,
@@ -114,7 +131,12 @@ export const StudentMonthlyReport: React.FC<Props> = ({ uid, isAr, homework, gra
             icon={ClipboardCheck}
             title={isAr ? 'حل الواجبات' : 'Homework'}
             main={hw.length ? `${pct(hwDone, hw.length)}%` : dash}
-            sub={hw.length ? (isAr ? `${hwDone} من ${hw.length}` : `${hwDone} of ${hw.length}`) : undefined}
+            sub={
+              hw.length
+                ? (isAr ? `${hwDone} من ${hw.length}` : `${hwDone} of ${hw.length}`) +
+                  (onLessons.length ? (isAr ? ` • ${onLessons.length} من الموقع` : ` • ${onLessons.length} online`) : '')
+                : undefined
+            }
           />
           <Card
             icon={CalendarCheck}
@@ -126,13 +148,12 @@ export const StudentMonthlyReport: React.FC<Props> = ({ uid, isAr, homework, gra
             icon={GraduationCap}
             title={isAr ? 'درجات الاختبارات' : 'Test scores'}
             main={grAvg !== undefined ? `${grAvg}%` : dash}
-            sub={gr.length ? (isAr ? `نجح في ${grPassed} من ${gr.length}` : `Passed ${grPassed} of ${gr.length}`) : undefined}
-          />
-          <Card
-            icon={BookOpenCheck}
-            title={isAr ? 'الواجبات التفاعلية' : 'Interactive homework'}
-            main={onAvg !== undefined ? `${onAvg}%` : dash}
-            sub={on.length ? (isAr ? `${on.length} درس واختبار` : `${on.length} lessons & tests`) : undefined}
+            sub={
+              gr.length
+                ? (isAr ? `نجح في ${grPassed} من ${gr.length}` : `Passed ${grPassed} of ${gr.length}`) +
+                  (onTests.length ? (isAr ? ` • ${onTests.length} من الموقع` : ` • ${onTests.length} online`) : '')
+                : undefined
+            }
           />
           <Card
             icon={Sparkles}

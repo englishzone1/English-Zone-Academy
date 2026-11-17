@@ -46,6 +46,7 @@ import { groupService } from '../../services/groupService';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
 import { AdminTeachersManager } from '../../components/admin/AdminTeachersManager';
+import { AdminHomeworkResults } from '../../components/admin/AdminHomeworkResults';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -53,6 +54,7 @@ interface AdminDashboardProps {
 
 type TabId =
   | 'overview'
+  | 'hwresults'
   | 'teachers'
   | 'blog'
   | 'messages'
@@ -517,6 +519,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'overview', labelEn: 'Overview & Metrics', labelAr: 'الإحصائيات العامة' },
     { id: 'registrations', labelEn: `Registrations (${pendingRegistrations.length} Pending)`, labelAr: `طلبات التسجيل (${pendingRegistrations.length})` },
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
+    { id: 'hwresults', labelEn: 'Homework results', labelAr: 'نتائج الواجبات' },
     { id: 'teachers', labelEn: 'Teachers', labelAr: 'المعلمون' },
     { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
     { id: 'community', labelEn: 'Community', labelAr: 'مجتمع الطلاب' },
@@ -869,6 +872,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* TEACHERS */}
         {activeTab === 'teachers' && <AdminTeachersManager onNotice={(msg) => notify(msg, 4000)} />}
+
+        {/* HOMEWORK RESULTS */}
+        {activeTab === 'hwresults' && <AdminHomeworkResults onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* COMMUNITY */}
         {activeTab === 'community' && firebaseUser && (
