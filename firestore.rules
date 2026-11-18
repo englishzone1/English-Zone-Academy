@@ -315,7 +315,8 @@ service cloud.firestore {
     // --- Contact messages: زائر من صفحة التواصل، أو طالب من لوحته (ويرى رسائله وردود الإدارة) ---
     match /contact_messages/{messageId} {
       allow create: if isValidId(messageId) &&
-        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt', 'studentId', 'teacherId']) &&
+        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt', 'studentId', 'teacherId', 'audioParts', 'audioSeconds']) &&
+        (!('audioParts' in request.resource.data) || (request.resource.data.audioParts is int && request.resource.data.audioParts >= 1 && request.resource.data.audioParts <= 6 && 'studentId' in request.resource.data)) &&
         (!('teacherId' in request.resource.data) || (isSignedIn() && request.resource.data.teacherId == myProfile().get('teacherId', ''))) &&
         request.resource.data.status == 'new' &&
         (!('studentId' in request.resource.data) || (isSignedIn() && request.resource.data.studentId == request.auth.uid)) &&
@@ -326,11 +327,37 @@ service cloud.firestore {
       allow get, list: if isAdmin() ||
         (isSignedIn() && resource.data.studentId == request.auth.uid) ||
         (isTeacherDoc() && resource.data.teacherId == request.auth.uid);
-      // المعلم يرد على رسائل طلاب مجموعاته فقط
+      // المعلم يرد على رسائل طلابه (كتابةً أو صوتيًا) ويبلّغ؛ الطالبة تبلّغ عن رسالتها فقط؛ الحذف للأكاديمية فقط
       allow update: if isAdmin() || (
         isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reply', 'repliedAt', 'status'])
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reply', 'repliedAt', 'status', 'repliedBy', 'replyAudioParts', 'replyAudioSeconds', 'reported', 'reportReason', 'reportedBy', 'reportedAt']) &&
+        request.resource.data.get('repliedBy', 'teacher') == 'teacher' &&
+        request.resource.data.get('reportedBy', 'teacher') == 'teacher'
+      ) || (
+        isSignedIn() && resource.data.get('studentId', '') == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reported', 'reportReason', 'reportedBy', 'reportedAt']) &&
+        request.resource.data.reported == true && request.resource.data.reportedBy == 'student' &&
+        request.resource.data.reportReason is string && request.resource.data.reportReason.size() <= 500
       );
+      allow delete: if isAdmin();
+    }
+
+    // --- Voice messages: أجزاء التسجيل الصوتي للرسائل (الطالبة ↔ المعلمة، والأكاديمية ترى الكل وتحذف) ---
+    match /message_audio/{audioId} {
+      allow create: if isSignedIn() && isValidId(audioId) &&
+        request.resource.data.keys().hasOnly(['messageId', 'kind', 'part', 'parts', 'mime', 'data', 'studentId', 'teacherId', 'createdAt']) &&
+        request.resource.data.data is string && request.resource.data.data.size() <= 950000 &&
+        request.resource.data.mime is string && request.resource.data.mime.matches('^audio/[a-z0-9.+-]+$') &&
+        request.resource.data.parts is int && request.resource.data.parts >= 1 && request.resource.data.parts <= 6 &&
+        (
+          (request.resource.data.kind == 'msg' && request.resource.data.studentId == request.auth.uid &&
+            (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', ''))) ||
+          (request.resource.data.kind == 'reply' &&
+            (isAdmin() || (isTeacherDoc() && request.resource.data.get('teacherId', '') == request.auth.uid)))
+        );
+      allow get: if isAdmin() ||
+        (isSignedIn() && resource.data.studentId == request.auth.uid) ||
+        (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid);
       allow delete: if isAdmin();
     }
 

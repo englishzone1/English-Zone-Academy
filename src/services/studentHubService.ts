@@ -68,7 +68,81 @@ export interface StudentMessage {
   studentId?: string;
   reply?: string;
   repliedAt?: string;
+  repliedBy?: 'teacher' | 'academy';
+  teacherId?: string;
+  // تسجيل صوتي مقسّم إلى أجزاء في message_audio
+  audioParts?: number;
+  audioSeconds?: number;
+  replyAudioParts?: number;
+  replyAudioSeconds?: number;
+  // بلاغ من الطالبة أو المعلمة؛ الأكاديمية فقط تحذف
+  reported?: boolean;
+  reportReason?: string;
+  reportedBy?: 'student' | 'teacher';
+  reportedAt?: string;
 }
+
+/* ---------- Voice messages: أجزاء base64 في message_audio ---------- */
+const AUDIO_PART_BYTES = 600000; // ~800 ألف حرف بعد base64 (حد المستند 1 ميغا)
+const MAX_AUDIO_PARTS = 6;
+
+const blobToBase64 = (blob: Blob): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(',')[1] || '');
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(blob);
+  });
+
+const audioDocId = (messageId: string, kind: 'msg' | 'reply', i: number) => `${messageId}_${kind === 'msg' ? 'm' : 'r'}${i}`;
+
+const saveMessageAudio = async (
+  messageId: string,
+  kind: 'msg' | 'reply',
+  audio: { blob: Blob; mime: string },
+  owner: { studentId: string; teacherId?: string }
+): Promise<number> => {
+  const parts: Blob[] = [];
+  for (let i = 0; i < audio.blob.size; i += AUDIO_PART_BYTES) parts.push(audio.blob.slice(i, i + AUDIO_PART_BYTES));
+  if (parts.length > MAX_AUDIO_PARTS) throw new Error('audio-too-long');
+  for (let i = 0; i < parts.length; i++) {
+    await setDoc(doc(db, 'message_audio', audioDocId(messageId, kind, i)), {
+      messageId,
+      kind,
+      part: i,
+      parts: parts.length,
+      mime: audio.mime.slice(0, 40),
+      data: await blobToBase64(parts[i]),
+      studentId: owner.studentId,
+      ...(owner.teacherId ? { teacherId: owner.teacherId } : {}),
+      createdAt: new Date().toISOString()
+    });
+  }
+  return parts.length;
+};
+
+export const loadMessageAudio = async (messageId: string, kind: 'msg' | 'reply', parts: number): Promise<Blob> => {
+  const bufs: Uint8Array[] = [];
+  let mime = 'audio/webm';
+  for (let i = 0; i < parts; i++) {
+    const snap = await getDoc(doc(db, 'message_audio', audioDocId(messageId, kind, i)));
+    if (!snap.exists()) throw new Error('missing-part');
+    const d = snap.data() as any;
+    mime = d.mime || mime;
+    const bin = atob(d.data || '');
+    const arr = new Uint8Array(bin.length);
+    for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
+    bufs.push(arr);
+  }
+  return new Blob(bufs, { type: mime });
+};
+
+// الأكاديمية تحذف الرسالة مع تسجيلاتها
+export const deleteMessageWithAudio = async (m: { id: string; audioParts?: number; replyAudioParts?: number }) => {
+  for (let i = 0; i < (m.audioParts || 0); i++) await deleteDoc(doc(db, 'message_audio', audioDocId(m.id, 'msg', i))).catch(() => undefined);
+  for (let i = 0; i < (m.replyAudioParts || 0); i++) await deleteDoc(doc(db, 'message_audio', audioDocId(m.id, 'reply', i))).catch(() => undefined);
+  await deleteDoc(doc(db, 'contact_messages', m.id));
+};
 
 /* ------------------------------ Interactive homework results ------------------------------ */
 
@@ -268,19 +342,46 @@ export const studentHubService = {
   },
 
   /* ---------- Messages between student and academy ---------- */
-  async sendStudentMessage(p: { studentId: string; name: string; email: string; subject: string; message: string; teacherId?: string }): Promise<void> {
+  async sendStudentMessage(p: {
+    studentId: string;
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    teacherId?: string;
+    audio?: { blob: Blob; mime: string; seconds: number } | null;
+  }): Promise<void> {
     const id = newId('MSG');
+    // التسجيل أولًا، ثم الرسالة التي تشير إليه
+    const audioParts = p.audio ? await saveMessageAudio(id, 'msg', p.audio, { studentId: p.studentId, teacherId: p.teacherId }) : 0;
+    const text = p.message.trim() || '🎙️ رسالة صوتية';
     await setDoc(doc(db, 'contact_messages', id), {
       id,
       name: p.name.trim().slice(0, 100),
       email: p.email.trim().slice(0, 150),
       subject: p.subject.trim().slice(0, 200),
-      message: p.message.trim().slice(0, 3000),
+      message: text.slice(0, 3000),
       status: 'new',
       submittedAt: new Date().toISOString(),
       studentId: p.studentId,
-      ...(p.teacherId ? { teacherId: p.teacherId } : {})
+      ...(p.teacherId ? { teacherId: p.teacherId } : {}),
+      ...(audioParts ? { audioParts, audioSeconds: Math.min(3600, Math.max(1, p.audio!.seconds)) } : {})
     });
+  },
+
+  // بلاغ عن رسالة (الطالبة على رسالتها، والمعلمة على رسائل طلابها)
+  async reportMessage(id: string, by: 'student' | 'teacher', reason: string): Promise<void> {
+    await updateDoc(doc(db, 'contact_messages', id), {
+      reported: true,
+      reportReason: reason.trim().slice(0, 500),
+      reportedBy: by,
+      reportedAt: new Date().toISOString()
+    });
+  },
+
+  // الأكاديمية تغلق البلاغ
+  async clearReport(id: string): Promise<void> {
+    await updateDoc(doc(db, 'contact_messages', id), { reported: false });
   },
 
   async getMyMessages(studentId: string): Promise<StudentMessage[]> {
@@ -290,12 +391,22 @@ export const studentHubService = {
       .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
   },
 
-  async replyToMessage(id: string, reply: string): Promise<void> {
+  async replyToMessage(
+    id: string,
+    reply: string,
+    opts: { by?: 'teacher' | 'academy'; studentId?: string; teacherId?: string; audio?: { blob: Blob; mime: string; seconds: number } | null } = {}
+  ): Promise<{ replyAudioParts?: number; replyAudioSeconds?: number }> {
+    const replyAudioParts =
+      opts.audio && opts.studentId ? await saveMessageAudio(id, 'reply', opts.audio, { studentId: opts.studentId, teacherId: opts.teacherId }) : 0;
+    const extra = replyAudioParts ? { replyAudioParts, replyAudioSeconds: Math.min(3600, Math.max(1, opts.audio!.seconds)) } : {};
     await updateDoc(doc(db, 'contact_messages', id), {
-      reply: reply.trim().slice(0, 3000),
+      reply: (reply.trim() || '🎙️ رد صوتي').slice(0, 3000),
       repliedAt: new Date().toISOString(),
-      status: 'replied'
+      status: 'replied',
+      ...(opts.by ? { repliedBy: opts.by } : {}),
+      ...extra
     });
+    return extra;
   },
 
   /* ---------- Interactive homework site (EFHOMEWORK) ---------- */

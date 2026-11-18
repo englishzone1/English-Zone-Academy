@@ -222,11 +222,15 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
   const lessonsAttended = typeof student.lessonsAttended === 'number' ? student.lessonsAttended : undefined;
   const lessonsTotal = typeof student.lessonsTotal === 'number' ? student.lessonsTotal : undefined;
 
+  const lessonMinutes = Number((student as any).lessonDuration) || 0;
+  const durLabel = lessonMinutes ? ` (${lessonMinutes} ${isAr ? 'دقيقة' : 'min'})` : '';
   const formatLabel: string | undefined =
     student.learningFormat === 'individual'
-      ? (isAr ? 'خاص (60 دقيقة)' : 'Private 1-on-1 (60 min)')
+      ? (isAr ? 'فردي (خاص)' : 'Private 1-on-1') + durLabel
       : student.learningFormat === 'group'
-      ? (isAr ? 'جماعي (90 دقيقة)' : 'Group (90 min)')
+      ? (isAr ? 'جماعي' : 'Group') + durLabel
+      : lessonMinutes
+      ? `${lessonMinutes} ${isAr ? 'دقيقة' : 'min'}`
       : undefined;
 
   const detailItems: { label: string; value: string }[] = [];
@@ -484,6 +488,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                       .map((d: number) => (isAr ? ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])[d])
                       .join(isAr ? ' و' : ', ')}
                     {(student as any).lessonTime ? ` • ${(student as any).lessonTime}` : ''}
+                    {Number((student as any).lessonDuration) ? ` • ${(student as any).lessonDuration} ${isAr ? 'دقيقة' : 'min'}` : ''}
                   </p>
                   {(student as any).lessonNote && <p className="text-xs text-gray-500">{(student as any).lessonNote}</p>}
                 </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Headphones, PlayCircle, Link as LinkIcon, Newspaper, Send, Star, MessageSquare } from 'lucide-react';
+import { BookOpen, Headphones, PlayCircle, Link as LinkIcon, Newspaper, Send, Star, MessageSquare, Flag } from 'lucide-react';
 import { studentHubService, CourseMaterials, MaterialType, StudentMessage } from '../../services/studentHubService';
+import { VoiceRecorder, MessageAudioPlayer, RecordedAudio } from '../common/VoiceRecorder';
 
 const card = 'bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-5';
 const inputCls = 'w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#D4AF37]';
@@ -131,6 +132,19 @@ export const StudentMessages: React.FC<{ uid: string; name: string; email: strin
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState('');
+  const [audio, setAudio] = useState<RecordedAudio | null>(null);
+
+  const report = async (m: StudentMessage) => {
+    const reason = window.prompt(isAr ? 'سبب البلاغ (يصل للأكاديمية فقط):' : 'Reason for the report (academy only):', '');
+    if (reason === null) return;
+    try {
+      await studentHubService.reportMessage(m.id, 'student', reason || '');
+      setItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, reported: true } : x)));
+    } catch (err) {
+      console.error(err);
+      setStatus(isAr ? 'تعذر إرسال البلاغ.' : 'Could not send the report.');
+    }
+  };
 
   const load = () =>
     studentHubService
@@ -143,13 +157,14 @@ export const StudentMessages: React.FC<{ uid: string; name: string; email: strin
   }, [uid]);
 
   const send = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() && !audio) return;
     setSending(true);
     setStatus('');
     try {
-      await studentHubService.sendStudentMessage({ studentId: uid, name, email, subject, message, teacherId });
+      await studentHubService.sendStudentMessage({ studentId: uid, name, email, subject, message, teacherId, audio });
       setSubject('');
       setMessage('');
+      setAudio(null);
       setStatus(isAr ? 'تم إرسال رسالتك.' : 'Your message was sent.');
       await load();
     } catch (err) {
@@ -162,16 +177,22 @@ export const StudentMessages: React.FC<{ uid: string; name: string; email: strin
 
   return (
     <div className={card}>
-      <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">{isAr ? 'رسائلي مع الأكاديمية' : 'My Messages'}</h2>
+      <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">{isAr ? (teacherId ? 'رسائلي مع معلمتي والأكاديمية' : 'رسائلي مع الأكاديمية') : 'My Messages'}</h2>
+      <p className="text-[11px] text-gray-500">
+        {isAr
+          ? 'يمكنك كتابة رسالة أو تسجيل صوتك (مثل قراءة الدرس) حتى 10 دقائق. الرسائل تصل لمعلمتك، والأكاديمية تطّلع على كل الرسائل.'
+          : 'Write or record (up to 10 min). Messages reach your teacher; the academy can see all messages.'}
+      </p>
 
       <div className="space-y-3">
         <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder={isAr ? 'الموضوع (اختياري)' : 'Subject (optional)'} className={inputCls} />
         <textarea rows={4} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={isAr ? 'اكتب رسالتك...' : 'Write your message...'} className={inputCls} />
+        <VoiceRecorder isAr={isAr} value={audio} onChange={setAudio} disabled={sending} />
         <div className="flex items-center justify-between gap-3">
           <span className="text-xs text-gray-500">{status}</span>
           <button
             onClick={send}
-            disabled={sending || !message.trim()}
+            disabled={sending || (!message.trim() && !audio)}
             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] disabled:opacity-50 flex items-center gap-1.5"
           >
             <Send className="w-4 h-4 text-[#D4AF37]" />
@@ -189,17 +210,29 @@ export const StudentMessages: React.FC<{ uid: string; name: string; email: strin
                 <span className="text-[10px] text-gray-400">{new Date(m.submittedAt).toLocaleDateString()}</span>
               </div>
               <p className="text-gray-700 whitespace-pre-line">{m.message}</p>
+              {!!m.audioParts && <MessageAudioPlayer messageId={m.id} kind="msg" parts={m.audioParts} seconds={m.audioSeconds} isAr={isAr} />}
               {m.reply ? (
                 <div className="p-3 rounded-xl bg-white border border-[#D4AF37]/40 space-y-1">
                   <span className="flex items-center gap-1 text-[11px] font-bold text-[#AA820A]">
                     <MessageSquare className="w-3.5 h-3.5" />
-                    {isAr ? 'رد الأكاديمية' : 'Academy reply'}
+                    {m.repliedBy === 'teacher' ? (isAr ? 'رد المعلمة' : 'Teacher reply') : isAr ? 'رد الأكاديمية' : 'Academy reply'}
                   </span>
                   <p className="text-gray-700 whitespace-pre-line">{m.reply}</p>
+                  {!!m.replyAudioParts && <MessageAudioPlayer messageId={m.id} kind="reply" parts={m.replyAudioParts} seconds={m.replyAudioSeconds} isAr={isAr} />}
                 </div>
               ) : (
                 <span className="text-[11px] text-gray-400">{isAr ? 'بانتظار الرد' : 'Awaiting reply'}</span>
               )}
+              <div className="flex justify-end">
+                {m.reported ? (
+                  <span className="text-[10px] text-red-600 font-bold">{isAr ? 'تم الإبلاغ للأكاديمية' : 'Reported to the academy'}</span>
+                ) : (
+                  <button onClick={() => report(m)} className="text-[10px] text-gray-400 hover:text-red-600 flex items-center gap-1">
+                    <Flag className="w-3 h-3" />
+                    {isAr ? 'إبلاغ عن الرسالة' : 'Report'}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>

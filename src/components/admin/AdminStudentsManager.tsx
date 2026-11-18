@@ -57,6 +57,7 @@ type FormState = {
   lessonDays: number[];
   lessonTime: string;
   lessonNote: string;
+  lessonDuration: string;
   tuitionCurrency: string;
 };
 
@@ -76,6 +77,7 @@ const EMPTY_FORM: FormState = {
   lessonDays: [],
   lessonTime: '',
   lessonNote: '',
+  lessonDuration: '',
   tuitionCurrency: ''
 };
 
@@ -105,6 +107,7 @@ const toForm = (s: StudentRow): FormState => ({
   lessonDays: Array.isArray((s as any).lessonDays) ? (s as any).lessonDays : [],
   lessonTime: (s as any).lessonTime || '',
   lessonNote: (s as any).lessonNote || '',
+  lessonDuration: (s as any).lessonDuration ? String((s as any).lessonDuration) : '',
   tuitionCurrency: (s as any).tuitionCurrency || ''
 });
 
@@ -245,6 +248,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         lessonDays: form.lessonDays.length ? [...form.lessonDays].sort() : deleteField(),
         lessonTime: textOrDelete(form.lessonTime),
         lessonNote: textOrDelete(form.lessonNote),
+        lessonDuration: numberOrDelete(form.lessonDuration, 10, 180),
         tuitionCurrency: textOrDelete(form.tuitionCurrency),
         updatedAt: new Date().toISOString()
       });
@@ -604,8 +608,22 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                   className={inputCls}
                 >
                   <option value="">{isAr ? '— بدون —' : '— None —'}</option>
-                  <option value="individual">{isAr ? 'خاص (60 دقيقة)' : 'Private 1-on-1 (60 min)'}</option>
-                  <option value="group">{isAr ? 'جماعي (90 دقيقة)' : 'Group (90 min)'}</option>
+                  <option value="individual">{isAr ? 'فردي (خاص)' : 'Private 1-on-1'}</option>
+                  <option value="group">{isAr ? 'جماعي (مجموعة)' : 'Group'}</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-gray-600 mb-1">
+                  {isAr ? 'مدة الدرس' : 'Lesson length'}
+                </label>
+                <select value={form.lessonDuration} onChange={(e) => setForm((f) => ({ ...f, lessonDuration: e.target.value }))} className={inputCls}>
+                  <option value="">{isAr ? '— غير محددة —' : '— Not set —'}</option>
+                  {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120].map((n) => (
+                    <option key={n} value={String(n)}>
+                      {n} {isAr ? 'دقيقة' : 'min'}
+                    </option>
+                  ))}
                 </select>
               </div>
 
