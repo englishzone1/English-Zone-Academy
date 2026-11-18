@@ -195,8 +195,17 @@ export const studentDataService = {
    * and copy the request data into it. Returns the student's uid, or null if no account exists.
    */
   // حذف حساب طالبة أو مسجّلة من المنصة (للإدارة): ملفها وعضويتها وطلباتها، ومنعها من إعادة إنشاء الملف
-  async deleteMemberAccount(uid: string, email?: string): Promise<void> {
-    await setDoc(doc(db, 'blocked_users', uid), { id: uid, email: String(email || ''), blockedAt: new Date().toISOString() });
+  async deleteMemberAccount(uid: string, email?: string): Promise<{ blocked: boolean }> {
+    // الأهم أولًا: حذف الملف نفسه
+    await deleteDoc(doc(db, 'users', uid));
+    let blocked = true;
+    try {
+      await setDoc(doc(db, 'blocked_users', uid), { id: uid, email: String(email || ''), blockedAt: new Date().toISOString() });
+    } catch (err) {
+      // القواعد الجديدة لم تُنشر بعد: الحذف تم، لكن المنع من العودة لم يُسجَّل
+      console.warn('Could not record blocked user:', err);
+      blocked = false;
+    }
     try {
       await deleteDoc(doc(db, 'group_members', uid));
     } catch {
@@ -208,7 +217,7 @@ export const studentDataService = {
     } catch {
       // لا طلبات
     }
-    await deleteDoc(doc(db, 'users', uid));
+    return { blocked };
   },
 
   // إضافة المسجّل كطالب نشط مباشرة: يُفعَّل اشتراكه ومستواه من بيانات طلبه

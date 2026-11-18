@@ -258,10 +258,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const deleteMember = async (uid: string) => {
     const u: any = usersList.find((x) => x.id === uid);
     try {
-      await studentDataService.deleteMemberAccount(uid, u?.email);
+      const res = await studentDataService.deleteMemberAccount(uid, u?.email);
       setUsersList((prev) => prev.filter((x) => x.id !== uid));
       setRegistrations((prev) => prev.filter((r: any) => r.studentId !== uid));
-      notify(tr(`${u?.fullName || 'Account'} was deleted.`, `تم حذف ${u?.fullName || 'الحساب'}.`), 5000);
+      notify(
+        res.blocked
+          ? tr(`${u?.fullName || 'Account'} was deleted.`, `تم حذف ${u?.fullName || 'الحساب'}.`)
+          : tr(
+              `${u?.fullName || 'Account'} was deleted. Publish the latest rules so deleted accounts cannot come back.`,
+              `تم حذف ${u?.fullName || 'الحساب'}. انشري ملف القواعد الأخير حتى لا يعود الحساب المحذوف إذا دخل مرة أخرى.`
+            ),
+        7000
+      );
     } catch (err: any) {
       notify(`${tr('Delete failed:', 'تعذّر الحذف:')} ${err?.code || ''}`, 6000, true);
     }
