@@ -169,7 +169,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   useEffect(() => {
     const fetchRegs = async () => {
       try {
-        setRegistrations(await studentDataService.getRegistrationRequests());
+        const regs = await studentDataService.getRegistrationRequests();
+        setRegistrations(regs);
+        // طلبات مقبولة تنتظر حساب الطالب: نحاول ربطها تلقائيًا
+        const waiting = regs.filter((r: any) => r.status === 'approved' && r.awaitingAccount && !r.linkedUserId);
+        let linked = 0;
+        for (const r of waiting) {
+          try {
+            const uid = await studentDataService.linkRegistrationToStudent(r);
+            if (uid) {
+              await studentDataService.updateRegistrationStatus(r.id, 'approved', (r as any).reviewedBy || 'admin', uid, false);
+              linked++;
+              setRegistrations((prev) => prev.map((x) => (x.id === r.id ? ({ ...x, awaitingAccount: false, linkedUserId: uid } as any) : x)));
+            }
+          } catch (e) {
+            console.error('Auto-link failed:', e);
+          }
+        }
+        if (linked) {
+          notify(
+            isAr
+              ? `تم ربط ${linked} طلب مقبول بحسابات الطلاب. افتحي تبويب الطلاب وفعّلي الاشتراك.`
+              : `${linked} approved request(s) linked to student accounts. Open Students and activate the subscription.`,
+            9000
+          );
+        }
       } catch (err) {
         console.error('Error fetching registration requests:', err);
       }
@@ -517,13 +541,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
       // ربط الطلب بحساب الطالب الذي يحمل نفس البريد
       const uid = await studentDataService.linkRegistrationToStudent(reg);
       if (!uid) {
+        // نقبل الطلب الآن، ويُربط بالحساب تلقائيًا عندما ينشئه الطالب بنفس البريد
+        await studentDataService.updateRegistrationStatus(regId, 'approved', adminName, undefined, true);
+        setRegistrations((prev) => prev.map((r) => (r.id === regId ? ({ ...r, status: 'approved' as const, awaitingAccount: true } as any) : r)));
         notify(
           tr(
-            `No student account uses ${reg.email}. Ask the student to create an account with this exact email, then press Approve again.`,
-            `لا يوجد حساب طالب بالبريد ${reg.email}. اطلب من الطالب إنشاء حساب بنفس البريد تمامًا، ثم اضغط قبول مرة أخرى.`
+            `Approved. ${reg.email} has no login account yet: ask the student to create one with this email (or Google). It will link automatically when you open the dashboard.`,
+            `تم القبول. البريد ${reg.email} ليس له حساب دخول بعد: اطلبي من الطالبة إنشاء حساب بنفس البريد (أو بحساب Google). سيُربط تلقائيًا عند فتحك لوحة الإدارة.`
           ),
-          9000,
-          true
+          12000
         );
         return;
       }
@@ -827,6 +853,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                           >
                             {statusLabel(reg.status)}
                           </span>
+                          {(reg as any).awaitingAccount && !(reg as any).linkedUserId && (
+                            <div className="mt-1 text-[10px] font-bold text-amber-700">
+                              {tr('Waiting for login account', 'بانتظار إنشاء حساب الدخول')}
+                            </div>
+                          )}
                         </td>
                         <td className="py-3.5 px-4 text-center">
                           {reg.status === 'pending' ? (

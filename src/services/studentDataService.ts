@@ -203,6 +203,16 @@ export const studentDataService = {
         break;
       }
     }
+    // بحث أوسع: نفس البريد مع اختلاف الحروف الكبيرة/الصغيرة أو المسافات
+    if (!found) {
+      const target = email.toLowerCase();
+      const all = await getDocs(collection(db, 'users'));
+      const hit = all.docs.find((d) => {
+        const u = d.data() as any;
+        return String(u.email || '').trim().toLowerCase() === target && (u.role === 'student' || !u.role);
+      });
+      if (hit) found = { id: hit.id, data: hit.data() };
+    }
     if (!found) return null;
 
     const updates: Record<string, any> = {
@@ -240,7 +250,8 @@ export const studentDataService = {
     requestId: string,
     status: 'approved' | 'rejected',
     reviewer: string,
-    linkedUserId?: string
+    linkedUserId?: string,
+    awaitingAccount?: boolean
   ): Promise<void> {
     const path = `registration_requests/${requestId}`;
     try {
@@ -248,6 +259,8 @@ export const studentDataService = {
         status,
         reviewedAt: new Date().toISOString(),
         reviewedBy: reviewer,
+        // مقبول لكن الطالب لم ينشئ حساب الدخول بعد: يُربط تلقائيًا لاحقًا
+        awaitingAccount: !!awaitingAccount,
         ...(linkedUserId ? { linkedUserId } : {})
       });
     } catch (err) {

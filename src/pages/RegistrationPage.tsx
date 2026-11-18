@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { CEFR_LEVELS_INFO } from '../data/academyData';
 import { useAcademySettings, whatsappWithText } from '../hooks/useAcademySettings';
@@ -27,6 +28,7 @@ interface RegistrationPageProps {
 export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, initialLevel }) => {
   const contacts = useAcademySettings();
   const { t, language } = useLanguage();
+  const { isAuthenticated } = useAuth();
 
   const [formData, setFormData] = useState<RegistrationFormData>({
     fullName: '',
@@ -130,6 +132,26 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
             <p className="text-sm text-gray-600 max-w-lg mx-auto leading-relaxed">
               {t.register.successDesc}
             </p>
+
+            {/* الخطوة الأخيرة: حساب الدخول بنفس البريد */}
+            {!isAuthenticated && (
+              <div className="p-4 rounded-2xl bg-[#FAF8F5] border-2 border-[#D4AF37] text-sm text-[#0A192F] space-y-3" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+                <b className="block">
+                  {language === 'ar' ? 'خطوة أخيرة مهمة: أنشئي حساب الدخول' : 'One last step: create your login account'}
+                </b>
+                <p className="text-xs text-gray-600">
+                  {language === 'ar'
+                    ? `أنشئي حسابك بنفس البريد الذي كتبتِه (${formData.email})، أو ادخلي بحساب Google بنفس البريد، حتى تظهر لكِ لوحة الطالب بعد قبول طلبك.`
+                    : `Create your account with the same email (${formData.email}), or sign in with Google using it, so your student dashboard appears once you're accepted.`}
+                </p>
+                <button
+                  onClick={() => navigate('login')}
+                  className="px-6 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold"
+                >
+                  {language === 'ar' ? 'إنشاء حساب الدخول الآن' : 'Create my login now'}
+                </button>
+              </div>
+            )}
 
             {/* Direct WhatsApp button */}
             <div className="pt-4 space-y-3">
