@@ -149,6 +149,8 @@ function MainApp() {
       case 'english-club':
         return <EnglishClubPage navigate={navigate} />;
       case 'register':
+        // الزائرة غير المسجّلة: التسجيل الموحّد أولًا (Google أو بريد)، وطلب الكورس من داخل المنصة
+        if (!isAuthenticated) return <VisitorJoinPage navigate={navigate} />;
         return <RegistrationPage navigate={navigate} initialLevel={navigationState.preselectedLevel} />;
       
       // Dedicated Student Portal Login

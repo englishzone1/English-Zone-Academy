@@ -61,6 +61,15 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
     }));
   }, [user]);
 
+  // البيانات المعروفة من حسابها لا نطلبها مرة ثانية
+  const up: any = user || {};
+  const known = {
+    name: !!firebaseUser && !!String(up.fullName || '').trim(),
+    age: !!firebaseUser && Number(up.age) > 0,
+    country: !!firebaseUser && !!String(up.country || '').trim(),
+    phone: !!firebaseUser && !!String(up.phone || '').trim()
+  };
+
   useEffect(() => {
     if (initialLevel) {
       setFormData((prev) => ({ ...prev, mainLevel: initialLevel }));
@@ -285,8 +294,24 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
             <form onSubmit={handleSubmit} className="space-y-6">
               
+              {firebaseUser && (known.name || known.age || known.country || known.phone) && (
+                <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/40 text-xs text-[#0A192F] space-y-1">
+                  <b>{language === 'ar' ? 'بياناتك من حسابك:' : 'From your account:'}</b>
+                  <div className="text-gray-600">
+                    {[known.name && up.fullName, known.country && up.country, known.age && `${up.age} ${language === 'ar' ? 'سنة' : 'yrs'}`, known.phone && up.phone]
+                      .filter(Boolean)
+                      .join(' • ')}
+                  </div>
+                  <span className="text-[11px] text-gray-500">
+                    {language === 'ar' ? 'لتعديل الاسم أو رقم الواتساب: من «الأفاتار الخاص بي».' : 'Edit name or WhatsApp from “My avatar”.'}
+                  </span>
+                </div>
+              )}
+
               {/* Full Name & Age */}
+              {!(known.name && known.age) && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {!known.name && (
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
                     {t.register.fullName} *
@@ -303,7 +328,9 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                     />
                   </div>
                 </div>
+                )}
 
+                {!known.age && (
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
                     {t.register.age} *
@@ -322,10 +349,14 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                     />
                   </div>
                 </div>
+                )}
               </div>
+              )}
 
               {/* Country & WhatsApp */}
+              {!(known.country && known.phone) && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {!known.country && (
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
                     {t.register.country} *
@@ -342,7 +373,9 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                     />
                   </div>
                 </div>
+                )}
 
+                {!known.phone && (
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
                     {t.register.whatsapp} *
@@ -359,7 +392,9 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                     />
                   </div>
                 </div>
+                )}
               </div>
+              )}
 
               {/* Email */}
               <div>
