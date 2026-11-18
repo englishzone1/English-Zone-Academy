@@ -1,5 +1,5 @@
 // تنبيه بالبريد عند وصول رسالة جديدة، عبر EmailJS (خطة مجانية، يُضبط من لوحة الإدارة ← الإعدادات)
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 interface EmailCfg {
@@ -30,25 +30,43 @@ const loadCfg = (): Promise<EmailCfg | null> => {
 
 export const getAcademyNotifyEmail = async (): Promise<string> => (await loadCfg())?.academyEmail || '';
 
-// رسالة واحدة كل 10 دقائق لكل مستلم، حتى لا تمتلئ حصة البريد المجانية
-const THROTTLE_MS = 10 * 60 * 1000;
-const throttled = (to: string) => {
+// بريد واحد فقط في اليوم لكل مستلم (بتوقيت مكة/إسطنبول UTC+3)، مهما كثرت الرسائل أو المرسلون.
+// السجل في Firestore: mail_log/{البريد}_{اليوم} يُنشأ مرة واحدة، والمحاولة الثانية ترفضها القواعد.
+const today = () => new Date(Date.now() + 3 * 3600 * 1000).toISOString().slice(0, 10);
+
+const claimToday = async (to: string): Promise<boolean> => {
+  const day = today();
+  const key = `ez_mail_${to.toLowerCase()}`;
   try {
-    const k = `ez_mail_${to.toLowerCase()}`;
-    const last = Number(localStorage.getItem(k) || 0);
-    if (Date.now() - last < THROTTLE_MS) return true;
-    localStorage.setItem(k, String(Date.now()));
+    if (localStorage.getItem(key) === day) return false;
   } catch {
     /* ignore */
   }
-  return false;
+  const id = `${to.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 100)}_${day}`;
+  try {
+    await setDoc(doc(db, 'mail_log', id), { day, createdAt: new Date().toISOString() });
+  } catch {
+    // موجود مسبقًا = أُرسل بريد اليوم
+    try {
+      localStorage.setItem(key, day);
+    } catch {
+      /* ignore */
+    }
+    return false;
+  }
+  try {
+    localStorage.setItem(key, day);
+  } catch {
+    /* ignore */
+  }
+  return true;
 };
 
 export const notifyNewMessage = async (p: { toEmail?: string; toName?: string; fromName: string; preview: string }) => {
   const to = String(p.toEmail || '').trim();
   if (!to || !to.includes('@')) return;
   const cfg = await loadCfg();
-  if (!cfg || throttled(to)) return;
+  if (!cfg || !(await claimToday(to))) return;
   try {
     await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method: 'POST',
