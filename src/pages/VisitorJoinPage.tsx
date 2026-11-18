@@ -20,6 +20,8 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  // تمييز الحقول الناقصة باللون الأحمر
+  const [missing, setMissing] = useState(false);
 
   const benefits = [
     { icon: Target, text: tr('Free placement test to know your exact level', 'تحديد مستواكِ مجانًا باختبار دقيق') },
@@ -44,9 +46,11 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
 
   const valid = () => {
     if (!name.trim() || !phone.trim()) {
-      setError(tr('Please write your name and WhatsApp number.', 'اكتبي اسمكِ ورقم واتساب.'));
+      setMissing(true);
+      setError(tr('Write your name and WhatsApp number first, then continue with Google or email.', 'اكتبي اسمكِ ورقم الواتساب أولًا، ثم تابعي بحساب Google أو بالبريد.'));
       return false;
     }
+    setMissing(false);
     return true;
   };
 
@@ -126,11 +130,12 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-4">
           <h2 className="font-bold text-xl text-[#0A192F]">{tr('Sign up now – free', 'سجّلي الآن مجانًا')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={tr('Full name *', 'الاسم الكامل *')} className={inp} />
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" placeholder={tr('WhatsApp number *', 'رقم واتساب *')} className={inp} />
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={tr('Full name *', 'الاسم الكامل *')} className={`${inp} ${missing && !name.trim() ? 'border-red-400 bg-red-50' : ''}`} />
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" placeholder={tr('WhatsApp number *', 'رقم واتساب *')} className={`${inp} ${missing && !phone.trim() ? 'border-red-400 bg-red-50' : ''}`} />
             <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder={tr('Country', 'الدولة')} className={inp} />
             <input value={age} onChange={(e) => setAge(e.target.value.replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder={tr('Age', 'العمر')} className={inp} />
           </div>
+          {error && <p className="text-xs font-bold text-red-600 text-center p-2 rounded-lg bg-red-50 border border-red-100">{error}</p>}
           <GoogleSignInButton onClick={viaGoogle} disabled={busy} isAr={isAr} />
           <OrDivider isAr={isAr} />
           <form onSubmit={viaEmail} className="space-y-3">
@@ -140,7 +145,6 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
               {busy ? '...' : tr('Create my free account', 'إنشاء حسابي المجاني')}
             </button>
           </form>
-          {error && <p className="text-xs font-bold text-red-600 text-center">{error}</p>}
           <p className="text-xs text-gray-500 text-center">
             {tr('Already have an account?', 'عندكِ حساب؟')}{' '}
             <button onClick={() => navigate('login')} className="font-bold text-[#0A192F] underline">
