@@ -9,9 +9,12 @@ interface EmailCfg {
   academyEmail: string;
 }
 
+// تُقرأ الإعدادات من جديد كل 5 دقائق (حتى تعمل فور حفظها دون تحديث الصفحة)
 let cfgPromise: Promise<EmailCfg | null> | null = null;
+let cfgAt = 0;
 const loadCfg = (): Promise<EmailCfg | null> => {
-  if (!cfgPromise) {
+  if (!cfgPromise || Date.now() - cfgAt > 5 * 60 * 1000) {
+    cfgAt = Date.now();
     cfgPromise = getDoc(doc(db, 'academy_settings', 'main'))
       .then((s) => {
         const d: any = s.exists() ? s.data() : {};
@@ -43,16 +46,21 @@ const claimToday = async (to: string): Promise<boolean> => {
     /* ignore */
   }
   const id = `${to.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 100)}_${day}`;
+  const ref = doc(db, 'mail_log', id);
   try {
-    await setDoc(doc(db, 'mail_log', id), { day, createdAt: new Date().toISOString() });
-  } catch {
-    // موجود مسبقًا = أُرسل بريد اليوم
-    try {
-      localStorage.setItem(key, day);
-    } catch {
-      /* ignore */
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      try {
+        localStorage.setItem(key, day);
+      } catch {
+        /* ignore */
+      }
+      return false;
     }
-    return false;
+    await setDoc(ref, { day, createdAt: new Date().toISOString() });
+  } catch (err) {
+    // القواعد الجديدة غير منشورة: نكتفي بحد المتصفح حتى لا يتوقف البريد
+    console.warn('mail_log unavailable, using browser limit only:', (err as any)?.code);
   }
   try {
     localStorage.setItem(key, day);
@@ -67,8 +75,13 @@ export const notifyNewMessage = async (p: { toEmail?: string; toName?: string; f
   if (!to || !to.includes('@')) return;
   const cfg = await loadCfg();
   if (!cfg || !(await claimToday(to))) return;
+  await sendViaEmailJS(cfg, { to, toName: p.toName || '', fromName: p.fromName, preview: p.preview });
+};
+
+const sendViaEmailJS = async (cfg: EmailCfg, p: { to: string; toName: string; fromName: string; preview: string }): Promise<{ ok: boolean; status: number; text: string }> => {
+  const to = p.to;
   try {
-    await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+    const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -84,7 +97,18 @@ export const notifyNewMessage = async (p: { toEmail?: string; toName?: string; f
         }
       })
     });
-  } catch (err) {
+    const text = await res.text().catch(() => '');
+    if (!res.ok) console.warn('EmailJS error', res.status, text);
+    return { ok: res.ok, status: res.status, text };
+  } catch (err: any) {
     console.warn('Email notification failed:', err);
+    return { ok: false, status: 0, text: String(err?.message || err) };
   }
 };
+
+// زر «إرسال بريد تجريبي» في الإعدادات: يرسل فورًا دون حد اليوم، ويعيد سبب الخطأ إن وُجد
+export const sendTestEmail = async (cfg: { serviceId: string; templateId: string; publicKey: string }, to: string) =>
+  sendViaEmailJS(
+    { serviceId: cfg.serviceId.trim(), templateId: cfg.templateId.trim(), publicKey: cfg.publicKey.trim(), academyEmail: to },
+    { to: to.trim(), toName: 'English Zone', fromName: 'منصة English Zone', preview: 'هذه رسالة تجريبية للتأكد من أن تنبيهات البريد تعمل ✅' }
+  );

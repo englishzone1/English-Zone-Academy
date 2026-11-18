@@ -55,6 +55,7 @@ import { AdminVisitors } from '../../components/admin/AdminVisitors';
 import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { CURRENCIES } from '../../hooks/useAcademySettings';
 import { useUnreadMessages } from '../../hooks/useUnreadMessages';
+import { sendTestEmail } from '../../services/emailNotify';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
 interface AdminDashboardProps {
@@ -732,6 +733,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   ];
 
   const unreadMsgs = useUnreadMessages('academy', firebaseUser?.uid);
+  const [emailTest, setEmailTest] = useState('');
 
   const settingFields: { key: keyof AcademySettings; labelEn: string; labelAr: string }[] = [
     { key: 'whatsapp', labelEn: 'WhatsApp link', labelAr: 'رابط واتساب' },
@@ -1174,6 +1176,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                       />
                     </div>
                   ))}
+                </div>
+                <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2">
+                  <div className="text-xs font-bold text-[#0A192F]">{tr('Test email alerts', 'تجربة تنبيه البريد')}</div>
+                  <p className="text-[11px] text-gray-500">
+                    {tr('Sends a test email now using the EmailJS fields above (no need to save first).', 'يرسل بريدًا تجريبيًا الآن بالرموز المكتوبة أعلاه (لا يلزم الحفظ أولًا).')}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const st: any = settings || {};
+                      const to = String(st.notifyEmail || st.email || '').trim();
+                      if (!st.emailjsServiceId || !st.emailjsTemplateId || !st.emailjsPublicKey || !to) {
+                        setEmailTest(tr('Fill the 3 EmailJS codes and the alerts email first.', 'اكتبي رموز EmailJS الثلاثة وبريد التنبيهات أولًا.'));
+                        return;
+                      }
+                      setEmailTest(tr('Sending...', 'جارٍ الإرسال...'));
+                      const r = await sendTestEmail({ serviceId: st.emailjsServiceId, templateId: st.emailjsTemplateId, publicKey: st.emailjsPublicKey }, to);
+                      setEmailTest(
+                        r.ok
+                          ? tr(`Sent to ${to}. Check inbox and Spam.`, `تم الإرسال إلى ${to}. افحصي الوارد ومجلد Spam.`)
+                          : `${tr('EmailJS refused:', 'رفضت EmailJS الإرسال:')} ${r.status} — ${r.text}`
+                      );
+                    }}
+                    className="px-4 py-2 rounded-xl text-xs font-bold border border-[#D4AF37] text-[#0A192F] bg-white"
+                  >
+                    {tr('Send test email', 'إرسال بريد تجريبي')}
+                  </button>
+                  {emailTest && <p className="text-xs text-[#0A192F] break-words" dir="auto">{emailTest}</p>}
                 </div>
                 <div className="pt-4 border-t border-gray-100">
                   <button onClick={handleSaveSettings} disabled={isSettingsSaving} className={primaryBtn}>

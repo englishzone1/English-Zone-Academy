@@ -368,7 +368,8 @@ service cloud.firestore {
       allow create: if isSignedIn() && isValidId(logId) &&
         request.resource.data.keys().hasOnly(['day', 'createdAt']) &&
         request.resource.data.day is string && request.resource.data.day.size() == 10;
-      allow get, list, delete: if isAdmin();
+      allow get: if isSignedIn();
+      allow list, delete: if isAdmin();
     }
 
     // --- Voice messages: أجزاء التسجيل الصوتي للرسائل (الطالبة ↔ المعلمة، والأكاديمية ترى الكل وتحذف) ---
