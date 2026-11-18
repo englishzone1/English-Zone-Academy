@@ -7,6 +7,7 @@ import { EnglishZoneEmblem } from '../../components/common/Logo';
 import { AdminStudentsManager } from '../../components/admin/AdminStudentsManager';
 import { AdminStarsLedger } from '../../components/admin/AdminStarsLedger';
 import { AdminMessagesManager } from '../../components/admin/AdminMessagesManager';
+import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 import { AdminHomeworkResults } from '../../components/admin/AdminHomeworkResults';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { AvatarRenderer } from '../../components/avatar/AvatarRenderer';
@@ -41,6 +42,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
     });
   }, [firebaseUser?.uid]);
 
+  const unreadMsgs = useUnreadMessages('teacher', firebaseUser?.uid);
   const tabs: { id: Tab; ar: string; en: string; icon: any }[] = [
     { id: 'students', ar: 'طلابي', en: 'My students', icon: Users },
     { id: 'results', ar: 'نتائج الواجبات', en: 'Homework results', icon: BookOpenCheck },
@@ -111,6 +113,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
               >
                 <Icon className="w-4 h-4" />
                 {isAr ? t.ar : t.en}
+                {t.id === 'messages' && unreadMsgs > 0 && (
+                <span className="ms-1.5 inline-flex min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold items-center justify-center animate-pulse">{unreadMsgs}</span>
+              )}
               </button>
             );
           })}

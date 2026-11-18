@@ -259,7 +259,15 @@ export const groupService = {
         teacherId = g.exists() ? String((g.data() as any).teacherId || '') : '';
       }
       if (!data.teacherManual && (data.teacherId || '') !== teacherId) {
-        await updateDoc(doc(db, 'users', studentId), { teacherId: teacherId ? teacherId : deleteField() });
+        let tEmail = '';
+        if (teacherId) {
+          const t = await getDoc(doc(db, 'teachers', teacherId)).catch(() => null);
+          tEmail = t && t.exists() ? String((t.data() as any).email || '') : '';
+        }
+        await updateDoc(doc(db, 'users', studentId), {
+          teacherId: teacherId ? teacherId : deleteField(),
+          assignedTeacherEmail: tEmail ? tEmail : deleteField()
+        });
       }
     }
     if (!data || data.role !== 'student' || !data.groupId) {
@@ -285,6 +293,12 @@ export const groupService = {
     ]);
     const teacherOf = new Map<string, string>();
     groupsSnap.forEach((g) => teacherOf.set(g.id, String((g.data() as any).teacherId || '')));
+    const teacherEmail = new Map<string, string>();
+    try {
+      (await getDocs(collection(db, 'teachers'))).forEach((t) => teacherEmail.set(t.id, String((t.data() as any).email || '')));
+    } catch {
+      /* البريد اختياري */
+    }
     const ops: ((b: ReturnType<typeof writeBatch>) => void)[] = [];
     const keep = new Set<string>();
     usersSnap.forEach((d) => {
@@ -292,8 +306,9 @@ export const groupService = {
       // المعلم الذي اختارته الإدارة يدويًا لا يُستبدل بمعلم المجموعة
       if (data.role === 'student' && !data.teacherManual) {
         const t = data.groupId ? teacherOf.get(data.groupId) || '' : '';
-        if ((data.teacherId || '') !== t) {
-          ops.push((b) => b.update(d.ref, { teacherId: t ? t : deleteField() }));
+        const te = t ? teacherEmail.get(t) || '' : '';
+        if ((data.teacherId || '') !== t || (data.assignedTeacherEmail || '') !== te) {
+          ops.push((b) => b.update(d.ref, { teacherId: t ? t : deleteField(), assignedTeacherEmail: te ? te : deleteField() }));
         }
       }
       if (data.role === 'student' && data.groupId) {

@@ -14,6 +14,7 @@ import { groupService, StudyGroup, RatingCriterion, PASS_MARK } from '../../serv
 import { AdminStudentRecords } from './AdminStudentRecords';
 import { studentDataService } from '../../services/studentDataService';
 import { CURRENCIES } from '../../hooks/useAcademySettings';
+import { AdminMemberProfile } from './AdminMemberProfile';
 import { AvatarRenderer } from '../avatar/AvatarRenderer';
 
 interface AdminStudentsManagerProps {
@@ -132,6 +133,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
   const adminName = user?.fullName || (isAr ? 'المدير' : 'Administrator');
 
   const [students, setStudents] = useState<StudentRow[]>([]);
+  const [profileOf, setProfileOf] = useState<any>(null);
   const [courseNames, setCourseNames] = useState<string[]>([]);
   const [groups, setGroups] = useState<StudyGroup[]>([]);
   const [criteria, setCriteria] = useState<RatingCriterion[]>([]);
@@ -147,9 +149,9 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
   const [starReason, setStarReason] = useState('');
   const [gradeTitle, setGradeTitle] = useState('');
   const [gradeScore, setGradeScore] = useState('');
-  const [teachers, setTeachers] = useState<{ id: string; fullName: string }[]>([]);
+  const [teachers, setTeachers] = useState<{ id: string; fullName: string; email?: string }[]>([]);
   useEffect(() => {
-    if (!teacherMode) groupService.getTeachers().then((t: any[]) => setTeachers(t.map((x) => ({ id: x.id, fullName: x.fullName || x.email || '' })))).catch(() => {});
+    if (!teacherMode) groupService.getTeachers().then((t: any[]) => setTeachers(t.map((x) => ({ id: x.id, fullName: x.fullName || x.email || '', email: x.email || '' })))).catch(() => {});
   }, [teacherMode]);
 
   const load = async (showSpinner = true) => {
@@ -242,7 +244,12 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         groupId: textOrDelete(form.groupId),
         // معلم حقيقي: يرى الطالب في لوحته ويرد على رسائله
         ...(form.teacherId
-          ? { teacherId: form.teacherId, teacherManual: true, assignedTeacherName: teachers.find((t) => t.id === form.teacherId)?.fullName || form.assignedTeacherName || deleteField() }
+          ? {
+              teacherId: form.teacherId,
+              teacherManual: true,
+              assignedTeacherName: teachers.find((t) => t.id === form.teacherId)?.fullName || form.assignedTeacherName || deleteField(),
+              assignedTeacherEmail: teachers.find((t) => t.id === form.teacherId)?.email || deleteField()
+            }
           : { teacherManual: deleteField() }),
         // مواعيد الدرس: أيام الأسبوع (0 = الأحد) والساعة، ومنها يُسجَّل الحضور
         lessonDays: form.lessonDays.length ? [...form.lessonDays].sort() : deleteField(),
@@ -487,6 +494,14 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         </div>
       )}
 
+      {profileOf && (
+        <AdminMemberProfile
+          member={profileOf}
+          isAr={isAr}
+          onClose={() => setProfileOf(null)}
+          onChanged={(patch) => setStudents((prev) => prev.map((s) => (s.id === profileOf.id ? ({ ...s, ...patch } as any) : s)))}
+        />
+      )}
       {selected && (
         <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto p-4" onClick={() => setSelectedId(null)}>
           <div
@@ -500,6 +515,11 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                 <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F]">{selected.fullName || '—'}</h3>
                 <p className="text-[11px] text-gray-500 break-all">{selected.email}</p>
                 <p className="text-[10px] text-gray-400 font-mono break-all">{selected.id}</p>
+                {!teacherMode && (
+                  <button onClick={() => setProfileOf(selected)} className="mt-1 px-3 py-1 rounded-lg text-[11px] font-bold bg-[#D4AF37]/20 text-[#7A5C00]">
+                    {isAr ? 'صفحتها: الاسم والأفاتار والصور والمنشورات' : 'Profile: name, avatar, photos & posts'}
+                  </button>
+                )}
                 </div>
               </div>
               <button

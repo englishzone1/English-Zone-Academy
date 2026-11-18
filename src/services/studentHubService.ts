@@ -84,6 +84,7 @@ export interface StudentMessage {
   // المحادثة: من أرسل الرسالة (القديمة بلا from = من الطالبة)
   from?: 'student' | 'teacher' | 'academy';
   audioDeleted?: boolean;
+  seenByAcademy?: boolean;
 }
 
 /* ---------- Voice messages: أجزاء base64 في message_audio ---------- */
@@ -191,6 +192,46 @@ export const deleteLegacyReply = async (m: { id: string; replyAudioParts?: numbe
     replyAudioSeconds: deleteField(),
     status: 'read'
   });
+};
+
+// الإدارة فقط: تعديل اسم/رقم/أفاتار عضوة، وتحديث صورتها واسمها في منشوراتها
+export const adminUpdateMemberProfile = async (uid: string, updates: { fullName?: string; phone?: string; avatarConfig?: any }) => {
+  const clean: any = { updatedAt: new Date().toISOString() };
+  if (updates.fullName !== undefined) clean.fullName = updates.fullName;
+  if (updates.phone !== undefined) clean.phone = updates.phone;
+  if (updates.avatarConfig !== undefined) clean.avatarConfig = updates.avatarConfig;
+  await updateDoc(doc(db, 'users', uid), clean);
+  const posts = await getDocs(query(collection(db, 'community_posts'), where('authorId', '==', uid)));
+  for (const p of posts.docs) {
+    const patch: any = {};
+    if (updates.avatarConfig !== undefined) patch.authorAvatar = updates.avatarConfig;
+    if (updates.fullName) patch.authorName = updates.fullName;
+    if (Object.keys(patch).length) await updateDoc(p.ref, patch).catch(() => undefined);
+  }
+  // لوحة المجموعة
+  const gm = await getDoc(doc(db, 'group_members', uid)).catch(() => null);
+  if (gm && gm.exists()) {
+    const patch: any = {};
+    if (updates.avatarConfig !== undefined) patch.avatar = updates.avatarConfig;
+    if (updates.fullName) patch.fullName = updates.fullName;
+    await updateDoc(gm.ref, patch).catch(() => undefined);
+  }
+};
+
+export const getMemberPosts = async (uid: string): Promise<CommunityPost[]> => {
+  const snap = await getDocs(query(collection(db, 'community_posts'), where('authorId', '==', uid)));
+  return snap.docs
+    .map((d) => ({ likes: [], ...(d.data() as any), id: d.id } as CommunityPost))
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+};
+
+// حذف صورة/صوت من منشور مع بقاء النص
+export const adminStripPostMedia = async (postId: string, field: 'imageDataUrl' | 'audioDataUrl' | 'videoUrl') => {
+  await updateDoc(doc(db, 'community_posts', postId), { [field]: deleteField() });
+};
+
+export const markSeenByAcademy = async (ids: string[]) => {
+  for (const id of ids) await updateDoc(doc(db, 'contact_messages', id), { seenByAcademy: true }).catch(() => undefined);
 };
 
 export const markMessagesRead = async (ids: string[]) => {

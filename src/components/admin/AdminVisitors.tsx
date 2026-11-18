@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { AdminMemberProfile } from './AdminMemberProfile';
 import { Download, MessageCircle, Mail, Search, CheckCircle2, Trash2 } from 'lucide-react';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 // الزوار الذين أنشؤوا حسابًا مجانيًا (ليسوا مشتركين بعد): للتواصل معهم بالعروض
 export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [], onActivate, onDelete }) => {
   const [busy, setBusy] = useState('');
+  const [profileOf, setProfileOf] = useState<any>(null);
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [q, setQ] = useState('');
 
@@ -90,7 +92,10 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [], 
                   {u.phone ? ` • ${u.phone}` : ''}
                 </div>
               </div>
-              <div className="flex gap-1.5">
+              <div className="flex flex-wrap gap-1.5">
+                <button onClick={() => setProfileOf(u)} className="px-2.5 py-1.5 rounded-lg border border-[#D4AF37] text-[#7A5C00] font-bold">
+                  {tr('Profile', 'صفحتها')}
+                </button>
                 {onActivate && (
                   <button
                     disabled={busy === u.id}
@@ -137,6 +142,7 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [], 
           ))}
         </div>
       )}
+      {profileOf && <AdminMemberProfile member={profileOf} isAr={isAr} onClose={() => setProfileOf(null)} />}
     </div>
   );
 };

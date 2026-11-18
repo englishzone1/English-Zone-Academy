@@ -8,6 +8,7 @@ import {
   deleteMessageAudioOnly,
   deleteLegacyReply,
   markMessagesRead,
+  markSeenByAcademy,
   sendChatMessage,
   StudentMessage
 } from '../../services/studentHubService';
@@ -17,6 +18,7 @@ import { AvatarRenderer } from '../avatar/AvatarRenderer';
 import { groupService } from '../../services/groupService';
 import { ChatThread, Bubble } from '../common/ChatThread';
 import { RecordedAudio } from '../common/VoiceRecorder';
+import { notifyNewMessage } from '../../services/emailNotify';
 
 interface Props {
   onNotice: (message: string) => void;
@@ -30,6 +32,7 @@ interface Person {
   email: string;
   teacherId?: string;
   avatarConfig?: any;
+  potential?: boolean;
 }
 
 const isFromStudent = (m: StudentMessage) => !m.from || m.from === 'student';
@@ -66,6 +69,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
   const [activeId, setActiveId] = useState('');
   const [search, setSearch] = useState('');
   const [onlyReported, setOnlyReported] = useState(false);
+  const [showPotential, setShowPotential] = useState(false);
   const [view, setView] = useState<'chats' | 'contact'>('chats');
   const [seenTick, setSeenTick] = useState(0);
 
@@ -97,10 +101,20 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
           ? await groupService.getTeacherStudents(uid)
           : (await getDocs(collection(db, 'users'))).docs
               .map((d) => ({ ...(d.data() as any), id: d.id }))
-              .filter((u) => u.role === 'student' && u.subscriptionStatus && u.subscriptionStatus !== 'pending');
+              .filter((u) => u.role === 'student');
         setPeople(
           Object.fromEntries(
-            list.map((u) => [u.id, { id: u.id, name: u.fullName || u.email || '—', email: u.email || '', teacherId: u.teacherId, avatarConfig: u.avatarConfig }])
+            list.map((u) => [
+              u.id,
+              {
+                id: u.id,
+                name: u.fullName || u.email || '—',
+                email: u.email || '',
+                teacherId: u.teacherId,
+                avatarConfig: u.avatarConfig,
+                potential: !u.subscriptionStatus || u.subscriptionStatus === 'pending'
+              }
+            ])
           )
         );
       } catch (err) {
@@ -124,15 +138,17 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
       .map((t) => {
         const sorted = [...t.msgs].sort((a, b) => lastAt(a).localeCompare(lastAt(b)));
         const last = sorted[sorted.length - 1];
-        const seen = getSeen(role, t.id);
-        const unread = t.msgs.filter((m) => isFromStudent(m) && (m.submittedAt || '') > seen).length;
+        const unread = t.msgs.filter((m) =>
+          isFromStudent(m) && (teacherMode ? m.status === 'new' : !m.seenByAcademy && (m.from === 'student' || m.status === 'new'))
+        ).length;
         const firstStudentMsg = t.msgs.find(isFromStudent);
         const name = people[t.id]?.name || firstStudentMsg?.name || '—';
         return { ...t, last, unread, name, reported: t.msgs.some((m) => m.reported) };
       })
+      .filter((t) => (showPotential || teacherMode || !people[t.id]?.potential || t.msgs.length > 0))
       .filter((t) => (!onlyReported || t.reported) && (!search.trim() || t.name.toLowerCase().includes(search.trim().toLowerCase())))
       .sort((a, b) => (b.last ? lastAt(b.last) : '').localeCompare(a.last ? lastAt(a.last) : '') || a.name.localeCompare(b.name));
-  }, [people, chatMsgs, onlyReported, search, seenTick]);
+  }, [people, chatMsgs, onlyReported, search, seenTick, showPotential]);
 
   const activeMsgs = useMemo(() => chatMsgs.filter((m) => m.studentId === activeId), [chatMsgs, activeId]);
   const activeName = activeId ? people[activeId]?.name || activeMsgs.find(isFromStudent)?.name || '—' : '';
@@ -145,6 +161,9 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
     if (teacherMode) {
       const ids = activeMsgs.filter((m) => isFromStudent(m) && m.status === 'new').map((m) => m.id);
       if (ids.length) markMessagesRead(ids);
+    } else {
+      const ids = activeMsgs.filter((m) => isFromStudent(m) && !m.seenByAcademy).map((m) => m.id);
+      if (ids.length) markSeenByAcademy(ids);
     }
   }, [activeId, activeMsgs.length]);
 
@@ -160,6 +179,13 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
       email: firebaseUser?.email || '',
       text,
       audio
+    });
+    // تنبيه الطالبة بالبريد
+    notifyNewMessage({
+      toEmail: p?.email,
+      toName: p?.name,
+      fromName: teacherMode ? (user as any)?.fullName || 'معلمتك' : 'English Zone Academy',
+      preview: text.trim() || '🎙️ رسالة صوتية'
     });
   };
 
@@ -252,6 +278,12 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
                 <Search className="w-3.5 h-3.5 text-gray-400 absolute top-1/2 -translate-y-1/2 start-3" />
                 <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={tr('Search a student...', 'ابحثي عن طالبة...')} className="w-full ps-8 pe-3 py-2 rounded-xl border border-gray-200 text-xs" />
               </div>
+              {!teacherMode && (
+                <label className="flex items-center gap-2 text-[11px] text-gray-600 px-1">
+                  <input type="checkbox" checked={showPotential} onChange={(e) => setShowPotential(e.target.checked)} />
+                  {tr('Show potential registrants too', 'إظهار المسجّلين المحتملين أيضًا')}
+                </label>
+              )}
               {!teacherMode && reportedCount > 0 && (
                 <button
                   onClick={() => setOnlyReported((v) => !v)}
@@ -269,7 +301,10 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
                   <AvatarRenderer config={people[t.id]?.avatarConfig} size={36} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-bold text-xs text-[#0A192F] truncate">{t.name}</span>
+                      <span className="font-bold text-xs text-[#0A192F] truncate">
+                        {t.name}
+                        {people[t.id]?.potential && <span className="ms-1 text-[9px] font-semibold text-gray-400">{tr('(potential)', '(محتمل)')}</span>}
+                      </span>
                       {t.last && <span className="text-[10px] text-gray-400 shrink-0">{new Date(lastAt(t.last)).toLocaleDateString()}</span>}
                     </div>
                     <div className="flex items-center justify-between gap-2">

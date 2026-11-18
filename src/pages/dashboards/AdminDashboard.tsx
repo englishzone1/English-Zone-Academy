@@ -54,6 +54,7 @@ import { AdminChatFaq } from '../../components/admin/AdminChatFaq';
 import { AdminVisitors } from '../../components/admin/AdminVisitors';
 import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { CURRENCIES } from '../../hooks/useAcademySettings';
+import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
 interface AdminDashboardProps {
@@ -730,6 +731,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { key: 'C1-C2', labelEn: 'Mastery (C1–C2)', labelAr: 'الإتقان (C1–C2)', wrap: 'border-indigo-200 bg-indigo-50/20', badge: 'bg-indigo-100 text-indigo-800' }
   ];
 
+  const unreadMsgs = useUnreadMessages('academy', firebaseUser?.uid);
+
   const settingFields: { key: keyof AcademySettings; labelEn: string; labelAr: string }[] = [
     { key: 'whatsapp', labelEn: 'WhatsApp link', labelAr: 'رابط واتساب' },
     { key: 'email', labelEn: 'Admissions email', labelAr: 'بريد القبول' },
@@ -739,7 +742,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { key: 'facebook', labelEn: 'Facebook link', labelAr: 'رابط فيسبوك' },
     { key: 'telegram', labelEn: 'Telegram link', labelAr: 'رابط تيليغرام' },
     { key: 'placementTestUrl', labelEn: 'Placement test link', labelAr: 'رابط اختبار تحديد المستوى' },
-    { key: 'tawkUrl', labelEn: 'Tawk.to chat link (Direct Chat Link)', labelAr: 'رابط محادثة Tawk.to (Direct Chat Link)' }
+    { key: 'tawkUrl', labelEn: 'Tawk.to chat link (Direct Chat Link)', labelAr: 'رابط محادثة Tawk.to (Direct Chat Link)' },
+    { key: 'notifyEmail' as any, labelEn: 'Email that receives new-message alerts', labelAr: 'البريد الذي تصله تنبيهات الرسائل الجديدة' },
+    { key: 'emailjsServiceId' as any, labelEn: 'EmailJS Service ID (message email alerts)', labelAr: 'EmailJS Service ID (تنبيه الرسائل بالبريد)' },
+    { key: 'emailjsTemplateId' as any, labelEn: 'EmailJS Template ID', labelAr: 'EmailJS Template ID' },
+    { key: 'emailjsPublicKey' as any, labelEn: 'EmailJS Public Key', labelAr: 'EmailJS Public Key' }
   ];
 
   const updateTrack = (key: string, patch: Record<string, any>) => {
@@ -805,6 +812,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
               }`}
             >
               {isAr ? tab.labelAr : tab.labelEn}
+              {tab.id === 'messages' && unreadMsgs > 0 && (
+                <span className="ms-1.5 inline-flex min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold items-center justify-center animate-pulse">{unreadMsgs}</span>
+              )}
             </button>
           ))}
         </div>

@@ -3,7 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { EZAvatar } from '../../components/avatar/EZAvatar';
 import { AvatarRenderer } from '../../components/avatar/AvatarRenderer';
-import { squarePhoto } from '../../services/studentHubService';
+import { squarePhoto, adminUpdateMemberProfile } from '../../services/studentHubService';
 import {
   EZAvatarConfig,
   Gender,
@@ -25,14 +25,19 @@ import { ArrowLeft, Save, Dices, RotateCcw, User, Scissors, Shirt, Palette, Chec
 
 interface AvatarStudioPageProps {
   navigate: (route: string) => void;
+  // الإدارة فقط: تعديل أفاتار واسم طالبة أخرى
+  editUser?: any;
+  onClose?: () => void;
+  onSaved?: (updates: { fullName?: string; phone?: string; avatarConfig: any }) => void;
 }
 
 type Tab = 'look' | 'hair' | 'outfit' | 'colors';
 
 // غرفة الأفاتار: نسخة واحدة للذكور والإناث بملابس محتشمة وعصرية
-export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) => {
+export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate, editUser, onClose, onSaved }) => {
   const { language } = useLanguage();
-  const { user, saveAvatarConfig, updateProfile } = useAuth();
+  const { user: me, saveAvatarConfig, updateProfile } = useAuth();
+  const user: any = editUser || me;
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
 
@@ -67,12 +72,17 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
   const handleSave = async () => {
     setStatus('saving');
     try {
-      await saveAvatarConfig(a as any);
       const u: any = user || {};
       const updates: any = {};
       if (displayName.trim() && displayName.trim() !== u.fullName) updates.fullName = displayName.trim().slice(0, 100);
       if (phone.trim() !== String(u.phone || '')) updates.phone = phone.trim().slice(0, 30);
-      if (Object.keys(updates).length) await updateProfile({ ...updates, updatedAt: new Date().toISOString() });
+      if (editUser) {
+        await adminUpdateMemberProfile(editUser.id, { ...updates, avatarConfig: a });
+        onSaved?.({ ...updates, avatarConfig: a });
+      } else {
+        await saveAvatarConfig(a as any);
+        if (Object.keys(updates).length) await updateProfile({ ...updates, updatedAt: new Date().toISOString() });
+      }
       setStatus('saved');
     } catch (err) {
       console.error('Avatar save failed:', err);
@@ -141,7 +151,12 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
   return (
     <div className="min-h-screen bg-[#FAF8F5] py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <button onClick={() => navigate('student-dashboard')} className="text-xs font-bold text-gray-500 hover:text-[#0A192F] flex items-center gap-1.5">
+        {editUser && (
+          <div className="p-3 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold text-center">
+            {tr('Admin editing:', 'تعديل الإدارة لحساب:')} {editUser.fullName || editUser.email}
+          </div>
+        )}
+        <button onClick={() => (onClose ? onClose() : navigate('student-dashboard'))} className="text-xs font-bold text-gray-500 hover:text-[#0A192F] flex items-center gap-1.5">
           <ArrowLeft className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
           <span>{tr('Back to my dashboard', 'العودة إلى لوحتي')}</span>
         </button>

@@ -27,6 +27,7 @@ import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 import { VisitorDashboard } from '../../components/student/VisitorDashboard';
 import { useAcademySettings, formatMoney } from '../../hooks/useAcademySettings';
+import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 
 interface StudentDashboardProps {
   navigate: (route: string) => void;
@@ -36,6 +37,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
   const { currency: siteCurrency } = useAcademySettings();
   const { language } = useLanguage();
   const { user, firebaseUser, hasProfile, isLoading: isAuthLoading, logout } = useAuth();
+  const unreadMsgs = useUnreadMessages('student', firebaseUser?.uid);
   const isAr = language === 'ar';
 
   const [activeTab, setActiveTab] = useState<'overview' | 'group' | 'community' | 'stars' | 'curriculum' | 'library' | 'homework' | 'messages' | 'feedback' | 'subscription'>('overview');
@@ -366,6 +368,9 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
               }`}
             >
               {isAr ? tab.labelAr : tab.labelEn}
+              {tab.id === 'messages' && unreadMsgs > 0 && (
+                <span className="ms-1.5 inline-flex min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold items-center justify-center animate-pulse">{unreadMsgs}</span>
+              )}
             </button>
           ))}
         </div>
@@ -618,7 +623,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
 
         {/* TAB: MESSAGES */}
         {activeTab === 'messages' && (
-          <StudentMessages uid={firebaseUser.uid} name={student.fullName || ''} email={student.email || firebaseUser.email || ''} isAr={isAr} teacherId={student.teacherId} teacherName={student.assignedTeacherName || undefined} />
+          <StudentMessages uid={firebaseUser.uid} name={student.fullName || ''} email={student.email || firebaseUser.email || ''} isAr={isAr} teacherId={student.teacherId} teacherName={student.assignedTeacherName || undefined} teacherEmail={(student as any).assignedTeacherEmail || undefined} />
         )}
 
         {/* TAB: FEEDBACK */}

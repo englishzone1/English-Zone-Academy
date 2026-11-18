@@ -3,6 +3,7 @@ import { BookOpen, Headphones, PlayCircle, Link as LinkIcon, Newspaper, Send, St
 import { studentHubService, CourseMaterials, MaterialType, StudentMessage } from '../../services/studentHubService';
 import { RecordedAudio } from '../common/VoiceRecorder';
 import { ChatThread, Bubble } from '../common/ChatThread';
+import { notifyNewMessage, getAcademyNotifyEmail } from '../../services/emailNotify';
 import { sendChatMessage, markMessagesRead } from '../../services/studentHubService';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebase';
@@ -130,13 +131,14 @@ export const StudentLibrary: React.FC<{ isAr: boolean }> = ({ isAr }) => {
 
 /* ------------------------------ Messages with the academy ------------------------------ */
 
-export const StudentMessages: React.FC<{ uid: string; name: string; email: string; isAr: boolean; teacherId?: string; teacherName?: string }> = ({
+export const StudentMessages: React.FC<{ uid: string; name: string; email: string; isAr: boolean; teacherId?: string; teacherName?: string; teacherEmail?: string }> = ({
   uid,
   name,
   email,
   isAr,
   teacherId,
-  teacherName
+  teacherName,
+  teacherEmail
 }) => {
   const [items, setItems] = useState<StudentMessage[]>([]);
   const [loadError, setLoadError] = useState('');
@@ -162,6 +164,10 @@ export const StudentMessages: React.FC<{ uid: string; name: string; email: strin
 
   const send = async (text: string, audio: RecordedAudio | null) => {
     await sendChatMessage({ from: 'student', studentId: uid, teacherId, name, email, text, audio });
+    // تنبيه المعلمة والأكاديمية بالبريد
+    const preview = text.trim() || '🎙️ رسالة صوتية';
+    if (teacherId && teacherEmail) notifyNewMessage({ toEmail: teacherEmail, toName: teacherName, fromName: name, preview });
+    getAcademyNotifyEmail().then((to) => notifyNewMessage({ toEmail: to, toName: 'English Zone', fromName: name, preview }));
   };
 
   const report = async (b: Bubble) => {

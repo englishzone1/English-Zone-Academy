@@ -411,6 +411,8 @@ service cloud.firestore {
         (!('audioDataUrl' in request.resource.data) || (request.resource.data.audioDataUrl is string && request.resource.data.audioDataUrl.size() <= 750000)) &&
         (!('videoUrl' in request.resource.data) || (request.resource.data.videoUrl is string && request.resource.data.videoUrl.size() <= 500));
 
+      // الإدارة: تعديل اسم/أفاتار الكاتبة أو حذف صورة/صوت من المنشور
+      allow update: if isAdmin();
       // الإعجاب: يضيف أو يحذف المستخدم معرّفه فقط
       allow update: if (isTeacher() || isMember()) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
