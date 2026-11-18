@@ -99,7 +99,7 @@ service cloud.firestore {
           'currentStage', 'subscriptionStatus', 'learningFormat',
           'starOfTheWeekCount', 'starOfTheMonthCount', 'accountType'
         ]) &&
-        (!('accountType' in request.resource.data) || request.resource.data.accountType == 'visitor')
+        (!('accountType' in request.resource.data) || request.resource.data.accountType in ['visitor', 'registrant'])
       );
 
       // المعلم يغيّر نقاط طلابه فقط
@@ -137,8 +137,9 @@ service cloud.firestore {
         request.resource.data.keys().hasOnly([
           'id', 'fullName', 'age', 'country', 'whatsappNumber', 'email',
           'mainLevel', 'learningGoal', 'learningFormat', 'notes', 'status', 'submittedAt',
-          'type', 'selectedTrack', 'currentEnglishLevel', 'timestamp'
+          'type', 'selectedTrack', 'currentEnglishLevel', 'timestamp', 'studentId'
         ]) &&
+        (!('studentId' in request.resource.data) || (isSignedIn() && request.resource.data.studentId == request.auth.uid)) &&
         request.resource.data.fullName is string && request.resource.data.fullName.size() <= 100 &&
         request.resource.data.email is string && request.resource.data.email.size() <= 150 &&
         request.resource.data.whatsappNumber is string && request.resource.data.whatsappNumber.size() <= 40;

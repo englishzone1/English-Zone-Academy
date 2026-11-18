@@ -1,4 +1,5 @@
-import { 
+import {
+  deleteField,
   collection, 
   doc, 
   getDoc, 
@@ -177,7 +178,9 @@ export const studentDataService = {
         learningFormat: data.learningFormat,
         notes: data.notes ?? '',
         status: 'pending',
-        submittedAt: new Date().toISOString()
+        submittedAt: new Date().toISOString(),
+        // حساب الدخول الذي أنشأه المسجّل مع الطلب
+        ...((data as any).studentId ? { studentId: (data as any).studentId } : {})
       });
       return requestId;
     } catch (err) {
@@ -190,7 +193,30 @@ export const studentDataService = {
    * Admins only: find the student account (users) with the same email as the request,
    * and copy the request data into it. Returns the student's uid, or null if no account exists.
    */
+  // إضافة المسجّل كطالب نشط مباشرة: يُفعَّل اشتراكه ومستواه من بيانات طلبه
+  async activateRegistrantAsStudent(uid: string, reg: RegistrationRequest): Promise<void> {
+    const updates: Record<string, any> = {
+      subscriptionStatus: 'active',
+      accountType: deleteField(),
+      registrationRequestId: reg.id,
+      updatedAt: new Date().toISOString()
+    };
+    if (reg.mainLevel && reg.mainLevel !== ('needs_test' as any)) updates.mainLevel = reg.mainLevel;
+    if (reg.learningFormat) updates.learningFormat = reg.learningFormat;
+    await updateDoc(doc(db, 'users', uid), updates);
+  },
+
   async linkRegistrationToStudent(reg: RegistrationRequest): Promise<string | null> {
+    // الطلب الذي أُرسل مع إنشاء الحساب يحمل معرّف الحساب مباشرة
+    const sid = String((reg as any).studentId || '');
+    if (sid) {
+      try {
+        const snap = await getDoc(doc(db, 'users', sid));
+        if (snap.exists()) return sid;
+      } catch {
+        // نكمل بالبحث بالبريد
+      }
+    }
     const email = String(reg.email || '').trim();
     if (!email) return null;
     const candidates = Array.from(new Set([email, email.toLowerCase()]));

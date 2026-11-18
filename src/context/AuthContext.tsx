@@ -25,7 +25,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   adminLogin: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   registerStudentAccount: (email: string, password: string, fullName: string) => Promise<{ success: boolean; message?: string }>;
-  registerVisitor: (p: { email?: string; password?: string; name: string; phone?: string; google?: boolean }) => Promise<{ success: boolean; code?: string }>;
+  registerVisitor: (p: { email?: string; password?: string; name: string; phone?: string; google?: boolean; kind?: 'visitor' | 'registrant' }) => Promise<{ success: boolean; code?: string; uid?: string; email?: string }>;
   isVisitor: boolean;
   loginWithGoogle: () => Promise<{ success: boolean; code?: string }>;
   adminLoginWithGoogle: () => Promise<{ success: boolean; code?: string }>;
@@ -43,7 +43,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // بيانات «حساب زائر مجاني» تُحفظ مؤقتًا قبل الدخول، ثم تُستعمل عند إنشاء الملف
 const VISITOR_KEY = 'ez_visitor_signup';
-const readVisitorSignup = (): { name?: string; phone?: string } | null => {
+const readVisitorSignup = (): { name?: string; phone?: string; kind?: 'visitor' | 'registrant' } | null => {
   try {
     const raw = localStorage.getItem(VISITOR_KEY);
     if (!raw) return null;
@@ -143,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               id: fbUser.uid,
               email: fbUser.email,
               fullName: (vs?.name || '').trim().slice(0, 100) || fbUser.displayName || fbUser.email.split('@')[0],
-              ...(vs ? { accountType: 'visitor' as const } : {}),
+              ...(vs ? { accountType: (vs.kind === 'registrant' ? 'registrant' : 'visitor') as 'visitor' | 'registrant' } : {}),
               ...(vs?.phone ? { phone: String(vs.phone).trim().slice(0, 30) } : {}),
               role: 'student',
               points: 0,
@@ -430,10 +430,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * Register a new student account using Firebase Authentication
    */
   // حساب زائر مجاني: بالبريد وكلمة المرور أو بحساب Google
-  const registerVisitor = async (p: { email?: string; password?: string; name: string; phone?: string; google?: boolean }): Promise<{ success: boolean; code?: string }> => {
+  const registerVisitor = async (p: { email?: string; password?: string; name: string; phone?: string; google?: boolean; kind?: 'visitor' | 'registrant' }): Promise<{ success: boolean; code?: string; uid?: string; email?: string }> => {
     setAuthError(null);
     try {
-      localStorage.setItem(VISITOR_KEY, JSON.stringify({ name: p.name, phone: p.phone || '', at: Date.now() }));
+      localStorage.setItem(VISITOR_KEY, JSON.stringify({ name: p.name, phone: p.phone || '', kind: p.kind || 'visitor', at: Date.now() }));
     } catch {
       // ignore
     }
@@ -443,12 +443,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!fbUser) return { success: false, code: 'redirect' };
         setFirebaseUser(fbUser);
         await fetchProfile(fbUser);
-        return { success: true };
+        return { success: true, uid: fbUser.uid, email: fbUser.email || '' };
       }
       const cred = await createUserWithEmailAndPassword(auth, String(p.email || '').trim(), String(p.password || ''));
       setFirebaseUser(cred.user);
       await fetchProfile(cred.user);
-      return { success: true };
+      return { success: true, uid: cred.user.uid, email: cred.user.email || '' };
     } catch (err: any) {
       clearVisitorSignup();
       return { success: false, code: err?.code || 'unknown' };

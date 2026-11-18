@@ -28,7 +28,10 @@ interface RegistrationPageProps {
 export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, initialLevel }) => {
   const contacts = useAcademySettings();
   const { t, language } = useLanguage();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, firebaseUser, registerVisitor } = useAuth();
+  // كلمة مرور حساب الدخول: يُنشأ الحساب مع الطلب، فلا خطوة إضافية بعده
+  const [password, setPassword] = useState('');
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   const [formData, setFormData] = useState<RegistrationFormData>({
     fullName: '',
@@ -56,17 +59,52 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.whatsappNumber || !formData.email) return;
+    if (!formData.fullName || !formData.whatsappNumber || (!formData.email && !firebaseUser?.email)) return;
+    const ar = language === 'ar';
+    if (!firebaseUser && password.length < 6) {
+      setSubmitError(ar ? 'اختاري كلمة مرور لحسابك من 6 أحرف على الأقل.' : 'Choose a password of at least 6 characters.');
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitError('');
     try {
+      // حساب الدخول: الحالي إن كانت مسجّلة، وإلا ننشئه الآن بنفس البريد
+      let studentId = firebaseUser?.uid || '';
+      let email = firebaseUser?.email || formData.email.trim();
+      if (!studentId) {
+        const acc = await registerVisitor({
+          kind: 'registrant',
+          name: formData.fullName.trim(),
+          phone: formData.whatsappNumber.trim(),
+          email: formData.email.trim(),
+          password
+        });
+        if (!acc.success || !acc.uid) {
+          setSubmitError(
+            acc.code === 'auth/email-already-in-use'
+              ? ar
+                ? 'هذا البريد له حساب من قبل. سجّلي الدخول أولًا (من «تسجيل الدخول»)، ثم ارجعي لهذه الصفحة وأرسلي الطلب.'
+                : 'This email already has an account. Log in first, then come back and submit.'
+              : acc.code === 'auth/invalid-email'
+              ? ar ? 'البريد الإلكتروني غير صحيح.' : 'The email address is not valid.'
+              : acc.code === 'auth/weak-password'
+              ? ar ? 'كلمة المرور ضعيفة، 6 أحرف على الأقل.' : 'Password must be at least 6 characters.'
+              : ar ? 'تعذر إنشاء حسابك، حاولي مرة أخرى.' : 'Could not create your account, please try again.'
+          );
+          setIsSubmitting(false);
+          return;
+        }
+        studentId = acc.uid;
+        email = acc.email || email;
+      }
       const savedId = await studentDataService.submitRegistration({
+        studentId,
         fullName: formData.fullName.trim(),
         age: formData.age ? String(formData.age) : '',
         country: formData.country.trim(),
         whatsappNumber: formData.whatsappNumber.trim(),
-        email: formData.email.trim(),
+        email,
         mainLevel: formData.mainLevel,
         learningGoal: formData.learningGoal,
         learningFormat: formData.learningFormat,
@@ -319,13 +357,54 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                   <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 rtl:left-auto rtl:right-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
-                    required
-                    value={formData.email}
+                    required={!firebaseUser}
+                    readOnly={!!firebaseUser}
+                    value={firebaseUser?.email || formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder={t.register.emailPlaceholder}
-                    className="w-full pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#D4AF37]"
+                    className={`w-full pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#D4AF37] ${firebaseUser ? 'bg-gray-50 text-gray-500' : ''}`}
                   />
                 </div>
+                {firebaseUser ? (
+                  <p className="text-[11px] text-gray-500 mt-1.5">
+                    {language === 'ar' ? 'سيُربط طلبك بحسابك الحالي.' : 'Your application will be linked to your current account.'}
+                  </p>
+                ) : (
+                  <div className="mt-3 space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F]">
+                      {language === 'ar' ? 'كلمة مرور لحسابك *' : 'Password for your account *'}
+                    </label>
+                    <input
+                      type="password"
+                      dir="ltr"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={language === 'ar' ? '6 أحرف على الأقل' : 'At least 6 characters'}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#D4AF37]"
+                    />
+                    <p className="text-[11px] text-gray-500">
+                      {language === 'ar'
+                        ? 'يُنشأ حسابك في المنصة مع الطلب، وتدخلين به بهذا البريد وكلمة المرور.'
+                        : 'Your platform account is created with this application; log in with this email and password.'}
+                    </p>
+                    <button
+                      type="button"
+                      disabled={googleBusy}
+                      onClick={async () => {
+                        setGoogleBusy(true);
+                        setSubmitError('');
+                        const r = await registerVisitor({ kind: 'registrant', google: true, name: formData.fullName.trim(), phone: formData.whatsappNumber.trim() });
+                        setGoogleBusy(false);
+                        if (!r.success && r.code && r.code !== 'redirect' && r.code !== 'auth/popup-closed-by-user') {
+                          setSubmitError(language === 'ar' ? 'تعذر الدخول بحساب Google، حاولي مرة أخرى.' : 'Google sign-in failed, please try again.');
+                        }
+                      }}
+                      className="w-full py-2.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-[#0A192F] disabled:opacity-50"
+                    >
+                      {language === 'ar' ? 'أو استعملي حساب Google بدل كلمة المرور' : 'Or use your Google account instead'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* CRITICAL ENROLLMENT RULE: Main CEFR Level A1–C2 ONLY (Sections 8 & 17) */}

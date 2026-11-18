@@ -24,7 +24,8 @@ export interface UserProfile {
   subscriptionStatus?: 'active' | 'pending' | 'due' | 'expired';
   monthlyTuitionUSD?: number;
   // حساب زائر مجاني (ليس طالبًا مشتركًا بعد)
-  accountType?: 'visitor';
+  // visitor: حساب مجاني للمواد | registrant: سجّل على الكورس وينتظر إضافته كطالب
+  accountType?: 'visitor' | 'registrant';
   avatarConfig?: AvatarConfiguration;
   createdAt: string;
 }

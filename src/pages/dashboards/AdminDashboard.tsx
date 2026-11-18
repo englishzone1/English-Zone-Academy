@@ -178,6 +178,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
           try {
             const uid = await studentDataService.linkRegistrationToStudent(r);
             if (uid) {
+              await studentDataService.activateRegistrantAsStudent(uid, r);
               await studentDataService.updateRegistrationStatus(r.id, 'approved', (r as any).reviewedBy || 'admin', uid, false);
               linked++;
               setRegistrations((prev) => prev.map((x) => (x.id === r.id ? ({ ...x, awaitingAccount: false, linkedUserId: uid } as any) : x)));
@@ -189,8 +190,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         if (linked) {
           notify(
             isAr
-              ? `تم ربط ${linked} طلب مقبول بحسابات الطلاب. افتحي تبويب الطلاب وفعّلي الاشتراك.`
-              : `${linked} approved request(s) linked to student accounts. Open Students and activate the subscription.`,
+              ? `أُضيف ${linked} من المسجّلين كطلاب نشطين بعد إنشاء حساباتهم. اختاري مجموعاتهم من تبويب الطلاب.`
+              : `${linked} registrant(s) became active students after creating their accounts. Choose their groups in Students.`,
             9000
           );
         }
@@ -245,7 +246,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
   // الزائر صاحب الحساب المجاني لا يُعدّ طالبًا حتى يُفعَّل اشتراكه
   const isFreeVisitor = (u: any) => u.accountType === 'visitor' && String(u.subscriptionStatus || '') !== 'active';
-  const students = usersList.filter((u) => u.role === 'student' && !isFreeVisitor(u));
+  // من سجّل على الكورس ولم تُضِفه الإدارة كطالب بعد يبقى في «المسجّلون على الكورس»
+  const isRegistrant = (u: any) => u.accountType === 'registrant' && String(u.subscriptionStatus || '') !== 'active';
+  const students = usersList.filter((u) => u.role === 'student' && !isFreeVisitor(u) && !isRegistrant(u));
   const visitorsCount = usersList.filter(isFreeVisitor).length;
   const teachers = usersList.filter((u) => u.role === 'teacher');
   const pendingRegistrations = registrations.filter((r) => r.status === 'pending');
@@ -253,7 +256,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const formatLabel = (f?: string) =>
     f === 'individual' ? tr('Individual', 'فردي') : f === 'group' ? tr('Group', 'جماعي') : f === 'both' ? tr('Group & 1-on-1', 'جماعي وفردي') : f || '';
   const statusLabel = (s: string) =>
-    s === 'approved' ? tr('Approved', 'مقبول') : s === 'rejected' ? tr('Rejected', 'مرفوض') : tr('Pending', 'قيد المراجعة');
+    s === 'approved' ? tr('Student', 'أُضيفت كطالبة') : s === 'rejected' ? tr('Rejected', 'مرفوض') : tr('Registered', 'مسجّلة على الكورس');
   const categoryLabel = (c: string) =>
     c === 'magazine'
       ? tr('Monthly Magazine', 'المجلة الشهرية')
@@ -546,20 +549,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         setRegistrations((prev) => prev.map((r) => (r.id === regId ? ({ ...r, status: 'approved' as const, awaitingAccount: true } as any) : r)));
         notify(
           tr(
-            `Approved. ${reg.email} has no login account yet: ask the student to create one with this email (or Google). It will link automatically when you open the dashboard.`,
-            `تم القبول. البريد ${reg.email} ليس له حساب دخول بعد: اطلبي من الطالبة إنشاء حساب بنفس البريد (أو بحساب Google). سيُربط تلقائيًا عند فتحك لوحة الإدارة.`
+            `Accepted. ${reg.email} has no login account yet: ask her to create one with this email (or Google). She becomes an active student automatically when you next open the dashboard.`,
+            `تم القبول. البريد ${reg.email} ليس له حساب دخول بعد: اطلبي منها إنشاء حساب بنفس البريد (أو بحساب Google)، وتصبح طالبة نشطة تلقائيًا عند فتحك لوحة الإدارة بعدها.`
           ),
           12000
         );
         return;
       }
 
+      await studentDataService.activateRegistrantAsStudent(uid, reg);
       await studentDataService.updateRegistrationStatus(regId, 'approved', adminName, uid);
       setRegistrations((prev) => prev.map((r) => (r.id === regId ? { ...r, status: 'approved' as const } : r)));
+      setUsersList((prev) => prev.map((u) => (u.id === uid ? ({ ...u, subscriptionStatus: 'active', accountType: undefined } as any) : u)));
       notify(
         tr(
-          'Request approved and linked to the student account. Now open the Students tab, set the course, and change the subscription to Active.',
-          'تم قبول الطلب وربطه بحساب الطالب. افتح الآن تبويب الطلاب، وحدد الدورة، وغيّر حالة الاشتراك إلى نشط.'
+          `${reg.fullName} is now an active student. In the Students tab, choose her group and course.`,
+          `أصبحت ${reg.fullName} طالبة نشطة. من تبويب الطلاب اختاري مجموعتها ودورتها.`
         ),
         9000
       );
@@ -585,7 +590,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
   const tabs: { id: TabId; labelEn: string; labelAr: string }[] = [
     { id: 'overview', labelEn: 'Overview & Metrics', labelAr: 'الإحصائيات العامة' },
-    { id: 'registrations', labelEn: `Registrations (${pendingRegistrations.length} Pending)`, labelAr: `طلبات التسجيل (${pendingRegistrations.length})` },
+    { id: 'registrations', labelEn: `Course registrants (${pendingRegistrations.length})`, labelAr: `المسجّلون على الكورس (${pendingRegistrations.length})` },
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
     { id: 'visitors', labelEn: `Free accounts (${visitorsCount})`, labelAr: `الزوار المسجّلون (${visitorsCount})` },
     { id: 'homework', labelEn: 'Homework & tests', labelAr: 'الواجبات والاختبارات' },
@@ -763,7 +768,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                       </div>
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleApprove(reg.id)} className="px-4 py-2 rounded-lg bg-[#0A192F] text-[#F3E5AB] font-bold">
-                          {tr('Approve', 'قبول')}
+                          {tr('Add as student', 'إضافة كطالبة')}
                         </button>
                         <button onClick={() => handleReject(reg.id)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:text-red-600">
                           {tr('Reject', 'رفض')}
@@ -783,7 +788,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
-                  {tr('Admissions Requests', 'طلبات القبول والتسجيل')}
+                  {tr('Course registrants', 'المسجّلون على الكورس')}
                 </h2>
                 <p className="text-xs text-gray-500">
                   {tr('Review applications and update their status.', 'راجع الطلبات وحدّث حالتها.')}
@@ -863,7 +868,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                           {reg.status === 'pending' ? (
                             <div className="inline-flex items-center gap-2">
                               <button onClick={() => handleApprove(reg.id)} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D]">
-                                {tr('Approve', 'قبول')}
+                                {tr('Add as student', 'إضافة كطالبة')}
                               </button>
                               <button onClick={() => handleReject(reg.id)} className="px-2.5 py-1.5 rounded-lg text-xs border border-gray-300 text-gray-600 hover:text-red-600">
                                 {tr('Reject', 'رفض')}
