@@ -12,6 +12,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { groupService, StudyGroup, RatingCriterion, PASS_MARK } from '../../services/groupService';
 import { AdminStudentRecords } from './AdminStudentRecords';
+import { studentDataService } from '../../services/studentDataService';
 import { AvatarRenderer } from '../avatar/AvatarRenderer';
 
 interface AdminStudentsManagerProps {
@@ -657,6 +658,25 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
             </button>
 
               </>
+            )}
+
+            {!teacherMode && (
+              <button
+                onClick={async () => {
+                  if (!window.confirm(isAr ? `حذف ${selected.fullName || ''} نهائيًا من المنصة؟ تُحذف بياناتها وعضويتها في المجموعة.` : `Delete ${selected.fullName || ''} permanently?`)) return;
+                  try {
+                    await studentDataService.deleteMemberAccount(selected.id, selected.email);
+                    onNotice(isAr ? 'تم حذف الطالبة.' : 'Student deleted.');
+                    setSelectedId(null);
+                    await load(false);
+                  } catch (err: any) {
+                    onNotice((isAr ? 'تعذّر الحذف: ' : 'Delete failed: ') + errText(err));
+                  }
+                }}
+                className="w-full py-2 rounded-xl border border-red-200 text-xs font-bold text-red-600 hover:bg-red-50"
+              >
+                {isAr ? 'حذف هذه الطالبة من المنصة' : 'Delete this student'}
+              </button>
             )}
 
             {!teacherMode && (selected as any).role !== 'teacher' && (

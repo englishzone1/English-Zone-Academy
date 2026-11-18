@@ -254,6 +254,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const enrolledIds = registrations.filter((r: any) => r.studentId && r.status !== 'rejected').map((r: any) => r.studentId);
   const visitorsCount = usersList.filter((u) => isPotential(u)).length;
 
+  // حذف مسجّلة أو طالبة من المنصة
+  const deleteMember = async (uid: string) => {
+    const u: any = usersList.find((x) => x.id === uid);
+    try {
+      await studentDataService.deleteMemberAccount(uid, u?.email);
+      setUsersList((prev) => prev.filter((x) => x.id !== uid));
+      setRegistrations((prev) => prev.filter((r: any) => r.studentId !== uid));
+      notify(tr(`${u?.fullName || 'Account'} was deleted.`, `تم حذف ${u?.fullName || 'الحساب'}.`), 5000);
+    } catch (err: any) {
+      notify(`${tr('Delete failed:', 'تعذّر الحذف:')} ${err?.code || ''}`, 6000, true);
+    }
+  };
+
   // تفعيل مسجّلة كطالبة مشتركة مباشرة من «المسجّلون المحتملون»
   const activateMember = async (uid: string) => {
     try {
@@ -1066,6 +1079,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             isAr={isAr}
             enrolledIds={registrations.filter((r: any) => r.studentId && r.status === 'pending').map((r: any) => r.studentId)}
             onActivate={activateMember}
+            onDelete={deleteMember}
           />
         )}
 

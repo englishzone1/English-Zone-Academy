@@ -98,6 +98,8 @@ service cloud.firestore {
         request.resource.data.points == 0 &&
         request.resource.data.subscriptionStatus == 'pending' &&
         request.resource.data.email.lower() == request.auth.token.email.lower() &&
+        // الحساب الذي حذفته الإدارة لا يعود بإنشاء ملف جديد
+        !exists(/databases/$(database)/documents/blocked_users/$(userId)) &&
         request.resource.data.keys().hasOnly([
           'id', 'email', 'fullName', 'role', 'phone', 'country', 'age',
           'avatarUrl', 'avatarConfig', 'createdAt', 'points', 'mainLevel',
@@ -269,6 +271,12 @@ service cloud.firestore {
     }
 
     // --- Group leaderboard: الاسم والنقاط فقط لكل طالب، يراها زملاء المجموعة ---
+    // حسابات حذفتها الإدارة (لا يمكن حذف حساب الدخول نفسه بالخطة المجانية)
+    match /blocked_users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list, write: if isAdmin();
+    }
+
     match /group_members/{memberId} {
       allow get, list: if isSignedIn() && (
         memberId == request.auth.uid ||

@@ -3,7 +3,8 @@ import {
   collection, 
   doc, 
   getDoc, 
-  getDocs, 
+  getDocs,
+  deleteDoc, 
   setDoc, 
   updateDoc, 
   query, 
@@ -193,6 +194,23 @@ export const studentDataService = {
    * Admins only: find the student account (users) with the same email as the request,
    * and copy the request data into it. Returns the student's uid, or null if no account exists.
    */
+  // حذف حساب طالبة أو مسجّلة من المنصة (للإدارة): ملفها وعضويتها وطلباتها، ومنعها من إعادة إنشاء الملف
+  async deleteMemberAccount(uid: string, email?: string): Promise<void> {
+    await setDoc(doc(db, 'blocked_users', uid), { id: uid, email: String(email || ''), blockedAt: new Date().toISOString() });
+    try {
+      await deleteDoc(doc(db, 'group_members', uid));
+    } catch {
+      // لا عضوية
+    }
+    try {
+      const regs = await getDocs(query(collection(db, 'registration_requests'), where('studentId', '==', uid)));
+      for (const d of regs.docs) await deleteDoc(d.ref);
+    } catch {
+      // لا طلبات
+    }
+    await deleteDoc(doc(db, 'users', uid));
+  },
+
   // إضافة المسجّل كطالب نشط مباشرة: يُفعَّل اشتراكه ومستواه من بيانات طلبه
   async activateRegistrantAsStudent(uid: string, reg: RegistrationRequest): Promise<void> {
     const updates: Record<string, any> = {

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Download, MessageCircle, Mail, Search, CheckCircle2 } from 'lucide-react';
+import { Download, MessageCircle, Mail, Search, CheckCircle2, Trash2 } from 'lucide-react';
 
 interface Props {
   users: any[];
@@ -7,10 +7,11 @@ interface Props {
   // من أرسلت طلب الاشتراك في الكورس تنتقل إلى «المسجّلون على الكورس»
   enrolledIds?: string[];
   onActivate?: (uid: string) => Promise<void>;
+  onDelete?: (uid: string) => Promise<void>;
 }
 
 // الزوار الذين أنشؤوا حسابًا مجانيًا (ليسوا مشتركين بعد): للتواصل معهم بالعروض
-export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [], onActivate }) => {
+export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [], onActivate, onDelete }) => {
   const [busy, setBusy] = useState('');
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [q, setQ] = useState('');
@@ -115,6 +116,22 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [], 
                   <Mail className="w-3.5 h-3.5" />
                   {tr('Email', 'بريد')}
                 </a>
+                {onDelete && (
+                  <button
+                    disabled={busy === u.id}
+                    title={tr('Delete', 'حذف')}
+                    onClick={async () => {
+                      if (!window.confirm(tr(`Delete ${u.fullName} permanently?`, `حذف ${u.fullName} نهائيًا من المنصة؟`))) return;
+                      setBusy(u.id);
+                      await onDelete(u.id);
+                      setBusy('');
+                    }}
+                    className="px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 font-bold flex items-center gap-1 disabled:opacity-50"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    {tr('Delete', 'حذف')}
+                  </button>
+                )}
               </div>
             </div>
           ))}
