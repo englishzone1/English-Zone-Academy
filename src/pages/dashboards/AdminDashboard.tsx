@@ -535,14 +535,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     const digits = (v: any) => String(v || '').replace(/\D/g, '').slice(-8);
     const words = String(reg.fullName || '').toLowerCase().split(/\s+/).filter((w: string) => w.length >= 3);
     const regPhone = digits(reg.whatsappNumber);
-    return usersList
-      .filter((u: any) => u.role === 'student' && String(u.subscriptionStatus || '') !== 'active')
-      .filter((u: any) => {
-        const name = String(u.fullName || '').toLowerCase();
-        const mail = String(u.email || '').toLowerCase();
-        return (regPhone && digits(u.phone) === regPhone) || words.some((w: string) => name.includes(w) || mail.includes(w));
-      })
-      .slice(0, 5);
+    const open = usersList.filter((u: any) => (u.role === 'student' || !u.role) && String(u.subscriptionStatus || '') !== 'active');
+    const similar = open.filter((u: any) => {
+      const name = String(u.fullName || '').toLowerCase();
+      const mail = String(u.email || '').toLowerCase();
+      return (regPhone && digits(u.phone) === regPhone) || words.some((w: string) => name.includes(w) || mail.includes(w));
+    });
+    if (similar.length) return similar.slice(0, 5);
+    // لا تشابه (مثلًا اسمها بالعربي في حساب Google): أحدث الحسابات غير المفعّلة لتختار منها الإدارة
+    return [...open].sort((a: any, b: any) => String(b.createdAt || '').localeCompare(String(a.createdAt || ''))).slice(0, 8);
   };
 
   const linkToAccount = async (regId: string, uid: string) => {
@@ -579,7 +580,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         setLinkCandidates((c) => ({ ...c, [regId]: cands }));
         if (cands.length) {
           notify(
-            tr('No account with that email, but similar accounts were found under her request: pick the right one.', 'لا يوجد حساب بهذا البريد، لكن ظهرت تحت طلبها حسابات قريبة بالاسم أو الرقم: اختاري حسابها الصحيح.'),
+            tr('No account with that email. The latest unactivated accounts are listed under her request: pick hers.', 'لا يوجد حساب بهذا البريد. ظهرت تحت طلبها أحدث الحسابات غير المفعّلة: اختاري حسابها إن وجدتِه.'),
             10000
           );
           return;
