@@ -342,7 +342,8 @@ service cloud.firestore {
     match /community_posts/{postId} {
       allow get, list: if isTeacher() || isMember();
 
-      allow create: if (isTeacher() || isMember()) &&
+      // النشر والتعليق للطالبات المشتركات والمعلمين، والمشاهدة والإعجاب لكل مسجّلة
+      allow create: if (isTeacher() || isActiveStudent()) &&
         isValidId(postId) &&
         request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'authorAvatar', 'text', 'imageDataUrl', 'audioDataUrl', 'videoUrl', 'likes', 'createdAt']) &&
         request.resource.data.authorId == request.auth.uid &&
@@ -363,7 +364,7 @@ service cloud.firestore {
 
       match /comments/{commentId} {
         allow get, list: if isTeacher() || isMember();
-        allow create: if (isTeacher() || isMember()) &&
+        allow create: if (isTeacher() || isActiveStudent()) &&
           isValidId(commentId) &&
           request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'authorAvatar', 'text', 'createdAt']) &&
           request.resource.data.authorId == request.auth.uid &&

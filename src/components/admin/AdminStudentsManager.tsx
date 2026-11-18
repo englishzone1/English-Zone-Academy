@@ -139,7 +139,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         const snap = await getDocs(collection(db, 'users'));
         snap.forEach((d) => {
           const data = d.data() as any;
-          if (data.role === 'student' && !(data.accountType === 'visitor' && String(data.subscriptionStatus || '') !== 'active')) rows.push({ ...data, id: d.id });
+          if (data.role === 'student' && !['', 'pending'].includes(String(data.subscriptionStatus || '').toLowerCase())) rows.push({ ...data, id: d.id });
         });
       }
       rows.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));

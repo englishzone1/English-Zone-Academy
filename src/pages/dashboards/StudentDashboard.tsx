@@ -121,7 +121,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
   }
 
   // حساب زائر مجاني: صفحة الكتب المجانية ودعوة للاشتراك
-  if (!isActive && hasProfile && (user as any)?.accountType === 'visitor') {
+  if (!isActive && hasProfile && ['', 'pending'].includes(String((user as any)?.subscriptionStatus || '').toLowerCase())) {
     return (
       <VisitorDashboard
         isAr={isAr}

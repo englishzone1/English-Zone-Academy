@@ -1,22 +1,24 @@
 import React, { useMemo, useState } from 'react';
-import { Download, MessageCircle, Mail, Search } from 'lucide-react';
+import { Download, MessageCircle, Mail, Search, CheckCircle2 } from 'lucide-react';
 
 interface Props {
   users: any[];
   isAr: boolean;
   // من أرسلت طلب الاشتراك في الكورس تنتقل إلى «المسجّلون على الكورس»
   enrolledIds?: string[];
+  onActivate?: (uid: string) => Promise<void>;
 }
 
 // الزوار الذين أنشؤوا حسابًا مجانيًا (ليسوا مشتركين بعد): للتواصل معهم بالعروض
-export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [] }) => {
+export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [], onActivate }) => {
+  const [busy, setBusy] = useState('');
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [q, setQ] = useState('');
 
   const visitors = useMemo(
     () =>
       users
-        .filter((u) => u.accountType === 'visitor' && String(u.subscriptionStatus || '') !== 'active' && !enrolledIds.includes(u.id))
+
         .filter((u) => !q.trim() || `${u.fullName} ${u.email} ${u.phone || ''}`.toLowerCase().includes(q.trim().toLowerCase()))
         .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || ''))),
     [users, q]
@@ -49,8 +51,8 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [] }
           <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{tr('Potential registrants', 'المسجّلون المحتملون')}</h2>
           <p className="text-xs text-gray-500">
             {tr(
-              'Everyone who signed up for free. When one taps "Subscribe to the course", she moves to Course registrants.',
-              'كل من سجّلت مجانًا في الموقع. حين تضغط إحداهن «للاشتراك في الكورس» تنتقل إلى «المسجّلون على الكورس».'
+              'Everyone who signed up and is not an enrolled student yet. After you talk with her, press Activate to make her a student.',
+              'كل من سجّلت في الموقع ولم تصبح طالبة مشتركة بعد. بعد أن تتحدثي معها اضغطي «تفعيل» لتصبح طالبة في الكورس.'
             )}
           </p>
         </div>
@@ -75,6 +77,9 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [] }
             <div key={u.id} className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-100 flex flex-wrap items-center justify-between gap-2 text-xs">
               <div>
                 <span className="font-bold text-[#0A192F]">{u.fullName}</span>
+                {enrolledIds.includes(u.id) && (
+                  <span className="ms-1.5 px-1.5 py-0.5 rounded bg-[#F3E5AB] text-[#0A192F] text-[10px] font-bold">{tr('Asked to subscribe', 'طلبت الاشتراك')}</span>
+                )}
                 <span className="text-gray-400">
                   {u.country ? ` • ${u.country}` : ''}
                   {u.age ? ` • ${tr('age', 'العمر')} ${u.age}` : ''} • {u.createdAt ? new Date(u.createdAt).toLocaleDateString(isAr ? 'ar' : 'en') : ''}
@@ -85,6 +90,21 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [] }
                 </div>
               </div>
               <div className="flex gap-1.5">
+                {onActivate && (
+                  <button
+                    disabled={busy === u.id}
+                    onClick={async () => {
+                      if (!window.confirm(tr(`Activate ${u.fullName} as an enrolled student?`, `تفعيل ${u.fullName} كطالبة مشتركة في الكورس؟`))) return;
+                      setBusy(u.id);
+                      await onActivate(u.id);
+                      setBusy('');
+                    }}
+                    className="px-2.5 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] font-bold flex items-center gap-1 disabled:opacity-50"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    {tr('Activate', 'تفعيل')}
+                  </button>
+                )}
                 {waLink(u.phone) && (
                   <a href={waLink(u.phone)} target="_blank" rel="noopener noreferrer" className="px-2.5 py-1.5 rounded-lg bg-[#25D366] text-white font-bold flex items-center gap-1">
                     <MessageCircle className="w-3.5 h-3.5" />

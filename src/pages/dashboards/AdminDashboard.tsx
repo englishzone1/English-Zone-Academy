@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, deleteField } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -245,12 +245,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
 
   // الزائر صاحب الحساب المجاني لا يُعدّ طالبًا حتى يُفعَّل اشتراكه
-  const isFreeVisitor = (u: any) => u.accountType === 'visitor' && String(u.subscriptionStatus || '') !== 'active';
+  // كل حساب لم يُفعَّل بعد (مسجّلة مجانًا) = «المسجّلون المحتملون»؛ الطلاب = من فُعّلت أو أُوقفت
+  const isPotential = (u: any) => (u.role === 'student' || !u.role) && ['', 'pending'].includes(String(u.subscriptionStatus || '').toLowerCase());
+  const isFreeVisitor = (u: any) => isPotential(u);
   // من سجّل على الكورس ولم تُضِفه الإدارة كطالب بعد يبقى في «المسجّلون على الكورس»
   const isRegistrant = (u: any) => u.accountType === 'registrant' && String(u.subscriptionStatus || '') !== 'active';
   const students = usersList.filter((u) => u.role === 'student' && !isFreeVisitor(u) && !isRegistrant(u));
   const enrolledIds = registrations.filter((r: any) => r.studentId && r.status !== 'rejected').map((r: any) => r.studentId);
-  const visitorsCount = usersList.filter((u) => isFreeVisitor(u) && !enrolledIds.includes(u.id)).length;
+  const visitorsCount = usersList.filter((u) => isPotential(u)).length;
+
+  // تفعيل مسجّلة كطالبة مشتركة مباشرة من «المسجّلون المحتملون»
+  const activateMember = async (uid: string) => {
+    try {
+      await updateDoc(doc(db, 'users', uid), { subscriptionStatus: 'active', accountType: deleteField(), updatedAt: new Date().toISOString() });
+      setUsersList((prev) => prev.map((u) => (u.id === uid ? ({ ...u, subscriptionStatus: 'active', accountType: undefined } as any) : u)));
+      const reg = registrations.find((r: any) => r.studentId === uid && r.status === 'pending');
+      if (reg) {
+        await studentDataService.updateRegistrationStatus(reg.id, 'approved', adminName, uid);
+        setRegistrations((prev) => prev.map((r) => (r.id === reg.id ? { ...r, status: 'approved' as const } : r)));
+      }
+      const u: any = usersList.find((x) => x.id === uid);
+      notify(tr(`${u?.fullName || 'She'} is now an active student. Choose her group in Students.`, `أصبحت ${u?.fullName || 'المسجّلة'} طالبة مشتركة. اختاري مجموعتها من تبويب الطلاب.`), 8000);
+    } catch (err: any) {
+      notify(`${tr('Activation failed:', 'تعذّر التفعيل:')} ${err?.code || ''}`, 6000, true);
+    }
+  };
   const teachers = usersList.filter((u) => u.role === 'teacher');
   const pendingRegistrations = registrations.filter((r) => r.status === 'pending');
 
@@ -1042,7 +1061,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* FREE ACCOUNTS */}
         {activeTab === 'visitors' && (
-          <AdminVisitors users={usersList} isAr={isAr} enrolledIds={registrations.filter((r: any) => r.studentId && r.status !== 'rejected').map((r: any) => r.studentId)} />
+          <AdminVisitors
+            users={usersList.filter(isPotential)}
+            isAr={isAr}
+            enrolledIds={registrations.filter((r: any) => r.studentId && r.status === 'pending').map((r: any) => r.studentId)}
+            onActivate={activateMember}
+          />
         )}
 
         {/* AUTO ASSISTANT */}

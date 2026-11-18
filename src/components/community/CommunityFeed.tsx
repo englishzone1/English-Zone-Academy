@@ -18,6 +18,8 @@ interface Props {
   role: 'student' | 'admin' | 'teacher';
   isAr: boolean;
   avatar?: any;
+  // للمسجّلين غير المشتركين: مشاهدة وإعجاب فقط، بلا نشر ولا تعليق
+  readOnly?: boolean;
 }
 
 const MAX_RECORD_SECONDS = 60;
@@ -34,7 +36,7 @@ const driveEmbed = (url: string): string | null => {
 };
 
 // مجتمع English Zone: منشورات الطلاب والإدارة، الإعجابات والتعليقات
-export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }) => {
+export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar, readOnly = false }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const isAdmin = role === 'admin';
 
@@ -260,8 +262,13 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }
 
   return (
     <div className="space-y-6">
+      {readOnly && (
+        <div className="p-3 rounded-2xl bg-[#F3E5AB]/40 border border-[#D4AF37]/40 text-xs text-[#0A192F] font-bold">
+          {tr('You can read and like posts. Posting and commenting are for enrolled students.', 'تستطيعين قراءة المنشورات والإعجاب بها. النشر والتعليق للطالبات المشتركات في الكورس.')}
+        </div>
+      )}
       {/* Composer */}
-      <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
+      <div className={`bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3 ${readOnly ? 'hidden' : ''}`}>
         <textarea
           rows={3}
           value={text}
@@ -409,7 +416,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar }
                       <p className="text-gray-700 whitespace-pre-line">{c.text}</p>
                     </div>
                   ))}
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 ${readOnly ? 'hidden' : ''}`}>
                     <input
                       type="text"
                       value={commentText}

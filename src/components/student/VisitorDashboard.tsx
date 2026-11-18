@@ -92,7 +92,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           </span>
         </button>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {placementTestUrl ? (
             <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37]">
               <Target className="w-6 h-6 text-[#D4AF37]" />
@@ -102,6 +102,10 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           <button onClick={() => setTab('community')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
             <Users className="w-6 h-6 text-[#D4AF37]" />
             {tr('English Zone community', 'مجتمع English Zone')}
+          </button>
+          <button onClick={() => navigate('blog')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
+            <BookOpen className="w-6 h-6 text-[#D4AF37]" />
+            {tr('Academy blog', 'مدونة الأكاديمية')}
           </button>
           <button onClick={() => navigate('offers')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
             <BadgePercent className="w-6 h-6 text-[#D4AF37]" />
@@ -149,7 +153,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           ))}
         </div>
 
-        {tab === 'community' && <CommunityFeed uid={uid} name={name} role="student" isAr={isAr} />}
+        {tab === 'community' && <CommunityFeed uid={uid} name={name} role="student" isAr={isAr} readOnly />}
 
         <div className={`bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4 ${tab === 'library' ? '' : 'hidden'}`}>
           {loading ? (
