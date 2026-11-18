@@ -314,8 +314,23 @@ service cloud.firestore {
 
     // --- Contact messages: زائر من صفحة التواصل، أو طالب من لوحته (ويرى رسائله وردود الإدارة) ---
     match /contact_messages/{messageId} {
+      // المعلمة أو الأكاديمية ترسل رسالة في محادثة طالبة
+      allow create: if isValidId(messageId) && isSignedIn() &&
+        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt', 'studentId', 'teacherId', 'audioParts', 'audioSeconds', 'from']) &&
+        request.resource.data.studentId is string && request.resource.data.studentId.size() > 0 &&
+        request.resource.data.status == 'new' &&
+        request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 3000 &&
+        (!('audioParts' in request.resource.data) || (request.resource.data.audioParts is int && request.resource.data.audioParts >= 1 && request.resource.data.audioParts <= 6)) &&
+        (
+          (request.resource.data.get('from', '') == 'academy' && isAdmin()) ||
+          (request.resource.data.get('from', '') == 'teacher' && isTeacherDoc() &&
+            request.resource.data.get('teacherId', '') == request.auth.uid &&
+            get(/databases/$(database)/documents/users/$(request.resource.data.studentId)).data.get('teacherId', '') == request.auth.uid)
+        );
+      // الزائرة من صفحة التواصل، أو الطالبة في محادثتها
       allow create: if isValidId(messageId) &&
-        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt', 'studentId', 'teacherId', 'audioParts', 'audioSeconds']) &&
+        request.resource.data.get('from', 'student') == 'student' &&
+        request.resource.data.keys().hasOnly(['id', 'name', 'email', 'subject', 'message', 'status', 'submittedAt', 'studentId', 'teacherId', 'audioParts', 'audioSeconds', 'from']) &&
         (!('audioParts' in request.resource.data) || (request.resource.data.audioParts is int && request.resource.data.audioParts >= 1 && request.resource.data.audioParts <= 6 && 'studentId' in request.resource.data)) &&
         (!('teacherId' in request.resource.data) || (isSignedIn() && request.resource.data.teacherId == myProfile().get('teacherId', ''))) &&
         request.resource.data.status == 'new' &&
@@ -338,6 +353,12 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reported', 'reportReason', 'reportedBy', 'reportedAt']) &&
         request.resource.data.reported == true && request.resource.data.reportedBy == 'student' &&
         request.resource.data.reportReason is string && request.resource.data.reportReason.size() <= 500
+      ) || (
+        // الطالبة تعلّم رسائل المعلمة/الأكاديمية مقروءة
+        isSignedIn() && resource.data.get('studentId', '') == request.auth.uid &&
+        resource.data.get('from', 'student') != 'student' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) &&
+        request.resource.data.status == 'read'
       );
       allow delete: if isAdmin();
     }
@@ -349,11 +370,12 @@ service cloud.firestore {
         request.resource.data.data is string && request.resource.data.data.size() <= 950000 &&
         request.resource.data.mime is string && request.resource.data.mime.matches('^audio/[a-z0-9.+-]+$') &&
         request.resource.data.parts is int && request.resource.data.parts >= 1 && request.resource.data.parts <= 6 &&
+        request.resource.data.kind in ['msg', 'reply'] &&
         (
           (request.resource.data.kind == 'msg' && request.resource.data.studentId == request.auth.uid &&
             (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', ''))) ||
-          (request.resource.data.kind == 'reply' &&
-            (isAdmin() || (isTeacherDoc() && request.resource.data.get('teacherId', '') == request.auth.uid)))
+          isAdmin() ||
+          (isTeacherDoc() && request.resource.data.get('teacherId', '') == request.auth.uid)
         );
       allow get: if isAdmin() ||
         (isSignedIn() && resource.data.studentId == request.auth.uid) ||

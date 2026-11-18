@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Headphones, PlayCircle, Link as LinkIcon, Newspaper, Send, Star, MessageSquare, Flag } from 'lucide-react';
+import { BookOpen, Headphones, PlayCircle, Link as LinkIcon, Newspaper, Send, Star, MessageSquare } from 'lucide-react';
 import { studentHubService, CourseMaterials, MaterialType, StudentMessage } from '../../services/studentHubService';
-import { VoiceRecorder, MessageAudioPlayer, RecordedAudio } from '../common/VoiceRecorder';
+import { RecordedAudio } from '../common/VoiceRecorder';
+import { ChatThread, Bubble } from '../common/ChatThread';
+import { sendChatMessage, markMessagesRead } from '../../services/studentHubService';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 
 const card = 'bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-5';
 const inputCls = 'w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#D4AF37]';
@@ -126,117 +130,58 @@ export const StudentLibrary: React.FC<{ isAr: boolean }> = ({ isAr }) => {
 
 /* ------------------------------ Messages with the academy ------------------------------ */
 
-export const StudentMessages: React.FC<{ uid: string; name: string; email: string; isAr: boolean; teacherId?: string }> = ({ uid, name, email, isAr, teacherId }) => {
+export const StudentMessages: React.FC<{ uid: string; name: string; email: string; isAr: boolean; teacherId?: string; teacherName?: string }> = ({
+  uid,
+  name,
+  email,
+  isAr,
+  teacherId,
+  teacherName
+}) => {
   const [items, setItems] = useState<StudentMessage[]>([]);
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
-  const [sending, setSending] = useState(false);
-  const [status, setStatus] = useState('');
-  const [audio, setAudio] = useState<RecordedAudio | null>(null);
+  const [loadError, setLoadError] = useState('');
 
-  const report = async (m: StudentMessage) => {
-    const reason = window.prompt(isAr ? 'سبب البلاغ (يصل للأكاديمية فقط):' : 'Reason for the report (academy only):', '');
-    if (reason === null) return;
-    try {
-      await studentHubService.reportMessage(m.id, 'student', reason || '');
-      setItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, reported: true } : x)));
-    } catch (err) {
-      console.error(err);
-      setStatus(isAr ? 'تعذر إرسال البلاغ.' : 'Could not send the report.');
-    }
-  };
-
-  const load = () =>
-    studentHubService
-      .getMyMessages(uid)
-      .then(setItems)
-      .catch((err) => console.error('Error loading messages:', err));
-
+  // تحديث فوري للمحادثة
   useEffect(() => {
-    load();
+    const unsub = onSnapshot(
+      query(collection(db, 'contact_messages'), where('studentId', '==', uid)),
+      (snap) => {
+        const list = snap.docs.map((d) => ({ ...(d.data() as any), id: d.id } as StudentMessage));
+        setItems(list);
+        // رسائل المعلمة والأكاديمية الجديدة تُعلَّم مقروءة
+        const unread = list.filter((m) => m.from && m.from !== 'student' && m.status === 'new').map((m) => m.id);
+        if (unread.length) markMessagesRead(unread);
+      },
+      (err) => {
+        console.error('Error loading messages:', err);
+        setLoadError(isAr ? 'تعذر تحميل الرسائل.' : 'Could not load messages.');
+      }
+    );
+    return unsub;
   }, [uid]);
 
-  const send = async () => {
-    if (!message.trim() && !audio) return;
-    setSending(true);
-    setStatus('');
-    try {
-      await studentHubService.sendStudentMessage({ studentId: uid, name, email, subject, message, teacherId, audio });
-      setSubject('');
-      setMessage('');
-      setAudio(null);
-      setStatus(isAr ? 'تم إرسال رسالتك.' : 'Your message was sent.');
-      await load();
-    } catch (err) {
-      console.error(err);
-      setStatus(isAr ? 'تعذر الإرسال، حاول مرة أخرى.' : 'Could not send, please try again.');
-    } finally {
-      setSending(false);
-    }
+  const send = async (text: string, audio: RecordedAudio | null) => {
+    await sendChatMessage({ from: 'student', studentId: uid, teacherId, name, email, text, audio });
+  };
+
+  const report = async (b: Bubble) => {
+    const reason = window.prompt(isAr ? 'سبب البلاغ (يصل للأكاديمية فقط):' : 'Reason for the report (academy only):', '');
+    if (reason === null) return;
+    await studentHubService.reportMessage(b.msg.id, 'student', reason || '');
   };
 
   return (
-    <div className={card}>
-      <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">{isAr ? (teacherId ? 'رسائلي مع معلمتي والأكاديمية' : 'رسائلي مع الأكاديمية') : 'My Messages'}</h2>
-      <p className="text-[11px] text-gray-500">
-        {isAr
-          ? 'يمكنك كتابة رسالة أو تسجيل صوتك (مثل قراءة الدرس) حتى 10 دقائق. الرسائل تصل لمعلمتك، والأكاديمية تطّلع على كل الرسائل.'
-          : 'Write or record (up to 10 min). Messages reach your teacher; the academy can see all messages.'}
-      </p>
-
-      <div className="space-y-3">
-        <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder={isAr ? 'الموضوع (اختياري)' : 'Subject (optional)'} className={inputCls} />
-        <textarea rows={4} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={isAr ? 'اكتب رسالتك...' : 'Write your message...'} className={inputCls} />
-        <VoiceRecorder isAr={isAr} value={audio} onChange={setAudio} disabled={sending} />
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-xs text-gray-500">{status}</span>
-          <button
-            onClick={send}
-            disabled={sending || (!message.trim() && !audio)}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] disabled:opacity-50 flex items-center gap-1.5"
-          >
-            <Send className="w-4 h-4 text-[#D4AF37]" />
-            <span>{sending ? (isAr ? 'جارٍ الإرسال...' : 'Sending...') : isAr ? 'إرسال' : 'Send'}</span>
-          </button>
-        </div>
-      </div>
-
-      {items.length > 0 && (
-        <div className="space-y-3 border-t border-gray-100 pt-4">
-          {items.map((m) => (
-            <div key={m.id} className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2 text-xs">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-bold text-[#0A192F]">{m.subject || (isAr ? 'رسالة' : 'Message')}</span>
-                <span className="text-[10px] text-gray-400">{new Date(m.submittedAt).toLocaleDateString()}</span>
-              </div>
-              <p className="text-gray-700 whitespace-pre-line">{m.message}</p>
-              {!!m.audioParts && <MessageAudioPlayer messageId={m.id} kind="msg" parts={m.audioParts} seconds={m.audioSeconds} isAr={isAr} />}
-              {m.reply ? (
-                <div className="p-3 rounded-xl bg-white border border-[#D4AF37]/40 space-y-1">
-                  <span className="flex items-center gap-1 text-[11px] font-bold text-[#AA820A]">
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    {m.repliedBy === 'teacher' ? (isAr ? 'رد المعلمة' : 'Teacher reply') : isAr ? 'رد الأكاديمية' : 'Academy reply'}
-                  </span>
-                  <p className="text-gray-700 whitespace-pre-line">{m.reply}</p>
-                  {!!m.replyAudioParts && <MessageAudioPlayer messageId={m.id} kind="reply" parts={m.replyAudioParts} seconds={m.replyAudioSeconds} isAr={isAr} />}
-                </div>
-              ) : (
-                <span className="text-[11px] text-gray-400">{isAr ? 'بانتظار الرد' : 'Awaiting reply'}</span>
-              )}
-              <div className="flex justify-end">
-                {m.reported ? (
-                  <span className="text-[10px] text-red-600 font-bold">{isAr ? 'تم الإبلاغ للأكاديمية' : 'Reported to the academy'}</span>
-                ) : (
-                  <button onClick={() => report(m)} className="text-[10px] text-gray-400 hover:text-red-600 flex items-center gap-1">
-                    <Flag className="w-3 h-3" />
-                    {isAr ? 'إبلاغ عن الرسالة' : 'Report'}
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="space-y-2">
+      {loadError && <p className="text-xs text-red-600">{loadError}</p>}
+      <ChatThread
+        isAr={isAr}
+        me="student"
+        items={items}
+        title={isAr ? (teacherId ? `محادثتي مع ${teacherName ? `المعلمة ${teacherName}` : 'معلمتي'} والأكاديمية` : 'محادثتي مع الأكاديمية') : 'My chat'}
+        subtitle={isAr ? 'اكتبي أو سجّلي صوتك (حتى 10 دقائق). الأكاديمية تطّلع على المحادثة.' : 'Type or record (up to 10 min). The academy can see this chat.'}
+        onSend={send}
+        onReport={report}
+      />
     </div>
   );
 };

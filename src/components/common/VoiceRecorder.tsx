@@ -22,11 +22,12 @@ const pickMime = (): string => {
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 // زر تسجيل صوتي: تسجيل ← إيقاف ← استماع قبل الإرسال أو حذف
-export const VoiceRecorder: React.FC<{ isAr: boolean; value: RecordedAudio | null; onChange: (a: RecordedAudio | null) => void; disabled?: boolean }> = ({
+export const VoiceRecorder: React.FC<{ isAr: boolean; value: RecordedAudio | null; onChange: (a: RecordedAudio | null) => void; disabled?: boolean; compact?: boolean }> = ({
   isAr,
   value,
   onChange,
-  disabled
+  disabled,
+  compact
 }) => {
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -113,6 +114,30 @@ export const VoiceRecorder: React.FC<{ isAr: boolean; value: RecordedAudio | nul
         <button type="button" onClick={() => onChange(null)} className="p-1.5 text-gray-400 hover:text-red-600" title={isAr ? 'حذف التسجيل' : 'Remove'}>
           <Trash2 className="w-4 h-4" />
         </button>
+      </div>
+    );
+  }
+
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2">
+        {error && <span className="text-[10px] text-red-600 max-w-[140px]">{error}</span>}
+        {recording ? (
+          <button type="button" onClick={stop} className="h-11 px-4 rounded-full bg-red-600 text-white flex items-center gap-1.5 text-xs font-bold animate-pulse" title={isAr ? 'إيقاف' : 'Stop'}>
+            <Square className="w-3.5 h-3.5" />
+            <span dir="ltr">{fmt(elapsed)}</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={start}
+            disabled={disabled}
+            className="w-11 h-11 rounded-full bg-[#0A192F] text-[#D4AF37] flex items-center justify-center disabled:opacity-50"
+            title={isAr ? 'تسجيل صوتي (حتى 10 دقائق)' : 'Voice recording (up to 10 min)'}
+          >
+            <Mic className="w-5 h-5" />
+          </button>
+        )}
       </div>
     );
   }

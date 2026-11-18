@@ -3,6 +3,7 @@ import {
   arrayUnion,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -80,6 +81,9 @@ export interface StudentMessage {
   reportReason?: string;
   reportedBy?: 'student' | 'teacher';
   reportedAt?: string;
+  // المحادثة: من أرسل الرسالة (القديمة بلا from = من الطالبة)
+  from?: 'student' | 'teacher' | 'academy';
+  audioDeleted?: boolean;
 }
 
 /* ---------- Voice messages: أجزاء base64 في message_audio ---------- */
@@ -135,6 +139,62 @@ export const loadMessageAudio = async (messageId: string, kind: 'msg' | 'reply',
     bufs.push(arr);
   }
   return new Blob(bufs, { type: mime });
+};
+
+// رسالة في المحادثة من المعلمة أو الأكاديمية أو الطالبة
+export const sendChatMessage = async (p: {
+  from: 'student' | 'teacher' | 'academy';
+  studentId: string;
+  teacherId?: string;
+  name: string;
+  email: string;
+  text: string;
+  audio?: { blob: Blob; mime: string; seconds: number } | null;
+}): Promise<StudentMessage> => {
+  const id = newId('MSG');
+  const audioParts = p.audio ? await saveMessageAudio(id, 'msg', p.audio, { studentId: p.studentId, teacherId: p.teacherId }) : 0;
+  const data: any = {
+    id,
+    name: (p.name.trim() || (p.from === 'academy' ? 'English Zone' : '—')).slice(0, 100),
+    email: (p.email.trim() || '—').slice(0, 150),
+    subject: '',
+    message: (p.text.trim() || '🎙️ رسالة صوتية').slice(0, 3000),
+    status: 'new',
+    submittedAt: new Date().toISOString(),
+    studentId: p.studentId,
+    from: p.from,
+    ...(p.teacherId ? { teacherId: p.teacherId } : {}),
+    ...(audioParts ? { audioParts, audioSeconds: Math.min(3600, Math.max(1, p.audio!.seconds)) } : {})
+  };
+  await setDoc(doc(db, 'contact_messages', id), data);
+  return data as StudentMessage;
+};
+
+// الأكاديمية فقط: حذف التسجيل الصوتي وحده مع بقاء الرسالة والمحادثة
+export const deleteMessageAudioOnly = async (m: { id: string; audioParts?: number; replyAudioParts?: number }, which: 'msg' | 'reply') => {
+  const n = which === 'msg' ? m.audioParts || 0 : m.replyAudioParts || 0;
+  for (let i = 0; i < n; i++) await deleteDoc(doc(db, 'message_audio', audioDocId(m.id, which, i))).catch(() => undefined);
+  await updateDoc(
+    doc(db, 'contact_messages', m.id),
+    which === 'msg' ? { audioParts: deleteField(), audioSeconds: deleteField(), audioDeleted: true } : { replyAudioParts: deleteField(), replyAudioSeconds: deleteField(), audioDeleted: true }
+  );
+};
+
+// الأكاديمية فقط: حذف الرد القديم وحده
+export const deleteLegacyReply = async (m: { id: string; replyAudioParts?: number }) => {
+  for (let i = 0; i < (m.replyAudioParts || 0); i++) await deleteDoc(doc(db, 'message_audio', audioDocId(m.id, 'reply', i))).catch(() => undefined);
+  await updateDoc(doc(db, 'contact_messages', m.id), {
+    reply: deleteField(),
+    repliedAt: deleteField(),
+    repliedBy: deleteField(),
+    replyAudioParts: deleteField(),
+    replyAudioSeconds: deleteField(),
+    status: 'read'
+  });
+};
+
+export const markMessagesRead = async (ids: string[]) => {
+  for (const id of ids) await updateDoc(doc(db, 'contact_messages', id), { status: 'read' }).catch(() => undefined);
 };
 
 // الأكاديمية تحذف الرسالة مع تسجيلاتها

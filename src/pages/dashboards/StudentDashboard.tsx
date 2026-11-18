@@ -618,7 +618,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
 
         {/* TAB: MESSAGES */}
         {activeTab === 'messages' && (
-          <StudentMessages uid={firebaseUser.uid} name={student.fullName || ''} email={student.email || firebaseUser.email || ''} isAr={isAr} teacherId={student.teacherId} />
+          <StudentMessages uid={firebaseUser.uid} name={student.fullName || ''} email={student.email || firebaseUser.email || ''} isAr={isAr} teacherId={student.teacherId} teacherName={student.assignedTeacherName || undefined} />
         )}
 
         {/* TAB: FEEDBACK */}
