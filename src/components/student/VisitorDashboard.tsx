@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift, Target, Users, BadgePercent } from 'lucide-react';
 import { CommunityFeed } from '../community/CommunityFeed';
+import { CompleteProfile } from './CompleteProfile';
 import { useAcademySettings } from '../../hooks/useAcademySettings';
 import { studentHubService } from '../../services/studentHubService';
 import { whatsappWithText } from '../../hooks/useAcademySettings';
@@ -58,6 +59,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] py-10 px-4" dir={isAr ? 'rtl' : 'ltr'}>
+      <CompleteProfile isAr={isAr} />
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="bg-gradient-to-r from-[#0A192F] to-[#102445] text-white rounded-3xl p-6 sm:p-8 border border-[#D4AF37]/40 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">

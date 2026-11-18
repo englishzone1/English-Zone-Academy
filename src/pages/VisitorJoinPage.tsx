@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Target, Users, BookOpen, Megaphone, BadgePercent, CheckCircle2 } from 'lucide-react';
+import { Target, Users, BookOpen, Megaphone, BadgePercent, CheckCircle2, MessageCircle } from 'lucide-react';
+import { useAcademySettings, whatsappWithText } from '../hooks/useAcademySettings';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { GoogleSignInButton, OrDivider, googleErrorMessage } from '../components/common/GoogleSignInButton';
@@ -12,16 +13,11 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const { registerVisitor, isAuthenticated } = useAuth();
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [country, setCountry] = useState('');
-  const [age, setAge] = useState('');
+  const { whatsapp } = useAcademySettings();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  // تمييز الحقول الناقصة باللون الأحمر
-  const [missing, setMissing] = useState(false);
 
   const benefits = [
     { icon: Target, text: tr('Free placement test to know your exact level', 'تحديد مستواكِ مجانًا باختبار دقيق') },
@@ -44,23 +40,11 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
     }
   };
 
-  const valid = () => {
-    if (!name.trim() || !phone.trim()) {
-      setMissing(true);
-      setError(tr('Write your name and WhatsApp number first, then continue with Google or email.', 'اكتبي اسمكِ ورقم الواتساب أولًا، ثم تابعي بحساب Google أو بالبريد.'));
-      return false;
-    }
-    setMissing(false);
-    return true;
-  };
-
-  const details = () => ({ name: name.trim(), phone: phone.trim(), country: country.trim(), age: age.trim() });
-
+  // التسجيل: بحساب Google أو بالبريد وكلمة المرور فقط، والاسم ورقم الواتساب يُطلبان داخل المنصة
   const viaGoogle = async () => {
     setError('');
-    if (!valid()) return;
     setBusy(true);
-    const r = await registerVisitor({ ...details(), google: true });
+    const r = await registerVisitor({ name: '', google: true });
     setBusy(false);
     if (r.success) navigate('portal');
     else setError(errText(r.code));
@@ -69,13 +53,12 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
   const viaEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!valid()) return;
     if (!email.trim() || password.length < 6) {
       setError(tr('Write your email and a password (6+ characters).', 'اكتبي بريدكِ وكلمة مرور من 6 أحرف على الأقل.'));
       return;
     }
     setBusy(true);
-    const r = await registerVisitor({ ...details(), email, password });
+    const r = await registerVisitor({ name: '', email, password });
     setBusy(false);
     if (r.success) navigate('portal');
     else setError(errText(r.code));
@@ -117,6 +100,17 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
               );
             })}
           </ul>
+          {whatsapp && (
+            <a
+              href={whatsappWithText(whatsapp, tr('Hello English Zone, I would like to know more.', 'مرحبًا English Zone، أريد معرفة المزيد عن الأكاديمية.'))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#25D366] text-white text-sm font-bold shadow-lg hover:brightness-105"
+            >
+              <MessageCircle className="w-5 h-5" />
+              {tr('Talk to us on WhatsApp now', 'تواصلي معنا مباشرة على واتساب')}
+            </a>
+          )}
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-gray-300 flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
             {tr(
@@ -129,12 +123,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
         {/* النموذج */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-4">
           <h2 className="font-bold text-xl text-[#0A192F]">{tr('Sign up now – free', 'سجّلي الآن مجانًا')}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={tr('Full name *', 'الاسم الكامل *')} className={`${inp} ${missing && !name.trim() ? 'border-red-400 bg-red-50' : ''}`} />
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" placeholder={tr('WhatsApp number *', 'رقم واتساب *')} className={`${inp} ${missing && !phone.trim() ? 'border-red-400 bg-red-50' : ''}`} />
-            <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder={tr('Country', 'الدولة')} className={inp} />
-            <input value={age} onChange={(e) => setAge(e.target.value.replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder={tr('Age', 'العمر')} className={inp} />
-          </div>
+          <p className="text-xs text-gray-500">{tr('One step: Google or email. We ask for your name and WhatsApp inside.', 'خطوة واحدة: بحساب Google أو بالبريد. اسمكِ ورقم الواتساب نطلبهما داخل المنصة.')}</p>
           {error && <p className="text-xs font-bold text-red-600 text-center p-2 rounded-lg bg-red-50 border border-red-100">{error}</p>}
           <GoogleSignInButton onClick={viaGoogle} disabled={busy} isAr={isAr} />
           <OrDivider isAr={isAr} />
