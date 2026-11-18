@@ -76,7 +76,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const adminAttemptRef = useRef(false);
 
   // Helper to fetch user profile document and custom claims
-  const fetchProfile = async (fbUser: FirebaseUser) => {
+  // طلب واحد لكل حساب في اللحظة نفسها، حتى لا يتسابق إنشاء الملف مرتين
+  const profileInflight = useRef<Record<string, Promise<void> | undefined>>({});
+  const fetchProfile = (fbUser: FirebaseUser): Promise<void> => {
+    const running = profileInflight.current[fbUser.uid];
+    if (running) return running;
+    const p = fetchProfileOnce(fbUser).finally(() => {
+      delete profileInflight.current[fbUser.uid];
+    });
+    profileInflight.current[fbUser.uid] = p;
+    return p;
+  };
+
+  const fetchProfileOnce = async (fbUser: FirebaseUser) => {
     try {
       // 1. Refresh token to get latest Custom Claims
       let tokenClaims: Record<string, any> = {};
@@ -157,7 +169,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             await setDoc(doc(db, 'users', fbUser.uid), createdProfile);
             resolvedProfile = createdProfile;
           } catch (createErr) {
-            console.error('Could not create missing student profile:', createErr);
+            // قد يكون طلب آخر أنشأ الملف في اللحظة نفسها: نقرؤه من جديد بدل اعتباره مفقودًا
+            try {
+              const again = await getDoc(doc(db, 'users', fbUser.uid));
+              if (again.exists()) {
+                resolvedProfile = { ...(again.data() as UserProfile), id: fbUser.uid };
+              } else {
+                console.error('Could not create missing student profile:', createErr);
+              }
+            } catch {
+              console.error('Could not create missing student profile:', createErr);
+            }
           }
         }
       }
