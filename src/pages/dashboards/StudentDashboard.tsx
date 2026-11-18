@@ -10,7 +10,7 @@ import {
   GradeRecord,
   TimetableRecord
 } from '../../services/studentDataService';
-import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle } from 'lucide-react';
+import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle, MessageCircle } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import {
   groupService,
@@ -315,12 +315,32 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="px-4 py-2 rounded-2xl bg-[#0A192F] border border-[#D4AF37]/40 text-[#F3E5AB] flex items-center gap-2 shadow-sm">
-              <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-              <div className="text-left rtl:text-right">
-                <span className="text-[10px] text-gray-400 block leading-none">English Zone Stars</span>
-                <span className="font-bold text-base text-[#F3E5AB]">{student.points || 0} {isAr ? 'نقطة' : 'Points'}</span>
+            <div className="flex flex-col gap-2">
+              <div className="px-4 py-2 rounded-2xl bg-[#0A192F] border border-[#D4AF37]/40 text-[#F3E5AB] flex items-center gap-2 shadow-sm">
+                <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+                <div className="text-left rtl:text-right">
+                  <span className="text-[10px] text-gray-400 block leading-none">English Zone Stars</span>
+                  <span className="font-bold text-base text-[#F3E5AB]">{student.points || 0} {isAr ? 'نقطة' : 'Points'}</span>
+                </div>
               </div>
+              {/* الرسائل: زر ظاهر دائمًا تحت النقاط */}
+              <button
+                onClick={() => {
+                  setActiveTab('messages');
+                  setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                }}
+                className={`relative px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm transition-all ${
+                  activeTab === 'messages' ? 'bg-[#D4AF37] text-[#0A192F] border-[#D4AF37]' : 'bg-white text-[#0A192F] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
+                }`}
+              >
+                <MessageCircle className="w-4 h-4 text-[#AA820A]" />
+                <span>{isAr ? 'الرسائل' : 'Messages'}</span>
+                {unreadMsgs > 0 && (
+                  <span className="absolute -top-2 -end-2 min-w-[20px] h-[20px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center animate-pulse shadow">
+                    {unreadMsgs}
+                  </span>
+                )}
+              </button>
             </div>
 
             <button
@@ -354,7 +374,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
             { id: 'curriculum', labelEn: 'Curriculum & Stages', labelAr: 'المنهج والمراحل' },
             { id: 'library', labelEn: 'Library', labelAr: 'المكتبة' },
             { id: 'homework', labelEn: 'Homework & Tests', labelAr: 'الواجبات والاختبارات' },
-            { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
             { id: 'feedback', labelEn: 'My Feedback', labelAr: 'رأيي' },
             { id: 'subscription', labelEn: 'Tuition & Invoices', labelAr: 'الاشتراك والفواتير' }
           ].map((tab) => (
@@ -376,7 +395,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div id="ez-tab-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-4">
 
         {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
