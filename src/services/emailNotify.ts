@@ -1,5 +1,5 @@
 // تنبيه بالبريد عند وصول رسالة جديدة، عبر EmailJS (خطة مجانية، يُضبط من لوحة الإدارة ← الإعدادات)
-import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { getDoc, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 interface EmailCfg {
@@ -37,45 +37,53 @@ export const getAcademyNotifyEmail = async (): Promise<string> => (await loadCfg
 // السجل في Firestore: mail_log/{البريد}_{اليوم} يُنشأ مرة واحدة، والمحاولة الثانية ترفضها القواعد.
 const today = () => new Date(Date.now() + 3 * 3600 * 1000).toISOString().slice(0, 10);
 
-const claimToday = async (to: string): Promise<boolean> => {
+const logId = (to: string, day: string) => `${to.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 100)}_${day}`;
+const localKey = (to: string) => `ez_mail_${to.toLowerCase()}`;
+
+// هل أُرسل له بريد اليوم؟
+const sentToday = async (to: string): Promise<boolean> => {
   const day = today();
-  const key = `ez_mail_${to.toLowerCase()}`;
   try {
-    if (localStorage.getItem(key) === day) return false;
+    if (localStorage.getItem(localKey(to)) === day) return true;
   } catch {
     /* ignore */
   }
-  const id = `${to.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 100)}_${day}`;
-  const ref = doc(db, 'mail_log', id);
   try {
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      try {
-        localStorage.setItem(key, day);
-      } catch {
-        /* ignore */
-      }
-      return false;
-    }
-    await setDoc(ref, { day, createdAt: new Date().toISOString() });
-  } catch (err) {
-    // القواعد الجديدة غير منشورة: نكتفي بحد المتصفح حتى لا يتوقف البريد
-    console.warn('mail_log unavailable, using browser limit only:', (err as any)?.code);
+    return (await getDoc(doc(db, 'mail_log', logId(to, day)))).exists();
+  } catch {
+    return false; // القواعد غير منشورة: نعتمد على حد المتصفح
   }
+};
+
+// يُسجَّل اليوم بعد نجاح الإرسال فقط، فالمحاولة الفاشلة لا تستهلك بريد اليوم
+const markSent = async (to: string) => {
+  const day = today();
   try {
-    localStorage.setItem(key, day);
+    localStorage.setItem(localKey(to), day);
   } catch {
     /* ignore */
   }
-  return true;
+  await setDoc(doc(db, 'mail_log', logId(to, day)), { day, createdAt: new Date().toISOString() }).catch(() => undefined);
+};
+
+// الإدارة: تصفير حد اليوم لبريد معيّن (بعد إصلاح الإعدادات)
+export const resetTodayLimit = async (to: string) => {
+  const day = today();
+  try {
+    localStorage.removeItem(localKey(to));
+  } catch {
+    /* ignore */
+  }
+  await deleteDoc(doc(db, 'mail_log', logId(to, day))).catch(() => undefined);
 };
 
 export const notifyNewMessage = async (p: { toEmail?: string; toName?: string; fromName: string; preview: string }) => {
   const to = String(p.toEmail || '').trim();
   if (!to || !to.includes('@')) return;
   const cfg = await loadCfg();
-  if (!cfg || !(await claimToday(to))) return;
-  await sendViaEmailJS(cfg, { to, toName: p.toName || '', fromName: p.fromName, preview: p.preview });
+  if (!cfg || (await sentToday(to))) return;
+  const r = await sendViaEmailJS(cfg, { to, toName: p.toName || '', fromName: p.fromName, preview: p.preview });
+  if (r.ok) await markSent(to);
 };
 
 const sendViaEmailJS = async (cfg: EmailCfg, p: { to: string; toName: string; fromName: string; preview: string }): Promise<{ ok: boolean; status: number; text: string }> => {

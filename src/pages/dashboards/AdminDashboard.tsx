@@ -55,7 +55,7 @@ import { AdminVisitors } from '../../components/admin/AdminVisitors';
 import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { CURRENCIES } from '../../hooks/useAcademySettings';
 import { useUnreadMessages } from '../../hooks/useUnreadMessages';
-import { sendTestEmail } from '../../services/emailNotify';
+import { sendTestEmail, resetTodayLimit } from '../../services/emailNotify';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
 interface AdminDashboardProps {
@@ -1193,6 +1193,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                       }
                       setEmailTest(tr('Sending...', 'جارٍ الإرسال...'));
                       const r = await sendTestEmail({ serviceId: st.emailjsServiceId, templateId: st.emailjsTemplateId, publicKey: st.emailjsPublicKey }, to);
+                      if (r.ok) await resetTodayLimit(to);
                       setEmailTest(
                         r.ok
                           ? tr(`Sent to ${to}. Check inbox and Spam.`, `تم الإرسال إلى ${to}. افحصي الوارد ومجلد Spam.`)
