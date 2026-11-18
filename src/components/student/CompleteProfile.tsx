@@ -2,35 +2,30 @@ import React, { useState } from 'react';
 import { UserRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-// بعد التسجيل بحساب Google أو بالبريد: نطلب الاسم ورقم الواتساب (والدولة والعمر) مرة واحدة
+// بعد التسجيل: نطلب الدولة والعمر فقط مرة واحدة (الاسم من Gmail، والواتساب اختياري في غرفة الأفاتار)
 export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const { user, updateProfile } = useAuth();
   const u: any = user || {};
-  const emailPrefix = String(u.email || '').split('@')[0];
-  const [name, setName] = useState(u.fullName && u.fullName !== emailPrefix ? u.fullName : '');
-  const [phone, setPhone] = useState(u.phone || '');
   const [country, setCountry] = useState(u.country || '');
   const [age, setAge] = useState(u.age ? String(u.age) : '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  if (!user || (u.phone && String(u.phone).trim())) return null;
+  if (!user || (String(u.country || '').trim() && Number(u.age) > 0)) return null;
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || phone.replace(/\D/g, '').length < 7) {
-      setError(tr('Write your name and a valid WhatsApp number.', 'اكتبي اسمكِ ورقم واتساب صحيحًا.'));
+    if (!country.trim() || !(Number(age) > 0)) {
+      setError(tr('Write your country and age.', 'اكتبي دولتكِ وعمركِ.'));
       return;
     }
     setBusy(true);
     setError('');
     try {
       await updateProfile({
-        fullName: name.trim().slice(0, 100),
-        phone: phone.trim().slice(0, 30),
-        ...(country.trim() ? { country: country.trim().slice(0, 60) } : {}),
-        ...(Number(age) > 0 ? { age: Number(age) } : {}),
+        country: country.trim().slice(0, 60),
+        age: Number(age),
         updatedAt: new Date().toISOString()
       } as any);
     } catch {
@@ -51,14 +46,12 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
           </span>
           <div>
             <h2 className="font-bold text-lg text-[#0A192F]">{tr('Welcome! One last step', 'أهلًا بكِ! خطوة أخيرة')}</h2>
-            <p className="text-xs text-gray-500">{tr('So we can reach you about your level, workshops and offers.', 'لنتواصل معكِ بخصوص مستواكِ والورش والعروض.')}</p>
+            <p className="text-xs text-gray-500">{tr('Your country and age help us suggest the right group and times.', 'دولتكِ وعمركِ يساعداننا في اقتراح المجموعة والمواعيد المناسبة لكِ.')}</p>
           </div>
         </div>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={tr('Full name *', 'الاسم الكامل *')} className={inp} />
-        <input value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" inputMode="tel" placeholder={tr('WhatsApp number with country code *', 'رقم واتساب مع مفتاح الدولة *')} className={inp} />
         <div className="grid grid-cols-2 gap-3">
-          <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder={tr('Country', 'الدولة')} className={inp} />
-          <input value={age} onChange={(e) => setAge(e.target.value.replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder={tr('Age', 'العمر')} className={inp} />
+          <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder={tr('Country *', 'الدولة *')} className={inp} />
+          <input value={age} onChange={(e) => setAge(e.target.value.replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder={tr('Age *', 'العمر *')} className={inp} />
         </div>
         {error && <p className="text-xs font-bold text-red-600">{error}</p>}
         <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-sm font-bold disabled:opacity-50">

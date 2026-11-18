@@ -32,7 +32,7 @@ type Tab = 'look' | 'hair' | 'outfit' | 'colors';
 // غرفة الأفاتار: نسخة واحدة للذكور والإناث بملابس محتشمة وعصرية
 export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) => {
   const { language } = useLanguage();
-  const { user, saveAvatarConfig } = useAuth();
+  const { user, saveAvatarConfig, updateProfile } = useAuth();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
 
@@ -41,6 +41,9 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
   const [tab, setTab] = useState<Tab>('outfit');
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [occasionOnly, setOccasionOnly] = useState(false);
+  // الاسم الظاهر ورقم الواتساب (اختياري) مع الأفاتار
+  const [displayName, setDisplayName] = useState<string>((user as any)?.fullName || '');
+  const [phone, setPhone] = useState<string>((user as any)?.phone || '');
 
   const set = (patch: Partial<EZAvatarConfig>) => {
     setA((prev) => ({ ...prev, ...patch }));
@@ -65,6 +68,11 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
     setStatus('saving');
     try {
       await saveAvatarConfig(a as any);
+      const u: any = user || {};
+      const updates: any = {};
+      if (displayName.trim() && displayName.trim() !== u.fullName) updates.fullName = displayName.trim().slice(0, 100);
+      if (phone.trim() !== String(u.phone || '')) updates.phone = phone.trim().slice(0, 30);
+      if (Object.keys(updates).length) await updateProfile({ ...updates, updatedAt: new Date().toISOString() });
       setStatus('saved');
     } catch (err) {
       console.error('Avatar save failed:', err);
@@ -166,6 +174,17 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate }) 
           </div>
         </div>
         {status === 'error' && <p className="text-xs text-red-600">{tr('Could not save, please try again.', 'تعذر الحفظ، حاول مرة أخرى.')}</p>}
+
+        <div className="bg-white rounded-2xl p-4 border border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('Your name (shown with your avatar)', 'اسمكِ (يظهر مع الأفاتار)')}</label>
+            <input value={displayName} onChange={(e) => { setDisplayName(e.target.value); setStatus('idle'); }} className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('WhatsApp number (optional)', 'رقم واتساب (اختياري)')}</label>
+            <input value={phone} onChange={(e) => { setPhone(e.target.value); setStatus('idle'); }} dir="ltr" inputMode="tel" placeholder="+966..." className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm" />
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Preview */}

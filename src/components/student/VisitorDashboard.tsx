@@ -72,10 +72,15 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
             </h1>
             <p className="text-sm text-gray-300">{tr('Here are the free books and materials for members.', 'هنا الكتب والمواد المجانية المفتوحة لكِ.')}</p>
           </div>
-          <button onClick={onLogout} className="self-start px-3 py-2 rounded-xl border border-white/20 text-xs font-bold flex items-center gap-1.5">
+          <div className="flex gap-2 self-start">
+          <button onClick={() => navigate('avatar-studio')} className="px-3 py-2 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold">
+            {tr('My avatar', 'الأفاتار الخاص بي')}
+          </button>
+          <button onClick={onLogout} className="px-3 py-2 rounded-xl border border-white/20 text-xs font-bold flex items-center gap-1.5">
             <LogOut className="w-4 h-4" />
             {tr('Sign out', 'خروج')}
           </button>
+          </div>
         </div>
 
         {/* زر الاشتراك الكبير المضيء */}
