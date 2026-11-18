@@ -258,7 +258,7 @@ export const groupService = {
         const g = await getDoc(doc(db, 'groups', data.groupId));
         teacherId = g.exists() ? String((g.data() as any).teacherId || '') : '';
       }
-      if ((data.teacherId || '') !== teacherId) {
+      if (!data.teacherManual && (data.teacherId || '') !== teacherId) {
         await updateDoc(doc(db, 'users', studentId), { teacherId: teacherId ? teacherId : deleteField() });
       }
     }
@@ -289,7 +289,8 @@ export const groupService = {
     const keep = new Set<string>();
     usersSnap.forEach((d) => {
       const data = d.data() as any;
-      if (data.role === 'student') {
+      // المعلم الذي اختارته الإدارة يدويًا لا يُستبدل بمعلم المجموعة
+      if (data.role === 'student' && !data.teacherManual) {
         const t = data.groupId ? teacherOf.get(data.groupId) || '' : '';
         if ((data.teacherId || '') !== t) {
           ops.push((b) => b.update(d.ref, { teacherId: t ? t : deleteField() }));

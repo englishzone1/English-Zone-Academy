@@ -7,6 +7,9 @@ interface Props {
   isAr: boolean;
   onNotice: (message: string) => void;
   teacherScope?: string; // معرّف المعلم في وضع المعلم
+  // مواعيد الدرس (أيام الأسبوع 0 = الأحد، والساعة): منها تُعرض الحصص لتسجيل الحضور
+  lessonDays?: number[];
+  lessonTime?: string;
 }
 
 const inputCls = 'w-full px-3 py-2 rounded-xl border border-gray-300 text-xs bg-white';
@@ -14,14 +17,12 @@ const btn = 'px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-50';
 const today = () => new Date().toISOString().slice(0, 10);
 
 // تسجيل الواجبات والحضور لطالب واحد؛ منها يُحسب التقرير الشهري في لوحة الطالب
-export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice, teacherScope }) => {
+export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice, teacherScope, lessonDays = [], lessonTime = '' }) => {
   const [online, setOnline] = useState<HomeworkResult[]>([]);
   const tr = (en: string, ar: string) => (isAr ? ar : en);
 
   const [homework, setHomework] = useState<any[]>([]);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
-  const [hwTitle, setHwTitle] = useState('');
-  const [hwDate, setHwDate] = useState(today());
   const [attDate, setAttDate] = useState(today());
   const [busy, setBusy] = useState(false);
 
@@ -60,23 +61,33 @@ export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice
     }
   };
 
-  const addHw = (done: boolean) => {
-    if (!hwTitle.trim()) {
-      onNotice(tr('Write the homework name.', 'اكتب اسم الواجب.'));
-      return;
+  // حصص الأسابيع الستة الماضية حتى اليوم حسب أيام الدرس
+  const sessions: string[] = [];
+  if (lessonDays.length) {
+    const now = new Date();
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      if (lessonDays.includes(d.getDay())) {
+        sessions.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+      }
     }
-    run(
-      async () => {
-        await studentHubService.addHomeworkRecord({ studentId, title: hwTitle.trim(), date: hwDate, done });
-        setHwTitle('');
-      },
-      'تم تسجيل الواجب.',
-      'Homework recorded.'
-    );
+  }
+  const dayName = (iso: string) => {
+    const [y, m, d] = iso.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString(isAr ? 'ar' : 'en', { weekday: 'long' });
   };
 
-  const addAtt = (present: boolean) =>
-    run(() => studentHubService.addAttendance({ studentId, date: attDate, present }), 'تم تسجيل الحضور.', 'Attendance recorded.');
+  const mark = (date: string, present: boolean) => {
+    const old = attendance.find((a) => a.date === date);
+    run(
+      async () => {
+        if (old) await studentHubService.deleteAttendance(old.id);
+        await studentHubService.addAttendance({ studentId, date, present });
+      },
+      'تم تسجيل الحضور.',
+      'Attendance recorded.'
+    );
+  };
 
   return (
     <>
@@ -101,77 +112,59 @@ export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice
         )}
       </div>
 
-      {/* Homework */}
-      <div className="border-t border-gray-100 pt-4 space-y-3">
-        <h4 className="font-bold text-sm text-[#0A192F]">{tr('Homework', 'الواجبات')}</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <input
-            value={hwTitle}
-            onChange={(e) => setHwTitle(e.target.value)}
-            placeholder={tr('Homework name', 'اسم الواجب (مثل واجب الوحدة 2)')}
-            className={`${inputCls} sm:col-span-2`}
-          />
-          <input type="date" value={hwDate} onChange={(e) => setHwDate(e.target.value)} className={inputCls} />
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => addHw(true)} disabled={busy} className={`${btn} bg-emerald-600 text-white`}>
-            {tr('Done', 'حلّه')}
-          </button>
-          <button onClick={() => addHw(false)} disabled={busy} className={`${btn} bg-red-50 text-red-700 border border-red-200`}>
-            {tr('Not done', 'لم يحلّه')}
-          </button>
-        </div>
-        {homework.length > 0 && (
-          <div className="space-y-1 max-h-40 overflow-y-auto">
-            {homework.slice(0, 20).map((h) => (
-              <div key={h.id} className="flex items-center justify-between gap-2 text-[11px] px-3 py-1.5 rounded-lg bg-[#FAF8F5]">
-                <span>
-                  {h.dueDate} • {h.titleAr || h.titleEn} •{' '}
-                  <b className={h.status === 'missed' ? 'text-red-600' : 'text-emerald-700'}>
-                    {h.status === 'missed' ? tr('not done', 'لم يحلّه') : tr('done', 'حلّه')}
-                  </b>
-                </span>
-                <button
-                  onClick={() => run(() => studentHubService.deleteHomework(h.id), 'تم الحذف.', 'Deleted.')}
-                  className="text-gray-400 hover:text-red-600"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Attendance */}
+      {/* Attendance by the lesson schedule */}
       <div className="border-t border-gray-100 pt-4 space-y-3">
         <h4 className="font-bold text-sm text-[#0A192F]">{tr('Attendance (commitment)', 'الحضور والالتزام')}</h4>
-        <div className="flex flex-wrap items-center gap-2">
-          <input type="date" value={attDate} onChange={(e) => setAttDate(e.target.value)} className={`${inputCls} w-auto`} />
-          <button onClick={() => addAtt(true)} disabled={busy} className={`${btn} bg-emerald-600 text-white`}>
-            {tr('Present', 'حضر')}
-          </button>
-          <button onClick={() => addAtt(false)} disabled={busy} className={`${btn} bg-red-50 text-red-700 border border-red-200`}>
-            {tr('Absent', 'غاب')}
-          </button>
-        </div>
-        {attendance.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {attendance.slice(0, 30).map((a) => (
-              <span
-                key={a.id}
-                className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold ${
-                  a.present ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
-                }`}
-              >
-                {a.date}
-                <button onClick={() => run(() => studentHubService.deleteAttendance(a.id), 'تم الحذف.', 'Deleted.')} title={tr('Delete', 'حذف')}>
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
+        {sessions.length === 0 ? (
+          <p className="text-[11px] text-amber-700">
+            {tr('Set the lesson days above to list the sessions here.', 'حدّدي أيام الدرس في «مواعيد الدرس» أعلاه واحفظي، فتظهر الحصص هنا لتسجيل الحضور.')}
+          </p>
+        ) : (
+          <div className="space-y-1.5">
+            {sessions.map((d) => {
+              const rec = attendance.find((a) => a.date === d);
+              return (
+                <div key={d} className="flex flex-wrap items-center justify-between gap-2 text-[11px] px-3 py-2 rounded-lg bg-[#FAF8F5]">
+                  <span className="font-bold text-[#0A192F]">
+                    {dayName(d)} {d}
+                    {lessonTime ? ` • ${lessonTime}` : ''}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    {rec ? (
+                      <>
+                        <b className={rec.present ? 'text-emerald-700' : 'text-red-600'}>{rec.present ? tr('Present', 'حضرت') : tr('Absent', 'غابت')}</b>
+                        <button onClick={() => run(() => studentHubService.deleteAttendance(rec.id), 'تم المسح.', 'Cleared.')} title={tr('Clear', 'مسح')} className="text-gray-400 hover:text-red-600">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={() => mark(d, true)} disabled={busy} className={`${btn} py-1 bg-emerald-600 text-white`}>
+                          {tr('Present', 'حضرت')}
+                        </button>
+                        <button onClick={() => mark(d, false)} disabled={busy} className={`${btn} py-1 bg-red-50 text-red-700 border border-red-200`}>
+                          {tr('Absent', 'غابت')}
+                        </button>
+                      </>
+                    )}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         )}
+        <details className="text-[11px]">
+          <summary className="cursor-pointer text-gray-500">{tr('Another date (make-up lesson)', 'تاريخ آخر (حصة تعويضية)')}</summary>
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <input type="date" value={attDate} onChange={(e) => setAttDate(e.target.value)} className={`${inputCls} w-auto`} />
+            <button onClick={() => mark(attDate, true)} disabled={busy} className={`${btn} bg-emerald-600 text-white`}>
+              {tr('Present', 'حضرت')}
+            </button>
+            <button onClick={() => mark(attDate, false)} disabled={busy} className={`${btn} bg-red-50 text-red-700 border border-red-200`}>
+              {tr('Absent', 'غابت')}
+            </button>
+          </div>
+        </details>
       </div>
     </>
   );

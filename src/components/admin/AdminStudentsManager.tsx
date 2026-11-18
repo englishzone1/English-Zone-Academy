@@ -52,6 +52,10 @@ type FormState = {
   lessonsAttended: string;
   lessonsTotal: string;
   groupId: string;
+  teacherId: string;
+  lessonDays: number[];
+  lessonTime: string;
+  lessonNote: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -65,7 +69,11 @@ const EMPTY_FORM: FormState = {
   stageProgress: '',
   lessonsAttended: '',
   lessonsTotal: '',
-  groupId: ''
+  groupId: '',
+  teacherId: '',
+  lessonDays: [],
+  lessonTime: '',
+  lessonNote: ''
 };
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
@@ -89,7 +97,11 @@ const toForm = (s: StudentRow): FormState => ({
   stageProgress: s.stageProgress !== undefined ? String(s.stageProgress) : '',
   lessonsAttended: s.lessonsAttended !== undefined ? String(s.lessonsAttended) : '',
   lessonsTotal: s.lessonsTotal !== undefined ? String(s.lessonsTotal) : '',
-  groupId: s.groupId || ''
+  groupId: s.groupId || '',
+  teacherId: (s as any).teacherId || '',
+  lessonDays: Array.isArray((s as any).lessonDays) ? (s as any).lessonDays : [],
+  lessonTime: (s as any).lessonTime || '',
+  lessonNote: (s as any).lessonNote || ''
 });
 
 const textOrDelete = (value: string) => (value.trim() === '' ? deleteField() : value.trim());
@@ -128,6 +140,10 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
   const [starReason, setStarReason] = useState('');
   const [gradeTitle, setGradeTitle] = useState('');
   const [gradeScore, setGradeScore] = useState('');
+  const [teachers, setTeachers] = useState<{ id: string; fullName: string }[]>([]);
+  useEffect(() => {
+    if (!teacherMode) groupService.getTeachers().then((t: any[]) => setTeachers(t.map((x) => ({ id: x.id, fullName: x.fullName || x.email || '' })))).catch(() => {});
+  }, [teacherMode]);
 
   const load = async (showSpinner = true) => {
     if (showSpinner) setLoading(true);
@@ -212,12 +228,19 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         enrolledCourseName: textOrDelete(form.enrolledCourseName),
         currentStage: textOrDelete(form.currentStage),
         learningFormat: textOrDelete(form.learningFormat),
-        assignedTeacherName: textOrDelete(form.assignedTeacherName),
         monthlyTuitionUSD: numberOrDelete(form.monthlyTuitionUSD, 0),
         stageProgress: numberOrDelete(form.stageProgress, 0, 100),
         lessonsAttended: numberOrDelete(form.lessonsAttended, 0),
         lessonsTotal: numberOrDelete(form.lessonsTotal, 0),
         groupId: textOrDelete(form.groupId),
+        // معلم حقيقي: يرى الطالب في لوحته ويرد على رسائله
+        ...(form.teacherId
+          ? { teacherId: form.teacherId, teacherManual: true, assignedTeacherName: teachers.find((t) => t.id === form.teacherId)?.fullName || form.assignedTeacherName || deleteField() }
+          : { teacherManual: deleteField() }),
+        // مواعيد الدرس: أيام الأسبوع (0 = الأحد) والساعة، ومنها يُسجَّل الحضور
+        lessonDays: form.lessonDays.length ? [...form.lessonDays].sort() : deleteField(),
+        lessonTime: textOrDelete(form.lessonTime),
+        lessonNote: textOrDelete(form.lessonNote),
         updatedAt: new Date().toISOString()
       });
       try {
@@ -583,14 +606,49 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
 
               <div>
                 <label className="block text-[11px] font-bold text-gray-600 mb-1">
-                  {isAr ? 'اسم المعلم' : 'Instructor name'}
+                  {isAr ? 'المعلم' : 'Teacher'}
                 </label>
-                <input
-                  type="text"
-                  value={form.assignedTeacherName}
-                  onChange={(e) => setField('assignedTeacherName', e.target.value)}
-                  className={inputCls}
-                />
+                {teacherMode ? (
+                  <input type="text" value={form.assignedTeacherName} readOnly className={`${inputCls} bg-gray-50`} />
+                ) : (
+                  <select value={form.teacherId} onChange={(e) => setForm((f) => ({ ...f, teacherId: e.target.value }))} className={inputCls}>
+                    <option value="">{isAr ? 'معلم المجموعة (تلقائي)' : "Group's teacher (automatic)"}</option>
+                    {teachers.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.fullName}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              <div className="sm:col-span-2 p-3 rounded-xl bg-[#FAF8F5] border border-gray-200 space-y-2">
+                <label className="block text-[11px] font-bold text-gray-600">{isAr ? 'مواعيد الدرس' : 'Lesson schedule'}</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {(isAr ? ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']).map((d, i) => {
+                    const on = form.lessonDays.includes(i);
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, lessonDays: on ? f.lessonDays.filter((x) => x !== i) : [...f.lessonDays, i] }))}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border ${on ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-gray-600 border-gray-200'}`}
+                      >
+                        {d}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <input type="time" value={form.lessonTime} onChange={(e) => setForm((f) => ({ ...f, lessonTime: e.target.value }))} className={inputCls} />
+                  <input
+                    type="text"
+                    value={form.lessonNote}
+                    onChange={(e) => setForm((f) => ({ ...f, lessonNote: e.target.value }))}
+                    placeholder={isAr ? 'ملاحظة (مثل: بتوقيت السعودية)' : 'Note (e.g. Saudi time)'}
+                    className={inputCls}
+                  />
+                </div>
               </div>
 
               <div>
@@ -766,40 +824,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
               </div>
             </div>
 
-            {/* Grades */}
-            <div className="border-t border-gray-100 pt-4 space-y-3">
-              <h4 className="font-bold text-sm text-[#0A192F]">{isAr ? 'تسجيل درجة' : 'Record a grade'}</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  value={gradeTitle}
-                  onChange={(e) => setGradeTitle(e.target.value)}
-                  placeholder={isAr ? 'اسم التقييم (مثل اختبار الشهر الأول)' : 'Assessment name'}
-                  className={`${inputCls} sm:col-span-2`}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={gradeScore}
-                  onChange={(e) => setGradeScore(e.target.value)}
-                  placeholder={isAr ? 'الدرجة من 100' : 'Score / 100'}
-                  className={inputCls}
-                />
-              </div>
-              <p className="text-[10px] text-gray-400">
-                {isAr ? `يُعتبر الطالب ناجحًا عند ${PASS_MARK} فأكثر.` : `Counted as passed at ${PASS_MARK} or above.`}
-              </p>
-              <button
-                onClick={handleAddGrade}
-                disabled={saving}
-                className="px-5 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] disabled:opacity-50"
-              >
-                {isAr ? 'تسجيل الدرجة' : 'Record grade'}
-              </button>
-            </div>
-
-            <AdminStudentRecords studentId={selected.id} isAr={isAr} onNotice={onNotice} teacherScope={teacherMode ? firebaseUser?.uid : undefined} />
+            <AdminStudentRecords studentId={selected.id} isAr={isAr} onNotice={onNotice} teacherScope={teacherMode ? firebaseUser?.uid : undefined} lessonDays={form.lessonDays} lessonTime={form.lessonTime} />
           </div>
         </div>
       )}

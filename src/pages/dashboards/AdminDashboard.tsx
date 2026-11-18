@@ -52,6 +52,7 @@ import { AdminHomeworkResults } from '../../components/admin/AdminHomeworkResult
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 import { AdminChatFaq } from '../../components/admin/AdminChatFaq';
 import { AdminVisitors } from '../../components/admin/AdminVisitors';
+import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
 interface AdminDashboardProps {
@@ -99,6 +100,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   // عند فتح لوحة الإدارة: تحديث لوحات المجموعات التي يراها الطلاب (الاسم والنقاط)
   useEffect(() => {
     groupService.syncAllMembers().catch((err) => console.error('Group boards sync failed:', err));
+    // نجوم الواجبات والاختبارات التي حلّتها الطالبات في الموقع
+    autoAwardHomeworkStars({ awardedBy: 'English Zone' }).then((n) => {
+      if (n) notify(isAr ? `مُنحت نجوم تلقائية عن ${n} واجب/اختبار حلّته الطالبات.` : `Auto stars given for ${n} solved homework/tests.`, 6000);
+    });
   }, []);
   const [registrations, setRegistrations] = useState<RegistrationRequest[]>([]);
   const [usersList, setUsersList] = useState<UserProfile[]>([]);

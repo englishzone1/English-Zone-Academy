@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { useAuth } from '../../context/AuthContext';
 import { EnglishZoneEmblem } from '../../components/common/Logo';
 import { AdminStudentsManager } from '../../components/admin/AdminStudentsManager';
@@ -31,6 +32,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
     setNotice(msg);
     window.setTimeout(() => setNotice(''), 4000);
   };
+
+  // نجوم تلقائية لطلابي عن الواجبات والاختبارات التي حلّوها في الموقع
+  useEffect(() => {
+    if (!firebaseUser) return;
+    autoAwardHomeworkStars({ teacherId: firebaseUser.uid, awardedBy: user?.fullName || 'Teacher', asTeacher: true }).then((n) => {
+      if (n) notify(isAr ? `مُنحت نجوم تلقائية عن ${n} واجب/اختبار.` : `Auto stars given for ${n} homework/tests.`);
+    });
+  }, [firebaseUser?.uid]);
 
   const tabs: { id: Tab; ar: string; en: string; icon: any }[] = [
     { id: 'students', ar: 'طلابي', en: 'My students', icon: Users },

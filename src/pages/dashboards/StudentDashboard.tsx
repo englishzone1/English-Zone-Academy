@@ -473,29 +473,19 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                 pointsLog={pointsLog}
               />
 
-              <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-3">
-                <h4 className="font-serif-luxury font-bold text-sm text-[#0A192F]">
-                  {isAr ? 'الواجبات والمهام الحالية' : 'Active Homework & Tasks'}
-                </h4>
-                {homeworkList.length === 0 ? (
-                  <p className="text-xs text-gray-500 py-3 text-center">
-                    {isAr ? 'لا توجد واجبات معلقة حالياً.' : 'No pending homework assignments.'}
+              {/* مواعيد الدرس التي كتبتها الإدارة */}
+              {(Array.isArray((student as any).lessonDays) && (student as any).lessonDays.length > 0) || (student as any).lessonTime ? (
+                <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-2">
+                  <h4 className="font-serif-luxury font-bold text-sm text-[#0A192F]">{isAr ? 'مواعيد دروسك' : 'Your lesson times'}</h4>
+                  <p className="text-sm font-bold text-[#0A192F]">
+                    {((student as any).lessonDays || [])
+                      .map((d: number) => (isAr ? ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])[d])
+                      .join(isAr ? ' و' : ', ')}
+                    {(student as any).lessonTime ? ` • ${(student as any).lessonTime}` : ''}
                   </p>
-                ) : (
-                  homeworkList.map((hw) => (
-                    <div key={hw.id} className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-200 text-xs space-y-1">
-                      <div className="flex items-center justify-between font-bold text-[#0A192F]">
-                        <span>{isAr ? hw.titleAr : hw.titleEn}</span>
-                        <span className="text-[10px] text-[#AA820A]">{hw.pointsAward}</span>
-                      </div>
-                      <div className="text-gray-500 text-[11px] flex items-center justify-between">
-                        <span>{isAr ? 'التسليم:' : 'Due:'} {hw.dueDate}</span>
-                        <span className="capitalize font-semibold text-emerald-700">{hw.status}</span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+                  {(student as any).lessonNote && <p className="text-xs text-gray-500">{(student as any).lessonNote}</p>}
+                </div>
+              ) : null}
             </div>
           </div>
         )}
@@ -708,38 +698,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
             teacherId={(student as any).teacherId}
           />
         )}
-        {activeTab === 'homework' && (
-          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
-            <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
-              {isAr ? 'التقييمات والواجبات' : 'Academic Evaluations & Homework'}
-            </h2>
-            <div className="space-y-4">
-              <h3 className="font-bold text-sm text-[#0A192F] uppercase tracking-wider">
-                {isAr ? 'الدرجات والاختبارات' : 'Evaluations & Exam Grades'}
-              </h3>
-              {gradesList.length === 0 ? (
-                <div className="p-6 rounded-2xl bg-[#FAF8F5] text-center text-xs text-gray-500">
-                  {isAr ? 'لم تُرصد أي درجات بعد.' : 'No grades have been recorded yet.'}
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-100">
-                  {gradesList.map((gr) => (
-                    <div key={gr.id} className="py-3 flex items-center justify-between text-xs">
-                      <div>
-                        <span className="font-bold text-[#0A192F] block">{gr.assessmentTitle}</span>
-                        <span className="text-gray-400 text-[10px]">
-                          {isAr ? 'المستوى:' : 'Level:'} {gr.level} • {gr.date}
-                        </span>
-                      </div>
-                      <span className="font-bold text-emerald-700 text-sm">{gr.score}%</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* TAB 5: SUBSCRIPTION */}
         {activeTab === 'subscription' && (
           <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
