@@ -213,6 +213,20 @@ export const studentDataService = {
       try {
         const snap = await getDoc(doc(db, 'users', sid));
         if (snap.exists()) return sid;
+        // الحساب موجود لكن ملفه لم يُحفظ (مثلًا قبل نشر القواعد): تنشئه الإدارة الآن
+        await setDoc(doc(db, 'users', sid), {
+          id: sid,
+          email: String(reg.email || '').trim(),
+          fullName: reg.fullName || '',
+          role: 'student',
+          points: 0,
+          starOfTheWeekCount: 0,
+          starOfTheMonthCount: 0,
+          subscriptionStatus: 'pending',
+          ...(reg.whatsappNumber ? { phone: reg.whatsappNumber } : {}),
+          createdAt: new Date().toISOString()
+        });
+        return sid;
       } catch {
         // نكمل بالبحث بالبريد
       }

@@ -529,6 +529,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     }
   };
 
+  // حسابات قريبة (نفس الاسم أو الرقم) حين لا يطابق البريد: تختار الإدارة الحساب الصحيح
+  const [linkCandidates, setLinkCandidates] = useState<Record<string, UserProfile[]>>({});
+  const findCandidates = (reg: any): UserProfile[] => {
+    const digits = (v: any) => String(v || '').replace(/\D/g, '').slice(-8);
+    const words = String(reg.fullName || '').toLowerCase().split(/\s+/).filter((w: string) => w.length >= 3);
+    const regPhone = digits(reg.whatsappNumber);
+    return usersList
+      .filter((u: any) => u.role === 'student' && String(u.subscriptionStatus || '') !== 'active')
+      .filter((u: any) => {
+        const name = String(u.fullName || '').toLowerCase();
+        const mail = String(u.email || '').toLowerCase();
+        return (regPhone && digits(u.phone) === regPhone) || words.some((w: string) => name.includes(w) || mail.includes(w));
+      })
+      .slice(0, 5);
+  };
+
+  const linkToAccount = async (regId: string, uid: string) => {
+    const reg = registrations.find((r) => r.id === regId);
+    if (!reg) return;
+    try {
+      await studentDataService.activateRegistrantAsStudent(uid, reg);
+      await studentDataService.updateRegistrationStatus(regId, 'approved', adminName, uid, false);
+      setRegistrations((prev) => prev.map((r) => (r.id === regId ? ({ ...r, status: 'approved' as const, awaitingAccount: false, linkedUserId: uid } as any) : r)));
+      setUsersList((prev) => prev.map((u) => (u.id === uid ? ({ ...u, subscriptionStatus: 'active', accountType: undefined } as any) : u)));
+      setLinkCandidates((c) => ({ ...c, [regId]: [] }));
+      notify(tr(`${reg.fullName} is now an active student.`, `أصبحت ${reg.fullName} طالبة نشطة. اختاري مجموعتها من تبويب الطلاب.`), 8000);
+    } catch (err: any) {
+      notify(`${tr('Failed:', 'تعذّر:')} ${err?.code || ''}`, 6000, true);
+    }
+  };
+
   const handleApprove = async (regId: string, retry = false) => {
     const reg = registrations.find((r) => r.id === regId);
     if (!reg) return;
@@ -544,6 +575,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
       // ربط الطلب بحساب الطالب الذي يحمل نفس البريد
       const uid = await studentDataService.linkRegistrationToStudent(reg);
       if (!uid && retry) {
+        const cands = findCandidates(reg);
+        setLinkCandidates((c) => ({ ...c, [regId]: cands }));
+        if (cands.length) {
+          notify(
+            tr('No account with that email, but similar accounts were found under her request: pick the right one.', 'لا يوجد حساب بهذا البريد، لكن ظهرت تحت طلبها حسابات قريبة بالاسم أو الرقم: اختاري حسابها الصحيح.'),
+            10000
+          );
+          return;
+        }
         notify(
           tr(
             `Still no account with ${reg.email}. Ask her which email she used to log in, or to sign up with exactly this one.`,
@@ -557,6 +597,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
       if (!uid) {
         // نقبل الطلب الآن، ويُربط بالحساب تلقائيًا عندما ينشئه الطالب بنفس البريد
         await studentDataService.updateRegistrationStatus(regId, 'approved', adminName, undefined, true);
+        setLinkCandidates((c) => ({ ...c, [regId]: findCandidates(reg) }));
         setRegistrations((prev) => prev.map((r) => (r.id === regId ? ({ ...r, status: 'approved' as const, awaitingAccount: true } as any) : r)));
         notify(
           tr(
@@ -880,6 +921,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                               >
                                 {tr('She created it – add now', 'أنشأت حسابها؟ أضيفيها الآن')}
                               </button>
+                              {(linkCandidates[reg.id] || []).map((u) => (
+                                <button
+                                  key={u.id}
+                                  onClick={() => linkToAccount(reg.id, u.id)}
+                                  className="block px-2 py-1 rounded-md border border-[#D4AF37] bg-white text-[10px] font-bold text-[#0A192F]"
+                                >
+                                  {tr('Link to', 'اربطي بحساب')}: {u.fullName} ({u.email})
+                                </button>
+                              ))}
                             </div>
                           )}
                         </td>
