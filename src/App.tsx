@@ -19,6 +19,8 @@ import { CourseDetailsPage } from './pages/CourseDetailsPage';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { LoginPage } from './pages/LoginPage';
 import { LibraryPage } from './pages/LibraryPage';
+import { WorkshopPage } from './pages/WorkshopPage';
+import { VerifyCertificatePage } from './pages/VerifyCertificatePage';
 import { VisitorJoinPage } from './pages/VisitorJoinPage';
 import { HomeworkPlatform } from './components/student/HomeworkPlatform';
 import { HomeworkAnswersPage } from './components/admin/HomeworkAnswersPage';
@@ -197,6 +199,13 @@ function MainApp() {
         return <AvatarStudioPage navigate={navigate} />;
 
       default:
+        // صفحة الورشة العامة وصفحة التحقق من الشهادة
+        if (currentRoute.startsWith('workshop/')) {
+          return <WorkshopPage workshopId={currentRoute.slice('workshop/'.length)} navigate={navigate} />;
+        }
+        if (currentRoute === 'verify' || currentRoute.startsWith('verify/')) {
+          return <VerifyCertificatePage serial={decodeURIComponent(currentRoute.slice('verify/'.length))} navigate={navigate} />;
+        }
         if (currentRoute.startsWith('hw-answers/')) {
           if (isLoading) return <LoadingScreen />;
           if (!isAuthenticated) return <LoginPage navigate={navigate} targetRedirect={currentRoute} />;
