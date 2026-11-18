@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { usePricing } from '../hooks/usePricing';
+import { useAcademySettings, formatMoney } from '../hooks/useAcademySettings';
 import { CEFRLevel } from '../types';
 import { 
   Check, 
@@ -21,6 +22,8 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
   const [levelFilter, setLevelFilter] = useState<'ALL' | CEFRLevel>('ALL');
 
   const { cards: levelCards, loading: pricingLoading } = usePricing();
+
+  const { currency } = useAcademySettings();
 
   const filteredLevels = levelCards.filter((item) => {
     if (levelFilter === 'ALL') return true;
@@ -186,7 +189,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                             {t.pricing.originalPrice}
                           </span>
                           <span className="text-xl font-semibold text-gray-400 line-through inline-block mt-1" dir="ltr">
-                            ${item.groupOriginal}
+                            {formatMoney(item.groupOriginal, currency)}
                           </span>
                         </>
                       )}
@@ -201,7 +204,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                           <span className="text-xs text-gray-300 font-normal">{language === 'ar' ? 'من' : 'from'}</span>
                         )}
                         <span className="font-serif-luxury font-bold text-3xl" dir="ltr">
-                          ${item.groupPrice}
+                          {formatMoney(item.groupPrice, currency)}
                         </span>
                         <span className="text-xs text-gray-300 font-normal">
                           {t.programs.perMonth}

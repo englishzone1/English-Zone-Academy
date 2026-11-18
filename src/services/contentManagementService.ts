@@ -115,6 +115,7 @@ export interface AcademySettings extends SocialLinks {
   placementTestUrl: string;
   tawkUrl?: string; // رابط المحادثة المباشرة من Tawk.to
   homeworkUrl?: string; // رابط منصة الواجبات والاختبارات التفاعلية
+  currency?: string; // عملة الأسعار في الموقع
   registrationOpen: boolean;
   updatedAt?: string;
 }

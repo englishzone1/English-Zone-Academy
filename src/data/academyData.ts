@@ -762,12 +762,12 @@ export const FAQ_LIST: FAQItem[] = [
     questionAr: 'هل أحصل على شهادة معتمدة بعد إتمام المستوى بنجاح؟',
     answerEn: `Yes! Students receive two certificates completely free of charge:
 
-1. CPD Certificate: An English professional development certificate issued through a British international platform under the Continuing Professional Development (CPD) system. It can be added to your CV and LinkedIn profile.
+1. Professional Development Certificate: An English professional development certificate issued through a British international platform. It can be added to your CV and LinkedIn profile.
 
 2. English Level Certificate: A free certificate showing your English proficiency level according to the Common European Framework of Reference for Languages (CEFR), after completing the EF SET test.`,
     answerAr: `نعم، يحصل الطلاب مجانًا على شهادتين دون أي رسوم إضافية:
 
-1. شهادة التطوير المهني المستمر (CPD): شهادة في التطوير المهني باللغة الإنجليزية من منصة بريطانية عالمية ضمن نظام CPD، ويمكن إضافتها إلى السيرة الذاتية (CV) والملف المهني على LinkedIn.
+1. شهادة التطوير المهني: شهادة في التطوير المهني باللغة الإنجليزية من منصة بريطانية عالمية، ويمكن إضافتها إلى السيرة الذاتية (CV) والملف المهني على LinkedIn.
 
 2. شهادة إثبات مستوى اللغة الإنجليزية: شهادة مجانية توضح مستوى الطالب وفق الإطار الأوروبي المرجعي المشترك للغات (CEFR)، بعد إتمام اختبار EF SET.`
   }

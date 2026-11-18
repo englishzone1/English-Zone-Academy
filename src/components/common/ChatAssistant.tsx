@@ -5,7 +5,7 @@ import { db } from '../../services/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { studentHubService } from '../../services/studentHubService';
 import { useLanguage } from '../../context/LanguageContext';
-import { useAcademySettings, whatsappWithText } from '../../hooks/useAcademySettings';
+import { useAcademySettings, whatsappWithText, formatMoney } from '../../hooks/useAcademySettings';
 import { usePricing, LevelPriceCard } from '../../hooks/usePricing';
 import { chatFaqService, ChatFaq, PRICES_TOKEN } from '../../services/chatFaqService';
 
@@ -16,7 +16,7 @@ interface Msg {
   offer?: boolean;
 }
 
-const pricesText = (cards: LevelPriceCard[], isAr: boolean): string => {
+const pricesText = (cards: LevelPriceCard[], isAr: boolean, currency = 'USD'): string => {
   if (!cards.length)
     return isAr
       ? 'الأسعار غير منشورة حاليًا. اضغطي «واتساب» أو «رسالة للأكاديمية» في الأسفل ونرسلها لكِ.'
@@ -25,7 +25,7 @@ const pricesText = (cards: LevelPriceCard[], isAr: boolean): string => {
     .map((c) => {
       const from = c.groupVaries ? (isAr ? 'من ' : 'from ') : '';
       const name = isAr ? c.nameAr : c.nameEn;
-      return `• ${c.level}${name ? ` (${name})` : ''}: ${from}$${c.groupPrice} ${isAr ? 'شهريًا للمجموعات' : 'per month (groups)'}`;
+      return `• ${c.level}${name ? ` (${name})` : ''}: ${from}${formatMoney(c.groupPrice, currency)} ${isAr ? 'شهريًا للمجموعات' : 'per month (groups)'}`;
     })
     .join('\n');
 };
@@ -87,7 +87,9 @@ const bestMatch = (msg: string, list: ChatFaq[]): ChatFaq | null => {
 export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   const { language } = useLanguage();
   const isAr = language === 'ar';
-  const { tawkUrl, whatsapp } = useAcademySettings();
+  const { tawkUrl, whatsapp, currency } = useAcademySettings();
+  const currencyRef = useRef(currency);
+  currencyRef.current = currency;
   const { cards } = usePricing();
   const [open, setOpen] = useState(false);
   const { user, firebaseUser, isStudent } = useAuth();
@@ -119,7 +121,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
       const text = String(message?.message ?? message ?? '');
       const f = bestMatch(text, faqsRef.current);
       if (!f) return;
-      const ans = f.answerAr.split(PRICES_TOKEN).join(pricesText(cardsRef.current, true));
+      const ans = f.answerAr.split(PRICES_TOKEN).join(pricesText(cardsRef.current, true, currencyRef.current));
       setMsgs((m) => [...m, { from: 'me', text: f.questionAr }, { from: 'bot', text: ans }]);
       setOpen(true);
       // على الجوال تغطي نافذة Tawk الشاشة، فنصغّرها ليظهر الجواب
@@ -145,7 +147,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   const q = (f: ChatFaq) => (!isAr && f.questionEn ? f.questionEn : f.questionAr);
   const a = (f: ChatFaq) => {
     const t = !isAr && f.answerEn ? f.answerEn : f.answerAr;
-    return t.split(PRICES_TOKEN).join(pricesText(cards, isAr));
+    return t.split(PRICES_TOKEN).join(pricesText(cards, isAr, currency));
   };
 
   const ask = (f: ChatFaq) => setMsgs((m) => [...m, { from: 'me', text: q(f) }, { from: 'bot', text: a(f) }]);

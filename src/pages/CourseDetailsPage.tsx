@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { PROGRAM_CATEGORIES } from '../data/academyData';
 import { usePricing } from '../hooks/usePricing';
+import { useAcademySettings, formatMoney } from '../hooks/useAcademySettings';
 import { CEFRLevel } from '../types';
 import {
   ArrowLeft,
@@ -22,6 +23,7 @@ interface CourseDetailsPageProps {
 export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, navigate }) => {
   const { t, language, dir } = useLanguage();
   const { cards: levelCards } = usePricing();
+  const { currency } = useAcademySettings();
   const course = PROGRAM_CATEGORIES.find((item) => item.id === courseId);
 
   if (!course) {
@@ -239,7 +241,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
                                 {t.pricing.originalPrice}
                               </span>
                               <span className="text-xl font-semibold text-gray-400 line-through inline-block mt-1" dir="ltr">
-                                ${item.groupOriginal}
+                                {formatMoney(item.groupOriginal, currency)}
                               </span>
                             </>
                           )}
@@ -254,7 +256,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
                               <span className="text-xs text-gray-300 font-normal">{language === 'ar' ? 'من' : 'from'}</span>
                             )}
                             <span className="font-serif-luxury font-bold text-3xl" dir="ltr">
-                              ${item.groupPrice}
+                              {formatMoney(item.groupPrice, currency)}
                             </span>
                             <span className="text-xs text-gray-300 font-normal">
                               {t.programs.perMonth}

@@ -15,6 +15,8 @@ export interface PublicAcademySettings {
   placementTestUrl: string;
   tawkUrl: string;
   homeworkUrl: string;
+  // عملة الأسعار التي تظهر في الموقع (USD، SAR، EGP، TRY... أو رمز تكتبه الإدارة)
+  currency: string;
 }
 
 const EMPTY: PublicAcademySettings = {
@@ -27,7 +29,8 @@ const EMPTY: PublicAcademySettings = {
   telegram: '',
   placementTestUrl: '',
   tawkUrl: '',
-  homeworkUrl: ''
+  homeworkUrl: '',
+  currency: 'USD'
 };
 
 // قيمة صالحة فقط: نص غير فارغ وليس "#"
@@ -55,7 +58,8 @@ const loadSettings = (): Promise<PublicAcademySettings> => {
           telegram: clean(d.telegram),
           placementTestUrl: clean(d.placementTestUrl),
           tawkUrl: clean(d.tawkUrl),
-          homeworkUrl: clean(d.homeworkUrl)
+          homeworkUrl: clean(d.homeworkUrl),
+          currency: clean(d.currency) || 'USD'
         };
       })
       .catch((err) => {
@@ -100,4 +104,28 @@ export const handleFromUrl = (link: string): string => {
   } catch {
     return link;
   }
+};
+
+// العملات الشائعة: الرمز الذي يظهر بجانب السعر
+export const CURRENCIES: { code: string; ar: string; en: string; symbol: string; prefix?: boolean }[] = [
+  { code: 'USD', ar: 'دولار أمريكي', en: 'US Dollar', symbol: '$', prefix: true },
+  { code: 'SAR', ar: 'ريال سعودي', en: 'Saudi Riyal', symbol: 'ر.س' },
+  { code: 'AED', ar: 'درهم إماراتي', en: 'UAE Dirham', symbol: 'د.إ' },
+  { code: 'KWD', ar: 'دينار كويتي', en: 'Kuwaiti Dinar', symbol: 'د.ك' },
+  { code: 'QAR', ar: 'ريال قطري', en: 'Qatari Riyal', symbol: 'ر.ق' },
+  { code: 'BHD', ar: 'دينار بحريني', en: 'Bahraini Dinar', symbol: 'د.ب' },
+  { code: 'OMR', ar: 'ريال عماني', en: 'Omani Rial', symbol: 'ر.ع' },
+  { code: 'JOD', ar: 'دينار أردني', en: 'Jordanian Dinar', symbol: 'د.أ' },
+  { code: 'EGP', ar: 'جنيه مصري', en: 'Egyptian Pound', symbol: 'ج.م' },
+  { code: 'TRY', ar: 'ليرة تركية', en: 'Turkish Lira', symbol: '₺', prefix: true },
+  { code: 'EUR', ar: 'يورو', en: 'Euro', symbol: '€', prefix: true },
+  { code: 'GBP', ar: 'جنيه إسترليني', en: 'British Pound', symbol: '£', prefix: true }
+];
+
+// عرض المبلغ بعملته: $80 أو 300 ر.س؛ أي رمز آخر يُكتب بعد الرقم كما هو
+export const formatMoney = (amount: number | string, currency?: string): string => {
+  const code = String(currency || 'USD').trim();
+  const c = CURRENCIES.find((x) => x.code === code.toUpperCase());
+  if (!c) return `${amount} ${code}`;
+  return c.prefix ? `${c.symbol}${amount}` : `${amount} ${c.symbol}`;
 };

@@ -53,6 +53,7 @@ import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 import { AdminChatFaq } from '../../components/admin/AdminChatFaq';
 import { AdminVisitors } from '../../components/admin/AdminVisitors';
 import { autoAwardHomeworkStars } from '../../services/autoStars';
+import { CURRENCIES } from '../../hooks/useAcademySettings';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
 interface AdminDashboardProps {
@@ -1126,6 +1127,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Price currency on the website', 'عملة الأسعار في الموقع')}</label>
+                    <select
+                      value={CURRENCIES.some((c) => c.code === ((settings as any).currency || 'USD')) ? (settings as any).currency || 'USD' : '__custom'}
+                      onChange={(e) => setSettings({ ...settings, currency: e.target.value === '__custom' ? '' : e.target.value } as any)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm"
+                    >
+                      {CURRENCIES.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {isAr ? c.ar : c.en} ({c.symbol})
+                        </option>
+                      ))}
+                      <option value="__custom">{tr('Other (type it)', 'عملة أخرى (اكتبيها)')}</option>
+                    </select>
+                    {!CURRENCIES.some((c) => c.code === ((settings as any).currency || 'USD')) && (
+                      <input
+                        type="text"
+                        value={(settings as any).currency || ''}
+                        onChange={(e) => setSettings({ ...settings, currency: e.target.value } as any)}
+                        placeholder={tr('e.g. IQD or د.ع', 'مثل: د.ع أو ل.س')}
+                        className="mt-2 w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm"
+                      />
+                    )}
+                    <p className="text-[11px] text-gray-500 mt-1">{tr('Write prices in this currency in Pricing & Stages.', 'اكتبي الأسعار في «الأسعار والمراحل» بهذه العملة نفسها.')}</p>
+                  </div>
                   {settingFields.map((f) => (
                     <div key={f.key as string}>
                       <label className="block text-xs font-bold text-[#0A192F] mb-1">{isAr ? f.labelAr : f.labelEn}</label>

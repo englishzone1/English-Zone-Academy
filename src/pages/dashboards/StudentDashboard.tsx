@@ -26,12 +26,14 @@ import { StudentCourseMaterials, StudentLibrary, StudentMessages, StudentFeedbac
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 import { VisitorDashboard } from '../../components/student/VisitorDashboard';
+import { useAcademySettings, formatMoney } from '../../hooks/useAcademySettings';
 
 interface StudentDashboardProps {
   navigate: (route: string) => void;
 }
 
 export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) => {
+  const { currency: siteCurrency } = useAcademySettings();
   const { language } = useLanguage();
   const { user, firebaseUser, hasProfile, isLoading: isAuthLoading, logout } = useAuth();
   const isAr = language === 'ar';
@@ -714,7 +716,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
               <div className="flex items-center justify-between border-t border-gray-200 pt-3">
                 <span className="text-xs text-gray-600">{isAr ? 'الرسوم الشهرية' : 'Monthly Tuition'}</span>
                 <span className="font-bold text-base text-[#0A192F]">
-                  {tuition !== undefined ? `$${tuition} USD / ${isAr ? 'شهر' : 'Month'}` : notSet}
+                  {tuition !== undefined ? `${formatMoney(tuition, (student as any).tuitionCurrency || siteCurrency)} / ${isAr ? 'شهر' : 'Month'}` : notSet}
                 </span>
               </div>
             </div>

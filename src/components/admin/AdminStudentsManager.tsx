@@ -13,6 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 import { groupService, StudyGroup, RatingCriterion, PASS_MARK } from '../../services/groupService';
 import { AdminStudentRecords } from './AdminStudentRecords';
 import { studentDataService } from '../../services/studentDataService';
+import { CURRENCIES } from '../../hooks/useAcademySettings';
 import { AvatarRenderer } from '../avatar/AvatarRenderer';
 
 interface AdminStudentsManagerProps {
@@ -56,6 +57,7 @@ type FormState = {
   lessonDays: number[];
   lessonTime: string;
   lessonNote: string;
+  tuitionCurrency: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -73,7 +75,8 @@ const EMPTY_FORM: FormState = {
   teacherId: '',
   lessonDays: [],
   lessonTime: '',
-  lessonNote: ''
+  lessonNote: '',
+  tuitionCurrency: ''
 };
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
@@ -101,7 +104,8 @@ const toForm = (s: StudentRow): FormState => ({
   teacherId: (s as any).teacherId || '',
   lessonDays: Array.isArray((s as any).lessonDays) ? (s as any).lessonDays : [],
   lessonTime: (s as any).lessonTime || '',
-  lessonNote: (s as any).lessonNote || ''
+  lessonNote: (s as any).lessonNote || '',
+  tuitionCurrency: (s as any).tuitionCurrency || ''
 });
 
 const textOrDelete = (value: string) => (value.trim() === '' ? deleteField() : value.trim());
@@ -241,6 +245,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         lessonDays: form.lessonDays.length ? [...form.lessonDays].sort() : deleteField(),
         lessonTime: textOrDelete(form.lessonTime),
         lessonNote: textOrDelete(form.lessonNote),
+        tuitionCurrency: textOrDelete(form.tuitionCurrency),
         updatedAt: new Date().toISOString()
       });
       try {
@@ -653,15 +658,25 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
 
               <div>
                 <label className="block text-[11px] font-bold text-gray-600 mb-1">
-                  {isAr ? 'الرسوم الشهرية (دولار)' : 'Monthly tuition (USD)'}
+                  {isAr ? 'الرسوم الشهرية والعملة' : 'Monthly tuition & currency'}
                 </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={form.monthlyTuitionUSD}
-                  onChange={(e) => setField('monthlyTuitionUSD', e.target.value)}
-                  className={inputCls}
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    value={form.monthlyTuitionUSD}
+                    onChange={(e) => setField('monthlyTuitionUSD', e.target.value)}
+                    className={inputCls}
+                  />
+                  <select value={form.tuitionCurrency} onChange={(e) => setForm((f) => ({ ...f, tuitionCurrency: e.target.value }))} className={`${inputCls} w-36`}>
+                    <option value="">{isAr ? 'عملة الموقع' : 'Site currency'}</option>
+                    {CURRENCIES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.symbol} {isAr ? c.ar : c.en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
