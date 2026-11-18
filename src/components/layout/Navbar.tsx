@@ -242,7 +242,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 </button>
 
                 <button
-                  onClick={() => handleNav('register')}
+                  onClick={() => handleNav('join-us')}
                   className="relative group overflow-hidden px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-lg hover:shadow-[#D4AF37]/20 transition-all active:scale-95"
                 >
                   <span className="relative z-10 flex items-center gap-1.5">
@@ -273,7 +273,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
         <div className="md:hidden border-t border-[#D4AF37]/20 bg-[#0A192F] px-4 pt-4 pb-6 space-y-2 max-h-[85vh] overflow-y-auto">
           <div className="grid grid-cols-2 gap-2 mb-4">
             <button
-              onClick={() => handleNav('register')}
+              onClick={() => handleNav('join-us')}
               className="w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-center"
             >
               {t.nav.register}

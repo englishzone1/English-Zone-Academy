@@ -529,7 +529,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     }
   };
 
-  const handleApprove = async (regId: string) => {
+  const handleApprove = async (regId: string, retry = false) => {
     const reg = registrations.find((r) => r.id === regId);
     if (!reg) return;
     try {
@@ -543,6 +543,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
       // ربط الطلب بحساب الطالب الذي يحمل نفس البريد
       const uid = await studentDataService.linkRegistrationToStudent(reg);
+      if (!uid && retry) {
+        notify(
+          tr(
+            `Still no account with ${reg.email}. Ask her which email she used to log in, or to sign up with exactly this one.`,
+            `لا يوجد حتى الآن حساب بالبريد ${reg.email}. اسأليها بأي بريد دخلت، أو اطلبي منها إنشاء الحساب بهذا البريد نفسه.`
+          ),
+          10000,
+          true
+        );
+        return;
+      }
       if (!uid) {
         // نقبل الطلب الآن، ويُربط بالحساب تلقائيًا عندما ينشئه الطالب بنفس البريد
         await studentDataService.updateRegistrationStatus(regId, 'approved', adminName, undefined, true);
@@ -859,8 +870,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                             {statusLabel(reg.status)}
                           </span>
                           {(reg as any).awaitingAccount && !(reg as any).linkedUserId && (
-                            <div className="mt-1 text-[10px] font-bold text-amber-700">
-                              {tr('Waiting for login account', 'بانتظار إنشاء حساب الدخول')}
+                            <div className="mt-1 space-y-1">
+                              <div className="text-[10px] font-bold text-amber-700">
+                                {tr('Waiting for login account', 'بانتظار إنشاء حساب الدخول')}
+                              </div>
+                              <button
+                                onClick={() => handleApprove(reg.id, true)}
+                                className="px-2 py-1 rounded-md bg-[#0A192F] text-[#F3E5AB] text-[10px] font-bold"
+                              >
+                                {tr('She created it – add now', 'أنشأت حسابها؟ أضيفيها الآن')}
+                              </button>
                             </div>
                           )}
                         </td>

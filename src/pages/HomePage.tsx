@@ -71,7 +71,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
-                onClick={() => navigate('register')}
+                onClick={() => navigate('join-us')}
                 className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-xl hover:shadow-[#D4AF37]/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
               >
                 <GraduationCap className="w-5 h-5" />

@@ -20,6 +20,7 @@ import { RegistrationPage } from './pages/RegistrationPage';
 import { LoginPage } from './pages/LoginPage';
 import { LibraryPage } from './pages/LibraryPage';
 import { VisitorJoinPage } from './pages/VisitorJoinPage';
+import { JoinUsPage } from './pages/JoinUsPage';
 import { HomeworkPlatform } from './components/student/HomeworkPlatform';
 import { HomeworkAnswersPage } from './components/admin/HomeworkAnswersPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
@@ -142,6 +143,8 @@ function MainApp() {
         return <LibraryPage navigate={navigate} />;
       case 'join':
         return <VisitorJoinPage navigate={navigate} />;
+      case 'join-us':
+        return <JoinUsPage navigate={navigate} />;
       case 'blog':
         return <BlogPage navigate={navigate} />;
       case 'english-club':

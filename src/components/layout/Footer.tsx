@@ -226,7 +226,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
               </li>
               <li className="pt-2">
                 <button
-                  onClick={() => handleNav('register')}
+                  onClick={() => handleNav('join-us')}
                   className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] font-bold text-center text-xs shadow hover:brightness-110"
                 >
                   {t.nav.register}
