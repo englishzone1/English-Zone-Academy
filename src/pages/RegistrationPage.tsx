@@ -28,7 +28,7 @@ interface RegistrationPageProps {
 export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, initialLevel }) => {
   const contacts = useAcademySettings();
   const { t, language } = useLanguage();
-  const { isAuthenticated, firebaseUser, registerVisitor, user } = useAuth();
+  const { isAuthenticated, firebaseUser, registerVisitor, user, updateProfile } = useAuth();
   // كلمة مرور حساب الدخول: يُنشأ الحساب مع الطلب، فلا خطوة إضافية بعده
   const [password, setPassword] = useState('');
   const [googleBusy, setGoogleBusy] = useState(false);
@@ -63,11 +63,12 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
   // البيانات المعروفة من حسابها لا نطلبها مرة ثانية
   const up: any = user || {};
+  // الاسم ورقم الواتساب يظهران دائمًا (معبّأين من الحساب)؛ الدولة والعمر لا نكررهما إن كانا معروفين
   const known = {
-    name: !!firebaseUser && !!String(up.fullName || '').trim(),
+    name: false,
     age: !!firebaseUser && Number(up.age) > 0,
     country: !!firebaseUser && !!String(up.country || '').trim(),
-    phone: !!firebaseUser && !!String(up.phone || '').trim()
+    phone: false
   };
 
   useEffect(() => {
@@ -133,6 +134,14 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
         notes: formData.notes
       } as any);
 
+      // الاسم والرقم الرسميان يُحفظان في حسابها أيضًا
+      if (firebaseUser) {
+        const nm = formData.fullName.trim();
+        const ph = formData.whatsappNumber.trim();
+        if (nm !== String(up.fullName || '') || ph !== String(up.phone || '')) {
+          await updateProfile({ fullName: nm, phone: ph, updatedAt: new Date().toISOString() } as any).catch(() => undefined);
+        }
+      }
       setSubmissionId(savedId);
       setIsSubmitted(true);
     } catch (err) {
@@ -294,25 +303,11 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
             <form onSubmit={handleSubmit} className="space-y-6">
               
-              {firebaseUser && (known.name || known.age || known.country || known.phone) && (
-                <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/40 text-xs text-[#0A192F] space-y-1">
-                  <b>{language === 'ar' ? 'بياناتك من حسابك:' : 'From your account:'}</b>
-                  <div className="text-gray-600">
-                    {[known.name && up.fullName, known.country && up.country, known.age && `${up.age} ${language === 'ar' ? 'سنة' : 'yrs'}`, known.phone && up.phone]
-                      .filter(Boolean)
-                      .join(' • ')}
-                  </div>
-                  <span className="text-[11px] text-gray-500">
-                    {language === 'ar' ? 'لتعديل الاسم أو رقم الواتساب: من «الأفاتار الخاص بي».' : 'Edit name or WhatsApp from “My avatar”.'}
-                  </span>
-                </div>
-              )}
-
               {/* Full Name & Age */}
               {!(known.name && known.age) && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {!known.name && (
-                <div className="sm:col-span-2">
+                <div className={known.age ? 'sm:col-span-3' : 'sm:col-span-2'}>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
                     {t.register.fullName} *
                   </label>
@@ -376,7 +371,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                 )}
 
                 {!known.phone && (
-                <div>
+                <div className={known.country ? 'sm:col-span-2' : ''}>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
                     {t.register.whatsapp} *
                   </label>
