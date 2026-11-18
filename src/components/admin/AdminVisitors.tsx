@@ -4,17 +4,19 @@ import { Download, MessageCircle, Mail, Search } from 'lucide-react';
 interface Props {
   users: any[];
   isAr: boolean;
+  // من أرسلت طلب الاشتراك في الكورس تنتقل إلى «المسجّلون على الكورس»
+  enrolledIds?: string[];
 }
 
 // الزوار الذين أنشؤوا حسابًا مجانيًا (ليسوا مشتركين بعد): للتواصل معهم بالعروض
-export const AdminVisitors: React.FC<Props> = ({ users, isAr }) => {
+export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [] }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [q, setQ] = useState('');
 
   const visitors = useMemo(
     () =>
       users
-        .filter((u) => u.accountType === 'visitor' && String(u.subscriptionStatus || '') !== 'active')
+        .filter((u) => u.accountType === 'visitor' && String(u.subscriptionStatus || '') !== 'active' && !enrolledIds.includes(u.id))
         .filter((u) => !q.trim() || `${u.fullName} ${u.email} ${u.phone || ''}`.toLowerCase().includes(q.trim().toLowerCase()))
         .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || ''))),
     [users, q]
@@ -27,8 +29,8 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr }) => {
 
   const exportExcel = () => {
     const cell = (v: any) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-    const head = [tr('Name', 'الاسم'), tr('Email', 'البريد'), tr('WhatsApp', 'واتساب'), tr('Joined', 'تاريخ التسجيل')];
-    const rows = visitors.map((u) => [u.fullName, u.email, u.phone || '', u.createdAt ? new Date(u.createdAt).toLocaleDateString(isAr ? 'ar' : 'en') : '']);
+    const head = [tr('Name', 'الاسم'), tr('Email', 'البريد'), tr('WhatsApp', 'واتساب'), tr('Country', 'الدولة'), tr('Age', 'العمر'), tr('Joined', 'تاريخ التسجيل')];
+    const rows = visitors.map((u) => [u.fullName, u.email, u.phone || '', u.country || '', u.age || '', u.createdAt ? new Date(u.createdAt).toLocaleDateString(isAr ? 'ar' : 'en') : '']);
     const csv = '﻿' + [head, ...rows].map((r) => r.map(cell).join(',')).join('\r\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const a = document.createElement('a');
@@ -44,11 +46,11 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr }) => {
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-5" dir={isAr ? 'rtl' : 'ltr'}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{tr('Free accounts (visitors)', 'الزوار المسجّلون')}</h2>
+          <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{tr('Potential registrants', 'المسجّلون المحتملون')}</h2>
           <p className="text-xs text-gray-500">
             {tr(
-              'People who created a free account to download materials. They are not students until you approve their enrollment.',
-              'من أنشأ حسابًا مجانيًا لتحميل المواد. ليسوا طلابًا حتى يسجّلوا في الأكاديمية وتعتمدي اشتراكهم.'
+              'Everyone who signed up for free. When one taps "Subscribe to the course", she moves to Course registrants.',
+              'كل من سجّلت مجانًا في الموقع. حين تضغط إحداهن «للاشتراك في الكورس» تنتقل إلى «المسجّلون على الكورس».'
             )}
           </p>
         </div>
@@ -66,14 +68,17 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr }) => {
       <p className="text-xs font-bold text-gray-700">{tr(`Total: ${visitors.length}`, `العدد: ${visitors.length}`)}</p>
 
       {visitors.length === 0 ? (
-        <div className="p-8 text-center text-xs text-gray-500 bg-[#FAF8F5] rounded-2xl">{tr('No free accounts yet.', 'لا يوجد زوار مسجّلون بعد.')}</div>
+        <div className="p-8 text-center text-xs text-gray-500 bg-[#FAF8F5] rounded-2xl">{tr('No sign-ups yet.', 'لا توجد مسجّلات بعد.')}</div>
       ) : (
         <div className="space-y-2">
           {visitors.map((u) => (
             <div key={u.id} className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-100 flex flex-wrap items-center justify-between gap-2 text-xs">
               <div>
                 <span className="font-bold text-[#0A192F]">{u.fullName}</span>
-                <span className="text-gray-400"> • {u.createdAt ? new Date(u.createdAt).toLocaleDateString(isAr ? 'ar' : 'en') : ''}</span>
+                <span className="text-gray-400">
+                  {u.country ? ` • ${u.country}` : ''}
+                  {u.age ? ` • ${tr('age', 'العمر')} ${u.age}` : ''} • {u.createdAt ? new Date(u.createdAt).toLocaleDateString(isAr ? 'ar' : 'en') : ''}
+                </span>
                 <div className="text-gray-600" dir="ltr">
                   {u.email}
                   {u.phone ? ` • ${u.phone}` : ''}

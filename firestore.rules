@@ -63,6 +63,11 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
+    // كل من له ملف في المنصة (مسجّلة مجانًا أو طالبة)
+    function isMember() {
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
     // طالب اشتراكه مفعّل
     function isActiveStudent() {
       return isSignedIn() &&
@@ -335,9 +340,9 @@ service cloud.firestore {
 
     // --- English Zone community (مجتمع الطلاب) ---
     match /community_posts/{postId} {
-      allow get, list: if isTeacher() || isActiveStudent();
+      allow get, list: if isTeacher() || isMember();
 
-      allow create: if (isTeacher() || isActiveStudent()) &&
+      allow create: if (isTeacher() || isMember()) &&
         isValidId(postId) &&
         request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'authorAvatar', 'text', 'imageDataUrl', 'audioDataUrl', 'videoUrl', 'likes', 'createdAt']) &&
         request.resource.data.authorId == request.auth.uid &&
@@ -349,7 +354,7 @@ service cloud.firestore {
         (!('videoUrl' in request.resource.data) || (request.resource.data.videoUrl is string && request.resource.data.videoUrl.size() <= 500));
 
       // الإعجاب: يضيف أو يحذف المستخدم معرّفه فقط
-      allow update: if (isTeacher() || isActiveStudent()) &&
+      allow update: if (isTeacher() || isMember()) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
         request.resource.data.likes.toSet().difference(resource.data.likes.toSet()).hasOnly([request.auth.uid]) &&
         resource.data.likes.toSet().difference(request.resource.data.likes.toSet()).hasOnly([request.auth.uid]);
@@ -357,8 +362,8 @@ service cloud.firestore {
       allow delete: if isAdmin() || (isSignedIn() && resource.data.authorId == request.auth.uid);
 
       match /comments/{commentId} {
-        allow get, list: if isTeacher() || isActiveStudent();
-        allow create: if (isTeacher() || isActiveStudent()) &&
+        allow get, list: if isTeacher() || isMember();
+        allow create: if (isTeacher() || isMember()) &&
           isValidId(commentId) &&
           request.resource.data.keys().hasOnly(['id', 'authorId', 'authorName', 'authorRole', 'authorAvatar', 'text', 'createdAt']) &&
           request.resource.data.authorId == request.auth.uid &&

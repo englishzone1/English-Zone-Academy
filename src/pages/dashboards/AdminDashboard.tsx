@@ -249,7 +249,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   // من سجّل على الكورس ولم تُضِفه الإدارة كطالب بعد يبقى في «المسجّلون على الكورس»
   const isRegistrant = (u: any) => u.accountType === 'registrant' && String(u.subscriptionStatus || '') !== 'active';
   const students = usersList.filter((u) => u.role === 'student' && !isFreeVisitor(u) && !isRegistrant(u));
-  const visitorsCount = usersList.filter(isFreeVisitor).length;
+  const enrolledIds = registrations.filter((r: any) => r.studentId && r.status !== 'rejected').map((r: any) => r.studentId);
+  const visitorsCount = usersList.filter((u) => isFreeVisitor(u) && !enrolledIds.includes(u.id)).length;
   const teachers = usersList.filter((u) => u.role === 'teacher');
   const pendingRegistrations = registrations.filter((r) => r.status === 'pending');
 
@@ -645,7 +646,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'overview', labelEn: 'Overview & Metrics', labelAr: 'الإحصائيات العامة' },
     { id: 'registrations', labelEn: `Course registrants (${pendingRegistrations.length})`, labelAr: `المسجّلون على الكورس (${pendingRegistrations.length})` },
     { id: 'students', labelEn: `Students (${students.length})`, labelAr: `الطلاب (${students.length})` },
-    { id: 'visitors', labelEn: `Free accounts (${visitorsCount})`, labelAr: `الزوار المسجّلون (${visitorsCount})` },
+    { id: 'visitors', labelEn: `Potential registrants (${visitorsCount})`, labelAr: `المسجّلون المحتملون (${visitorsCount})` },
     { id: 'homework', labelEn: 'Homework & tests', labelAr: 'الواجبات والاختبارات' },
     { id: 'hwresults', labelEn: 'Homework results', labelAr: 'نتائج الواجبات' },
     { id: 'teachers', labelEn: 'Teachers', labelAr: 'المعلمون' },
@@ -1040,7 +1041,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         {activeTab === 'hwresults' && <AdminHomeworkResults onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* FREE ACCOUNTS */}
-        {activeTab === 'visitors' && <AdminVisitors users={usersList} isAr={isAr} />}
+        {activeTab === 'visitors' && (
+          <AdminVisitors users={usersList} isAr={isAr} enrolledIds={registrations.filter((r: any) => r.studentId && r.status !== 'rejected').map((r: any) => r.studentId)} />
+        )}
 
         {/* AUTO ASSISTANT */}
         {activeTab === 'assistant' && <AdminChatFaq onNotice={(msg) => notify(msg, 4000)} />}

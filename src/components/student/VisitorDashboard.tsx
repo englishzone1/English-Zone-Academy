@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift } from 'lucide-react';
+import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift, Target, Users, BadgePercent } from 'lucide-react';
+import { CommunityFeed } from '../community/CommunityFeed';
+import { useAcademySettings } from '../../hooks/useAcademySettings';
 import { studentHubService } from '../../services/studentHubService';
 import { whatsappWithText } from '../../hooks/useAcademySettings';
 
 interface Props {
   isAr: boolean;
+  uid: string;
   name: string;
   whatsapp: string;
   navigate: (route: string) => void;
@@ -12,7 +15,9 @@ interface Props {
 }
 
 // صفحة الحساب المجاني: الكتب والمجلة المفتوحة للمسجّلين، ودعوة للاشتراك
-export const VisitorDashboard: React.FC<Props> = ({ isAr, name, whatsapp, navigate, onLogout }) => {
+export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, navigate, onLogout }) => {
+  const { placementTestUrl } = useAcademySettings();
+  const [tab, setTab] = useState<'library' | 'community'>('library');
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,11 +76,42 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, name, whatsapp, naviga
           </button>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 border-2 border-[#D4AF37]/50 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* زر الاشتراك الكبير المضيء */}
+        <button
+          onClick={() => navigate('register')}
+          className="relative w-full rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-[0_0_35px_rgba(212,175,55,0.65)] animate-pulse hover:animate-none hover:scale-[1.01] transition-transform text-center"
+        >
+          <span className="flex items-center justify-center gap-3 font-serif-luxury font-bold text-2xl sm:text-3xl">
+            <GraduationCap className="w-8 h-8" />
+            {tr('To subscribe to the course, tap here', 'للاشتراك في الكورس اضغطي هنا')}
+          </span>
+          <span className="block mt-2 text-xs sm:text-sm font-semibold opacity-80">
+            {tr('Live small-group classes with a female teacher • monthly payment', 'حصص مباشرة في مجموعات صغيرة مع معلمة • الدفع شهريًا')}
+          </span>
+        </button>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {placementTestUrl ? (
+            <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37]">
+              <Target className="w-6 h-6 text-[#D4AF37]" />
+              {tr('Free placement test', 'اختبري مستواكِ مجانًا')}
+            </a>
+          ) : null}
+          <button onClick={() => setTab('community')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
+            <Users className="w-6 h-6 text-[#D4AF37]" />
+            {tr('English Zone community', 'مجتمع English Zone')}
+          </button>
+          <button onClick={() => navigate('offers')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
+            <BadgePercent className="w-6 h-6 text-[#D4AF37]" />
+            {tr('Workshops & offers', 'الورش والعروض')}
+          </button>
+        </div>
+
+        <div className={`bg-white rounded-3xl p-5 border border-gray-200 shadow-sm flex-col sm:flex-row sm:items-center justify-between gap-4 ${whatsapp ? 'flex' : 'hidden'}`}>
           <div>
             <h2 className="font-bold text-[#0A192F] flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
-              {tr('Ready to study with us?', 'جاهزة للدراسة معنا؟')}
+              {tr('A question before subscribing?', 'عندكِ سؤال قبل الاشتراك؟')}
             </h2>
             <p className="text-xs text-gray-600 mt-1">
               {tr(
@@ -85,9 +121,6 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, name, whatsapp, naviga
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => navigate('register')} className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-xs font-bold">
-              {tr('Enroll now', 'اشتركي الآن')}
-            </button>
             {whatsapp && (
               <a
                 href={whatsappWithText(whatsapp, isAr ? `مرحبًا English Zone، أنا ${name} ولدي حساب مجاني، أريد معرفة المزيد عن الاشتراك.` : `Hello English Zone, I'm ${name} with a free account. I'd like to know more about enrolling.`)}
@@ -102,7 +135,21 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, name, whatsapp, naviga
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4">
+        <div className="flex gap-2">
+          {(['library', 'community'] as const).map((k) => (
+            <button
+              key={k}
+              onClick={() => setTab(k)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold ${tab === k ? 'bg-[#0A192F] text-[#F3E5AB]' : 'bg-white border border-gray-200 text-gray-600'}`}
+            >
+              {k === 'library' ? tr('Books & magazine', 'الكتب والمجلة') : tr('Community', 'المجتمع')}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'community' && <CommunityFeed uid={uid} name={name} role="student" isAr={isAr} />}
+
+        <div className={`bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4 ${tab === 'library' ? '' : 'hidden'}`}>
           {loading ? (
             <p className="text-xs text-gray-500 text-center py-6">{tr('Loading...', 'جارٍ التحميل...')}</p>
           ) : items.length === 0 ? (

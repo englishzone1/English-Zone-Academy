@@ -125,6 +125,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
     return (
       <VisitorDashboard
         isAr={isAr}
+        uid={firebaseUser.uid}
         name={(user as any)?.fullName || ''}
         whatsapp={whatsappLink}
         navigate={navigate}

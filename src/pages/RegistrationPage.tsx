@@ -28,7 +28,7 @@ interface RegistrationPageProps {
 export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, initialLevel }) => {
   const contacts = useAcademySettings();
   const { t, language } = useLanguage();
-  const { isAuthenticated, firebaseUser, registerVisitor } = useAuth();
+  const { isAuthenticated, firebaseUser, registerVisitor, user } = useAuth();
   // كلمة مرور حساب الدخول: يُنشأ الحساب مع الطلب، فلا خطوة إضافية بعده
   const [password, setPassword] = useState('');
   const [googleBusy, setGoogleBusy] = useState(false);
@@ -47,6 +47,19 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState('');
+
+  // المسجّلة مجانًا: نملأ اسمها ورقمها ودولتها من حسابها
+  useEffect(() => {
+    if (!user) return;
+    const u: any = user;
+    setFormData((prev) => ({
+      ...prev,
+      fullName: prev.fullName || u.fullName || '',
+      whatsappNumber: prev.whatsappNumber || u.phone || '',
+      country: prev.country || u.country || '',
+      age: prev.age || (u.age ? String(u.age) : '')
+    }));
+  }, [user]);
 
   useEffect(() => {
     if (initialLevel) {
