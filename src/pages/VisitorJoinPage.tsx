@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Target, Users, BookOpen, Megaphone, BadgePercent, CheckCircle2, MessageCircle } from 'lucide-react';
 import { useAcademySettings, whatsappWithText } from '../hooks/useAcademySettings';
 import { useLanguage } from '../context/LanguageContext';
@@ -18,6 +18,14 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+
+  // متصفحات داخل التطبيقات (إنستغرام، فيسبوك، تيك توك، سناب...) يمنع Google الدخول منها
+  const inApp = typeof navigator !== 'undefined' && /Instagram|FBAN|FBAV|FB_IAB|FBIOS|Snapchat|TikTok|musical_ly|BytedanceWebview|Line\/|Twitter|WhatsApp|; wv\)/i.test(navigator.userAgent || '');
+
+  // بعد العودة من صفحة Google (على الجوال) ندخلها مباشرة إلى صفحتها
+  useEffect(() => {
+    if (isAuthenticated) navigate('portal');
+  }, [isAuthenticated]);
 
   const benefits = [
     { icon: Target, text: tr('Free placement test to know your exact level', 'تحديد مستواكِ مجانًا باختبار دقيق') },
@@ -125,7 +133,19 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
           <h2 className="font-bold text-xl text-[#0A192F]">{tr('Sign up now – free', 'سجّلي الآن مجانًا')}</h2>
           <p className="text-xs text-gray-500">{tr('One step: Google or email. We ask for your name and WhatsApp inside.', 'خطوة واحدة: بحساب Google أو بالبريد. اسمكِ ورقم الواتساب نطلبهما داخل المنصة.')}</p>
           {error && <p className="text-xs font-bold text-red-600 text-center p-2 rounded-lg bg-red-50 border border-red-100">{error}</p>}
-          <GoogleSignInButton onClick={viaGoogle} disabled={busy} isAr={isAr} />
+          {inApp ? (
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
+              <b className="block">{tr('Google sign-in does not work inside this app', 'الدخول بحساب Google لا يعمل داخل هذا التطبيق')}</b>
+              <span>
+                {tr(
+                  'Open this page in Chrome or Safari (menu ⋮ or ⋯ → Open in browser), or sign up below with your email.',
+                  'افتحي الصفحة في Chrome أو Safari (من القائمة ⋮ أو ⋯ ← «فتح في المتصفح»)، أو سجّلي بالبريد في الأسفل.'
+                )}
+              </span>
+            </div>
+          ) : (
+            <GoogleSignInButton onClick={viaGoogle} disabled={busy} isAr={isAr} />
+          )}
           <OrDivider isAr={isAr} />
           <form onSubmit={viaEmail} className="space-y-3">
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} dir="ltr" placeholder={tr('Email', 'البريد الإلكتروني')} className={inp} />
