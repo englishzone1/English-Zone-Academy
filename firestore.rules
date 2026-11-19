@@ -682,7 +682,7 @@ service cloud.firestore {
             (request.resource.data.pub == null ||
               (request.resource.data.pub is string && request.resource.data.status == 'in' && request.resource.data.role in ['owner', 'speaker'])) &&
             (request.resource.data.screen == null ||
-              (request.resource.data.screen is string && request.resource.data.status == 'in' && resource.data.canScreen == true)) &&
+              (request.resource.data.screen is string && request.resource.data.status == 'in' && resource.data.role == 'owner')) &&
             (request.resource.data.status == resource.data.status ||
               request.resource.data.status in ['left', 'pending'] ||
               (request.resource.data.status == 'in' &&

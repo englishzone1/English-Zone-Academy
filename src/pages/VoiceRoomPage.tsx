@@ -520,8 +520,9 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   }, [inRoom, me?.canScreen, stopCam]);
 
   useEffect(() => {
-    if (screenTrackRef.current && (!inRoom || !me?.canScreen)) stopScreen(inRoom);
-  }, [inRoom, me?.canScreen, stopScreen]);
+    // مشاركة الشاشة لصاحب/ة الغرفة وحده
+    if (screenTrackRef.current && (!inRoom || me?.role !== 'owner')) stopScreen(inRoom);
+  }, [inRoom, me?.role, stopScreen]);
 
   // مستوى الصوت: من يتكلم الآن
   useEffect(() => {
@@ -1020,7 +1021,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                 {camOn ? <VideoOff className="w-5 h-5" /> : <Video className="w-5 h-5" />}
               </button>
             )}
-            {me?.canScreen && canShareScreen() && (
+            {me?.role === 'owner' && canShareScreen() && (
               <button
                 onClick={() => (screenOn ? stopScreen() : startScreen())}
                 className={`${roundBtn} ${screenOn ? 'bg-red-600' : 'bg-white/15'}`}
@@ -1166,8 +1167,8 @@ const MemberMenu: React.FC<{ m: RoomMember; isMod: boolean; isAr: boolean; onClo
         {isMod && m.role === 'listener' && item('stage', <UserPlus className="w-4 h-4" />, tr('Invite to speak', 'دعوة للتحدث'))}
         {isMod && m.role === 'speaker' && item('audience', <UserMinus className="w-4 h-4" />, tr('Move to listeners', 'نقل إلى المستمعين'))}
         {isMod && m.role !== 'listener' && !m.muted && item('mute', <MicOff className="w-4 h-4" />, tr('Mute', 'كتم الميكروفون'))}
-        {isMod && m.role !== 'owner' && !m.canScreen && item('screenOn', <MonitorUp className="w-4 h-4" />, tr('Allow screen sharing', 'السماح بمشاركة الشاشة'))}
-        {isMod && m.role !== 'owner' && m.canScreen && item('screenOff', <MonitorX className="w-4 h-4" />, tr('Stop screen sharing', 'منع مشاركة الشاشة'))}
+        {isMod && m.role !== 'owner' && !m.canScreen && item('screenOn', <Video className="w-4 h-4" />, tr('Allow camera', 'السماح بالكاميرا'))}
+        {isMod && m.role !== 'owner' && m.canScreen && item('screenOff', <VideoOff className="w-4 h-4" />, tr('Stop camera', 'منع الكاميرا'))}
         {isMod && m.role !== 'owner' && item('kick', <Ban className="w-4 h-4" />, tr('Remove and block from room', 'إخراج وحظر من الغرفة'), true)}
         {item('report', <Flag className="w-4 h-4" />, tr('Report to the academy', 'إبلاغ الأكاديمية'), true)}
         <button onClick={onClose} className="w-full mt-1 py-2.5 rounded-xl bg-gray-100 text-sm font-bold">
