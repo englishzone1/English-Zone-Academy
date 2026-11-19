@@ -122,6 +122,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const [showSettings, setShowSettings] = useState(false);
   const [menuFor, setMenuFor] = useState<RoomMember | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [showRequests, setShowRequests] = useState(false);
   const [audioBlocked, setAudioBlocked] = useState(false);
   const [conn, setConn] = useState({ outTotal: 0, outOk: 0, inTotal: 0, inOk: 0, turn: false });
 
@@ -586,29 +587,15 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     );
   }
 
-  const tile = (m: RoomMember, big: boolean) => (
-    <button key={m.uid} onClick={() => m.uid !== uid && setMenuFor(m)} className="flex flex-col items-center gap-1.5 w-20 sm:w-24 text-center">
-      <div className="relative">
-        <Avatar m={m} size={big ? 'w-16 h-16 sm:w-20 sm:h-20' : 'w-12 h-12'} speaking={speaking.has(m.uid)} />
-        {m.role === 'owner' && <Crown className="absolute -top-2 -end-1 w-5 h-5 text-[#D4AF37] drop-shadow" />}
-        {big && (
-          <span className={`absolute -bottom-1 -end-1 w-6 h-6 rounded-full flex items-center justify-center ${m.muted ? 'bg-gray-500' : 'bg-emerald-500'} text-white border-2 border-white`}>
-            {m.muted ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
-          </span>
-        )}
-        {!big && m.hand && <span className="absolute -top-1 -end-1 text-base">✋</span>}
-        {m.screen && <MonitorUp className="absolute -bottom-1 -start-1 w-5 h-5 p-0.5 rounded-full bg-[#0A192F] text-white" />}
-      </div>
-      <span className="text-[11px] font-bold text-[#0A192F] truncate w-full">{m.uid === uid ? tr('You', 'أنت') : m.name}</span>
-    </button>
-  );
 
   const hands = audience.filter((m) => m.hand);
+  const requestsCount = pending.length + hands.length;
+  const seats: (RoomMember | null)[] = Array.from({ length: Math.max(room.maxSpeakers || 5, stage.length) }, (_, i) => stage[i] || null);
+  const photoOf = (id: string) => members.find((m) => m.uid === id) || null;
+  const roundBtn = 'w-11 h-11 shrink-0 rounded-full flex items-center justify-center';
 
-  return shell(
-    <>
-      {header}
-
+  return (
+    <div className="fixed inset-0 z-30 flex flex-col bg-gradient-to-b from-[#0A192F] via-[#0B1424] to-[#05080F] text-white" dir={isAr ? 'rtl' : 'ltr'}>
       {/* أصوات الآخرين */}
       {Object.entries(tracks)
         .filter(([k]) => k.endsWith(':mic'))
@@ -616,183 +603,244 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
           <AudioSink key={k} track={t} onBlocked={() => setAudioBlocked(true)} />
         ))}
 
-      {audioBlocked && (
-        <button onClick={unlockAudio} className="w-full p-4 rounded-2xl bg-[#D4AF37] text-[#0A192F] font-bold text-base animate-pulse">
-          🔊 {tr('Tap here to hear the room', 'اضغط/ي هنا لتشغيل صوت الغرفة')}
+      {/* الشريط العلوي */}
+      <div className="flex items-center gap-2 px-3 pt-3 pb-2">
+        <button onClick={() => leave()} className={`${roundBtn} bg-white/10`} title={tr('All rooms', 'كل الغرف')}>
+          <ArrowRight className={`w-5 h-5 ${isAr ? '' : 'rotate-180'}`} />
         </button>
-      )}
+        <div className="min-w-0 flex-1">
+          <div className="font-bold text-[15px] text-[#F3E5AB] truncate">{room.title}</div>
+          <div className="flex items-center gap-1.5 text-[10px] text-gray-300">
+            {room.level && <span className="px-1.5 rounded bg-[#D4AF37] text-[#0A192F] font-bold">{room.level}</span>}
+            {room.privacy !== 'public' && <Lock className="w-3 h-3" />}
+            {room.girlsOnly && <span className="text-pink-300 font-bold">{tr('Girls only', 'للبنات فقط')}</span>}
+            <span>
+              {present.length} {tr('in the room', 'في الغرفة')}
+            </span>
+          </div>
+        </div>
+        {isMod && requestsCount > 0 && (
+          <button onClick={() => setShowRequests(true)} className="relative h-9 px-3 rounded-full bg-[#D4AF37] text-[#0A192F] text-xs font-bold inline-flex items-center gap-1 animate-pulse">
+            <Hand className="w-4 h-4" />
+            {requestsCount}
+          </button>
+        )}
+        <button onClick={copyLink} className={`${roundBtn} bg-white/10`} title={tr('Copy invite link', 'نسخ رابط الدعوة')}>
+          <Link2 className="w-4 h-4" />
+        </button>
+        {isMod && (
+          <button onClick={() => setShowSettings(true)} className={`${roundBtn} bg-white/10`} title={tr('Room settings', 'إعدادات الغرفة')}>
+            <Settings className="w-4 h-4" />
+          </button>
+        )}
+      </div>
 
-      {showVpnHint && (
-        <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300 text-sm text-amber-900 font-bold leading-relaxed">
-          ⚠️{' '}
-          {tr(
-            'The sound is not connecting. If you use a VPN, turn it off during the room, then leave and enter again.',
-            'الصوت لا يتصل. إذا كان لديك VPN {أوقفه|أوقفيه} أثناء الغرفة، ثم {اخرج|اخرجي} {وادخل|وادخلي} من جديد.'
+      {/* تنبيهات */}
+      <div className="px-3 space-y-2">
+        {audioBlocked && (
+          <button onClick={unlockAudio} className="w-full p-3 rounded-2xl bg-[#D4AF37] text-[#0A192F] font-bold text-sm animate-pulse">
+            🔊 {tr('Tap here to hear the room', 'اضغط/ي هنا لتشغيل صوت الغرفة')}
+          </button>
+        )}
+        {showVpnHint && (
+          <div className="p-2.5 rounded-2xl bg-amber-400/15 border border-amber-300/40 text-xs text-amber-100 font-bold leading-relaxed">
+            ⚠️{' '}
+            {tr(
+              'The sound is not connecting. If you use a VPN, turn it off during the room, then leave and enter again.',
+              'الصوت لا يتصل. إذا كان لديك VPN {أوقفه|أوقفيه} أثناء الغرفة، ثم {اخرج|اخرجي} {وادخل|وادخلي} من جديد.'
+            )}
+          </div>
+        )}
+        {(isSpeaker || conn.inTotal > 0 || admin) && (
+          <div className="flex flex-wrap gap-1.5 text-[10px] font-bold">
+            {isSpeaker && (
+              <span className={`px-2 py-0.5 rounded-full ${conn.outTotal > 0 && conn.outOk === conn.outTotal ? 'bg-emerald-400/15 text-emerald-200' : 'bg-amber-400/15 text-amber-200'}`}>
+                {tr('Your voice reaches', 'صوتك يصل إلى')} {conn.outOk}/{conn.outTotal}
+              </span>
+            )}
+            {conn.inTotal > 0 && (
+              <span className={`px-2 py-0.5 rounded-full ${conn.inOk === conn.inTotal ? 'bg-emerald-400/15 text-emerald-200' : 'bg-amber-400/15 text-amber-200'}`}>
+                {tr('You hear', 'تسمع/ين')} {conn.inOk}/{conn.inTotal}
+              </span>
+            )}
+            {admin && (
+              <span className={`px-2 py-0.5 rounded-full ${conn.turn ? 'bg-sky-400/15 text-sky-200' : 'bg-white/10 text-gray-300'}`}>
+                {conn.turn ? tr('Relay: on', 'خادم الاتصال: مفعّل') : tr('Relay: off', 'خادم الاتصال: غير مفعّل')}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* الشاشة المشتركة */}
+      {screenOwner && screenOwner.uid !== uid && (
+        <div className="px-3 pt-2">
+          {tracks[screenOwner.uid + ':screen'] ? (
+            <VideoSink track={tracks[screenOwner.uid + ':screen']} />
+          ) : (
+            <div className="h-32 rounded-2xl bg-white/5 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+            </div>
           )}
         </div>
       )}
+      {screenOn && <div className="mx-3 mt-2 px-3 py-1.5 rounded-xl bg-red-500/20 text-red-100 text-xs font-bold">{tr('You are sharing your screen', 'أنت تشارك{|ين} شاشتك')}</div>}
 
-      <div className="flex flex-wrap gap-2 text-[11px] font-bold">
-        {isSpeaker && (
-          <span className={`px-2.5 py-1 rounded-full border ${conn.outTotal > 0 && conn.outOk === conn.outTotal ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
-            {tr('Your voice reaches', 'صوتك يصل إلى')} {conn.outOk}/{conn.outTotal}
-          </span>
-        )}
-        {conn.inTotal > 0 && (
-          <span className={`px-2.5 py-1 rounded-full border ${conn.inOk === conn.inTotal ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
-            {tr('You hear', 'تسمع/ين')} {conn.inOk}/{conn.inTotal} {tr('speakers', 'متحدث')}
-          </span>
-        )}
-        {admin && (
-          <span className={`px-2.5 py-1 rounded-full border ${conn.turn ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-gray-50 text-gray-500 border-gray-200'}`}>
-            {conn.turn ? tr('Relay server: on', 'خادم الاتصال: مفعّل') : tr('Relay server: off', 'خادم الاتصال: غير مفعّل')}
-          </span>
-        )}
-        {isSpeaker && me?.muted && micReady && (
-          <span className="px-2.5 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200">
-            {tr('Your mic is off — tap “Unmute” below', 'المايك مغلق: اضغط/ي «تشغيل المايك» في الأسفل ليسمعوك')}
-          </span>
+      {/* المسرح: مقاعد المتحدثين */}
+      <div className="grid grid-cols-4 gap-y-3 px-2 pt-3 shrink-0">
+        {seats.map((m, i) =>
+          m ? (
+            <button key={m.uid} onClick={() => m.uid !== uid && setMenuFor(m)} className="flex flex-col items-center gap-1 min-w-0">
+              <div className="relative">
+                <Avatar m={m} size="w-16 h-16 sm:w-20 sm:h-20" speaking={speaking.has(m.uid)} />
+                {m.role === 'owner' && <Crown className="absolute -top-2.5 start-1/2 -translate-x-1/2 w-5 h-5 text-[#D4AF37] drop-shadow" />}
+                {m.muted && (
+                  <span className="absolute inset-0 m-auto w-8 h-8 rounded-full bg-black/55 flex items-center justify-center">
+                    <MicOff className="w-4 h-4" />
+                  </span>
+                )}
+                {m.screen && <MonitorUp className="absolute -bottom-1 -end-1 w-5 h-5 p-0.5 rounded-full bg-[#D4AF37] text-[#0A192F]" />}
+              </div>
+              <span className="text-[11px] font-bold truncate max-w-[80px]">{m.uid === uid ? tr('You', 'أنت') : m.name}</span>
+            </button>
+          ) : (
+            <button
+              key={'seat' + i}
+              onClick={() => !isSpeaker && !isMod && toggleHand()}
+              className="flex flex-col items-center gap-1"
+              title={tr('Raise your hand to take a seat', 'ارفع/ي يدك للصعود')}
+            >
+              <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
+                <Mic className="w-6 h-6 text-white/40" />
+              </span>
+              <span className="text-[11px] text-white/40">{i + 1}</span>
+            </button>
+          )
         )}
       </div>
 
-      {/* طلبات الدخول للمشرفة */}
-      {isMod && pending.length > 0 && (
-        <div className="bg-white rounded-2xl border-2 border-amber-300 p-4 space-y-2">
-          <h3 className="text-sm font-bold text-amber-800">{tr('Requests to enter', 'طلبات الدخول')} ({pending.length})</h3>
-          {pending.map((m) => (
-            <div key={m.uid} className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <Avatar m={m} size="w-9 h-9" />
-                <span className="text-sm font-bold truncate">{m.name}</span>
-              </div>
-              <div className="flex gap-1.5 shrink-0">
-                <button onClick={() => mod.approve(m).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold inline-flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5" />
-                  {tr('Accept', 'قبول')}
-                </button>
-                <button onClick={() => mod.decline(m).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-gray-200 text-gray-700 text-xs font-bold">
-                  {tr('Decline', 'رفض')}
-                </button>
-                <button onClick={() => mod.ban(m).catch(() => {})} className="p-1.5 rounded-lg bg-red-50 text-red-600" title={tr('Block from room', 'حظر من الغرفة')}>
-                  <Ban className="w-4 h-4" />
-                </button>
-              </div>
+      {/* المستمعون: قائمة عرضية تُسحب */}
+      <div className="flex gap-3 overflow-x-auto px-3 pt-3 pb-1 shrink-0 snap-x [scrollbar-width:none]">
+        <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
+          <span className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">{audience.length}</span>
+          <span className="text-[10px] text-gray-300 whitespace-nowrap">{tr('Listeners', 'المستمعون')}</span>
+        </div>
+        {audience.map((m) => (
+          <button key={m.uid} onClick={() => m.uid !== uid && setMenuFor(m)} className="flex flex-col items-center gap-1 shrink-0 snap-start w-14">
+            <div className="relative">
+              <Avatar m={m} size="w-11 h-11" speaking={false} />
+              {m.hand && <span className="absolute -top-1 -end-1 text-sm">✋</span>}
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* الأيدي المرفوعة */}
-      {isMod && hands.length > 0 && (
-        <div className="bg-white rounded-2xl border border-[#D4AF37]/60 p-4 space-y-2">
-          <h3 className="text-sm font-bold text-[#0A192F]">✋ {tr('Want to speak', 'يريدون التحدث')}</h3>
-          {hands.map((m) => (
-            <div key={m.uid} className="flex items-center justify-between gap-2">
-              <span className="text-sm font-bold truncate">{m.name}</span>
-              <div className="flex gap-1.5">
-                <button onClick={() => mod.toStage(m).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
-                  {tr('Let speak', 'السماح بالكلام')}
-                </button>
-                <button onClick={() => updateMember(roomId, m.uid, { hand: false }).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-gray-200 text-xs font-bold">
-                  {tr('Not now', 'ليس الآن')}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* الشاشة المشتركة */}
-      {screenOwner && (
-        <div className="bg-white rounded-3xl border border-gray-200 p-3 space-y-2">
-          <div className="text-xs font-bold text-gray-600 flex items-center gap-1.5">
-            <MonitorUp className="w-4 h-4" />
-            {screenOwner.uid === uid ? tr('You are sharing your screen', 'أنت تشارك{|ين} شاشتك') : `${tr('Screen of', 'شاشة')} ${screenOwner.name}`}
-          </div>
-          {screenOwner.uid !== uid && tracks[screenOwner.uid + ':screen'] ? (
-            <VideoSink track={tracks[screenOwner.uid + ':screen']} />
-          ) : screenOwner.uid !== uid ? (
-            <div className="h-40 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-            </div>
-          ) : null}
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <div className="space-y-4">
-          <div className="bg-white rounded-3xl border border-gray-200 p-5 space-y-3">
-            <h3 className="text-xs font-bold text-gray-500">
-              {tr('Speakers', 'المتحدثون')} ({stage.length}/{room.maxSpeakers})
-            </h3>
-            <div className="flex flex-wrap gap-4 justify-center sm:justify-start">{stage.map((m) => tile(m, true))}</div>
-          </div>
-          <div className="bg-white rounded-3xl border border-gray-200 p-5 space-y-3">
-            <h3 className="text-xs font-bold text-gray-500">
-              {tr('Listeners', 'المستمعون')} ({audience.length})
-            </h3>
-            {audience.length === 0 ? (
-              <p className="text-xs text-gray-400">{tr('No listeners yet.', 'لا يوجد مستمعون بعد.')}</p>
-            ) : (
-              <div className="flex flex-wrap gap-3">{audience.map((m) => tile(m, false))}</div>
-            )}
-          </div>
-        </div>
-        {/* الدردشة الكتابية: ظاهرة دائمًا أسفل القائمة */}
-        <div id="ez-room-chat">
-          <RoomChat roomId={roomId} uid={uid} name={myName} msgs={chat} isMod={isMod} isAr={isAr} />
-        </div>
-      </div>
-
-      <div className="h-20" />
-
-      {/* شريط التحكم */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-3 py-3" dir={isAr ? 'rtl' : 'ltr'}>
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
-          <button onClick={() => leave()} className="px-4 py-2.5 rounded-xl bg-red-50 text-red-700 text-sm font-bold inline-flex items-center gap-1.5">
-            <LogOut className="w-4 h-4" />
-            {tr('Leave', 'خروج')}
+            <span className="text-[10px] truncate w-full text-center">{m.uid === uid ? tr('You', 'أنت') : m.name}</span>
           </button>
-          <div className="flex items-center gap-2">
+        ))}
+      </div>
+
+      {/* الدردشة: الرسائل تصعد للأعلى */}
+      <ChatFeed roomId={roomId} uid={uid} msgs={chat} isMod={isMod} isAr={isAr} memberOf={photoOf} />
+
+      {/* شريط التحكم والكتابة */}
+      <ChatBar
+        roomId={roomId}
+        uid={uid}
+        name={myName}
+        isAr={isAr}
+        left={
+          <>
+            <button onClick={() => leave()} className={`${roundBtn} bg-red-500/20 text-red-200`} title={tr('Leave', 'خروج')}>
+              <LogOut className="w-5 h-5" />
+            </button>
+            {isSpeaker ? (
+              <button
+                onClick={toggleMute}
+                disabled={!micReady}
+                className={`${roundBtn} disabled:opacity-50 ${me?.muted ? 'bg-white/15 text-white' : 'bg-emerald-500 text-white shadow-[0_0_14px_rgba(16,185,129,0.6)]'}`}
+                title={me?.muted ? tr('Unmute', 'تشغيل المايك') : tr('Mute', 'كتم')}
+              >
+                {!micReady ? <Loader2 className="w-5 h-5 animate-spin" /> : me?.muted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </button>
+            ) : (
+              <button onClick={toggleHand} className={`${roundBtn} ${me?.hand ? 'bg-[#D4AF37] text-[#0A192F]' : 'bg-white/15 text-white'}`} title={me?.hand ? tr('Lower hand', 'إنزال اليد') : tr('Raise hand', 'رفع اليد')}>
+                <Hand className="w-5 h-5" />
+              </button>
+            )}
             {me?.role === 'speaker' && (
               <button
                 onClick={() => updateMember(roomId, uid, { role: 'listener', pub: null, screen: null, muted: true, hand: false }).catch(() => {})}
-                className="p-3 rounded-full bg-gray-100 text-[#0A192F]"
+                className={`${roundBtn} bg-white/15`}
                 title={tr('Leave the stage', 'النزول إلى المستمعين')}
               >
                 <UserMinus className="w-5 h-5" />
               </button>
             )}
-            <button onClick={() => document.getElementById('ez-room-chat')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="p-3 rounded-full bg-gray-100 text-[#0A192F]" title={tr('Chat', 'الدردشة')}>
-              <MessageSquare className="w-5 h-5" />
-            </button>
             {me?.canScreen && canShareScreen() && (
               <button
                 onClick={() => (screenOn ? stopScreen() : startScreen())}
-                className={`p-3 rounded-full ${screenOn ? 'bg-red-600 text-white' : 'bg-gray-100 text-[#0A192F]'}`}
+                className={`${roundBtn} ${screenOn ? 'bg-red-600' : 'bg-white/15'}`}
                 title={screenOn ? tr('Stop sharing', 'إيقاف المشاركة') : tr('Share screen', 'مشاركة الشاشة')}
               >
                 {screenOn ? <MonitorX className="w-5 h-5" /> : <MonitorUp className="w-5 h-5" />}
               </button>
             )}
-            {isSpeaker ? (
-              <button
-                onClick={toggleMute}
-                disabled={!micReady}
-                className={`px-5 py-3 rounded-full font-bold text-sm inline-flex items-center gap-2 disabled:opacity-50 ${me?.muted ? 'bg-gray-200 text-gray-700' : 'bg-emerald-500 text-white'}`}
-              >
-                {!micReady ? <Loader2 className="w-5 h-5 animate-spin" /> : me?.muted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                {me?.muted ? tr('Unmute', 'تشغيل المايك') : tr('Mute', 'كتم')}
-              </button>
-            ) : (
-              <button onClick={toggleHand} className={`px-5 py-3 rounded-full font-bold text-sm inline-flex items-center gap-2 ${me?.hand ? 'bg-[#D4AF37] text-[#0A192F]' : 'bg-[#0A192F] text-[#F3E5AB]'}`}>
-                <Hand className="w-5 h-5" />
-                {me?.hand ? tr('Lower hand', 'إنزال اليد') : tr('Raise hand', 'رفع اليد')}
-              </button>
-            )}
+          </>
+        }
+      />
+
+      {/* طلبات الدخول والأيدي المرفوعة */}
+      {showRequests && isMod && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-3" onClick={() => setShowRequests(false)}>
+          <div className="bg-white text-[#0A192F] rounded-3xl w-full max-w-sm p-4 space-y-3 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            {pending.length > 0 && <h3 className="text-sm font-bold text-amber-700">{tr('Requests to enter', 'طلبات الدخول')}</h3>}
+            {pending.map((m) => (
+              <div key={m.uid} className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Avatar m={m} size="w-9 h-9" />
+                  <span className="text-sm font-bold truncate">{m.name}</span>
+                </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <button onClick={() => mod.approve(m).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold inline-flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" />
+                    {tr('Accept', 'قبول')}
+                  </button>
+                  <button onClick={() => mod.decline(m).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-gray-200 text-xs font-bold">
+                    {tr('Decline', 'رفض')}
+                  </button>
+                  <button onClick={() => mod.ban(m).catch(() => {})} className="p-1.5 rounded-lg bg-red-50 text-red-600" title={tr('Block from room', 'حظر من الغرفة')}>
+                    <Ban className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+            {hands.length > 0 && <h3 className="text-sm font-bold">✋ {tr('Want to speak', 'يريدون التحدث')}</h3>}
+            {hands.map((m) => (
+              <div key={m.uid} className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Avatar m={m} size="w-9 h-9" />
+                  <span className="text-sm font-bold truncate">{m.name}</span>
+                </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <button onClick={() => mod.toStage(m).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+                    {tr('Let speak', 'السماح بالكلام')}
+                  </button>
+                  <button onClick={() => updateMember(roomId, m.uid, { hand: false }).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-gray-200 text-xs font-bold">
+                    {tr('Not now', 'ليس الآن')}
+                  </button>
+                </div>
+              </div>
+            ))}
+            {requestsCount === 0 && <p className="text-xs text-gray-500">{tr('Nothing waiting.', 'لا يوجد طلبات.')}</p>}
+            <button onClick={() => setShowRequests(false)} className="w-full py-2.5 rounded-xl bg-gray-100 text-sm font-bold">
+              {tr('Close', 'إغلاق')}
+            </button>
           </div>
         </div>
-      </div>
+      )}
+
+      {notice && (
+        <div className="fixed bottom-24 inset-x-0 flex justify-center z-50 px-4 pointer-events-none">
+          <div className="px-4 py-2.5 rounded-xl bg-white text-[#0A192F] text-sm font-bold shadow-xl">{notice}</div>
+        </div>
+      )}
 
       {menuFor && (
         <MemberMenu
@@ -832,7 +880,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         />
       )}
       {showSettings && isMod && <RoomSettings room={room} isAr={isAr} canGirls={gender === 'female' || admin} onClose={() => setShowSettings(false)} onDeleted={() => navigate('rooms')} />}
-    </>
+    </div>
   );
 };
 
@@ -869,17 +917,80 @@ const MemberMenu: React.FC<{ m: RoomMember; isMod: boolean; isAr: boolean; onClo
 };
 
 const EMOJIS = ['😊', '😂', '😍', '🥰', '😎', '🤔', '😅', '😢', '😮', '🙏', '👏', '👍', '👋', '💪', '🎉', '❤️', '🌸', '🌟', '🔥', '✅', '💯', '📚', '✍️', '🗣️'];
+const NAME_COLORS = ['text-[#F3E5AB]', 'text-sky-300', 'text-pink-300', 'text-emerald-300', 'text-violet-300', 'text-orange-300'];
+const colorOf = (id: string) => NAME_COLORS[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % NAME_COLORS.length];
 
-const RoomChat: React.FC<{ roomId: string; uid: string; name: string; msgs: ChatMsg[]; isMod: boolean; isAr: boolean }> = ({ roomId, uid, name, msgs, isMod, isAr }) => {
+// الرسائل تظهر من الأسفل وتصعد للأعلى (مثل HelloTalk)
+const ChatFeed: React.FC<{
+  roomId: string;
+  uid: string;
+  msgs: ChatMsg[];
+  isMod: boolean;
+  isAr: boolean;
+  memberOf: (id: string) => RoomMember | null;
+}> = ({ roomId, uid, msgs, isMod, isAr, memberOf }) => {
+  const tr = (en: string, ar: string) => (isAr ? ar : en);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const atBottom = useRef(true);
+  const [unseen, setUnseen] = useState(0);
+  const toBottom = () => {
+    const b = boxRef.current;
+    if (b) b.scrollTo({ top: b.scrollHeight, behavior: 'smooth' });
+    setUnseen(0);
+  };
+  useEffect(() => {
+    const b = boxRef.current;
+    if (!b) return;
+    if (atBottom.current) b.scrollTop = b.scrollHeight;
+    else setUnseen((n) => n + 1);
+  }, [msgs.length]);
+  return (
+    <div className="relative flex-1 min-h-0 mt-2">
+      <div
+        ref={boxRef}
+        onScroll={(e) => {
+          const b = e.currentTarget;
+          atBottom.current = b.scrollHeight - b.scrollTop - b.clientHeight < 40;
+          if (atBottom.current) setUnseen(0);
+        }}
+        className="absolute inset-0 overflow-y-auto px-3 flex flex-col [mask-image:linear-gradient(to_bottom,transparent,black_18%)]"
+      >
+        <div className="mt-auto space-y-1.5 pb-2">
+          {msgs.length === 0 && <p className="text-center text-xs text-white/40 py-4">{tr('Say hello in English 👋', 'قل/قولي مرحبًا بالإنجليزية 👋')}</p>}
+          {msgs.map((m) => {
+            const mem = memberOf(m.uid);
+            return (
+              <div key={m.id} className="flex items-start gap-2">
+                {mem ? <Avatar m={mem} size="w-7 h-7" /> : <span className="w-7 h-7 rounded-full bg-white/10 shrink-0" />}
+                <div className="max-w-[85%] px-3 py-1.5 rounded-2xl bg-white/10 text-sm leading-snug break-words">
+                  <span className={`font-bold me-1.5 ${colorOf(m.uid)}`}>{m.uid === uid ? tr('You', 'أنت') : m.name}:</span>
+                  <span>{m.text}</span>
+                </div>
+                {(isMod || m.uid === uid) && (
+                  <button onClick={() => deleteChat(roomId, m.id).catch(() => {})} className="mt-1.5 text-white/25 hover:text-red-400 shrink-0">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {unseen > 0 && (
+        <button onClick={toBottom} className="absolute bottom-2 start-3 px-3 py-1.5 rounded-full bg-white text-[#0A192F] text-xs font-bold shadow-lg">
+          ↓ {unseen} {tr('new', 'رسالة جديدة')}
+        </button>
+      )}
+    </div>
+  );
+};
+
+// شريط الكتابة (مع الإيموجي) وأزرار التحكم
+const ChatBar: React.FC<{ roomId: string; uid: string; name: string; isAr: boolean; left: React.ReactNode }> = ({ roomId, uid, name, isAr, left }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [text, setText] = useState('');
   const [emojiOpen, setEmojiOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const endRef = useRef<HTMLDivElement>(null);
-  const boxRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
-  }, [msgs.length]);
   const send = async () => {
     const t = text.trim();
     if (!t) return;
@@ -887,51 +998,44 @@ const RoomChat: React.FC<{ roomId: string; uid: string; name: string; msgs: Chat
     setEmojiOpen(false);
     await sendChat(roomId, uid, name, t).catch(() => setText(t));
   };
-  const addEmoji = (e: string) => {
-    setText((t) => (t + e).slice(0, 500));
-    inputRef.current?.focus();
-  };
   return (
-    <div className="bg-white rounded-3xl border border-gray-200 flex flex-col h-[380px]">
-      <div className="px-4 py-3 border-b border-gray-100 text-xs font-bold text-gray-500">{tr('Room chat', 'دردشة الغرفة')}</div>
-      <div ref={boxRef} className="flex-1 overflow-y-auto p-3 space-y-2">
-        {msgs.map((m) => (
-          <div key={m.id} className={`group text-sm ${m.uid === uid ? 'text-end' : ''}`}>
-            <span className="text-[10px] font-bold text-gray-400 block">{m.name}</span>
-            <span className={`inline-block px-3 py-1.5 rounded-2xl break-words max-w-full ${m.uid === uid ? 'bg-[#0A192F] text-white' : 'bg-gray-100 text-[#0A192F]'}`}>{m.text}</span>
-            {(isMod || m.uid === uid) && (
-              <button onClick={() => deleteChat(roomId, m.id).catch(() => {})} className="sm:opacity-0 sm:group-hover:opacity-100 ms-1 text-gray-300 hover:text-red-600 align-middle">
-                <Trash2 className="w-3.5 h-3.5 inline" />
-              </button>
-            )}
-          </div>
-        ))}
-        <div ref={endRef} />
-      </div>
+    <div className="shrink-0 border-t border-white/10 bg-black/30 backdrop-blur px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {emojiOpen && (
-        <div className="px-2 pt-2 border-t border-gray-100 grid grid-cols-8 gap-1">
+        <div className="grid grid-cols-8 gap-1 pb-2">
           {EMOJIS.map((e) => (
-            <button key={e} onClick={() => addEmoji(e)} className="text-xl py-1 rounded-lg hover:bg-gray-100">
+            <button
+              key={e}
+              onClick={() => {
+                setText((t) => (t + e).slice(0, 500));
+                inputRef.current?.focus();
+              }}
+              className="text-2xl py-1 rounded-lg hover:bg-white/10"
+            >
               {e}
             </button>
           ))}
         </div>
       )}
-      <div className="p-2 border-t border-gray-100 flex gap-2">
-        <button onClick={() => setEmojiOpen((o) => !o)} className={`px-2.5 rounded-xl text-xl ${emojiOpen ? 'bg-[#FAF8F5] ring-1 ring-[#D4AF37]' : ''}`} title="Emoji">
-          😊
-        </button>
-        <input
-          ref={inputRef}
-          value={text}
-          onChange={(e) => setText(e.target.value.slice(0, 500))}
-          onKeyDown={(e) => e.key === 'Enter' && send()}
-          className="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-sm"
-          placeholder={tr('Write in English…', '{اكتب|اكتبي} بالإنجليزية…')}
-        />
-        <button onClick={send} className="p-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F]">
-          <Send className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
-        </button>
+      <div className="flex items-center gap-2">
+        {left}
+        <div className="flex-1 min-w-0 flex items-center gap-1 rounded-full bg-white/10 ps-1 pe-1">
+          <button onClick={() => setEmojiOpen((o) => !o)} className="w-9 h-9 shrink-0 rounded-full text-lg" title="Emoji">
+            😊
+          </button>
+          <input
+            ref={inputRef}
+            value={text}
+            onChange={(e) => setText(e.target.value.slice(0, 500))}
+            onKeyDown={(e) => e.key === 'Enter' && send()}
+            className="flex-1 min-w-0 bg-transparent text-sm text-white placeholder:text-white/40 outline-none py-2.5"
+            placeholder={tr('Comment…', 'تعليق…')}
+          />
+          {text.trim() && (
+            <button onClick={send} className="w-9 h-9 shrink-0 rounded-full bg-[#D4AF37] text-[#0A192F] flex items-center justify-center">
+              <Send className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

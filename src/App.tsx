@@ -127,7 +127,8 @@ function MainApp() {
 
   // المعلم لا يرى صفحات الموقع العامة (الأسعار والعروض والتسجيل…): لوحته فقط، بلا شعار ولا قوائم
   const teacherOnly = isTeacher && !isAdmin && !isSuperAdmin;
-  const bare = teacherOnly || currentRoute === 'staff';
+  // الغرفة الصوتية تملأ الشاشة (بلا القائمة العلوية والتذييل)
+  const bare = teacherOnly || currentRoute === 'staff' || currentRoute.startsWith('room/');
   useEffect(() => {
     if (teacherOnly) document.title = 'لوحة المعلم';
   }, [teacherOnly]);
