@@ -118,7 +118,6 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const [speaking, setSpeaking] = useState<Set<string>>(new Set());
   const [micReady, setMicReady] = useState(false);
   const [screenOn, setScreenOn] = useState(false);
-  const [showChat, setShowChat] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [menuFor, setMenuFor] = useState<RoomMember | null>(null);
   const [now, setNow] = useState(Date.now());
@@ -717,7 +716,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         </div>
       )}
 
-      <div className={`grid gap-4 ${showChat ? 'lg:grid-cols-[1fr_320px]' : ''}`}>
+      <div className="space-y-4">
         <div className="space-y-4">
           <div className="bg-white rounded-3xl border border-gray-200 p-5 space-y-3">
             <h3 className="text-xs font-bold text-gray-500">
@@ -736,7 +735,10 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
             )}
           </div>
         </div>
-        {showChat && <RoomChat roomId={roomId} uid={uid} name={myName} msgs={chat} isMod={isMod} isAr={isAr} />}
+        {/* الدردشة الكتابية: ظاهرة دائمًا أسفل القائمة */}
+        <div id="ez-room-chat">
+          <RoomChat roomId={roomId} uid={uid} name={myName} msgs={chat} isMod={isMod} isAr={isAr} />
+        </div>
       </div>
 
       <div className="h-20" />
@@ -758,7 +760,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                 <UserMinus className="w-5 h-5" />
               </button>
             )}
-            <button onClick={() => setShowChat((s) => !s)} className={`p-3 rounded-full ${showChat ? 'bg-[#0A192F] text-white' : 'bg-gray-100 text-[#0A192F]'}`} title={tr('Chat', 'الدردشة')}>
+            <button onClick={() => document.getElementById('ez-room-chat')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="p-3 rounded-full bg-gray-100 text-[#0A192F]" title={tr('Chat', 'الدردشة')}>
               <MessageSquare className="w-5 h-5" />
             </button>
             {me?.canScreen && canShareScreen() && (
@@ -867,8 +869,9 @@ const RoomChat: React.FC<{ roomId: string; uid: string; name: string; msgs: Chat
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [text, setText] = useState('');
   const endRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: 'end' });
+    if (boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
   }, [msgs.length]);
   const send = async () => {
     const t = text.trim();
@@ -877,9 +880,9 @@ const RoomChat: React.FC<{ roomId: string; uid: string; name: string; msgs: Chat
     await sendChat(roomId, uid, name, t).catch(() => setText(t));
   };
   return (
-    <div className="bg-white rounded-3xl border border-gray-200 flex flex-col h-[420px]">
+    <div className="bg-white rounded-3xl border border-gray-200 flex flex-col h-[380px]">
       <div className="px-4 py-3 border-b border-gray-100 text-xs font-bold text-gray-500">{tr('Room chat', 'دردشة الغرفة')}</div>
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div ref={boxRef} className="flex-1 overflow-y-auto p-3 space-y-2">
         {msgs.map((m) => (
           <div key={m.id} className={`group text-sm ${m.uid === uid ? 'text-end' : ''}`}>
             <span className="text-[10px] font-bold text-gray-400 block">{m.name}</span>
