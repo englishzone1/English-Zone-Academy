@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck } from 'lucide-react';
+import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck, UserRound } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { useAuth } from '../../context/AuthContext';
@@ -60,7 +60,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
               {(user as any)?.avatarConfig?.photo ? (
                 <AvatarRenderer config={(user as any).avatarConfig} size={56} />
               ) : (
-                <EnglishZoneEmblem sizeClass="w-14 h-14" glow={false} />
+                <span className="w-14 h-14 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center">
+                  <UserRound className="w-7 h-7" />
+                </span>
               )}
               <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[9px] font-bold">
                 {tr('Photo', 'صورة')}
@@ -91,7 +93,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
           <button
             onClick={async () => {
               await logout();
-              navigate('login');
+              navigate('staff');
             }}
             className="px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 hover:text-red-600 flex items-center gap-1.5 self-start"
           >

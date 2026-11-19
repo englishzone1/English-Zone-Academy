@@ -21,7 +21,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
   const { t, language, dir } = useLanguage();
   const [levelFilter, setLevelFilter] = useState<'ALL' | CEFRLevel>('ALL');
 
-  const { cards: levelCards, loading: pricingLoading } = usePricing();
+  const { cards: levelCards, loading: pricingLoading, locked } = usePricing();
 
   const { currency } = useAcademySettings();
 
@@ -123,7 +123,17 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
         </div>
 
         {/* 6 SEPARATE LEVEL-BASED PRICING CARDS */}
-        {!pricingLoading && levelCards.length === 0 && (
+        {locked && (
+          <div className="mb-6 p-8 rounded-3xl bg-gradient-to-br from-[#0A192F] to-[#102445] text-center space-y-3 border-2 border-[#D4AF37]/50 shadow-lg">
+            <div className="text-3xl">🔒</div>
+            <h3 className="font-serif-luxury font-bold text-xl text-[#F3E5AB]">{language === 'ar' ? 'الأسعار متاحة للمسجّلين' : 'Prices are for registered members'}</h3>
+            <p className="text-sm text-gray-300">{language === 'ar' ? '{سجّل|سجّلي} مجانًا بضغطة واحدة {لترى|لتري} الرسوم وعروض الخصم.' : 'Sign up free in one click to see tuition and discount offers.'}</p>
+            <button onClick={() => navigate('join-us')} className="ez-float-glow px-8 py-3 rounded-xl bg-[#D4AF37] text-[#0A192F] font-bold text-sm">
+              {language === 'ar' ? '{سجّل|سجّلي} مجانًا لرؤية الأسعار' : 'Sign up free to see prices'}
+            </button>
+          </div>
+        )}
+        {!locked && !pricingLoading && levelCards.length === 0 && (
           <div className="mb-6 p-8 rounded-3xl bg-white border border-gray-200 text-center text-sm text-gray-500">
             {language === 'ar'
               ? 'الأسعار غير منشورة حاليًا. تواصل معنا لمعرفة الرسوم.'

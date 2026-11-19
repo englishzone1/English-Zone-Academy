@@ -302,13 +302,14 @@ service cloud.firestore {
     }
 
     // --- Pricing (الأسعار) ---
+    // الأسعار للمسجّلين فقط، والمعلمون لا يرونها
     match /pricing_levels/{levelId} {
-      allow get, list: if true;
+      allow get, list: if isAdmin() || (isMember() && !isTeacherDoc() && myProfile().get('role', '') != 'teacher');
       allow write: if isAdmin();
     }
 
     match /pricing_stages/{stageId} {
-      allow get, list: if true;
+      allow get, list: if isAdmin() || (isMember() && !isTeacherDoc() && myProfile().get('role', '') != 'teacher');
       allow write: if isAdmin();
     }
 

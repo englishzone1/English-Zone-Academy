@@ -22,7 +22,7 @@ interface CourseDetailsPageProps {
 
 export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, navigate }) => {
   const { t, language, dir } = useLanguage();
-  const { cards: levelCards } = usePricing();
+  const { cards: levelCards, locked: pricesLocked } = usePricing();
   const { currency } = useAcademySettings();
   const course = PROGRAM_CATEGORIES.find((item) => item.id === courseId);
 
@@ -204,6 +204,16 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
               </div>
             </div>
 
+            {pricesLocked && (
+          <div className="mb-6 p-8 rounded-3xl bg-gradient-to-br from-[#0A192F] to-[#102445] text-center space-y-3 border-2 border-[#D4AF37]/50 shadow-lg">
+            <div className="text-3xl">🔒</div>
+            <h3 className="font-serif-luxury font-bold text-xl text-[#F3E5AB]">{language === 'ar' ? 'الأسعار متاحة للمسجّلين' : 'Prices are for registered members'}</h3>
+            <p className="text-sm text-gray-300">{language === 'ar' ? '{سجّل|سجّلي} مجانًا بضغطة واحدة {لترى|لتري} الرسوم وعروض الخصم.' : 'Sign up free in one click to see tuition and discount offers.'}</p>
+            <button onClick={() => navigate('join-us')} className="ez-float-glow px-8 py-3 rounded-xl bg-[#D4AF37] text-[#0A192F] font-bold text-sm">
+              {language === 'ar' ? '{سجّل|سجّلي} مجانًا لرؤية الأسعار' : 'Sign up free to see prices'}
+            </button>
+          </div>
+        )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {levelCards.map((item) => (
                 <div

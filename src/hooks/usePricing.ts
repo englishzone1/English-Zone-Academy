@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { CEFR_LEVELS_INFO } from '../data/academyData';
@@ -77,11 +78,22 @@ const loadCards = (): Promise<LevelPriceCard[]> => {
   return cached;
 };
 
-export const usePricing = (): { cards: LevelPriceCard[]; loading: boolean } => {
+// الأسعار للمسجّلين فقط (والمعلمون لا يرونها)
+export const usePricing = (): { cards: LevelPriceCard[]; loading: boolean; locked: boolean } => {
+  const { isAuthenticated, isTeacher, isAdmin, isSuperAdmin, isLoading } = useAuth();
+  const canSee = isAuthenticated && (!isTeacher || isAdmin || isSuperAdmin);
   const [cards, setCards] = useState<LevelPriceCard[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     let alive = true;
+    if (isLoading) return;
+    if (!canSee) {
+      cached = null;
+      setCards([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     loadCards().then((c) => {
       if (alive) {
         setCards(c);
@@ -91,6 +103,6 @@ export const usePricing = (): { cards: LevelPriceCard[]; loading: boolean } => {
     return () => {
       alive = false;
     };
-  }, []);
-  return { cards, loading };
+  }, [canSee, isLoading]);
+  return { cards, loading: loading || isLoading, locked: !isLoading && !canSee };
 };

@@ -16,7 +16,11 @@ interface Msg {
   offer?: boolean;
 }
 
-const pricesText = (cards: LevelPriceCard[], isAr: boolean, currency = 'USD'): string => {
+const pricesText = (cards: LevelPriceCard[], isAr: boolean, currency = 'USD', locked = false): string => {
+  if (locked)
+    return isAr
+      ? 'الأسعار متاحة للمسجّلين فقط 🔒 {سجّل|سجّلي} مجانًا بضغطة واحدة من زر «انضم الآن» {لترى|لتري} الرسوم وعروض الخصم.'
+      : 'Prices are for registered members 🔒 Sign up free with one click from “Join now” to see tuition and offers.';
   if (!cards.length)
     return isAr
       ? 'الأسعار غير منشورة حاليًا. {اضغط|اضغطي} «واتساب» أو «رسالة للأكاديمية» في الأسفل ونرسلها {لك|لكِ}.'
@@ -90,7 +94,9 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   const { tawkUrl, whatsapp, currency } = useAcademySettings();
   const currencyRef = useRef(currency);
   currencyRef.current = currency;
-  const { cards } = usePricing();
+  const { cards, locked: pricesLocked } = usePricing();
+  const lockedRef = useRef(pricesLocked);
+  lockedRef.current = pricesLocked;
   const [open, setOpen] = useState(false);
   const { user, firebaseUser, isStudent } = useAuth();
   const [input, setInput] = useState('');
@@ -121,7 +127,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
       const text = String(message?.message ?? message ?? '');
       const f = bestMatch(text, faqsRef.current);
       if (!f) return;
-      const ans = f.answerAr.split(PRICES_TOKEN).join(pricesText(cardsRef.current, true, currencyRef.current));
+      const ans = f.answerAr.split(PRICES_TOKEN).join(pricesText(cardsRef.current, true, currencyRef.current, lockedRef.current));
       setMsgs((m) => [...m, { from: 'me', text: f.questionAr }, { from: 'bot', text: ans }]);
       setOpen(true);
       // على الجوال تغطي نافذة Tawk الشاشة، فنصغّرها ليظهر الجواب
@@ -147,7 +153,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   const q = (f: ChatFaq) => (!isAr && f.questionEn ? f.questionEn : f.questionAr);
   const a = (f: ChatFaq) => {
     const t = !isAr && f.answerEn ? f.answerEn : f.answerAr;
-    return t.split(PRICES_TOKEN).join(pricesText(cards, isAr, currency));
+    return t.split(PRICES_TOKEN).join(pricesText(cards, isAr, currency, pricesLocked));
   };
 
   const ask = (f: ChatFaq) => setMsgs((m) => [...m, { from: 'me', text: q(f) }, { from: 'bot', text: a(f) }]);

@@ -21,6 +21,7 @@ import { LoginPage } from './pages/LoginPage';
 import { LibraryPage } from './pages/LibraryPage';
 import { getGender, onGenderChange, startGenderObserver } from './i18n/gender';
 import { storeRefCode } from './services/referralService';
+import { StaffLoginPage } from './pages/StaffLoginPage';
 import { WorkshopPage } from './pages/WorkshopPage';
 import { VerifyCertificatePage } from './pages/VerifyCertificatePage';
 import { VisitorJoinPage } from './pages/VisitorJoinPage';
@@ -122,13 +123,17 @@ function MainApp() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // المعلم لا يرى صفحات الموقع العامة (الأسعار والعروض والتسجيل…): لوحته فقط
+  // المعلم لا يرى صفحات الموقع العامة (الأسعار والعروض والتسجيل…): لوحته فقط، بلا شعار ولا قوائم
   const teacherOnly = isTeacher && !isAdmin && !isSuperAdmin;
+  const bare = teacherOnly || currentRoute === 'staff';
+  useEffect(() => {
+    if (teacherOnly) document.title = 'لوحة المعلم';
+  }, [teacherOnly]);
 
   const renderCurrentPage = () => {
     if (
       teacherOnly &&
-      !['teacher-dashboard', 'portal', 'homework', 'avatar-studio', 'login', 'student-login'].includes(currentRoute) &&
+      !['teacher-dashboard', 'portal', 'homework', 'avatar-studio', 'login', 'student-login', 'staff'].includes(currentRoute) &&
       !currentRoute.startsWith('hw-answers/')
     ) {
       return <TeacherDashboard navigate={navigate} />;
@@ -167,6 +172,9 @@ function MainApp() {
             </div>
           </div>
         );
+      // دخول المعلمين: صفحة محايدة بلا هوية
+      case 'staff':
+        return <StaffLoginPage navigate={navigate} />;
       // التسجيل القادم من عروض الدعوة: بدون زر واتساب
       case 'join-offer':
         return <VisitorJoinPage navigate={navigate} hideWhatsapp />;
@@ -283,11 +291,11 @@ function MainApp() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar currentRoute={currentRoute} navigate={navigate} />
+      {!bare && <Navbar currentRoute={currentRoute} navigate={navigate} />}
       <main className="flex-grow">
         {renderCurrentPage()}
       </main>
-      <Footer navigate={navigate} />
+      {!bare && <Footer navigate={navigate} />}
       <TawkChat hidden={teacherOnly || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
       <ChatAssistant
         hidden={
