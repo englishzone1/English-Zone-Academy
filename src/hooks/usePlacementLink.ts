@@ -8,7 +8,7 @@ export const usePlacementLink = (): { href: string; target?: string; rel?: strin
     loggedIn: isAuthenticated,
     label: (isAr: boolean) =>
       isAuthenticated
-        ? isAr ? 'اختبري مستواكِ من حسابكِ' : 'Test your level from your account'
-        : isAr ? 'سجّلي مجانًا واختبري مستواكِ' : 'Sign up free & test your level'
+        ? isAr ? '{اختبر|اختبري} {مستواك|مستواكِ} من {حسابك|حسابكِ}' : 'Test your level from your account'
+        : isAr ? '{سجّل|سجّلي} مجانًا {واختبر|واختبري} {مستواك|مستواكِ}' : 'Sign up free & test your level'
   };
 };
