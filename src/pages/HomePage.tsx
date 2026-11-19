@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ReferralTeaser } from '../components/student/ReferralOffers';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import {
   PROGRAM_CATEGORIES,
@@ -34,6 +36,7 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
   const contacts = useAcademySettings();
   const { t, language, dir } = useLanguage();
+  const { isAuthenticated } = useAuth();
   const heroAnnouncement = useSiteSection('hero_announcement', language);
   const methodologyIntro = useSiteSection('methodology_intro', language);
   const placementNotice = useSiteSection('placement_notice', language);
@@ -68,6 +71,10 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed">
               {t.hero.desc}
             </p>
+
+            <div className="max-w-xl mx-auto pt-2">
+              <ReferralTeaser isAr={language === 'ar'} onClick={() => navigate(isAuthenticated ? 'portal' : 'join-us')} />
+            </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button

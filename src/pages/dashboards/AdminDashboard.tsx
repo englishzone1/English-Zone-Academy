@@ -56,6 +56,7 @@ import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { CURRENCIES } from '../../hooks/useAcademySettings';
 import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 import { AdminWorkshops } from '../../components/admin/AdminWorkshops';
+import { AdminReferrals } from '../../components/admin/AdminReferrals';
 import { sendTestEmail, resetTodayLimit } from '../../services/emailNotify';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
@@ -73,6 +74,7 @@ type TabId =
   | 'blog'
   | 'messages'
   | 'workshops'
+  | 'referrals'
   | 'community'
   | 'registrations'
   | 'students'
@@ -710,6 +712,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'english_club', labelEn: 'English Club Config', labelAr: 'إعدادات نادي الإنجليزية' },
     { id: 'stars_audit', labelEn: 'Stars Audit Ledger', labelAr: 'سجل تدقيق النجوم' },
     { id: 'workshops', labelEn: 'Workshops & Certificates', labelAr: 'الورش والشهادات' },
+    { id: 'referrals', labelEn: 'Referrals & Rewards', labelAr: 'الدعوات والمكافآت' },
     { id: 'settings', labelEn: 'Academy Settings', labelAr: 'إعدادات الأكاديمية' }
   ];
 
@@ -1095,6 +1098,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         {/* CONTACT MESSAGES */}
         {activeTab === 'messages' && <AdminMessagesManager onNotice={(msg) => notify(msg, 4000)} />}
         {activeTab === 'workshops' && <AdminWorkshops isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
+        {activeTab === 'referrals' && <AdminReferrals isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* TEACHERS */}
         {activeTab === 'teachers' && <AdminTeachersManager onNotice={(msg) => notify(msg, 4000)} />}

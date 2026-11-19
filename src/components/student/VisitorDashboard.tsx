@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { ReferralOffers } from './ReferralOffers';
 import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift, Target, Users, BadgePercent } from 'lucide-react';
 import { CommunityFeed } from '../community/CommunityFeed';
 import { CompleteProfile } from './CompleteProfile';
@@ -18,7 +19,7 @@ interface Props {
 // صفحة الحساب المجاني: الكتب والمجلة المفتوحة للمسجّلين، ودعوة للاشتراك
 export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, navigate, onLogout }) => {
   const { placementTestUrl } = useAcademySettings();
-  const [tab, setTab] = useState<'library' | 'community'>('library');
+  const [tab, setTab] = useState<'library' | 'community' | 'offers'>('library');
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,9 +113,15 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
             <BookOpen className="w-6 h-6 text-[#D4AF37]" />
             {tr('Academy blog', 'مدونة الأكاديمية')}
           </button>
-          <button onClick={() => navigate('offers')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
-            <BadgePercent className="w-6 h-6 text-[#D4AF37]" />
-            {tr('Workshops & offers', 'الورش والعروض')}
+          <button
+            onClick={() => {
+              setTab('offers');
+              setTimeout(() => document.getElementById('ez-visitor-offers')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+            }}
+            className="ez-float-glow p-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] border border-[#D4AF37] flex items-center gap-3 text-sm font-bold text-[#0A192F] text-start"
+          >
+            <BadgePercent className="w-6 h-6 text-[#0A192F]" />
+            {tr('🎁 Offers — invite & earn', '🎁 العروض: ادعي واربحي')}
           </button>
         </div>
 
@@ -158,6 +165,11 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           ))}
         </div>
 
+        {tab === 'offers' && (
+          <div id="ez-visitor-offers" className="scroll-mt-4">
+            <ReferralOffers uid={uid} isAr={isAr} active={false} onSubscribe={() => navigate('register')} />
+          </div>
+        )}
         {tab === 'community' && <CommunityFeed uid={uid} name={name} role="student" isAr={isAr} readOnly />}
 
         <div className={`bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4 ${tab === 'library' ? '' : 'hidden'}`}>

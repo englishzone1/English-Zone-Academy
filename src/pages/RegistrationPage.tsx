@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getStoredRefCode } from '../services/referralService';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { CEFR_LEVELS_INFO } from '../data/academyData';
@@ -45,6 +46,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
     notes: ''
   });
 
+  const [referralCode, setReferralCode] = useState<string>(() => getStoredRefCode());
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState('');
 
@@ -131,7 +133,8 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
         mainLevel: formData.mainLevel,
         learningGoal: formData.learningGoal,
         learningFormat: formData.learningFormat,
-        notes: formData.notes
+        notes: formData.notes,
+        referralCode: referralCode.trim().toUpperCase().slice(0, 20)
       } as any);
 
       // الاسم والرقم الرسميان يُحفظان في حسابها أيضًا
@@ -549,6 +552,25 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                   placeholder={t.register.notesPlaceholder}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#D4AF37]"
                 ></textarea>
+              </div>
+
+              {/* كود الدعوة: خصم 30% على الشهر الأول */}
+              <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/40">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                  {language === 'ar' ? '🎁 كود الدعوة (اختياري)' : '🎁 Invitation code (optional)'}
+                </label>
+                <input
+                  type="text"
+                  dir="ltr"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                  placeholder="EZXXXXXX"
+                  maxLength={20}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm font-mono tracking-widest focus:outline-none focus:border-[#D4AF37]"
+                />
+                <p className="text-[11px] text-gray-500 mt-1">
+                  {language === 'ar' ? 'إن دعتكِ صديقة، اكتبي كودها واحصلي على خصم 30% على شهركِ الأول.' : 'Invited by a friend? Enter her code and get 30% off your first month.'}
+                </p>
               </div>
 
               {submitError && (

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { ReferralTeaser } from '../components/student/ReferralOffers';
+import { useAuth } from '../context/AuthContext';
 import { contentManagementService, DynamicPromotionOffer } from '../services/contentManagementService';
 import { useLanguage } from '../context/LanguageContext';
 import { Tag, Sparkles, Check, ArrowRight, Gift, Calendar, Copy, CheckCheck } from 'lucide-react';
@@ -9,6 +11,7 @@ interface OffersPageProps {
 
 export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
   const { t, language } = useLanguage();
+  const { isAuthenticated } = useAuth();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const handleCopy = (code: string) => {
@@ -55,6 +58,9 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
             {t.offers.sectionSubtitle}
           </p>
+          <div className="mt-6">
+            <ReferralTeaser isAr={language === 'ar'} onClick={() => navigate(isAuthenticated ? 'portal' : 'join-us')} />
+          </div>
         </div>
       </div>
 

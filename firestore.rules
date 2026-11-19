@@ -144,8 +144,9 @@ service cloud.firestore {
         request.resource.data.keys().hasOnly([
           'id', 'fullName', 'age', 'country', 'whatsappNumber', 'email',
           'mainLevel', 'learningGoal', 'learningFormat', 'notes', 'status', 'submittedAt',
-          'type', 'selectedTrack', 'currentEnglishLevel', 'timestamp', 'studentId'
+          'type', 'selectedTrack', 'currentEnglishLevel', 'timestamp', 'studentId', 'referralCode'
         ]) &&
+        (!('referralCode' in request.resource.data) || (request.resource.data.referralCode is string && request.resource.data.referralCode.size() <= 20)) &&
         (!('studentId' in request.resource.data) || (isSignedIn() && request.resource.data.studentId == request.auth.uid)) &&
         request.resource.data.fullName is string && request.resource.data.fullName.size() <= 100 &&
         request.resource.data.email is string && request.resource.data.email.size() <= 150 &&
@@ -361,6 +362,11 @@ service cloud.firestore {
         request.resource.data.status == 'read'
       );
       allow delete: if isAdmin();
+    }
+
+    // --- متابعة الدعوات ومكافآت السفيرات: الإدارة فقط ---
+    match /referral_status/{regId} {
+      allow read, write: if isAdmin();
     }
 
     // --- الورش المجانية والشهادات ---

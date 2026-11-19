@@ -181,7 +181,8 @@ export const studentDataService = {
         status: 'pending',
         submittedAt: new Date().toISOString(),
         // حساب الدخول الذي أنشأه المسجّل مع الطلب
-        ...((data as any).studentId ? { studentId: (data as any).studentId } : {})
+        ...((data as any).studentId ? { studentId: (data as any).studentId } : {}),
+        ...((data as any).referralCode ? { referralCode: String((data as any).referralCode).slice(0, 20) } : {})
       });
       return requestId;
     } catch (err) {

@@ -67,3 +67,19 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* خانة العروض: لامعة وعائمة */
+@keyframes ez-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes ez-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.45), 0 0 0 rgba(212, 175, 55, 0); }
+  50% { box-shadow: 0 0 28px rgba(212, 175, 55, 0.85), 0 0 50px rgba(212, 175, 55, 0.35); }
+}
+.ez-float-glow {
+  animation: ez-float 2.6s ease-in-out infinite, ez-glow 2.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ez-float-glow { animation: none; }
+}

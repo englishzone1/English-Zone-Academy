@@ -19,6 +19,7 @@ import { CourseDetailsPage } from './pages/CourseDetailsPage';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { LoginPage } from './pages/LoginPage';
 import { LibraryPage } from './pages/LibraryPage';
+import { storeRefCode } from './services/referralService';
 import { WorkshopPage } from './pages/WorkshopPage';
 import { VerifyCertificatePage } from './pages/VerifyCertificatePage';
 import { VisitorJoinPage } from './pages/VisitorJoinPage';
@@ -199,6 +200,12 @@ function MainApp() {
         return <AvatarStudioPage navigate={navigate} />;
 
       default:
+        // رابط الدعوة: يحفظ الكود ثم يفتح التسجيل
+        if (currentRoute.startsWith('r/')) {
+          storeRefCode(decodeURIComponent(currentRoute.slice(2)));
+          setTimeout(() => navigate(isAuthenticated ? 'register' : 'join-us'), 0);
+          return <LoadingScreen />;
+        }
         // صفحة الورشة العامة وصفحة التحقق من الشهادة
         if (currentRoute.startsWith('workshop/')) {
           return <WorkshopPage workshopId={currentRoute.slice('workshop/'.length)} navigate={navigate} />;
