@@ -698,7 +698,7 @@ service cloud.firestore {
           request.resource.data.keys().hasOnly(['from', 'to', 'kind', 'nonce', 'offer', 'answer', 'createdAt']) &&
           request.resource.data.from == request.auth.uid &&
           request.resource.data.to is string && request.resource.data.to != request.auth.uid &&
-          request.resource.data.kind in ['mic', 'screen', 'cam'] &&
+          request.resource.data.kind in ['mic', 'screen', 'cam', 'pair'] &&
           request.resource.data.nonce is string && request.resource.data.nonce.size() <= 64 &&
           request.resource.data.offer is string && request.resource.data.offer.size() <= 30000 &&
           request.resource.data.answer == null &&

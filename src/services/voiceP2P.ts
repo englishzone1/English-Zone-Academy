@@ -1,7 +1,7 @@
 // الصوت ومشاركة الشاشة مباشرة بين أجهزة المشاركين (بدون خادم وسيط ولا بطاقة دفع)
-// كل متحدث يرسل صوته لكل مشارك في اتصال مستقل باتجاه واحد (ناشر ← مستقبِل).
-// تبادل الإعداد (SDP) عبر Firestore: voice_rooms/{roomId}/signals/{id} {from, to, kind, nonce, offer, answer}
-// الناشر يكتب العرض، والمستقبِل يكتب الجواب، ثم يحذف الناشر الوثيقة.
+// اتصال واحد في الاتجاهين بين كل شخصين. تبادل الإعداد (SDP) عبر Firestore:
+// voice_rooms/{roomId}/signals/{id} {from, to, kind:'pair', nonce, offer, answer}
+// صاحب المعرّف الأصغر يكتب العرض، والآخر يكتب الجواب، ثم تُحذف الوثيقة.
 import { collection, deleteDoc, doc, getDoc, onSnapshot, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from './firebase';
 import type { RoomMember } from './voiceRooms';
@@ -34,7 +34,6 @@ export async function loadTurn(): Promise<TurnConfig | null> {
 }
 export const hasTurn = () => ICE.length > 1;
 export const saveTurn = (t: TurnConfig) => setDoc(doc(db, 'voice_config', 'turn'), t);
-const MAX_FAILS = 4;
 
 function waitIce(pc: RTCPeerConnection, ms = 2500): Promise<void> {
   if (pc.iceGatheringState === 'complete') return Promise.resolve();
@@ -54,33 +53,40 @@ function waitIce(pc: RTCPeerConnection, ms = 2500): Promise<void> {
 
 const newNonce = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
-interface Out {
+// ترتيب المسارات ثابت في كل اتصال: صوت، كاميرا، شاشة
+const KINDS: MediaKind[] = ['mic', 'cam', 'screen'];
+const BITRATE: Record<MediaKind, number> = { mic: 0, cam: 250_000, screen: 700_000 };
+const CONNECT_TIMEOUT = 35_000;
+const OFFER_MAX_AGE = 2 * 60_000;
+
+interface Pair {
   pc: RTCPeerConnection;
+  peer: string;
   docId: string;
-  to: string;
-  kind: MediaKind;
-  nonce: string;
-}
-interface In {
-  pc: RTCPeerConnection;
-  docId: string;
-  from: string;
-  kind: MediaKind;
-  nonce: string;
+  initiator: boolean;
   at: number;
 }
 
+const canPublish = (m: RoomMember) => m.role === 'owner' || m.role === 'speaker' || !!m.canScreen;
+
+/**
+ * اتصال واحد في الاتجاهين بين كل شخصين (إذا كان أحدهما على الأقل متحدثًا).
+ * فيه ثلاثة مسارات ثابتة (صوت، كاميرا، شاشة) تُبدَّل بـ replaceTrack بلا إعادة تفاوض،
+ * فإذا نجح الاتصال مرّ الصوت والصورة في الاتجاهين معًا.
+ * صاحب المعرّف الأصغر يبدأ الاتصال، ويُعاد المحاولة تلقائيًا بلا توقف (مع تمرير عبر TURN عند الفشل).
+ */
 export class P2PMesh {
   private roomId: string;
   private uid: string;
   private local: Partial<Record<MediaKind, { track: MediaStreamTrack; nonce: string }>> = {};
-  private outs = new Map<string, Out>(); // `${kind}:${to}`
-  private ins = new Map<string, In>(); // `${from}:${kind}`
+  private pairs = new Map<string, Pair>();
+  private fails = new Map<string, { n: number; nextAt: number }>();
+  private lastOffer = new Map<string, number>();
   private handled = new Set<string>();
-  private fails = new Map<string, number>();
   private present: RoomMember[] = [];
   private unsubs: (() => void)[] = [];
   private closed = false;
+  private started = false;
   private timer: any;
   onTrack: (key: string, track: MediaStreamTrack) => void;
   onRemove: (key: string) => void;
@@ -99,15 +105,17 @@ export class P2PMesh {
   async start() {
     await loadTurn();
     if (this.closed) return;
-    // عروض موجّهة إليّ
     this.unsubs.push(
       onSnapshot(
         query(this.col(), where('to', '==', this.uid)),
-        (snap) => snap.docChanges().forEach((c) => c.type !== 'removed' && this.onOffer(c.doc.id, c.doc.data() as any)),
+        (snap) => {
+          // الأحدث أولًا: لا نجيب على عروض قديمة بعد عرض أحدث
+          const docs = snap.docChanges().filter((c) => c.type !== 'removed').map((c) => ({ id: c.doc.id, d: c.doc.data() as any }));
+          docs.sort((a, b) => (a.d.createdAt || 0) - (b.d.createdAt || 0)).forEach((x) => this.onOffer(x.id, x.d));
+        },
         (e) => console.warn('signals in', e)
       )
     );
-    // أجوبة على عروضي
     this.unsubs.push(
       onSnapshot(
         query(this.col(), where('from', '==', this.uid)),
@@ -115,25 +123,58 @@ export class P2PMesh {
         (e) => console.warn('signals out', e)
       )
     );
-    this.timer = setInterval(() => this.sync(this.present), 10000);
+    this.timer = setInterval(() => this.sync(this.present), 5000);
     this.started = true;
     this.sync(this.present);
   }
-  private started = false;
 
-  /** يبدأ أو يوقف نشر مسار (الصوت أو الشاشة). يعيد المعرّف الذي يُكتب في وثيقة العضو. */
+  /** يبدأ أو يوقف إرسال مسار (الصوت أو الكاميرا أو الشاشة). يعيد المعرّف الذي يُكتب في وثيقة العضو. */
   setLocal(kind: MediaKind, track: MediaStreamTrack | null): string | null {
-    this.outs.forEach((o, k) => {
-      if (o.kind === kind) this.closeOut(k);
-    });
-    if (!track) {
-      delete this.local[kind];
-      return null;
-    }
-    const nonce = newNonce();
-    this.local[kind] = { track, nonce };
+    if (!track) delete this.local[kind];
+    else this.local[kind] = { track, nonce: newNonce() };
+    this.pairs.forEach((p) => this.applyLocal(p.pc, kind));
     this.sync(this.present);
-    return nonce;
+    return track ? this.local[kind]!.nonce : null;
+  }
+
+  private applyLocal(pc: RTCPeerConnection, kind: MediaKind) {
+    const t = pc.getTransceivers()[KINDS.indexOf(kind)];
+    if (!t || pc.signalingState === 'closed') return;
+    const track = this.local[kind]?.track || null;
+    t.sender
+      .replaceTrack(track)
+      .then(() => {
+        const max = BITRATE[kind];
+        if (!track || !max) return;
+        const prm = t.sender.getParameters();
+        if (!prm.encodings || !prm.encodings.length) prm.encodings = [{}] as any;
+        prm.encodings[0].maxBitrate = max;
+        return t.sender.setParameters(prm).catch(() => {});
+      })
+      .catch(() => {});
+  }
+
+  private wire(pc: RTCPeerConnection, peer: string, pair: () => Pair | undefined) {
+    pc.ontrack = (e) => {
+      const kind = KINDS[pc.getTransceivers().indexOf(e.transceiver)];
+      if (kind && this.pairs.get(peer) === pair()) this.onTrack(`${peer}:${kind}`, e.track);
+    };
+    pc.addEventListener('connectionstatechange', () => {
+      const p = this.pairs.get(peer);
+      if (!p || p.pc !== pc) return;
+      if (pc.connectionState === 'connected') {
+        this.fails.delete(peer);
+        KINDS.forEach((k) => this.applyLocal(pc, k)); // لضبط سرعة الفيديو بعد الاتصال
+      } else if (pc.connectionState === 'failed') {
+        this.fail(peer);
+      } else if (pc.connectionState === 'disconnected') {
+        // انقطاع مؤقت: إن لم يعد خلال 10 ثوانٍ نعيد بناء الاتصال
+        setTimeout(() => {
+          const q = this.pairs.get(peer);
+          if (q && q.pc === pc && pc.connectionState !== 'connected') this.fail(peer);
+        }, 10_000);
+      }
+    });
   }
 
   /** يُستدعى كلما تغيّرت قائمة الحاضرين */
@@ -141,67 +182,57 @@ export class P2PMesh {
     if (this.closed) return;
     this.present = present;
     if (!this.started) return;
-    const others = present.filter((m) => m.uid !== this.uid);
-    const ids = new Set(others.map((m) => m.uid));
-
-    // الإرسال: اتصال لكل حاضر لكل مسار أنشره
-    (Object.keys(this.local) as MediaKind[]).forEach((kind) => {
-      others.forEach((m) => {
-        const key = `${kind}:${m.uid}`;
-        if (!this.outs.has(key) && (this.fails.get(key) || 0) < MAX_FAILS) this.openOut(kind, m.uid).catch((e) => console.warn('offer', e));
-      });
-    });
-    this.outs.forEach((o, k) => {
-      if (!ids.has(o.to)) {
-        this.closeOut(k);
-        this.fails.delete(k);
-      }
-    });
-
-    // الاستقبال: إغلاق ما توقف ناشره عن نشره
+    const me = present.find((m) => m.uid === this.uid);
+    const iPub = !!me && canPublish(me);
+    const want = new Set(present.filter((m) => m.uid !== this.uid && (iPub || canPublish(m))).map((m) => m.uid));
     const now = Date.now();
-    this.ins.forEach((i, k) => {
-      const m = others.find((x) => x.uid === i.from);
-      const cur = m ? (i.kind === 'mic' ? m.pub : i.kind === 'screen' ? m.screen : m.cam || null) : null;
-      const allowed = !!m && (i.kind !== 'mic' || m.role === 'owner' || m.role === 'speaker');
-      if (!m || !allowed || (cur && cur !== i.nonce) || (!cur && now - i.at > 15000)) this.closeIn(k);
+
+    // أنا أبدأ الاتصال مع من معرّفه أكبر من معرّفي
+    want.forEach((peer) => {
+      if (this.pairs.has(peer) || this.uid > peer) return;
+      const f = this.fails.get(peer);
+      if (f && f.nextAt > now) return;
+      this.openPair(peer).catch((e) => console.warn('offer', e));
+    });
+    // إغلاق اتصالات من خرج
+    this.pairs.forEach((p, peer) => {
+      if (!want.has(peer)) {
+        this.closePair(peer);
+        this.fails.delete(peer);
+      }
     });
   }
 
-  private async openOut(kind: MediaKind, to: string) {
-    const loc = this.local[kind];
-    if (!loc) return;
-    const key = `${kind}:${to}`;
-    // بعد أول فشل نجبر المرور عبر خادم TURN (يفيد مع الـ VPN والشبكات المغلقة)
-    const relay = hasTurn() && (this.fails.get(key) || 0) > 0;
+  private fail(peer: string) {
+    const f = this.fails.get(peer) || { n: 0, nextAt: 0 };
+    f.n += 1;
+    f.nextAt = Date.now() + Math.min(30_000, 3000 * f.n);
+    this.fails.set(peer, f);
+    this.closePair(peer);
+  }
+
+  private async openPair(peer: string) {
+    const attempt = this.fails.get(peer)?.n || 0;
+    // بعد أول فشل: نجرّب التمرير عبر خادم TURN في المحاولات الفردية
+    const relay = hasTurn() && attempt % 2 === 1;
     const pc = new RTCPeerConnection({ iceServers: ICE, iceTransportPolicy: relay ? 'relay' : 'all' });
-    const docId = `${loc.nonce}_${to}_${Date.now().toString(36)}`;
-    const out: Out = { pc, docId, to, kind, nonce: loc.nonce };
-    this.outs.set(key, out);
-    // الكاميرا والشاشة بجودة معتدلة لأن كل اتصال يُرسل من جهاز المتحدث نفسه
-    const maxBitrate = kind === 'cam' ? 250_000 : kind === 'screen' ? 700_000 : 0;
-    pc.addTransceiver(loc.track, maxBitrate ? { direction: 'sendonly', sendEncodings: [{ maxBitrate }] } : { direction: 'sendonly' });
-    pc.addEventListener('connectionstatechange', () => {
-      if (pc.connectionState === 'failed') {
-        this.fails.set(key, (this.fails.get(key) || 0) + 1);
-        if (this.outs.get(key) === out) this.closeOut(key);
-      }
-    });
-    // إن لم يكتمل الاتصال خلال 25 ثانية نعيد المحاولة (عبر خادم TURN إن وُجد)
+    const docId = `${this.uid}_${peer}_${Date.now().toString(36)}`;
+    const pair: Pair = { pc, peer, docId, initiator: true, at: Date.now() };
+    this.pairs.set(peer, pair);
+    KINDS.forEach((k) => pc.addTransceiver(k === 'mic' ? 'audio' : 'video', { direction: 'sendrecv' }));
+    KINDS.forEach((k) => this.applyLocal(pc, k));
+    this.wire(pc, peer, () => pair);
     setTimeout(() => {
-      if (this.outs.get(key) === out && pc.connectionState !== 'connected') {
-        this.fails.set(key, (this.fails.get(key) || 0) + 1);
-        this.closeOut(key);
-      }
-    }, 25000);
+      if (this.pairs.get(peer) === pair && pc.connectionState !== 'connected') this.fail(peer);
+    }, CONNECT_TIMEOUT);
     await pc.setLocalDescription(await pc.createOffer());
-    await waitIce(pc, hasTurn() ? 7000 : 2500);
-    if (this.outs.get(key) !== out || this.closed) return;
+    await waitIce(pc, hasTurn() ? 4000 : 2500);
+    if (this.pairs.get(peer) !== pair || this.closed) return;
     await setDoc(doc(this.col(), docId), {
       from: this.uid,
-      to,
-      kind,
-      nonce: loc.nonce,
+      to: peer,
+      kind: 'pair',
+      nonce: docId.slice(-12),
       offer: pc.localDescription!.sdp,
       answer: null,
       createdAt: Date.now(),
@@ -210,9 +241,9 @@ export class P2PMesh {
 
   private onAnswer(docId: string, d: any) {
     if (!d || !d.answer) return;
-    let found: Out | undefined;
-    this.outs.forEach((o) => {
-      if (o.docId === docId) found = o;
+    let found: Pair | undefined;
+    this.pairs.forEach((p) => {
+      if (p.docId === docId) found = p;
     });
     if (!found) {
       deleteDoc(doc(this.col(), docId)).catch(() => {});
@@ -226,82 +257,99 @@ export class P2PMesh {
   }
 
   private async onOffer(docId: string, d: any) {
-    if (!d || !d.offer || d.answer || this.handled.has(docId) || this.closed) return;
-    if (d.kind !== 'mic' && d.kind !== 'screen' && d.kind !== 'cam') return;
+    if (!d || !d.offer || d.answer || d.kind !== 'pair' || this.handled.has(docId) || this.closed) return;
     this.handled.add(docId);
-    const key = `${d.from}:${d.kind}`;
-    this.closeIn(key);
+    const peer = String(d.from || '');
+    // طلب إعادة اتصال من الطرف الآخر: أبدأ اتصالًا جديدًا فورًا
+    if (d.offer === 'RESET') {
+      deleteDoc(doc(this.col(), docId)).catch(() => {});
+      if (Date.now() - Number(d.createdAt || 0) > OFFER_MAX_AGE) return;
+      this.closePair(peer);
+      this.fails.delete(peer);
+      this.sync(this.present);
+      return;
+    }
+    const at = Number(d.createdAt || 0);
+    if (!peer || Date.now() - at > OFFER_MAX_AGE || at < (this.lastOffer.get(peer) || 0)) return;
+    this.lastOffer.set(peer, at);
+    this.closePair(peer);
     const pc = new RTCPeerConnection({ iceServers: ICE });
-    const inn: In = { pc, docId, from: d.from, kind: d.kind, nonce: d.nonce, at: Date.now() };
-    this.ins.set(key, inn);
-    pc.ontrack = (e) => {
-      if (this.ins.get(key) === inn) this.onTrack(key, e.track);
-    };
-    pc.addEventListener('connectionstatechange', () => {
-      if ((pc.connectionState === 'failed' || pc.connectionState === 'closed') && this.ins.get(key) === inn) this.closeIn(key);
-    });
+    const pair: Pair = { pc, peer, docId, initiator: false, at: Date.now() };
+    this.pairs.set(peer, pair);
+    this.wire(pc, peer, () => pair);
     try {
       await pc.setRemoteDescription({ type: 'offer', sdp: d.offer });
+      pc.getTransceivers().forEach((t) => {
+        try {
+          t.direction = 'sendrecv';
+        } catch {
+          /* ignore */
+        }
+      });
+      KINDS.forEach((k) => this.applyLocal(pc, k));
       await pc.setLocalDescription(await pc.createAnswer());
-      await waitIce(pc, hasTurn() ? 7000 : 2500);
-      if (this.ins.get(key) !== inn) return;
+      await waitIce(pc, hasTurn() ? 4000 : 2500);
+      if (this.pairs.get(peer) !== pair) return;
       await updateDoc(doc(this.col(), docId), { answer: pc.localDescription!.sdp });
     } catch (e) {
       console.warn('offer in', e);
-      if (this.ins.get(key) === inn) this.closeIn(key);
+      if (this.pairs.get(peer) === pair) this.closePair(peer);
     }
   }
 
-  private closeOut(key: string) {
-    const o = this.outs.get(key);
-    if (!o) return;
-    this.outs.delete(key);
+  private closePair(peer: string) {
+    const p = this.pairs.get(peer);
+    if (!p) return;
+    this.pairs.delete(peer);
     try {
-      o.pc.close();
+      p.pc.close();
     } catch {
       /* ignore */
     }
-    deleteDoc(doc(this.col(), o.docId)).catch(() => {});
+    if (p.initiator) deleteDoc(doc(this.col(), p.docId)).catch(() => {});
+    KINDS.forEach((k) => this.onRemove(`${peer}:${k}`));
   }
 
-  private closeIn(key: string) {
-    const i = this.ins.get(key);
-    if (!i) return;
-    this.ins.delete(key);
-    try {
-      i.pc.close();
-    } catch {
-      /* ignore */
-    }
-    this.onRemove(key);
-  }
-
-  /** حالة الاتصالات لعرضها للمستخدم: كم مشاركًا يصله صوتي، وكم متحدثًا أسمعه */
+  /** حالة الاتصالات لعرضها: كم مشاركًا يصله صوتي، وكم متحدثًا أسمعه */
   status() {
-    let outTotal = 0,
-      outOk = 0,
-      inTotal = 0,
-      inOk = 0;
-    this.outs.forEach((o) => {
-      if (o.kind !== 'mic') return;
-      outTotal++;
-      if (o.pc.connectionState === 'connected') outOk++;
+    const others = this.present.filter((m) => m.uid !== this.uid);
+    const ok = (id: string) => this.pairs.get(id)?.pc.connectionState === 'connected';
+    const outPeers = this.local.mic ? others : [];
+    const speakers = others.filter((m) => m.pub && (m.role === 'owner' || m.role === 'speaker'));
+    return {
+      outTotal: outPeers.length,
+      outOk: outPeers.filter((m) => ok(m.uid)).length,
+      inTotal: speakers.length,
+      inOk: speakers.filter((m) => ok(m.uid)).length,
+      turn: hasTurn(),
+    };
+  }
+
+  /** إعادة الاتصال يدويًا بكل المشاركين */
+  reconnect() {
+    [...this.pairs.values()].forEach((p) => {
+      // إن كان الطرف الآخر هو من يبدأ الاتصال نطلب منه إعادة البدء
+      if (!p.initiator)
+        setDoc(doc(this.col(), `${this.uid}_${p.peer}_r${Date.now().toString(36)}`), {
+          from: this.uid,
+          to: p.peer,
+          kind: 'pair',
+          nonce: 'reset',
+          offer: 'RESET',
+          answer: null,
+          createdAt: Date.now(),
+        }).catch(() => {});
+      this.closePair(p.peer);
     });
-    const speakers = this.present.filter((m) => m.uid !== this.uid && m.pub && (m.role === 'owner' || m.role === 'speaker'));
-    inTotal = speakers.length;
-    speakers.forEach((m) => {
-      const i = this.ins.get(`${m.uid}:mic`);
-      if (i && i.pc.connectionState === 'connected') inOk++;
-    });
-    return { outTotal, outOk, inTotal, inOk, turn: hasTurn() };
+    this.fails.clear();
+    this.sync(this.present);
   }
 
   close() {
     this.closed = true;
     clearInterval(this.timer);
     this.unsubs.forEach((u) => u());
-    [...this.outs.keys()].forEach((k) => this.closeOut(k));
-    [...this.ins.keys()].forEach((k) => this.closeIn(k));
+    [...this.pairs.keys()].forEach((k) => this.closePair(k));
     (Object.values(this.local) as { track: MediaStreamTrack }[]).forEach((l) => {
       try {
         l.track.stop();

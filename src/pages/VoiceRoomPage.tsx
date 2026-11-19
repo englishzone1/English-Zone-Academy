@@ -896,6 +896,11 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                 {tr('You hear', 'تسمع/ين')} {conn.inOk}/{conn.inTotal}
               </span>
             )}
+            {((isSpeaker && conn.outOk < conn.outTotal) || conn.inOk < conn.inTotal) && (
+              <button onClick={() => meshRef.current?.reconnect()} className="px-2 py-0.5 rounded-full bg-white/15 text-white">
+                ↻ {tr('Reconnect', 'إعادة الاتصال')}
+              </button>
+            )}
             {admin && (
               <span className={`px-2 py-0.5 rounded-full ${conn.turn ? 'bg-sky-400/15 text-sky-200' : 'bg-white/10 text-gray-300'}`}>
                 {conn.turn ? tr('Relay: on', 'خادم الاتصال: مفعّل') : tr('Relay: off', 'خادم الاتصال: غير مفعّل')}
