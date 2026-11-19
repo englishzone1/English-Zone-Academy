@@ -4,6 +4,7 @@ import { ReferralOffers } from './ReferralOffers';
 import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift, Target, Users, BadgePercent, Mic } from 'lucide-react';
 import { CommunityFeed } from '../community/CommunityFeed';
 import { CompleteProfile } from './CompleteProfile';
+import { DailyChallenge } from './DailyChallenge';
 import { useAcademySettings } from '../../hooks/useAcademySettings';
 import { studentHubService } from '../../services/studentHubService';
 import { whatsappWithText } from '../../hooks/useAcademySettings';
@@ -111,6 +112,8 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
             {tr('Live small-group classes with a female teacher • monthly payment', 'حصص مباشرة في مجموعات صغيرة مع معلمة • الدفع شهريًا')}
           </span>
         </button>
+
+        <DailyChallenge uid={uid} isAr={isAr} />
 
         {/* الغرف الصوتية المجانية */}
         <button

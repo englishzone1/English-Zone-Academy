@@ -727,6 +727,34 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ===== تحدّي اليوم =====
+    match /daily_challenges/{date} {
+      allow get, list: if isMember() || isAdmin() || isTeacherDoc();
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin() &&
+        request.resource.data.keys().hasOnly(['date', 'question', 'options', 'answer', 'explanation', 'createdAt']) &&
+        request.resource.data.date == date &&
+        request.resource.data.question is string && request.resource.data.question.size() > 0 && request.resource.data.question.size() <= 400 &&
+        request.resource.data.options is list && request.resource.data.options.size() >= 2 && request.resource.data.options.size() <= 4 &&
+        request.resource.data.answer is int && request.resource.data.answer >= 0 && request.resource.data.answer < request.resource.data.options.size() &&
+        request.resource.data.explanation is string && request.resource.data.explanation.size() <= 600;
+    }
+
+    match /challenge_progress/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update: if isOwner(userId) &&
+        request.resource.data.keys().hasOnly(['lastDate', 'lastChoice', 'lastCorrect', 'streak', 'best', 'total', 'correct', 'updatedAt']) &&
+        request.resource.data.lastDate is string && request.resource.data.lastDate.size() == 10 &&
+        // إجابة واحدة في اليوم
+        (resource == null || resource.data.lastDate != request.resource.data.lastDate) &&
+        request.resource.data.lastChoice is int && request.resource.data.lastCorrect is bool &&
+        request.resource.data.streak is int && request.resource.data.streak >= 1 &&
+        request.resource.data.best is int && request.resource.data.total is int && request.resource.data.correct is int &&
+        request.resource.data.correct <= request.resource.data.total &&
+        (resource == null || request.resource.data.total == resource.data.total + 1);
+    }
+
     // البلاغات من داخل الغرف: الإدارة فقط تقرؤها
     match /voice_reports/{reportId} {
       allow create: if isSignedIn() &&

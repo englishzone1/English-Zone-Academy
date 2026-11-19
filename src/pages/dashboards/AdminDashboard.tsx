@@ -58,6 +58,7 @@ import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 import { AdminWorkshops } from '../../components/admin/AdminWorkshops';
 import { AdminReferrals } from '../../components/admin/AdminReferrals';
 import { AdminVoiceRooms } from '../../components/admin/AdminVoiceRooms';
+import { AdminDailyChallenge } from '../../components/admin/AdminDailyChallenge';
 import { AdminBlockedEmails } from '../../components/admin/AdminBlockedEmails';
 import { AdminDeletedAccounts } from '../../components/admin/AdminDeletedAccounts';
 import { sendTestEmail, resetTodayLimit } from '../../services/emailNotify';
@@ -79,6 +80,7 @@ type TabId =
   | 'workshops'
   | 'referrals'
   | 'voicerooms'
+  | 'challenge'
   | 'community'
   | 'registrations'
   | 'students'
@@ -718,6 +720,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'workshops', labelEn: 'Workshops & Certificates', labelAr: 'الورش والشهادات' },
     { id: 'referrals', labelEn: 'Referrals & Rewards', labelAr: 'الدعوات والمكافآت' },
     { id: 'voicerooms', labelEn: 'Voice rooms', labelAr: 'الغرف الصوتية' },
+    { id: 'challenge', labelEn: 'Daily challenge', labelAr: 'تحدّي اليوم' },
     { id: 'settings', labelEn: 'Academy Settings', labelAr: 'إعدادات الأكاديمية' }
   ];
 
@@ -1105,6 +1108,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         {activeTab === 'workshops' && <AdminWorkshops isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
         {activeTab === 'referrals' && <AdminReferrals isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
         {activeTab === 'voicerooms' && <AdminVoiceRooms isAr={isAr} navigate={navigate} />}
+        {activeTab === 'challenge' && <AdminDailyChallenge isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* TEACHERS */}
         {activeTab === 'teachers' && <AdminTeachersManager onNotice={(msg) => notify(msg, 4000)} />}
