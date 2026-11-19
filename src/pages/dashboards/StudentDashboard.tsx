@@ -10,7 +10,7 @@ import {
   GradeRecord,
   TimetableRecord
 } from '../../services/studentDataService';
-import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle, MessageCircle, Gift, Mic } from 'lucide-react';
+import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle, MessageCircle, Gift, Mic, BookOpenCheck } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import {
   groupService,
@@ -343,6 +343,19 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                     {unreadMsgs}
                   </span>
                 )}
+              </button>
+              {/* الواجبات والاختبارات: وصول سريع */}
+              <button
+                onClick={() => {
+                  setActiveTab('homework');
+                  setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                }}
+                className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm transition-all ${
+                  activeTab === 'homework' ? 'bg-[#D4AF37] text-[#0A192F] border-[#D4AF37]' : 'bg-white text-[#0A192F] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
+                }`}
+              >
+                <BookOpenCheck className="w-4 h-4 text-[#AA820A]" />
+                <span>{isAr ? 'الواجبات والاختبارات' : 'Homework & tests'}</span>
               </button>
               {/* الغرف الصوتية */}
               <button
