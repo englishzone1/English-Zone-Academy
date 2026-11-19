@@ -156,7 +156,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             </div>
           </div>
 
-          {/* Feature 2: Free CPD Certificate */}
+          {/* Feature 2: Three free certificates */}
           <div
             dir={dir}
             className="relative bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37]/50 shadow-xl hover:border-[#D4AF37] transition-all flex flex-col justify-between overflow-hidden"
@@ -176,9 +176,17 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 {t.features.cpdTitle}
               </h3>
 
-              <p className="text-sm sm:text-base text-gray-200 leading-relaxed">
-                {t.features.cpdDesc}
-              </p>
+              <ul className="space-y-3.5">
+                {((t.features as any).cpdItems || []).map((it: { icon: string; title: string; desc: string }) => (
+                  <li key={it.title} className="flex items-start gap-3">
+                    <span className="text-xl leading-none mt-0.5" aria-hidden="true">{it.icon}</span>
+                    <div>
+                      <div className="font-bold text-sm sm:text-base text-[#F3E5AB]">{it.title}</div>
+                      <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">{it.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="mt-7 pt-4 border-t border-white/10 flex items-center justify-between gap-3">
