@@ -317,9 +317,10 @@ export class P2PMesh {
 // تُعالَج الصورة قبل إرسالها (تفتيح لطيف مع تباين وألوان متوازنة) فيراها الجميع بنفس الإضاءة.
 export const LIGHT_LEVELS = [
   { id: 0, ar: 'عادية', en: 'Normal', filter: 'none' },
-  { id: 1, ar: 'مشرقة', en: 'Bright', filter: 'brightness(1.22) contrast(1.03) saturate(1.1)' },
-  { id: 2, ar: 'أكثر إشراقًا', en: 'Brighter', filter: 'brightness(1.4) contrast(0.97) saturate(1.12)' },
-  { id: 3, ar: 'دافئة ومشرقة', en: 'Warm & bright', filter: 'brightness(1.32) contrast(1) saturate(1.15) sepia(0.08)' },
+  { id: 1, ar: 'مشرقة', en: 'Bright', filter: 'brightness(1.2) contrast(1.02) saturate(0.92)' },
+  { id: 2, ar: 'أكثر إشراقًا', en: 'Brighter', filter: 'brightness(1.36) contrast(0.97) saturate(0.88)' },
+  // تخفيف الاصفرار: ألوان أهدأ وميل خفيف بعيدًا عن الأصفر نحو الوردي الطبيعي
+  { id: 3, ar: 'طبيعية بلا اصفرار', en: 'Natural, less yellow', filter: 'brightness(1.3) contrast(1) saturate(0.8) hue-rotate(-6deg)' },
 ];
 
 export interface LightProcessor {
