@@ -123,7 +123,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const [menuFor, setMenuFor] = useState<RoomMember | null>(null);
   const [now, setNow] = useState(Date.now());
   const [audioBlocked, setAudioBlocked] = useState(false);
-  const [conn, setConn] = useState({ outTotal: 0, outOk: 0, inTotal: 0, inOk: 0 });
+  const [conn, setConn] = useState({ outTotal: 0, outOk: 0, inTotal: 0, inOk: 0, turn: false });
 
   const meshRef = useRef<P2PMesh | null>(null);
   const micTrackRef = useRef<MediaStreamTrack | null>(null);
@@ -221,7 +221,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     if (!inRoom) return;
     const t = setInterval(() => {
       const st = meshRef.current?.status();
-      if (st) setConn((o) => (o.outTotal === st.outTotal && o.outOk === st.outOk && o.inTotal === st.inTotal && o.inOk === st.inOk ? o : st));
+      if (st) setConn((o) => (o.outTotal === st.outTotal && o.outOk === st.outOk && o.inTotal === st.inTotal && o.inOk === st.inOk && o.turn === st.turn ? o : st));
     }, 2000);
     return () => clearInterval(t);
   }, [inRoom]);
@@ -611,6 +611,9 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
             {tr('You hear', 'تسمع/ين')} {conn.inOk}/{conn.inTotal} {tr('speakers', 'متحدث')}
           </span>
         )}
+        <span className={`px-2.5 py-1 rounded-full border ${conn.turn ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-gray-50 text-gray-500 border-gray-200'}`}>
+          {conn.turn ? tr('Relay server: on', 'خادم الاتصال: مفعّل') : tr('Relay server: off', 'خادم الاتصال: غير مفعّل')}
+        </span>
         {isSpeaker && me?.muted && micReady && (
           <span className="px-2.5 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200">
             {tr('Your mic is off — tap “Unmute” below', 'المايك مغلق: اضغط/ي «تشغيل المايك» في الأسفل ليسمعوك')}

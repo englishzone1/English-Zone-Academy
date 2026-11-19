@@ -32,8 +32,9 @@ export async function loadTurn(): Promise<TurnConfig | null> {
     return null;
   }
 }
+export const hasTurn = () => ICE.length > 1;
 export const saveTurn = (t: TurnConfig) => setDoc(doc(db, 'voice_config', 'turn'), t);
-const MAX_FAILS = 3;
+const MAX_FAILS = 4;
 
 function waitIce(pc: RTCPeerConnection, ms = 2500): Promise<void> {
   if (pc.iceGatheringState === 'complete') return Promise.resolve();
@@ -171,7 +172,9 @@ export class P2PMesh {
     const loc = this.local[kind];
     if (!loc) return;
     const key = `${kind}:${to}`;
-    const pc = new RTCPeerConnection({ iceServers: ICE });
+    // بعد أول فشل نجبر المرور عبر خادم TURN (يفيد مع الـ VPN والشبكات المغلقة)
+    const relay = hasTurn() && (this.fails.get(key) || 0) > 0;
+    const pc = new RTCPeerConnection({ iceServers: ICE, iceTransportPolicy: relay ? 'relay' : 'all' });
     const docId = `${loc.nonce}_${to}_${Date.now().toString(36)}`;
     const out: Out = { pc, docId, to, kind, nonce: loc.nonce };
     this.outs.set(key, out);
@@ -182,15 +185,15 @@ export class P2PMesh {
         if (this.outs.get(key) === out) this.closeOut(key);
       }
     });
-    // إن لم يصل جواب خلال 30 ثانية نعيد المحاولة لاحقًا (بحد أقصى)
+    // إن لم يكتمل الاتصال خلال 25 ثانية نعيد المحاولة (عبر خادم TURN إن وُجد)
     setTimeout(() => {
-      if (this.outs.get(key) === out && pc.signalingState === 'have-local-offer') {
+      if (this.outs.get(key) === out && pc.connectionState !== 'connected') {
         this.fails.set(key, (this.fails.get(key) || 0) + 1);
         this.closeOut(key);
       }
-    }, 30000);
+    }, 25000);
     await pc.setLocalDescription(await pc.createOffer());
-    await waitIce(pc);
+    await waitIce(pc, hasTurn() ? 7000 : 2500);
     if (this.outs.get(key) !== out || this.closed) return;
     await setDoc(doc(this.col(), docId), {
       from: this.uid,
@@ -238,7 +241,7 @@ export class P2PMesh {
     try {
       await pc.setRemoteDescription({ type: 'offer', sdp: d.offer });
       await pc.setLocalDescription(await pc.createAnswer());
-      await waitIce(pc);
+      await waitIce(pc, hasTurn() ? 7000 : 2500);
       if (this.ins.get(key) !== inn) return;
       await updateDoc(doc(this.col(), docId), { answer: pc.localDescription!.sdp });
     } catch (e) {
@@ -288,7 +291,7 @@ export class P2PMesh {
       const i = this.ins.get(`${m.uid}:mic`);
       if (i && i.pc.connectionState === 'connected') inOk++;
     });
-    return { outTotal, outOk, inTotal, inOk };
+    return { outTotal, outOk, inTotal, inOk, turn: hasTurn() };
   }
 
   close() {
