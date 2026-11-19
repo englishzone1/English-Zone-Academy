@@ -697,6 +697,12 @@ service cloud.firestore {
       }
     }
 
+    // إعدادات خادم TURN للغرف الصوتية: يقرؤها المسجّلون، وتكتبها الإدارة
+    match /voice_config/{cfgId} {
+      allow get: if isMember() || isAdmin();
+      allow write: if isAdmin();
+    }
+
     // البلاغات من داخل الغرف: الإدارة فقط تقرؤها
     match /voice_reports/{reportId} {
       allow create: if isSignedIn() &&

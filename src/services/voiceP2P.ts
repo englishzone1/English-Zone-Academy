@@ -2,13 +2,37 @@
 // كل متحدث يرسل صوته لكل مشارك في اتصال مستقل باتجاه واحد (ناشر ← مستقبِل).
 // تبادل الإعداد (SDP) عبر Firestore: voice_rooms/{roomId}/signals/{id} {from, to, kind, nonce, offer, answer}
 // الناشر يكتب العرض، والمستقبِل يكتب الجواب، ثم يحذف الناشر الوثيقة.
-import { collection, deleteDoc, doc, onSnapshot, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, onSnapshot, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from './firebase';
 import type { RoomMember } from './voiceRooms';
 
 export type MediaKind = 'mic' | 'screen';
 
-const ICE: RTCIceServer[] = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] }];
+const STUN: RTCIceServer = { urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] };
+let ICE: RTCIceServer[] = [STUN];
+
+// خادم TURN المجاني (مثل ExpressTURN) يمرّر الصوت حين تمنع الشبكة أو الـ VPN الاتصال المباشر.
+// يُحفظ من لوحة الإدارة في voice_config/turn {server, username, credential}
+export interface TurnConfig {
+  server: string;
+  username: string;
+  credential: string;
+}
+export const turnUrls = (server: string) => {
+  const host = server.trim().replace(/^turns?:/, '').replace(/[:?].*$/, '');
+  return [`turn:${host}:3478?transport=udp`, `turn:${host}:3478?transport=tcp`, `turns:${host}:443?transport=tcp`];
+};
+export async function loadTurn(): Promise<TurnConfig | null> {
+  try {
+    const d = await getDoc(doc(db, 'voice_config', 'turn'));
+    const t = d.exists() ? (d.data() as TurnConfig) : null;
+    ICE = t && t.server && t.username && t.credential ? [STUN, { urls: turnUrls(t.server), username: t.username, credential: t.credential }] : [STUN];
+    return t;
+  } catch {
+    return null;
+  }
+}
+export const saveTurn = (t: TurnConfig) => setDoc(doc(db, 'voice_config', 'turn'), t);
 const MAX_FAILS = 3;
 
 function waitIce(pc: RTCPeerConnection, ms = 2500): Promise<void> {
@@ -71,7 +95,9 @@ export class P2PMesh {
     return collection(db, 'voice_rooms', this.roomId, 'signals');
   }
 
-  start() {
+  async start() {
+    await loadTurn();
+    if (this.closed) return;
     // عروض موجّهة إليّ
     this.unsubs.push(
       onSnapshot(
@@ -89,7 +115,10 @@ export class P2PMesh {
       )
     );
     this.timer = setInterval(() => this.sync(this.present), 10000);
+    this.started = true;
+    this.sync(this.present);
   }
+  private started = false;
 
   /** يبدأ أو يوقف نشر مسار (الصوت أو الشاشة). يعيد المعرّف الذي يُكتب في وثيقة العضو. */
   setLocal(kind: MediaKind, track: MediaStreamTrack | null): string | null {
@@ -110,6 +139,7 @@ export class P2PMesh {
   sync(present: RoomMember[]) {
     if (this.closed) return;
     this.present = present;
+    if (!this.started) return;
     const others = present.filter((m) => m.uid !== this.uid);
     const ids = new Set(others.map((m) => m.uid));
 
