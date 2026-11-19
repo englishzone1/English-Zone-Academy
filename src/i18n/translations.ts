@@ -3,7 +3,7 @@ export const translations = {
     brand: {
       name: 'ENGLISH ZONE',
       tagline: 'International Online Academy',
-      slogan: 'LEARN. SPEAK. GROW. — Master English with Confidence',
+      slogan: 'Interactive learning & accredited certificates - Learn. Speak. Grow.',
       motto: 'LEARN. SPEAK. GROW.',
       subSlogan: 'A prestigious international online English academy offering structured CEFR learning pathways and interactive small group courses.',
       onlineOnlyBadge: '100% Online Interactive Academy',
