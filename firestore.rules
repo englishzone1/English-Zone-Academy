@@ -569,6 +569,128 @@ service cloud.firestore {
         request.resource.data.json is string && request.resource.data.json.size() <= 200000;
     }
 
+    // ===== الغرف الصوتية (مثل HelloTalk) =====
+    function vrRoom(roomId) {
+      return get(/databases/$(database)/documents/voice_rooms/$(roomId)).data;
+    }
+    function vrIsFemale() {
+      return isMember() && myProfile().get('gender', '') == 'female';
+    }
+    // من يرى الغرفة: كل من سجّل في المنصة، وغرف «البنات فقط» للمشتركات فقط
+    function vrCanSee(r) {
+      return isAdmin() || (isMember() && (r.girlsOnly == false || vrIsFemale()));
+    }
+    function vrIsMod(roomId) {
+      return isAdmin() || (isSignedIn() && vrRoom(roomId).ownerId == request.auth.uid);
+    }
+    function vrMyStatus(roomId) {
+      return exists(/databases/$(database)/documents/voice_rooms/$(roomId)/members/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/voice_rooms/$(roomId)/members/$(request.auth.uid)).data.get('status', '')
+        : '';
+    }
+    function vrIsIn(roomId) {
+      return isSignedIn() && vrCanSee(vrRoom(roomId)) && vrMyStatus(roomId) == 'in';
+    }
+    function vrValidRoom(d) {
+      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount']) &&
+        d.title is string && d.title.size() > 0 && d.title.size() <= 80 &&
+        d.topic is string && d.topic.size() <= 300 &&
+        d.level is string && d.level.size() <= 20 &&
+        d.ownerName is string && d.ownerName.size() <= 80 &&
+        d.privacy in ['public', 'approval', 'private'] &&
+        d.girlsOnly is bool &&
+        d.maxSpeakers is int && d.maxSpeakers >= 2 && d.maxSpeakers <= 12 &&
+        d.status in ['open', 'closed'] &&
+        d.liveCount is int;
+    }
+
+    match /voice_rooms/{roomId} {
+      allow get, list: if isSignedIn() && vrCanSee(resource.data);
+      allow create: if (isMember() || isAdmin()) &&
+        request.resource.data.ownerId == request.auth.uid &&
+        vrValidRoom(request.resource.data) &&
+        request.resource.data.status == 'open' &&
+        (request.resource.data.girlsOnly == false || vrIsFemale() || isAdmin());
+      allow update: if isAdmin() ||
+        (isMember() && resource.data.ownerId == request.auth.uid &&
+          request.resource.data.ownerId == resource.data.ownerId &&
+          vrValidRoom(request.resource.data) &&
+          (request.resource.data.girlsOnly == false || vrIsFemale())) ||
+        (vrIsIn(roomId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastActiveAt', 'liveCount']) &&
+          request.resource.data.liveCount is int);
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.ownerId == request.auth.uid);
+
+      match /members/{uid} {
+        allow get, list: if isSignedIn() && (uid == request.auth.uid || vrIsMod(roomId) || vrIsIn(roomId));
+
+        // الدخول: المستمعة تدخل مباشرة في الغرفة العامة، وتنتظر الموافقة في غيرها
+        allow create: if isSignedIn() && uid == request.auth.uid &&
+          vrCanSee(vrRoom(roomId)) && vrRoom(roomId).status == 'open' &&
+          request.resource.data.keys().hasOnly(['uid', 'name', 'photo', 'gender', 'role', 'status', 'hand', 'muted', 'canScreen', 'pub', 'screen', 'joinedAt', 'seenAt']) &&
+          request.resource.data.uid == uid &&
+          request.resource.data.name is string && request.resource.data.name.size() <= 60 &&
+          request.resource.data.photo is string && request.resource.data.photo.size() <= 500 &&
+          request.resource.data.hand == false &&
+          request.resource.data.pub == null && request.resource.data.screen == null &&
+          (
+            (vrRoom(roomId).ownerId == uid && request.resource.data.role == 'owner' && request.resource.data.status == 'in' && request.resource.data.canScreen == true) ||
+            (vrRoom(roomId).ownerId != uid && request.resource.data.role == 'listener' && request.resource.data.canScreen == false &&
+              (request.resource.data.status == 'pending' ||
+                (request.resource.data.status == 'in' && (vrRoom(roomId).privacy == 'public' || isAdmin()))))
+          );
+
+        allow update: if
+          // صاحبة الغرفة أو الإدارة: الموافقة، رفع/إنزال المتحدثات، الكتم، الطرد، السماح بمشاركة الشاشة
+          (vrIsMod(roomId) && uid != request.auth.uid &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'status', 'muted', 'canScreen', 'hand', 'pub', 'screen']) &&
+            (request.resource.data.role == resource.data.role || (resource.data.role != 'owner' && request.resource.data.role in ['speaker', 'listener'])) &&
+            request.resource.data.status in ['in', 'pending', 'left', 'kicked'] &&
+            request.resource.data.canScreen is bool &&
+            (request.resource.data.muted == resource.data.muted || request.resource.data.muted == true) &&
+            (request.resource.data.pub == resource.data.pub || request.resource.data.pub == null) &&
+            (request.resource.data.screen == resource.data.screen || request.resource.data.screen == null)) ||
+          // العضو نفسه: اليد، الميكروفون، النشر، الخروج والعودة (والمطرود لا يغيّر شيئًا)
+          (uid == request.auth.uid && resource.data.status != 'kicked' &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hand', 'muted', 'pub', 'screen', 'seenAt', 'joinedAt', 'status', 'name', 'role']) &&
+            (request.resource.data.role == resource.data.role || (resource.data.role == 'speaker' && request.resource.data.role == 'listener')) &&
+            request.resource.data.name is string && request.resource.data.name.size() <= 60 &&
+            request.resource.data.hand is bool && request.resource.data.muted is bool &&
+            (request.resource.data.pub == null ||
+              (request.resource.data.pub is string && request.resource.data.status == 'in' && request.resource.data.role in ['owner', 'speaker'])) &&
+            (request.resource.data.screen == null ||
+              (request.resource.data.screen is string && request.resource.data.status == 'in' && resource.data.canScreen == true)) &&
+            (request.resource.data.status == resource.data.status ||
+              request.resource.data.status in ['left', 'pending'] ||
+              (request.resource.data.status == 'in' &&
+                (resource.data.role == 'owner' || isAdmin() || (vrRoom(roomId).privacy == 'public' && vrRoom(roomId).status == 'open')))));
+
+        allow delete: if vrIsMod(roomId);
+      }
+
+      match /chat/{msgId} {
+        allow get, list: if vrIsMod(roomId) || vrIsIn(roomId);
+        allow create: if vrIsIn(roomId) &&
+          request.resource.data.keys().hasOnly(['uid', 'name', 'text', 'createdAt']) &&
+          request.resource.data.uid == request.auth.uid &&
+          request.resource.data.name is string && request.resource.data.name.size() <= 60 &&
+          request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 500 &&
+          request.resource.data.createdAt is int;
+        allow delete: if vrIsMod(roomId) || (isSignedIn() && resource.data.uid == request.auth.uid);
+      }
+    }
+
+    // البلاغات من داخل الغرف: الإدارة فقط تقرؤها
+    match /voice_reports/{reportId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.keys().hasOnly(['roomId', 'roomTitle', 'reportedUid', 'reportedName', 'reporterUid', 'reporterName', 'reason', 'createdAt']) &&
+        request.resource.data.reporterUid == request.auth.uid &&
+        request.resource.data.reason is string && request.resource.data.reason.size() <= 500 &&
+        request.resource.data.roomTitle is string && request.resource.data.roomTitle.size() <= 80 &&
+        request.resource.data.reportedName is string && request.resource.data.reportedName.size() <= 60 &&
+        request.resource.data.reporterName is string && request.resource.data.reporterName.size() <= 60;
+      allow read, delete: if isAdmin();
+    }
+
     // --- Connection test collection: read for signed-in users, write for admins only ---
     match /test/{docId} {
       allow read: if isSignedIn();

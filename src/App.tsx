@@ -28,6 +28,8 @@ import { VisitorJoinPage } from './pages/VisitorJoinPage';
 import { HomeworkPlatform } from './components/student/HomeworkPlatform';
 import { HomeworkAnswersPage } from './components/admin/HomeworkAnswersPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
+import { VoiceRoomsPage } from './pages/VoiceRoomsPage';
+import { VoiceRoomPage } from './pages/VoiceRoomPage';
 import { EnglishClubPage } from './pages/EnglishClubPage';
 import { StudentDashboard } from './pages/dashboards/StudentDashboard';
 import { TeacherDashboard } from './pages/dashboards/TeacherDashboard';
@@ -178,6 +180,9 @@ function MainApp() {
       // التسجيل القادم من عروض الدعوة: بدون زر واتساب
       case 'join-offer':
         return <VisitorJoinPage navigate={navigate} hideWhatsapp />;
+      // الغرف الصوتية: لكل من سجّل في المنصة
+      case 'rooms':
+        return <VoiceRoomsPage navigate={navigate} />;
       case 'blog':
         return <BlogPage navigate={navigate} />;
       case 'english-club':
@@ -238,6 +243,9 @@ function MainApp() {
           return <LoadingScreen />;
         }
         // صفحة الورشة العامة وصفحة التحقق من الشهادة
+        if (currentRoute.startsWith('room/')) {
+          return <VoiceRoomPage key={currentRoute} roomId={currentRoute.slice('room/'.length).split(/[/?]/)[0]} navigate={navigate} />;
+        }
         if (currentRoute.startsWith('workshop/')) {
           return <WorkshopPage workshopId={currentRoute.slice('workshop/'.length)} navigate={navigate} />;
         }
@@ -296,11 +304,12 @@ function MainApp() {
         {renderCurrentPage()}
       </main>
       {!bare && <Footer navigate={navigate} />}
-      <TawkChat hidden={bare || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
+      <TawkChat hidden={bare || currentRoute.startsWith('room/') || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
       <ChatAssistant
         hidden={
           ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) ||
           currentRoute.startsWith('hw-answers/') ||
+          currentRoute.startsWith('room/') ||
           bare ||
           (currentRoute === 'portal' && (isAdmin || isTeacher || isSuperAdmin))
         }

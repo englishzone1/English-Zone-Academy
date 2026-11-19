@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { ReferralOffers } from './ReferralOffers';
-import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift, Target, Users, BadgePercent } from 'lucide-react';
+import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift, Target, Users, BadgePercent, Mic } from 'lucide-react';
 import { CommunityFeed } from '../community/CommunityFeed';
 import { CompleteProfile } from './CompleteProfile';
 import { useAcademySettings } from '../../hooks/useAcademySettings';
@@ -109,6 +109,22 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           </span>
           <span className="block mt-2 text-xs sm:text-sm font-semibold opacity-80">
             {tr('Live small-group classes with a female teacher • monthly payment', 'حصص مباشرة في مجموعات صغيرة مع معلمة • الدفع شهريًا')}
+          </span>
+        </button>
+
+        {/* الغرف الصوتية المجانية */}
+        <button
+          onClick={() => navigate('rooms')}
+          className="w-full p-5 rounded-3xl bg-white border-2 border-[#D4AF37] flex items-center gap-4 text-start hover:shadow-md transition-shadow"
+        >
+          <span className="w-12 h-12 rounded-full bg-[#0A192F] text-[#F3E5AB] flex items-center justify-center shrink-0">
+            <Mic className="w-6 h-6" />
+          </span>
+          <span>
+            <span className="block font-bold text-[#0A192F] text-base">{tr('Voice rooms — free', 'الغرف الصوتية — مجانًا')}</span>
+            <span className="block text-xs text-gray-600">
+              {tr('Practise speaking English live with other learners.', '{تدرّب|تدرّبي} على المحادثة بالإنجليزية مباشرة مع متعلمين آخرين.')}
+            </span>
           </span>
         </button>
 

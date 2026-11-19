@@ -1,0 +1,16 @@
+{
+  // الموقع (ملفات dist) + خادم صغير لمسار /api/rtc فقط (الغرف الصوتية)
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "english-zone-academy",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // لا تمسح المتغيرات المضافة من لوحة Cloudflare عند كل نشر
+  "keep_vars": true,
+  "observability": { "enabled": true }
+}

@@ -10,7 +10,7 @@ import {
   GradeRecord,
   TimetableRecord
 } from '../../services/studentDataService';
-import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle, MessageCircle, Gift } from 'lucide-react';
+import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle, MessageCircle, Gift, Mic } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import {
   groupService,
@@ -342,6 +342,14 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                     {unreadMsgs}
                   </span>
                 )}
+              </button>
+              {/* الغرف الصوتية */}
+              <button
+                onClick={() => navigate('rooms')}
+                className="px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm bg-white text-[#0A192F] border-[#D4AF37]/60 hover:bg-[#FAF8F5]"
+              >
+                <Mic className="w-4 h-4 text-[#AA820A]" />
+                <span>{isAr ? 'الغرف الصوتية' : 'Voice rooms'}</span>
               </button>
               {/* العروض: لامعة وعائمة */}
               <button
