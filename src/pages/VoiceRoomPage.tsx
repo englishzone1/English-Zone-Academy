@@ -18,6 +18,8 @@ import {
   UserMinus,
   UserPlus,
   Maximize2,
+  Minimize2,
+  Expand,
   Trash2,
   Lock,
   Loader2,
@@ -100,6 +102,96 @@ const VideoSink: React.FC<{ track: MediaStreamTrack; label?: string; mirror?: bo
       >
         <Maximize2 className="w-4 h-4" />
       </button>
+    </div>
+  );
+};
+
+// نافذة فيديو عائمة (الكاميرا أو الشاشة): صغيرة بحجم الصورة، تُسحب بالإصبع أو الفأرة، وتُكبَّر وتُصغَّر
+const FloatingVideo: React.FC<{ track: MediaStreamTrack | null; label: string; mirror?: boolean; wide?: boolean; index: number; isAr: boolean }> = ({
+  track,
+  label,
+  mirror,
+  wide,
+  index,
+  isAr,
+}) => {
+  const ref = useRef<HTMLVideoElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [big, setBig] = useState(false);
+  const small = typeof window !== 'undefined' && window.innerWidth < 640;
+  const w = big ? Math.min(window.innerWidth - 24, wide ? 900 : 640) : wide ? (small ? 220 : 320) : small ? 130 : 200;
+  const [pos, setPos] = useState(() => {
+    const W = typeof window !== 'undefined' ? window.innerWidth : 400;
+    const x = isAr ? 12 + index * (small ? 140 : 210) : W - w - 12 - index * (small ? 140 : 210);
+    return { x: Math.max(8, x), y: 76 };
+  });
+  const drag = useRef<{ dx: number; dy: number; id: number } | null>(null);
+
+  useEffect(() => {
+    if (ref.current && track) {
+      ref.current.srcObject = new MediaStream([track]);
+      ref.current.play().catch(() => {});
+    }
+  }, [track]);
+
+  // إبقاء النافذة داخل الشاشة عند التكبير أو تغيير الحجم
+  useEffect(() => {
+    const fit = () => {
+      const b = boxRef.current;
+      const bw = b?.offsetWidth || w;
+      const bh = b?.offsetHeight || 120;
+      setPos((p) => ({ x: Math.min(Math.max(8, p.x), window.innerWidth - bw - 8), y: Math.min(Math.max(8, p.y), window.innerHeight - bh - 80) }));
+    };
+    const t = setTimeout(fit, 50);
+    window.addEventListener('resize', fit);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', fit);
+    };
+  }, [big, w]);
+
+  return (
+    <div
+      ref={boxRef}
+      className="fixed z-40 rounded-2xl overflow-hidden bg-black shadow-2xl ring-1 ring-white/20 touch-none select-none"
+      style={{ left: pos.x, top: pos.y, width: w }}
+      onPointerDown={(e) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        drag.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y, id: e.pointerId };
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      }}
+      onPointerMove={(e) => {
+        const d = drag.current;
+        if (!d || d.id !== e.pointerId) return;
+        const b = boxRef.current;
+        const bw = b?.offsetWidth || w;
+        const bh = b?.offsetHeight || 120;
+        setPos({
+          x: Math.min(Math.max(4, e.clientX - d.dx), window.innerWidth - bw - 4),
+          y: Math.min(Math.max(4, e.clientY - d.dy), window.innerHeight - bh - 4),
+        });
+      }}
+      onPointerUp={() => (drag.current = null)}
+      onPointerCancel={() => (drag.current = null)}
+    >
+      {track ? (
+        <video ref={ref} autoPlay playsInline muted className={`block w-full h-auto max-h-[70vh] object-contain ${mirror ? '-scale-x-100' : ''}`} />
+      ) : (
+        <div className="aspect-video flex items-center justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+        </div>
+      )}
+      <div className="absolute top-1 end-1 flex gap-1">
+        <button onClick={() => setBig((b) => !b)} className="w-7 h-7 rounded-lg bg-black/60 text-white flex items-center justify-center" title={big ? 'Smaller' : 'Bigger'}>
+          {big ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+        </button>
+        {big && (
+          <button onClick={() => ref.current?.requestFullscreen?.().catch(() => {})} className="w-7 h-7 rounded-lg bg-black/60 text-white flex items-center justify-center" title="Fullscreen">
+            <Expand className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+      <span className="absolute bottom-1 start-1 px-1.5 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-bold max-w-[90%] truncate">{label}</span>
     </div>
   );
 };
@@ -744,28 +836,14 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         )}
       </div>
 
-      {/* الفيديو: الشاشة المشتركة والكاميرات */}
-      {(videoTiles.length > 0 || screenOn) && (
-        <div className="px-3 pt-2 space-y-2 shrink-0">
-          {screenOn && <div className="px-3 py-1.5 rounded-xl bg-red-500/20 text-red-100 text-xs font-bold">{tr('You are sharing your screen', 'أنت تشارك{|ين} شاشتك')}</div>}
-          {videoTiles.length > 0 && (
-            <div className={`grid gap-2 ${videoTiles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-              {videoTiles.map((v) => (
-                <div key={v.key} className={v.kind === 'screen' && videoTiles.length > 1 ? 'col-span-2' : ''}>
-                  {v.track ? (
-                    <VideoSink track={v.track} label={v.label} mirror={v.mine} compact={videoTiles.length > 1} />
-                  ) : (
-                    <div className="h-28 rounded-2xl bg-white/5 flex items-center justify-center">
-                      <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* الفيديو: نوافذ عائمة صغيرة تُسحب وتُكبَّر */}
+      {screenOn && <div className="mx-3 mt-1 px-3 py-1.5 rounded-xl bg-red-500/20 text-red-100 text-xs font-bold shrink-0">{tr('You are sharing your screen', 'أنت تشارك{|ين} شاشتك')}</div>}
+      {videoTiles.map((v, i) => (
+        <FloatingVideo key={v.key} index={i} track={v.track} label={v.label} mirror={v.mine} wide={v.kind === 'screen'} isAr={isAr} />
+      ))}
 
+      {/* الجزء الأوسط يتمرر إن ضاقت الشاشة، وشريط التحكم يبقى ظاهرًا دائمًا */}
+      <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
       {/* المسرح: مقاعد المتحدثين */}
       <div className="grid grid-cols-4 gap-y-3 px-2 pt-3 shrink-0">
         {seats.map((m, i) =>
@@ -819,6 +897,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
 
       {/* الدردشة: الرسائل تصعد للأعلى */}
       <ChatFeed roomId={roomId} uid={uid} msgs={chat} isMod={isMod} isAr={isAr} memberOf={photoOf} />
+
+      </div>
 
       {/* شريط التحكم والكتابة */}
       <ChatBar
@@ -1050,7 +1130,7 @@ const ChatFeed: React.FC<{
     else setUnseen((n) => n + 1);
   }, [msgs.length]);
   return (
-    <div className="relative flex-1 min-h-0 mt-2">
+    <div className="relative flex-1 min-h-[200px] mt-2">
       <div
         ref={boxRef}
         onScroll={(e) => {
