@@ -22,7 +22,10 @@ import {
   Lock,
   Loader2,
   ArrowRight,
+  Palette,
+  ImagePlus,
 } from 'lucide-react';
+import { ROOM_BGS, bgById, getMyBg, setMyBg, shrinkImage } from '../services/roomBackgrounds';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -123,6 +126,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const [menuFor, setMenuFor] = useState<RoomMember | null>(null);
   const [now, setNow] = useState(Date.now());
   const [showRequests, setShowRequests] = useState(false);
+  const [myBg, setMyBgState] = useState(getMyBg());
+  const [showBg, setShowBg] = useState(false);
   const [audioBlocked, setAudioBlocked] = useState(false);
   const [conn, setConn] = useState({ outTotal: 0, outOk: 0, inTotal: 0, inOk: 0, turn: false });
 
@@ -594,8 +599,14 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const photoOf = (id: string) => members.find((m) => m.uid === id) || null;
   const roundBtn = 'w-11 h-11 shrink-0 rounded-full flex items-center justify-center';
 
+  // الخلفية: اختياري الشخصي، ثم خلفية الغرفة، ثم الليلي
+  const bgStyle: React.CSSProperties =
+    myBg?.id === 'custom' && myBg.img
+      ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.55)), url(${myBg.img})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+      : { background: (bgById(myBg?.id) || bgById(room.bg) || ROOM_BGS[0]).css };
+
   return (
-    <div className="fixed inset-0 z-30 flex flex-col bg-gradient-to-b from-[#0A192F] via-[#0B1424] to-[#05080F] text-white" dir={isAr ? 'rtl' : 'ltr'}>
+    <div className="fixed inset-0 z-30 flex flex-col text-white" style={bgStyle} dir={isAr ? 'rtl' : 'ltr'}>
       {/* أصوات الآخرين */}
       {Object.entries(tracks)
         .filter(([k]) => k.endsWith(':mic'))
@@ -625,6 +636,9 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
             {requestsCount}
           </button>
         )}
+        <button onClick={() => setShowBg(true)} className={`${roundBtn} bg-white/10`} title={tr('Background', 'الخلفية')}>
+          <Palette className="w-4 h-4" />
+        </button>
         <button onClick={copyLink} className={`${roundBtn} bg-white/10`} title={tr('Copy invite link', 'نسخ رابط الدعوة')}>
           <Link2 className="w-4 h-4" />
         </button>
@@ -836,6 +850,21 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         </div>
       )}
 
+      {showBg && (
+        <BgPicker
+          isAr={isAr}
+          current={myBg?.id || ''}
+          roomBg={room.bg || 'night'}
+          canSetRoom={isMod}
+          onPick={(id, img) => {
+            if (!setMyBg(id, img)) flash(tr('Could not save the picture on this device.', 'تعذر حفظ الصورة في هذا الجهاز.'));
+            setMyBgState(getMyBg());
+          }}
+          onSetRoom={(id) => updateRoom(roomId, { bg: id }).then(() => flash(tr('Room background updated for everyone.', 'تم تغيير خلفية الغرفة للجميع.'))).catch(() => flash(tr('Could not save.', 'تعذر الحفظ.')))}
+          onClose={() => setShowBg(false)}
+        />
+      )}
+
       {notice && (
         <div className="fixed bottom-24 inset-x-0 flex justify-center z-50 px-4 pointer-events-none">
           <div className="px-4 py-2.5 rounded-xl bg-white text-[#0A192F] text-sm font-bold shadow-xl">{notice}</div>
@@ -1036,6 +1065,77 @@ const ChatBar: React.FC<{ roomId: string; uid: string; name: string; isAr: boole
             </button>
           )}
         </div>
+      </div>
+    </div>
+  );
+};
+
+// اختيار الخلفية: لي وحدي، أو للغرفة كلها (لصاحب/ة الغرفة)
+const BgPicker: React.FC<{
+  isAr: boolean;
+  current: string;
+  roomBg: string;
+  canSetRoom: boolean;
+  onPick: (id: string | null, img?: string) => void;
+  onSetRoom: (id: string) => void;
+  onClose: () => void;
+}> = ({ isAr, current, roomBg, canSetRoom, onPick, onSetRoom, onClose }) => {
+  const tr = (en: string, ar: string) => (isAr ? ar : en);
+  const [busy, setBusy] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const sel = current || roomBg;
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-3" onClick={onClose} dir={isAr ? 'rtl' : 'ltr'}>
+      <div className="bg-white text-[#0A192F] rounded-3xl w-full max-w-md p-4 space-y-3 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold">{tr('Room background', 'خلفية الغرفة')}</h3>
+          <button onClick={onClose}>
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <p className="text-xs text-gray-500">{tr('Your choice changes only what you see.', 'اختيارك يغيّر ما تراه/ينه أنت فقط.')}</p>
+        <div className="grid grid-cols-4 gap-2">
+          {ROOM_BGS.map((b) => (
+            <button key={b.id} onClick={() => onPick(b.id)} className="space-y-1">
+              <span className={`block h-20 rounded-2xl ${sel === b.id && current !== 'custom' ? 'ring-4 ring-[#D4AF37]' : 'ring-1 ring-gray-200'}`} style={{ background: b.css }} />
+              <span className="block text-[11px] font-bold text-center">{tr(b.en, b.ar)}</span>
+            </button>
+          ))}
+          <button onClick={() => fileRef.current?.click()} className="space-y-1" disabled={busy}>
+            <span className={`h-20 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center ${current === 'custom' ? 'ring-4 ring-[#D4AF37]' : ''}`}>
+              {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <ImagePlus className="w-6 h-6 text-gray-500" />}
+            </span>
+            <span className="block text-[11px] font-bold text-center">{tr('My photo', 'صورة من جهازي')}</span>
+          </button>
+        </div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={async (e) => {
+            const f = e.target.files?.[0];
+            e.target.value = '';
+            if (!f) return;
+            setBusy(true);
+            try {
+              onPick('custom', await shrinkImage(f));
+            } catch {
+              /* ignore */
+            }
+            setBusy(false);
+          }}
+        />
+        {current && (
+          <button onClick={() => onPick(null)} className="w-full py-2.5 rounded-xl bg-gray-100 text-sm font-bold">
+            {tr("Use the room's background", 'استعمال خلفية الغرفة الافتراضية')}
+          </button>
+        )}
+        {canSetRoom && current && current !== 'custom' && (
+          <button onClick={() => onSetRoom(current)} className="w-full py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-sm font-bold">
+            {tr('Make it the background for everyone', 'اجعلها خلفية الغرفة للجميع')}
+          </button>
+        )}
       </div>
     </div>
   );

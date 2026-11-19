@@ -38,6 +38,7 @@ export interface VoiceRoom {
   createdAt: number;
   lastActiveAt: number;
   liveCount: number;
+  bg?: string; // خلفية الغرفة الافتراضية (يختارها صاحب/ة الغرفة)
   chatSince?: number; // الدردشة تبدأ من هنا (تُمسح عند إغلاق الغرفة أو بدء جلسة جديدة)
 }
 

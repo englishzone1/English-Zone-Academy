@@ -592,7 +592,7 @@ service cloud.firestore {
       return isSignedIn() && vrCanSee(vrRoom(roomId)) && vrMyStatus(roomId) == 'in';
     }
     function vrValidRoom(d) {
-      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount', 'chatSince']) &&
+      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount', 'chatSince', 'bg']) &&
         d.title is string && d.title.size() > 0 && d.title.size() <= 80 &&
         d.topic is string && d.topic.size() <= 300 &&
         d.level is string && d.level.size() <= 20 &&
@@ -601,7 +601,8 @@ service cloud.firestore {
         d.girlsOnly is bool &&
         d.maxSpeakers is int && d.maxSpeakers >= 2 && d.maxSpeakers <= 12 &&
         d.status in ['open', 'closed'] &&
-        d.liveCount is int;
+        d.liveCount is int &&
+        (!('bg' in d) || (d.bg is string && d.bg.size() <= 30));
     }
 
     match /voice_rooms/{roomId} {
