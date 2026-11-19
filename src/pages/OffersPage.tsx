@@ -65,7 +65,36 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {!loading && offers.length === 0 && (
+        {/* للزوار غير المسجلين: عرض التسجيل المجاني وعرض السفراء */}
+        {!isAuthenticated && (
+          <div className="relative overflow-hidden rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-[#0A192F] via-[#102445] to-[#0A192F] border-2 border-[#D4AF37] shadow-xl text-center space-y-5">
+            <button
+              onClick={() => navigate('join-offer')}
+              className="ez-float-glow px-6 py-2 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] text-sm font-bold"
+            >
+              {isAr ? '{انضم|انضمي} الآن' : 'Join now'}
+            </button>
+            <div className="space-y-2">
+              <Gift className="w-9 h-9 text-[#D4AF37] mx-auto" />
+              <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#F3E5AB] leading-snug">
+                {isAr ? '{سجّل|سجّلي} معنا حسابًا مجانيًا {واستمتع|واستمتعي} بعرض خصم 50%' : 'Create a free account and enjoy a 50% discount'}
+              </h2>
+            </div>
+            <div className="mx-auto max-w-md p-4 rounded-2xl bg-white/5 border border-[#D4AF37]/40">
+              <p className="font-bold text-lg text-white">
+                {isAr ? '{كن سفيرًا|كوني سفيرة} لنا {واربح|واربحي} 15%' : 'Become our ambassador and earn 15%'}
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('join-offer')}
+              className="px-8 py-3 rounded-2xl bg-[#D4AF37] text-[#0A192F] text-base font-bold hover:bg-[#F3E5AB] transition-colors shadow-lg"
+            >
+              {isAr ? '{انضم|انضمي} الآن' : 'Join now'}
+            </button>
+          </div>
+        )}
+
+        {!loading && offers.length === 0 && isAuthenticated && (
           <div className="p-10 rounded-3xl bg-white border border-gray-200 text-center text-sm text-gray-500">
             {isAr ? 'لا توجد عروض حاليًا.' : 'There are no offers at the moment.'}
           </div>
