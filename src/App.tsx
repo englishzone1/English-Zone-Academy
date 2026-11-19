@@ -19,6 +19,7 @@ import { CourseDetailsPage } from './pages/CourseDetailsPage';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { LoginPage } from './pages/LoginPage';
 import { LibraryPage } from './pages/LibraryPage';
+import { getGender, onGenderChange, startGenderObserver } from './i18n/gender';
 import { storeRefCode } from './services/referralService';
 import { WorkshopPage } from './pages/WorkshopPage';
 import { VerifyCertificatePage } from './pages/VerifyCertificatePage';
@@ -289,11 +290,21 @@ function MainApp() {
   );
 }
 
+// إعادة رسم الصفحة عند معرفة جنس المشترك حتى تتحول الصيغة (مذكر/مؤنث) في كل مكان
+const GenderAwareApp: React.FC = () => {
+  const [g, setG] = React.useState(getGender());
+  React.useEffect(() => {
+    startGenderObserver();
+    return onGenderChange(() => setG(getGender()));
+  }, []);
+  return <MainApp key={g || 'none'} />;
+};
+
 export function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <MainApp />
+        <GenderAwareApp />
       </AuthProvider>
     </LanguageProvider>
   );

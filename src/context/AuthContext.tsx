@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from '../services/firebase';
+import { setGender } from '../i18n/gender';
 import { UserProfile, UserRole, AvatarConfiguration } from '../types/auth';
 
 interface AuthContextType {
@@ -204,6 +205,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setHasProfile(false);
     }
   };
+
+  // صيغة المخاطبة حسب جنس المشترك (طالب/طالبة)، ومن الأفاتار إن لم يُحدَّد
+  useEffect(() => {
+    const u: any = user;
+    const g = u?.gender === 'male' || u?.gender === 'female' ? u.gender : u?.avatarConfig?.gender === 'male' || u?.avatarConfig?.gender === 'female' ? u.avatarConfig.gender : '';
+    setGender(g);
+  }, [user]);
 
   useEffect(() => {
     // إكمال الدخول بجوجل إن تم بالتحويل بدل النافذة المنبثقة

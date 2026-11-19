@@ -19,7 +19,7 @@ interface Msg {
 const pricesText = (cards: LevelPriceCard[], isAr: boolean, currency = 'USD'): string => {
   if (!cards.length)
     return isAr
-      ? 'الأسعار غير منشورة حاليًا. اضغطي «واتساب» أو «رسالة للأكاديمية» في الأسفل ونرسلها لكِ.'
+      ? 'الأسعار غير منشورة حاليًا. {اضغط|اضغطي} «واتساب» أو «رسالة للأكاديمية» في الأسفل ونرسلها {لك|لكِ}.'
       : 'Prices are not published right now. Tap WhatsApp or “Message the academy” below and we will send them.';
   return cards
     .map((c) => {
@@ -168,7 +168,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
         : {
             from: 'bot',
             text: isAr
-              ? 'لم أجد جوابًا جاهزًا لسؤالك 🌷 اختاري كيف تريدين التواصل مع الأكاديمية:'
+              ? 'لم أجد جوابًا جاهزًا لسؤالك 🌷 {اختر|اختاري} كيف {تريد|تريدين} التواصل مع الأكاديمية:'
               : "I don't have a ready answer for that 🌷 Choose how to reach the academy:",
             offer: true
           }
@@ -213,7 +213,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
           {
             from: 'bot',
             text: isAr
-              ? 'وصلت رسالتك للأكاديمية ✅ ستجدين الرد في لوحتك ← تبويب «الرسائل».'
+              ? 'وصلت رسالتك للأكاديمية ✅ {ستجد|ستجدين} الرد في لوحتك ← تبويب «الرسائل».'
               : 'Your message reached the academy ✅ You will find the reply in your dashboard → Messages.'
           }
         ]);
@@ -245,7 +245,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
       setForm(null);
       setMsgs((m) => [
         ...m,
-        { from: 'bot', text: isAr ? 'وصلت رسالتك ✅ سنرد عليكِ على بريدك أو رقمك في أقرب وقت.' : 'Message received ✅ We will reply to your email or number soon.' }
+        { from: 'bot', text: isAr ? 'وصلت رسالتك ✅ سنرد {عليك|عليكِ} على بريدك أو رقمك في أقرب وقت.' : 'Message received ✅ We will reply to your email or number soon.' }
       ]);
     } catch (err: any) {
       setMsgs((m) => [...m, { from: 'bot', text: (isAr ? 'تعذّر إرسال الرسالة: ' : 'Could not send: ') + (err?.code || '') }]);
@@ -255,7 +255,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
   };
 
   const greeting = isAr
-    ? 'أهلًا بكِ في English Zone Academy 🌟\nاختاري سؤالك أو اكتبيه، وسأجيبك فورًا:'
+    ? 'أهلًا {بك|بكِ} في English Zone Academy 🌟\n{اختر|اختاري} سؤالك أو {اكتبه|اكتبيه}، وسأجيبك فورًا:'
     : 'Welcome to English Zone Academy 🌟\nChoose or type your question and I will answer right away:';
 
   const offerButtons = (
@@ -317,7 +317,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
 
             {form && (
               <div className="p-2.5 rounded-2xl bg-white border border-[#D4AF37] space-y-1.5">
-                <p className="text-[11px] font-bold text-[#0A192F]">{isAr ? 'اكتبي بياناتك لنرد عليكِ:' : 'Your details so we can reply:'}</p>
+                <p className="text-[11px] font-bold text-[#0A192F]">{isAr ? '{اكتب|اكتبي} بياناتك لنرد {عليك|عليكِ}:' : 'Your details so we can reply:'}</p>
                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={isAr ? 'اسمك' : 'Your name'} className={inp} />
                 <input value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} placeholder={isAr ? 'بريدك أو رقم واتساب' : 'Email or WhatsApp number'} className={inp} />
                 <textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={2} placeholder={isAr ? 'رسالتك' : 'Your message'} className={inp} />
@@ -359,7 +359,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={isAr ? 'اكتبي سؤالك هنا…' : 'Type your question…'}
+                placeholder={isAr ? '{اكتب|اكتبي} سؤالك هنا…' : 'Type your question…'}
                 className="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-xs"
               />
               <button type="submit" className="px-3 rounded-xl bg-[#0A192F] text-[#F3E5AB]" aria-label={isAr ? 'إرسال' : 'Send'}>

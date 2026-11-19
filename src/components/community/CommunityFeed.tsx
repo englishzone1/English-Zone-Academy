@@ -264,7 +264,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar, 
     <div className="space-y-6">
       {readOnly && (
         <div className="p-3 rounded-2xl bg-[#F3E5AB]/40 border border-[#D4AF37]/40 text-xs text-[#0A192F] font-bold">
-          {tr('You can read and like posts. Posting and commenting are for enrolled students.', 'تستطيعين قراءة المنشورات والإعجاب بها. النشر والتعليق للطالبات المشتركات في الكورس.')}
+          {tr('You can read and like posts. Posting and commenting are for enrolled students.', '{تستطيع|تستطيعين} قراءة المنشورات والإعجاب بها. النشر والتعليق للطالبات المشتركات في الكورس.')}
         </div>
       )}
       {/* Composer */}

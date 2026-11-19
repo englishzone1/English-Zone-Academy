@@ -83,9 +83,9 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
               {tr('Free account', 'حساب مجاني')}
             </span>
             <h1 className="font-serif-luxury font-bold text-2xl text-[#F3E5AB]">
-              {tr(`Welcome, ${name}`, `أهلًا بكِ يا ${name}`)} 🌟
+              {tr(`Welcome, ${name}`, `أهلًا {بك|بكِ} يا ${name}`)} 🌟
             </h1>
-            <p className="text-sm text-gray-300">{tr('Here are the free books and materials for members.', 'هنا الكتب والمواد المجانية المفتوحة لكِ.')}</p>
+            <p className="text-sm text-gray-300">{tr('Here are the free books and materials for members.', 'هنا الكتب والمواد المجانية المفتوحة {لك|لكِ}.')}</p>
           </div>
           <div className="flex gap-2 self-start">
           <button onClick={() => navigate('avatar-studio')} className="px-3 py-2 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold">
@@ -105,7 +105,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
         >
           <span className="flex items-center justify-center gap-3 font-serif-luxury font-bold text-2xl sm:text-3xl">
             <GraduationCap className="w-8 h-8" />
-            {tr('To subscribe to the course, tap here', 'للاشتراك في الكورس اضغطي هنا')}
+            {tr('To subscribe to the course, tap here', 'للاشتراك في الكورس {اضغط|اضغطي} هنا')}
           </span>
           <span className="block mt-2 text-xs sm:text-sm font-semibold opacity-80">
             {tr('Live small-group classes with a female teacher • monthly payment', 'حصص مباشرة في مجموعات صغيرة مع معلمة • الدفع شهريًا')}
@@ -116,7 +116,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           {placementTestUrl ? (
             <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37]">
               <Target className="w-6 h-6 text-[#D4AF37]" />
-              {tr('Free placement test', 'اختبري مستواكِ مجانًا')}
+              {tr('Free placement test', '{اختبر|اختبري} {مستواك|مستواكِ} مجانًا')}
             </a>
           ) : null}
           <button onClick={() => setTab('community')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
@@ -135,7 +135,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
             className="ez-float-glow p-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] border border-[#D4AF37] flex items-center gap-3 text-sm font-bold text-[#0A192F] text-start"
           >
             <BadgePercent className="w-6 h-6 text-[#0A192F]" />
-            {tr('🎁 Offers — invite & earn', '🎁 العروض: ادعي واربحي')}
+            {tr('🎁 Offers — invite & earn', '🎁 العروض: {ادعُ|ادعي} {واربح|واربحي}')}
           </button>
         </div>
 
@@ -148,12 +148,12 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
                 {tr('Your free placement test', 'اختبار تحديد المستوى المجاني')}
               </h2>
               <p className="text-xs text-gray-600 mt-1">
-                {tr('Take the test, then choose your result here so the academy knows your level.', 'ادخلي الاختبار، ثم اختاري نتيجتكِ هنا لتعرف الأكاديمية مستواكِ.')}
+                {tr('Take the test, then choose your result here so the academy knows your level.', '{ادخل|ادخلي} الاختبار، ثم {اختر|اختاري} {نتيجتك|نتيجتكِ} هنا لتعرف الأكاديمية {مستواك|مستواكِ}.')}
               </p>
             </div>
             {placementTestUrl && (
               <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
-                {tr('Start the test', 'ابدئي الاختبار')}
+                {tr('Start the test', '{ابدأ|ابدئي} الاختبار')}
               </a>
             )}
           </div>
@@ -176,7 +176,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           <div>
             <h2 className="font-bold text-[#0A192F] flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
-              {tr('A question before subscribing?', 'عندكِ سؤال قبل الاشتراك؟')}
+              {tr('A question before subscribing?', '{عندك|عندكِ} سؤال قبل الاشتراك؟')}
             </h2>
             <p className="text-xs text-gray-600 mt-1">
               {tr(
@@ -194,7 +194,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
                 className="px-4 py-2.5 rounded-xl bg-[#25D366] text-white text-xs font-bold flex items-center gap-1.5"
               >
                 <MessageCircle className="w-4 h-4" />
-                {tr('Ask on WhatsApp', 'اسألي على واتساب')}
+                {tr('Ask on WhatsApp', '{اسأل|اسألي} على واتساب')}
               </a>
             )}
           </div>

@@ -144,7 +144,7 @@ export const ChatThread: React.FC<Props> = ({
       <div className={`${height} overflow-y-auto px-3 py-4 space-y-2 bg-[#EFEAE2]`}>
         {bubbles.length === 0 && (
           <div className="text-center text-xs text-gray-500 bg-white/70 rounded-xl p-3 mx-auto max-w-xs">
-            {emptyText || (isAr ? 'لا توجد رسائل بعد. ابدئي المحادثة.' : 'No messages yet.')}
+            {emptyText || (isAr ? 'لا توجد رسائل بعد. {ابدأ|ابدئي} المحادثة.' : 'No messages yet.')}
           </div>
         )}
         {bubbles.map((b) => {
@@ -232,7 +232,7 @@ export const ChatThread: React.FC<Props> = ({
                   send();
                 }
               }}
-              placeholder={isAr ? 'اكتبي رسالة...' : 'Type a message...'}
+              placeholder={isAr ? '{اكتب|اكتبي} رسالة...' : 'Type a message...'}
               className="flex-1 resize-none px-4 py-2.5 rounded-3xl border border-gray-300 text-sm max-h-32 focus:outline-none focus:border-[#D4AF37]"
             />
             {text.trim() ? (

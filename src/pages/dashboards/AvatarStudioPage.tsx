@@ -192,7 +192,7 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate, ed
 
         <div className="bg-white rounded-2xl p-4 border border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('Your name (shown with your avatar)', 'اسمكِ (يظهر مع الأفاتار)')}</label>
+            <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('Your name (shown with your avatar)', '{اسمك|اسمكِ} (يظهر مع الأفاتار)')}</label>
             <input value={displayName} onChange={(e) => { setDisplayName(e.target.value); setStatus('idle'); }} className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm" />
           </div>
           <div>

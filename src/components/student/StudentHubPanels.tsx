@@ -184,7 +184,7 @@ export const StudentMessages: React.FC<{ uid: string; name: string; email: strin
         me="student"
         items={items}
         title={isAr ? (teacherId ? `محادثتي مع ${teacherName ? `المعلمة ${teacherName}` : 'معلمتي'} والأكاديمية` : 'محادثتي مع الأكاديمية') : 'My chat'}
-        subtitle={isAr ? 'اكتبي أو سجّلي صوتك (حتى 10 دقائق). الأكاديمية تطّلع على المحادثة.' : 'Type or record (up to 10 min). The academy can see this chat.'}
+        subtitle={isAr ? '{اكتب|اكتبي} أو {سجّل|سجّلي} صوتك (حتى 10 دقائق). الأكاديمية تطّلع على المحادثة.' : 'Type or record (up to 10 min). The academy can see this chat.'}
         onSend={send}
         onReport={report}
       />

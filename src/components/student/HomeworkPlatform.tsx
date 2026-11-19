@@ -107,7 +107,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         } catch (err: any) {
           console.error('Error saving homework result:', err);
           setSaveError(
-            (isAr ? 'لم تُحفظ النتيجة، أخبري المعلمة بهذا الخطأ: ' : 'Result was not saved, tell your teacher: ') + (err?.code || err?.message || '')
+            (isAr ? 'لم تُحفظ النتيجة، {أخبر|أخبري} المعلمة بهذا الخطأ: ' : 'Result was not saved, tell your teacher: ') + (err?.code || err?.message || '')
           );
         }
       } else if (m.type === 'progress' && m.data && typeof m.data === 'object') {
@@ -180,10 +180,10 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         <p className="text-[11px] text-gray-500">
           {preview
             ? isAr
-              ? 'معاينة للإدارة: تستطيعين تصفّح الواجبات والاختبارات وتجربتها كما يراها الطالب، ونتائجك هنا لا تُحفظ.'
+              ? 'معاينة للإدارة: {تستطيع|تستطيعين} تصفّح الواجبات والاختبارات وتجربتها كما يراها الطالب، ونتائجك هنا لا تُحفظ.'
               : 'Admin preview: browse and try everything as students see it; your answers are not saved.'
             : isAr
-              ? 'نتائجك وتقدّمك تُحفظ تلقائيًا باسمك ويراها معلمك، سواء حللتِ هنا أو في الصفحة الكاملة (أبقي هذه الصفحة مفتوحة).'
+              ? 'نتائجك وتقدّمك تُحفظ تلقائيًا باسمك ويراها معلمك، سواء {حللت|حللتِ} هنا أو في الصفحة الكاملة ({أبقِ|أبقي} هذه الصفحة مفتوحة).'
               : 'Your results and progress are saved automatically for your teacher.'}
         </p>
         {savedNote && (

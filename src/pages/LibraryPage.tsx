@@ -42,11 +42,11 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
             <Gift className="w-7 h-7 text-[#D4AF37] shrink-0" />
             <div>
               <b className="text-[#F3E5AB]">{isAr ? 'كتب ومواد إضافية مجانًا' : 'More free books and materials'}</b>
-              <p className="text-xs text-gray-300 mt-1">{isAr ? 'أنشئي حسابًا مجانيًا في دقيقة لتفتحي المواد المخصّصة للأعضاء.' : 'Create a free account in a minute to unlock members-only materials.'}</p>
+              <p className="text-xs text-gray-300 mt-1">{isAr ? '{أنشئ|أنشئي} حسابًا مجانيًا في دقيقة {لتفتح|لتفتحي} المواد المخصّصة للأعضاء.' : 'Create a free account in a minute to unlock members-only materials.'}</p>
             </div>
           </div>
           <button onClick={() => navigate('join')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-sm font-bold whitespace-nowrap">
-            {isAr ? 'سجّلي مجانًا' : 'Join free'}
+            {isAr ? '{سجّل|سجّلي} مجانًا' : 'Join free'}
           </button>
         </div>
       )}

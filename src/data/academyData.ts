@@ -783,7 +783,7 @@ export const TESTIMONIALS_LIST = [
     levelEn: 'Completed Level B2',
     levelAr: 'أتم المستوى B2',
     quoteEn: 'English Zone completely changed how I communicate with our international tech team. In just 4 months, my hesitation completely vanished.',
-    quoteAr: 'أكاديمية English Zone غيرت طريقة تواصلي تماماً مع فريقي التقني الدولي. خلال 4 أشهر فقط اختفى التردد وأصبحت أتحدث بسلاسة تامة.',
+    quoteAr: 'أكاديمية English Zone غيرت طريقة {تواصل|تواصلي} تماماً مع فريقي التقني الدولي. خلال 4 أشهر فقط اختفى التردد وأصبحت أتحدث بسلاسة تامة.',
     rating: 5
   },
   {

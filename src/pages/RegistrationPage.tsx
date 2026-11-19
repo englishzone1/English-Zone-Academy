@@ -89,7 +89,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
     if (!formData.fullName || !formData.whatsappNumber || (!formData.email && !firebaseUser?.email)) return;
     const ar = language === 'ar';
     if (!firebaseUser && password.length < 6) {
-      setSubmitError(ar ? 'اختاري كلمة مرور لحسابك من 6 أحرف على الأقل.' : 'Choose a password of at least 6 characters.');
+      setSubmitError(ar ? '{اختر|اختاري} كلمة مرور لحسابك من 6 أحرف على الأقل.' : 'Choose a password of at least 6 characters.');
       return;
     }
 
@@ -111,13 +111,13 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
           setSubmitError(
             acc.code === 'auth/email-already-in-use'
               ? ar
-                ? 'هذا البريد له حساب من قبل. سجّلي الدخول أولًا (من «تسجيل الدخول»)، ثم ارجعي لهذه الصفحة وأرسلي الطلب.'
+                ? 'هذا البريد له حساب من قبل. {سجّل|سجّلي} الدخول أولًا (من «تسجيل الدخول»)، ثم {ارجع|ارجعي} لهذه الصفحة {وأرسل|وأرسلي} الطلب.'
                 : 'This email already has an account. Log in first, then come back and submit.'
               : acc.code === 'auth/invalid-email'
               ? ar ? 'البريد الإلكتروني غير صحيح.' : 'The email address is not valid.'
               : acc.code === 'auth/weak-password'
               ? ar ? 'كلمة المرور ضعيفة، 6 أحرف على الأقل.' : 'Password must be at least 6 characters.'
-              : ar ? 'تعذر إنشاء حسابك، حاولي مرة أخرى.' : 'Could not create your account, please try again.'
+              : ar ? 'تعذر إنشاء حسابك، {حاول|حاولي} مرة أخرى.' : 'Could not create your account, please try again.'
           );
           setIsSubmitting(false);
           return;
@@ -211,11 +211,11 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
             {!isAuthenticated && (
               <div className="p-4 rounded-2xl bg-[#FAF8F5] border-2 border-[#D4AF37] text-sm text-[#0A192F] space-y-3" dir={language === 'ar' ? 'rtl' : 'ltr'}>
                 <b className="block">
-                  {language === 'ar' ? 'خطوة أخيرة مهمة: أنشئي حساب الدخول' : 'One last step: create your login account'}
+                  {language === 'ar' ? 'خطوة أخيرة مهمة: {أنشئ|أنشئي} حساب الدخول' : 'One last step: create your login account'}
                 </b>
                 <p className="text-xs text-gray-600">
                   {language === 'ar'
-                    ? `أنشئي حسابك بنفس البريد الذي كتبتِه (${formData.email})، أو ادخلي بحساب Google بنفس البريد، حتى تظهر لكِ لوحة الطالب بعد قبول طلبك.`
+                    ? `{أنشئ|أنشئي} حسابك بنفس البريد الذي {كتبته|كتبتِه} (${formData.email})، أو {ادخل|ادخلي} بحساب Google بنفس البريد، حتى تظهر {لك|لكِ} لوحة الطالب بعد قبول طلبك.`
                     : `Create your account with the same email (${formData.email}), or sign in with Google using it, so your student dashboard appears once you're accepted.`}
                 </p>
                 <button
@@ -432,7 +432,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                     />
                     <p className="text-[11px] text-gray-500">
                       {language === 'ar'
-                        ? 'يُنشأ حسابك في المنصة مع الطلب، وتدخلين به بهذا البريد وكلمة المرور.'
+                        ? 'يُنشأ حسابك في المنصة مع الطلب، {وتدخل|وتدخلين} به بهذا البريد وكلمة المرور.'
                         : 'Your platform account is created with this application; log in with this email and password.'}
                     </p>
                     <button
@@ -444,12 +444,12 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                         const r = await registerVisitor({ kind: 'registrant', google: true, name: formData.fullName.trim(), phone: formData.whatsappNumber.trim() });
                         setGoogleBusy(false);
                         if (!r.success && r.code && r.code !== 'redirect' && r.code !== 'auth/popup-closed-by-user') {
-                          setSubmitError(language === 'ar' ? 'تعذر الدخول بحساب Google، حاولي مرة أخرى.' : 'Google sign-in failed, please try again.');
+                          setSubmitError(language === 'ar' ? 'تعذر الدخول بحساب Google، {حاول|حاولي} مرة أخرى.' : 'Google sign-in failed, please try again.');
                         }
                       }}
                       className="w-full py-2.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-[#0A192F] disabled:opacity-50"
                     >
-                      {language === 'ar' ? 'أو استعملي حساب Google بدل كلمة المرور' : 'Or use your Google account instead'}
+                      {language === 'ar' ? 'أو {استعمل|استعملي} حساب Google بدل كلمة المرور' : 'Or use your Google account instead'}
                     </button>
                   </div>
                 )}
@@ -571,7 +571,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm font-mono tracking-widest focus:outline-none focus:border-[#D4AF37]"
                 />
                 <p className="text-[11px] text-gray-500 mt-1">
-                  {language === 'ar' ? 'إن دعتكِ صديقة، اكتبي كودها واحصلي على خصم 30% على شهركِ الأول.' : 'Invited by a friend? Enter her code and get 30% off your first month.'}
+                  {language === 'ar' ? 'إن {دعتك|دعتكِ} صديقة، {اكتب|اكتبي} كودها {واحصل|واحصلي} على خصم 30% على {شهرك|شهركِ} الأول.' : 'Invited by a friend? Enter her code and get 30% off your first month.'}
                 </p>
               </div>
 

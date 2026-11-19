@@ -52,9 +52,9 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ws) return;
-    if (form.name.trim().length < 3) return setError(tr('Please write your full name as it should appear on the certificate.', 'اكتبي اسمكِ الكامل كما تريدينه على الشهادة.'));
-    if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) return setError(tr('Please write a valid email.', 'اكتبي بريدًا إلكترونيًا صحيحًا.'));
-    if (form.feedback.trim().length < 5) return setError(tr('Please share a short feedback about the workshop.', 'اكتبي رأيكِ في الورشة ولو بجملة قصيرة.'));
+    if (form.name.trim().length < 3) return setError(tr('Please write your full name as it should appear on the certificate.', '{اكتب|اكتبي} {اسمك|اسمكِ} الكامل كما تريدينه على الشهادة.'));
+    if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) return setError(tr('Please write a valid email.', '{اكتب|اكتبي} بريدًا إلكترونيًا صحيحًا.'));
+    if (form.feedback.trim().length < 5) return setError(tr('Please share a short feedback about the workshop.', '{اكتب|اكتبي} {رأيك|رأيكِ} في الورشة ولو بجملة قصيرة.'));
     setSending(true);
     setError('');
     try {
@@ -68,7 +68,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       console.error(err);
-      setError(tr('Could not register, please try again.', 'تعذر التسجيل، حاولي مرة أخرى.') + (err?.code ? ` (${err.code})` : ''));
+      setError(tr('Could not register, please try again.', 'تعذر التسجيل، {حاول|حاولي} مرة أخرى.') + (err?.code ? ` (${err.code})` : ''));
     } finally {
       setSending(false);
     }
@@ -118,9 +118,9 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
       <div className="max-w-xl mx-auto px-4 py-20 text-center space-y-4">
         <Award className="w-12 h-12 mx-auto text-[#D4AF37]" />
         <h1 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">{tr('Registration is closed', 'التسجيل في هذه الورشة مغلق')}</h1>
-        <p className="text-sm text-gray-600">{tr('Follow us to join the next free workshop.', 'تابعينا لتنضمي إلى الورشة المجانية القادمة.')}</p>
+        <p className="text-sm text-gray-600">{tr('Follow us to join the next free workshop.', '{تابعنا|تابعينا} {لتنضم|لتنضمي} إلى الورشة المجانية القادمة.')}</p>
         <button onClick={() => navigate('join-us')} className="px-6 py-3 rounded-xl bg-[#0A192F] text-[#F3E5AB] font-bold text-sm">
-          {tr('Join the platform for free', 'انضمي إلى المنصة مجانًا')}
+          {tr('Join the platform for free', '{انضم|انضمي} إلى المنصة مجانًا')}
         </button>
       </div>
     );
@@ -130,10 +130,10 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
     <div className="rounded-3xl p-6 sm:p-8 bg-[#0A192F] text-[#F3E5AB] space-y-4 shadow-lg">
       <div className="flex items-center gap-2">
         <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-        <h2 className="font-serif-luxury font-bold text-xl">{tr('Join English Zone for free', 'انضمي إلى منصة English Zone مجانًا')}</h2>
+        <h2 className="font-serif-luxury font-bold text-xl">{tr('Join English Zone for free', '{انضم|انضمي} إلى منصة English Zone مجانًا')}</h2>
       </div>
       <p className="text-sm text-gray-300">
-        {tr('Create a free account to get first access to:', 'أنشئي حسابًا مجانيًا لتكوني أول من يحصل على:')}
+        {tr('Create a free account to get first access to:', '{أنشئ|أنشئي} حسابًا مجانيًا {لتكون|لتكوني} أول من يحصل على:')}
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         <div className="flex items-center gap-2"><Gift className="w-4 h-4 text-[#D4AF37]" />{tr('Exclusive discounts & offers', 'عروض وخصومات حصرية')}</div>
@@ -142,7 +142,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
         <div className="flex items-center gap-2"><Users className="w-4 h-4 text-[#D4AF37]" />{tr('Free placement test & community', 'اختبار تحديد المستوى ومجتمع المتعلمات')}</div>
       </div>
       <button onClick={() => navigate('join-us')} className="w-full sm:w-auto px-8 py-3 rounded-xl bg-[#D4AF37] text-[#0A192F] font-bold text-sm shadow-[0_0_25px_rgba(212,175,55,0.5)] hover:scale-[1.02] transition-transform">
-        {tr('Join now for free', 'سجّلي الآن مجانًا')}
+        {tr('Join now for free', '{سجّل|سجّلي} الآن مجانًا')}
       </button>
     </div>
   );
@@ -163,7 +163,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
           <div className="bg-white rounded-3xl p-5 sm:p-8 border border-[#D4AF37]/40 shadow-md space-y-4">
             <div className="flex items-center gap-2 text-emerald-700 font-bold">
               <CheckCircle2 className="w-5 h-5" />
-              {tr('Congratulations! Here is your certificate.', 'مبارك! هذه شهادتكِ.')}
+              {tr('Congratulations! Here is your certificate.', 'مبارك! هذه {شهادتك|شهادتكِ}.')}
             </div>
             {ws.template ? (
               <div className="relative">
@@ -197,7 +197,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
           </div>
         ) : (
           <form onSubmit={submit} className="bg-white rounded-3xl p-5 sm:p-8 border border-gray-200 shadow-md space-y-4">
-            <h2 className="font-bold text-lg text-[#0A192F]">{tr('Register & get your certificate', 'سجّلي واحصلي على شهادتكِ فورًا')}</h2>
+            <h2 className="font-bold text-lg text-[#0A192F]">{tr('Register & get your certificate', '{سجّل|سجّلي} {واحصل|واحصلي} على {شهادتك|شهادتكِ} فورًا')}</h2>
             <div>
               <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Full name (as on the certificate) *', 'الاسم الكامل كما تريدينه على الشهادة *')}</label>
               <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={80} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
@@ -217,7 +217,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
               <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Your rating of the workshop', 'تقييمكِ للورشة')}</label>
+              <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Your rating of the workshop', '{تقييمك|تقييمكِ} للورشة')}</label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button type="button" key={n} onClick={() => setForm({ ...form, rating: n })}>
@@ -228,18 +228,18 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
             </div>
             <div>
               <label className="block text-xs font-bold text-[#0A192F] mb-1">
-                {tr('How much did the workshop benefit you?', 'ما مدى استفادتكِ من الورشة؟')} <span className="text-[#AA820A]">{form.benefit} / 10</span>
+                {tr('How much did the workshop benefit you?', 'ما مدى {استفادتك|استفادتكِ} من الورشة؟')} <span className="text-[#AA820A]">{form.benefit} / 10</span>
               </label>
               <input type="range" min={1} max={10} value={form.benefit} onChange={(e) => setForm({ ...form, benefit: Number(e.target.value) })} className="w-full accent-[#D4AF37]" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Your feedback *', 'رأيكِ في الورشة *')}</label>
+              <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Your feedback *', '{رأيك|رأيكِ} في الورشة *')}</label>
               <textarea rows={4} value={form.feedback} onChange={(e) => setForm({ ...form, feedback: e.target.value })} maxLength={2000} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
             </div>
             {error && <p className="text-xs text-red-600">{error}</p>}
             <button type="submit" disabled={sending} className="w-full py-3.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Award className="w-4 h-4 text-[#D4AF37]" />}
-              {tr('Get my certificate', 'احصلي على شهادتكِ')}
+              {tr('Get my certificate', '{احصل|احصلي} على {شهادتك|شهادتكِ}')}
             </button>
           </form>
         )}

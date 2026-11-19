@@ -9,15 +9,20 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
   const u: any = user || {};
   const [country, setCountry] = useState(u.country || '');
   const [age, setAge] = useState(u.age ? String(u.age) : '');
+  const [gender, setGenderVal] = useState<string>(u.gender || '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  if (!user || (String(u.country || '').trim() && Number(u.age) > 0)) return null;
+  if (!user || (String(u.country || '').trim() && Number(u.age) > 0 && (u.gender === 'male' || u.gender === 'female'))) return null;
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!gender) {
+      setError(tr('Choose student (male) or student (female).', 'اختر/اختاري: طالب أو طالبة.'));
+      return;
+    }
     if (!country.trim() || !(Number(age) > 0)) {
-      setError(tr('Write your country and age.', 'اكتبي دولتكِ وعمركِ.'));
+      setError(tr('Write your country and age.', '{اكتب|اكتبي} {دولتك|دولتكِ} {وعمرك|وعمركِ}.'));
       return;
     }
     setBusy(true);
@@ -26,10 +31,11 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
       await updateProfile({
         country: country.trim().slice(0, 60),
         age: Number(age),
+        gender,
         updatedAt: new Date().toISOString()
       } as any);
     } catch {
-      setError(tr('Could not save, please try again.', 'تعذّر الحفظ، حاولي مرة أخرى.'));
+      setError(tr('Could not save, please try again.', 'تعذّر الحفظ، {حاول|حاولي} مرة أخرى.'));
     } finally {
       setBusy(false);
     }
@@ -45,9 +51,24 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
             <UserRound className="w-6 h-6" />
           </span>
           <div>
-            <h2 className="font-bold text-lg text-[#0A192F]">{tr('Welcome! One last step', 'أهلًا بكِ! خطوة أخيرة')}</h2>
-            <p className="text-xs text-gray-500">{tr('Your country and age help us suggest the right group and times.', 'دولتكِ وعمركِ يساعداننا في اقتراح المجموعة والمواعيد المناسبة لكِ.')}</p>
+            <h2 className="font-bold text-lg text-[#0A192F]">{tr('Welcome! One last step', 'أهلًا {بك|بكِ}! خطوة أخيرة')}</h2>
+            <p className="text-xs text-gray-500">{tr('This helps us address you correctly and suggest the right group and times.', 'هذه البيانات تساعدنا في مخاطبتك بالشكل الصحيح واقتراح المجموعة والمواعيد المناسبة لك.')}</p>
           </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { v: 'male', ar: 'طالب', en: 'Male student' },
+            { v: 'female', ar: 'طالبة', en: 'Female student' }
+          ].map((g) => (
+            <button
+              type="button"
+              key={g.v}
+              onClick={() => setGenderVal(g.v)}
+              className={`py-3 rounded-xl text-sm font-bold border ${gender === g.v ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-gray-600 border-gray-300'}`}
+            >
+              {isAr ? g.ar : g.en}
+            </button>
+          ))}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder={tr('Country *', 'الدولة *')} className={inp} />

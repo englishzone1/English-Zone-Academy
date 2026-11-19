@@ -28,8 +28,8 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
   }, [isAuthenticated]);
 
   const benefits = [
-    { icon: Target, text: tr('Free placement test to know your exact level', 'تحديد مستواكِ مجانًا باختبار دقيق') },
-    { icon: Users, text: tr('Join a community of English learners like you', 'مشاركة مجتمع من يشاركنكِ الاهتمام بالإنجليزية') },
+    { icon: Target, text: tr('Free placement test to know your exact level', 'تحديد {مستواك|مستواكِ} مجانًا باختبار دقيق') },
+    { icon: Users, text: tr('Join a community of English learners like you', 'مشاركة مجتمع من {يشاركنك|يشاركنكِ} الاهتمام بالإنجليزية') },
     { icon: BookOpen, text: tr('Free books and academy magazine issues', 'كتب ومجلات مجانية من الأكاديمية') },
     { icon: Megaphone, text: tr('First to hear about free workshops', 'إعلانات الورش المجانية أولًا بأول') },
     { icon: BadgePercent, text: tr('Discounted offers for members', 'عروض وخصومات خاصة بالمسجّلات') }
@@ -38,7 +38,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
   const errText = (code?: string) => {
     switch (code) {
       case 'auth/email-already-in-use':
-        return tr('This email already has an account. Please log in.', 'هذا البريد له حساب من قبل، سجّلي الدخول.');
+        return tr('This email already has an account. Please log in.', 'هذا البريد له حساب من قبل، {سجّل|سجّلي} الدخول.');
       case 'auth/weak-password':
         return tr('Password must be at least 6 characters.', 'كلمة المرور 6 أحرف على الأقل.');
       case 'auth/invalid-email':
@@ -62,7 +62,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
     e.preventDefault();
     setError('');
     if (!email.trim() || password.length < 6) {
-      setError(tr('Write your email and a password (6+ characters).', 'اكتبي بريدكِ وكلمة مرور من 6 أحرف على الأقل.'));
+      setError(tr('Write your email and a password (6+ characters).', '{اكتب|اكتبي} {بريدك|بريدكِ} وكلمة مرور من 6 أحرف على الأقل.'));
       return;
     }
     setBusy(true);
@@ -77,9 +77,9 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
   if (isAuthenticated) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 p-6 text-center" dir={isAr ? 'rtl' : 'ltr'}>
-        <p className="text-sm text-[#0A192F] font-bold">{tr('You are already signed in.', 'أنتِ مسجّلة الدخول بالفعل.')}</p>
+        <p className="text-sm text-[#0A192F] font-bold">{tr('You are already signed in.', '{أنت|أنتِ} مسجّلة الدخول بالفعل.')}</p>
         <button onClick={() => navigate('portal')} className="px-5 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-sm font-bold">
-          {tr('Go to my page', 'اذهبي إلى صفحتي')}
+          {tr('Go to my page', '{اذهب|اذهبي} إلى صفحتي')}
         </button>
       </div>
     );
@@ -92,8 +92,8 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
         <div className="bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-9 border border-[#D4AF37]/40 shadow-xl space-y-6">
           <EnglishZoneEmblem sizeClass="w-16 h-16" glow={true} />
           <div className="space-y-2">
-            <h1 className="font-serif-luxury font-bold text-3xl text-[#F3E5AB]">{tr('Join English Zone', 'انضمي إلى English Zone')}</h1>
-            <p className="text-sm text-gray-300">{tr('Free registration in one minute, and you get:', 'سجّلي مجانًا في دقيقة، واحصلي على:')}</p>
+            <h1 className="font-serif-luxury font-bold text-3xl text-[#F3E5AB]">{tr('Join English Zone', '{انضم|انضمي} إلى English Zone')}</h1>
+            <p className="text-sm text-gray-300">{tr('Free registration in one minute, and you get:', '{سجّل|سجّلي} مجانًا في دقيقة، {واحصل|واحصلي} على:')}</p>
           </div>
           <ul className="space-y-3">
             {benefits.map((b) => {
@@ -116,22 +116,22 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
               className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#25D366] text-white text-sm font-bold shadow-lg hover:brightness-105"
             >
               <MessageCircle className="w-5 h-5" />
-              {tr('Talk to us on WhatsApp now', 'تواصلي معنا مباشرة على واتساب')}
+              {tr('Talk to us on WhatsApp now', '{تواصل|تواصلي} معنا مباشرة على واتساب')}
             </a>
           )}
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-gray-300 flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
             {tr(
               'Want to study with us? After signing up, one tap on "Subscribe to the course" in your page.',
-              'تريدين الدراسة معنا؟ بعد التسجيل تضغطين زر «للاشتراك في الكورس» في صفحتكِ.'
+              '{تريد|تريدين} الدراسة معنا؟ بعد التسجيل {تضغط|تضغطين} زر «للاشتراك في الكورس» في {صفحتك|صفحتكِ}.'
             )}
           </div>
         </div>
 
         {/* النموذج */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-4">
-          <h2 className="font-bold text-xl text-[#0A192F]">{tr('Sign up now – free', 'سجّلي الآن مجانًا')}</h2>
-          <p className="text-xs text-gray-500">{tr('One step: Google or email. We ask for your name and WhatsApp inside.', 'خطوة واحدة: بحساب Google أو بالبريد. اسمكِ ورقم الواتساب نطلبهما داخل المنصة.')}</p>
+          <h2 className="font-bold text-xl text-[#0A192F]">{tr('Sign up now – free', '{سجّل|سجّلي} الآن مجانًا')}</h2>
+          <p className="text-xs text-gray-500">{tr('One step: Google or email. We ask for your name and WhatsApp inside.', 'خطوة واحدة: بحساب Google أو بالبريد. {اسمك|اسمكِ} ورقم الواتساب نطلبهما داخل المنصة.')}</p>
           {error && <p className="text-xs font-bold text-red-600 text-center p-2 rounded-lg bg-red-50 border border-red-100">{error}</p>}
           {inApp ? (
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
@@ -139,7 +139,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
               <span>
                 {tr(
                   'Open this page in Chrome or Safari (menu ⋮ or ⋯ → Open in browser), or sign up below with your email.',
-                  'افتحي الصفحة في Chrome أو Safari (من القائمة ⋮ أو ⋯ ← «فتح في المتصفح»)، أو سجّلي بالبريد في الأسفل.'
+                  '{افتح|افتحي} الصفحة في Chrome أو Safari (من القائمة ⋮ أو ⋯ ← «فتح في المتصفح»)، أو {سجّل|سجّلي} بالبريد في الأسفل.'
                 )}
               </span>
             </div>
@@ -155,9 +155,9 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
             </button>
           </form>
           <p className="text-xs text-gray-500 text-center">
-            {tr('Already have an account?', 'عندكِ حساب؟')}{' '}
+            {tr('Already have an account?', '{عندك|عندكِ} حساب؟')}{' '}
             <button onClick={() => navigate('login')} className="font-bold text-[#0A192F] underline">
-              {tr('Log in', 'سجّلي الدخول')}
+              {tr('Log in', '{سجّل|سجّلي} الدخول')}
             </button>
           </p>
         </div>

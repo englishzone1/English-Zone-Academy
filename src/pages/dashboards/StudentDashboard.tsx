@@ -26,6 +26,7 @@ import { StudentCourseMaterials, StudentLibrary, StudentMessages, StudentFeedbac
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 import { VisitorDashboard } from '../../components/student/VisitorDashboard';
+import { CompleteProfile } from '../../components/student/CompleteProfile';
 import { useAcademySettings, formatMoney } from '../../hooks/useAcademySettings';
 import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 import { ReferralOffers } from '../../components/student/ReferralOffers';
@@ -351,7 +352,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                 className="ez-float-glow px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] border border-[#D4AF37]"
               >
                 <Gift className="w-4 h-4" />
-                <span>{isAr ? 'العروض: ادعي واربحي' : 'Offers: invite & earn'}</span>
+                <span>{isAr ? 'العروض: {ادعُ|ادعي} {واربح|واربحي}' : 'Offers: invite & earn'}</span>
               </button>
             </div>
 
@@ -407,6 +408,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         </div>
       </div>
 
+      <CompleteProfile isAr={isAr} />
       <div id="ez-tab-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-4">
 
         {/* TAB 1: OVERVIEW */}

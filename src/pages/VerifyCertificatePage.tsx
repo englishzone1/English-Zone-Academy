@@ -67,7 +67,7 @@ export const VerifyCertificatePage: React.FC<{ serial: string; navigate: (r: str
           <div className="bg-white rounded-3xl p-6 border-2 border-red-400 shadow-md space-y-2 text-center">
             <ShieldX className="w-14 h-14 mx-auto text-red-500" />
             <div className="font-bold text-red-600">{tr('No certificate found with this number', 'لا توجد شهادة بهذا الرقم')}</div>
-            <p className="text-xs text-gray-500">{tr('Check the serial number and try again.', 'تأكدي من الرقم التسلسلي وحاولي مرة أخرى.')}</p>
+            <p className="text-xs text-gray-500">{tr('Check the serial number and try again.', '{تأكد|تأكدي} من الرقم التسلسلي {وحاول|وحاولي} مرة أخرى.')}</p>
           </div>
         ) : null}
       </div>
