@@ -3,7 +3,6 @@ import { Mic, Lock, ShieldCheck, Globe2, Users, Plus, X, Radio, ArrowRight } fro
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { ACTIVE_MS, RoomPrivacy, VoiceRoom, createRoom, watchRooms } from '../services/voiceRooms';
-import { rtcConfigured } from '../services/voiceRtc';
 
 const LEVELS = ['', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -58,12 +57,10 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
 
   const [rooms, setRooms] = useState<VoiceRoom[]>([]);
   const [loadErr, setLoadErr] = useState('');
-  const [configured, setConfigured] = useState<boolean | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
-    rtcConfigured().then(setConfigured);
     const t = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(t);
   }, []);
@@ -132,7 +129,6 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
           </div>
           <button
             onClick={() => setShowCreate(true)}
-            disabled={configured === false && !admin}
             className="self-start px-4 py-3 rounded-xl bg-[#D4AF37] text-[#0A192F] font-bold text-sm inline-flex items-center gap-2 disabled:opacity-50"
           >
             <Plus className="w-4 h-4" />
@@ -140,16 +136,6 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
           </button>
         </div>
 
-        {configured === false && (
-          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-sm text-amber-800">
-            {admin
-              ? tr(
-                  'Voice is not switched on yet: add REALTIME_APP_ID and REALTIME_APP_TOKEN as secrets in the Cloudflare Worker settings.',
-                  'الصوت غير مفعّل بعد: أضيفي REALTIME_APP_ID و REALTIME_APP_TOKEN كـ Secrets في إعدادات الـ Worker على Cloudflare.'
-                )
-              : tr('Voice rooms open very soon.', 'الغرف الصوتية تُفتح قريبًا جدًا.')}
-          </div>
-        )}
         {loadErr && <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">{loadErr}</div>}
 
         <div className="p-4 rounded-2xl bg-white border border-gray-200 text-xs text-gray-600 leading-relaxed">
@@ -230,7 +216,7 @@ const CreateRoomModal: React.FC<{
   const [level, setLevel] = useState('');
   const [privacy, setPrivacy] = useState<RoomPrivacy>('approval');
   const [girlsOnly, setGirlsOnly] = useState(isFemale);
-  const [maxSpeakers, setMaxSpeakers] = useState(6);
+  const [maxSpeakers, setMaxSpeakers] = useState(5);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
 
@@ -271,7 +257,7 @@ const CreateRoomModal: React.FC<{
           <label className="block space-y-1">
             <span className="text-xs font-bold text-gray-700">{tr('Max speakers', 'أقصى عدد للمتحدثين')}</span>
             <select value={maxSpeakers} onChange={(e) => setMaxSpeakers(Number(e.target.value))} className="w-full px-3 py-2.5 rounded-xl border border-gray-300 text-sm bg-white">
-              {[2, 3, 4, 5, 6, 8, 10, 12].map((n) => (
+              {[2, 3, 4, 5, 6].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>

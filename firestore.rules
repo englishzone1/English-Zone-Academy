@@ -667,6 +667,24 @@ service cloud.firestore {
         allow delete: if vrIsMod(roomId);
       }
 
+      // تبادل إعداد الاتصال المباشر (عرض وجواب) بين مشاركَين داخل الغرفة
+      match /signals/{sigId} {
+        allow get, list: if vrIsIn(roomId) && (resource.data.to == request.auth.uid || resource.data.from == request.auth.uid);
+        allow create: if vrIsIn(roomId) &&
+          request.resource.data.keys().hasOnly(['from', 'to', 'kind', 'nonce', 'offer', 'answer', 'createdAt']) &&
+          request.resource.data.from == request.auth.uid &&
+          request.resource.data.to is string && request.resource.data.to != request.auth.uid &&
+          request.resource.data.kind in ['mic', 'screen'] &&
+          request.resource.data.nonce is string && request.resource.data.nonce.size() <= 64 &&
+          request.resource.data.offer is string && request.resource.data.offer.size() <= 30000 &&
+          request.resource.data.answer == null &&
+          request.resource.data.createdAt is int;
+        allow update: if vrIsIn(roomId) && resource.data.to == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answer']) &&
+          request.resource.data.answer is string && request.resource.data.answer.size() <= 30000;
+        allow delete: if isSignedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || vrIsMod(roomId));
+      }
+
       match /chat/{msgId} {
         allow get, list: if vrIsMod(roomId) || vrIsIn(roomId);
         allow create: if vrIsIn(roomId) &&

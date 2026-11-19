@@ -119,7 +119,7 @@ export function watchRoom(roomId: string, cb: (r: VoiceRoom | null) => void, onE
 export const updateRoom = (roomId: string, data: Partial<VoiceRoom>) => updateDoc(doc(db, 'voice_rooms', roomId), data as any);
 export const deleteRoom = async (roomId: string) => {
   // حذف الدردشة والمشاركين أولًا (الإدارة أو صاحبة الغرفة)
-  for (const sub of ['chat', 'members']) {
+  for (const sub of ['chat', 'signals', 'members']) {
     try {
       const snap = await getDocs(collection(db, 'voice_rooms', roomId, sub));
       await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));

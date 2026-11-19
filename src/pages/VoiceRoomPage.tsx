@@ -46,7 +46,8 @@ import {
   watchMyMember,
   watchRoom,
 } from '../services/voiceRooms';
-import { LevelMeter, Publisher, Subscriber, WantedTrack, rtcConfigured } from '../services/voiceRtc';
+import { LevelMeter } from '../services/voiceRtc';
+import { P2PMesh } from '../services/voiceP2P';
 import { PrivacyBadge, userGender } from './VoiceRoomsPage';
 
 const canShareScreen = () => typeof navigator !== 'undefined' && !!navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices;
@@ -112,24 +113,20 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const [chat, setChat] = useState<ChatMsg[]>([]);
   const [entered, setEntered] = useState(false); // ضغطت زر الدخول (لازم لتشغيل الصوت في المتصفح)
   const [joining, setJoining] = useState(false);
-  const [configured, setConfigured] = useState<boolean | null>(null);
   const [notice, setNotice] = useState('');
   const [tracks, setTracks] = useState<Record<string, MediaStreamTrack>>({});
   const [speaking, setSpeaking] = useState<Set<string>>(new Set());
   const [micReady, setMicReady] = useState(false);
   const [screenOn, setScreenOn] = useState(false);
-  const [epoch, setEpoch] = useState(0); // يزيد عند إعادة الاتصال
-  const [connLost, setConnLost] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [menuFor, setMenuFor] = useState<RoomMember | null>(null);
   const [now, setNow] = useState(Date.now());
 
-  const subRef = useRef<Subscriber | null>(null);
-  const pubRef = useRef<Publisher | null>(null);
-  const screenRef = useRef<Publisher | null>(null);
+  const meshRef = useRef<P2PMesh | null>(null);
+  const micTrackRef = useRef<MediaStreamTrack | null>(null);
+  const screenTrackRef = useRef<MediaStreamTrack | null>(null);
   const meterRef = useRef<LevelMeter | null>(null);
-  const wantedRef = useRef<WantedTrack[]>([]);
 
   const flash = useCallback((msg: string) => {
     setNotice(msg);
@@ -137,7 +134,6 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   }, []);
 
   useEffect(() => {
-    rtcConfigured().then(setConfigured);
     const t = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(t);
   }, []);
@@ -178,14 +174,17 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   );
   const audience = useMemo(() => present.filter((m) => m.role === 'listener').sort((a, b) => Number(b.hand) - Number(a.hand) || a.joinedAt - b.joinedAt), [present]);
   const pending = useMemo(() => members.filter((m) => m.status === 'pending'), [members]);
+  const presentRef = useRef<RoomMember[]>([]);
+  presentRef.current = present;
   const screenOwner = present.find((m) => m.screen);
 
-  // ===== الصوت: الاستقبال =====
+  // ===== الصوت: شبكة الاتصالات المباشرة =====
   useEffect(() => {
-    if (!inRoom || configured !== true) return;
-    let cancelled = false;
+    if (!inRoom) return;
     const meter = (meterRef.current = meterRef.current || new LevelMeter());
-    const sub = new Subscriber(
+    const mesh = new P2PMesh(
+      roomId,
+      uid,
       (key, track) => {
         setTracks((t) => ({ ...t, [key]: track }));
         if (key.endsWith(':mic')) meter.add(key, track);
@@ -199,44 +198,28 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         });
       }
     );
-    sub.onDisconnect = () => setConnLost(true);
-    sub
-      .init()
-      .then(() => {
-        if (cancelled) return sub.close();
-        subRef.current = sub;
-        sub.sync(wantedRef.current);
-      })
-      .catch((e) => {
-        console.error(e);
-        setConnLost(true);
-      });
-    const t = setInterval(() => subRef.current === sub && sub.sync(wantedRef.current), 8000);
+    meshRef.current = mesh;
+    mesh.start();
+    mesh.sync(presentRef.current);
     return () => {
-      cancelled = true;
-      clearInterval(t);
-      sub.close();
-      if (subRef.current === sub) subRef.current = null;
+      mesh.close();
+      if (meshRef.current === mesh) meshRef.current = null;
+      micTrackRef.current = null;
+      screenTrackRef.current = null;
+      setScreenOn(false);
       setTracks({});
     };
-  }, [inRoom, configured, epoch]);
+  }, [inRoom, roomId, uid]);
 
   useEffect(() => {
-    const wanted: WantedTrack[] = [];
-    present.forEach((m) => {
-      if (m.uid === uid) return;
-      if (m.pub && (m.role === 'owner' || m.role === 'speaker')) wanted.push({ key: m.uid + ':mic', sessionId: m.pub, trackName: 'mic' });
-      if (m.screen) wanted.push({ key: m.uid + ':screen', sessionId: m.screen, trackName: 'screen' });
-    });
-    wantedRef.current = wanted;
-    subRef.current?.sync(wanted);
-  }, [present, uid]);
+    meshRef.current?.sync(present);
+  }, [present]);
 
   // ===== الصوت: النشر للمتحدثين =====
   useEffect(() => {
-    if (!isSpeaker || configured !== true) return;
+    if (!isSpeaker) return;
     let cancelled = false;
-    let pub: Publisher | null = null;
+    let track: MediaStreamTrack | null = null;
     (async () => {
       let stream: MediaStream;
       try {
@@ -246,49 +229,46 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         updateMember(roomId, uid, { muted: true }).catch(() => {});
         return;
       }
-      const track = stream.getAudioTracks()[0];
+      track = stream.getAudioTracks()[0];
       track.enabled = false;
-      if (cancelled) return track.stop();
-      try {
-        pub = await Publisher.start(track, 'mic');
-      } catch (e) {
-        console.error(e);
+      const mesh = meshRef.current;
+      if (cancelled || !mesh) {
         track.stop();
-        if (!cancelled) setConnLost(true);
         return;
       }
-      if (cancelled) return pub.close();
-      pubRef.current = pub;
-      pub.onDisconnect = () => setConnLost(true);
+      micTrackRef.current = track;
+      const nonce = mesh.setLocal('mic', track);
       (meterRef.current = meterRef.current || new LevelMeter()).add(uid + ':mic', track);
       setMicReady(true);
-      await updateMember(roomId, uid, { pub: pub.sessionId }).catch(() => {});
+      await updateMember(roomId, uid, { pub: nonce }).catch(() => {});
     })();
     return () => {
       cancelled = true;
       setMicReady(false);
       meterRef.current?.remove(uid + ':mic');
-      if (pub) {
-        pub.close();
-        if (pubRef.current === pub) pubRef.current = null;
+      if (track) {
+        meshRef.current?.setLocal('mic', null);
+        track.stop();
+        if (micTrackRef.current === track) micTrackRef.current = null;
         updateMember(roomId, uid, { pub: null }).catch(() => {});
       }
     };
-  }, [isSpeaker, configured, epoch, roomId, uid]);
+  }, [isSpeaker, roomId, uid]);
 
   // الكتم: من وثيقتي
   useEffect(() => {
-    if (pubRef.current) pubRef.current.track.enabled = !me?.muted;
+    if (micTrackRef.current) micTrackRef.current.enabled = !me?.muted;
   }, [me?.muted, micReady]);
 
   // ===== مشاركة الشاشة =====
   const stopScreen = useCallback(
     (write = true) => {
-      const p = screenRef.current;
-      screenRef.current = null;
+      const t = screenTrackRef.current;
+      screenTrackRef.current = null;
       setScreenOn(false);
-      if (p) {
-        p.close();
+      if (t) {
+        meshRef.current?.setLocal('screen', null);
+        t.stop();
         if (write) updateMember(roomId, uid, { screen: null }).catch(() => {});
       }
     },
@@ -299,7 +279,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     if (screenOwner && screenOwner.uid !== uid) return flash(tr('Someone is already sharing their screen.', 'هناك من يشارك شاشته الآن.'));
     let stream: MediaStream;
     try {
-      stream = await (navigator.mediaDevices as any).getDisplayMedia({ video: { frameRate: 15 }, audio: false });
+      stream = await (navigator.mediaDevices as any).getDisplayMedia({ video: { frameRate: 10 }, audio: false });
     } catch {
       return;
     }
@@ -309,21 +289,20 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     } catch {
       /* ignore */
     }
-    try {
-      const p = await Publisher.start(track, 'screen');
-      screenRef.current = p;
-      setScreenOn(true);
-      track.onended = () => stopScreen();
-      await updateMember(roomId, uid, { screen: p.sessionId });
-    } catch (e) {
-      console.error(e);
-      track.stop();
+    const mesh = meshRef.current;
+    if (!mesh) return track.stop();
+    screenTrackRef.current = track;
+    const nonce = mesh.setLocal('screen', track);
+    setScreenOn(true);
+    track.onended = () => stopScreen();
+    await updateMember(roomId, uid, { screen: nonce }).catch(() => {
+      stopScreen(false);
       flash(tr('Could not share the screen.', 'تعذرت مشاركة الشاشة.'));
-    }
+    });
   };
 
   useEffect(() => {
-    if (screenRef.current && (!inRoom || !me?.canScreen)) stopScreen(inRoom);
+    if (screenTrackRef.current && (!inRoom || !me?.canScreen)) stopScreen(inRoom);
   }, [inRoom, me?.canScreen, stopScreen]);
 
   // مستوى الصوت: من يتكلم الآن
@@ -342,8 +321,6 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   }, [inRoom, uid, me?.muted]);
 
   // نبض الحضور: كل 3 دقائق (لتوفير حصة Firestore المجانية)
-  const presentRef = useRef<RoomMember[]>([]);
-  presentRef.current = present;
   const roomRef = useRef<VoiceRoom | null | undefined>(room);
   roomRef.current = room;
   useEffect(() => {
@@ -397,15 +374,6 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     }
   }, [room?.status]);
 
-  // إعادة الاتصال تلقائيًا مرة بعد 3 ثوانٍ
-  useEffect(() => {
-    if (!connLost) return;
-    const t = setTimeout(() => {
-      setConnLost(false);
-      setEpoch((e) => e + 1);
-    }, 3000);
-    return () => clearTimeout(t);
-  }, [connLost]);
 
   const enter = async () => {
     if (!room) return;
@@ -543,9 +511,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       <>
         {header}
         <div className="bg-white rounded-3xl p-8 text-center space-y-4 border border-gray-200">
-          {configured === false ? (
-            <p className="text-sm text-amber-700 font-bold">{tr('Voice rooms open very soon.', 'الغرف الصوتية تُفتح قريبًا جدًا.')}</p>
-          ) : room.status === 'closed' && !isMod ? (
+          {room.status === 'closed' && !isMod ? (
             <p className="text-sm text-gray-600 font-bold">{tr('This room is closed now.', 'هذه الغرفة مغلقة الآن.')}</p>
           ) : waiting ? (
             <>
@@ -567,7 +533,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
               </p>
               <button
                 onClick={enter}
-                disabled={joining || configured === null}
+                disabled={joining}
                 className="px-8 py-3 rounded-2xl bg-[#D4AF37] text-[#0A192F] font-bold text-base inline-flex items-center gap-2 disabled:opacity-50"
               >
                 {joining && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -610,13 +576,6 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         .map(([k, t]) => (
           <AudioSink key={k} track={t} />
         ))}
-
-      {connLost && (
-        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-800 font-bold flex items-center gap-2">
-          <Loader2 className="w-4 h-4 animate-spin" />
-          {tr('Reconnecting…', 'إعادة الاتصال…')}
-        </div>
-      )}
 
       {/* طلبات الدخول للمشرفة */}
       {isMod && pending.length > 0 && (
