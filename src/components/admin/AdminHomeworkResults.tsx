@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Star, FileText, Mic, Download, Trash2 } from 'lucide-react';
+import { RefreshCw, Star, FileText, Mic, Download, Trash2, Undo2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { studentHubService, HomeworkResult } from '../../services/studentHubService';
@@ -49,6 +49,28 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
       onNotice(tr(`+${amount} stars for ${r.studentName}.`, `تم منح ${amount} نجوم لـ ${r.studentName}.`));
     } catch (err: any) {
       onNotice(`${tr('Could not give stars:', 'تعذّر منح النجوم:')} ${err?.code || err?.message || ''}`);
+    } finally {
+      setBusy('');
+    }
+  };
+
+  // إلغاء نجوم مُنحت بالخطأ على هذا الواجب (تُحذف العملية من السجل ويُطرح الرصيد)
+  const undoStars = async (r: HomeworkResult) => {
+    if (!r.starsGiven) return;
+    if (!window.confirm(tr(`Undo the ${r.starsGiven} stars given to ${r.studentName}?`, `إلغاء ${r.starsGiven} نجوم مُنحت لـ ${r.studentName}؟`))) return;
+    setBusy(r.id);
+    try {
+      const log = await groupService.getPointsLog();
+      const tail = `: ${r.title} (${r.score}/${r.total})`;
+      const entry = log
+        .filter((e) => e.studentId === r.studentId && e.amount === r.starsGiven && String(e.reason || '').endsWith(tail))
+        .sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)))[0];
+      if (entry) await groupService.revertPoints(entry, { asTeacher: teacherMode });
+      await studentHubService.markHomeworkStars(r.id, 0);
+      setItems((prev) => prev.map((x) => (x.id === r.id ? { ...x, starsGiven: 0 } : x)));
+      onNotice(entry ? tr('Stars removed.', 'تم إلغاء النجوم وطرحها من الرصيد.') : tr('Marked as not given (no matching ledger entry found).', 'أُلغيت العلامة، لكن لم أجد العملية في سجل النجوم؛ راجعي تبويب النجوم.'));
+    } catch (err: any) {
+      onNotice(`${tr('Could not undo:', 'تعذّر الإلغاء:')} ${err?.code || err?.message || ''}`);
     } finally {
       setBusy('');
     }
@@ -294,10 +316,21 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                   </button>
                 )}
                 {r.starsGiven ? (
-                  <span className="px-2.5 py-1 rounded-lg bg-[#F3E5AB]/50 text-[#8a6d10] font-bold whitespace-nowrap flex items-center gap-1">
-                    <Star className="w-3.5 h-3.5 fill-current" />
-                    {tr(`${r.starsGiven} given`, `مُنحت ${r.starsGiven}`)}
-                  </span>
+                  <>
+                    <span className="px-2.5 py-1 rounded-lg bg-[#F3E5AB]/50 text-[#8a6d10] font-bold whitespace-nowrap flex items-center gap-1">
+                      <Star className="w-3.5 h-3.5 fill-current" />
+                      {tr(`${r.starsGiven} given`, `مُنحت ${r.starsGiven}`)}
+                    </span>
+                    <button
+                      onClick={() => undoStars(r)}
+                      disabled={busy === r.id}
+                      className="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 font-bold whitespace-nowrap flex items-center gap-1 disabled:opacity-50"
+                      title={tr('Undo stars', 'استعادة النجوم')}
+                    >
+                      <Undo2 className="w-3.5 h-3.5" />
+                      {tr('Undo', 'استعادة')}
+                    </button>
+                  </>
                 ) : (
                   [1, 2, 3].map((n) => (
                     <button

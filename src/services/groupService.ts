@@ -245,6 +245,22 @@ export const groupService = {
     }
   },
 
+  // استعادة نقاط مُنحت بالخطأ: يحذف العملية من السجل ويطرح قيمتها من رصيد الطالب
+  async revertPoints(e: PointsEntry, opts: { asTeacher?: boolean } = {}): Promise<void> {
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'points_log', e.id));
+    batch.update(doc(db, 'users', e.studentId), {
+      points: increment(-Number(e.amount || 0)),
+      updatedAt: new Date().toISOString()
+    });
+    await batch.commit();
+    try {
+      await groupService.syncMember(e.studentId, { asTeacher: opts.asTeacher });
+    } catch (err) {
+      console.error('Could not update group board:', err);
+    }
+  },
+
   // ---- Group board (group_members) ----
   // ينسخ اسم الطالب ونقاطه ومجموعته من users إلى group_members، أو يحذفه إن لم تكن له مجموعة
   async syncMember(studentId: string, opts: { asTeacher?: boolean } = {}): Promise<void> {

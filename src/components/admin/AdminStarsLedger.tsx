@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { Plus, Trash2, Save, ChevronDown, ChevronUp, Crown } from 'lucide-react';
+import { Plus, Trash2, Save, ChevronDown, ChevronUp, Crown, Undo2 } from 'lucide-react';
 import { db } from '../../services/firebase';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -48,6 +48,23 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
   const [criteria, setCriteria] = useState<RatingCriterion[]>([]);
   const [students, setStudents] = useState<StudentLite[]>([]);
   const [log, setLog] = useState<PointsEntry[]>([]);
+  const [reverting, setReverting] = useState('');
+  // استعادة نقاط مُنحت بالخطأ
+  const revert = async (e: PointsEntry, name: string) => {
+    const amt = e.amount > 0 ? `+${e.amount}` : String(e.amount);
+    if (!window.confirm(tr(`Undo ${amt} for ${name}? The student's balance will change by ${-e.amount}.`, `إلغاء ${amt} من ${name}؟ سيتغير رصيدها بمقدار ${-e.amount}.`))) return;
+    setReverting(e.id);
+    try {
+      await groupService.revertPoints(e, { asTeacher: teacherMode });
+      setLog((l) => l.filter((x) => x.id !== e.id));
+      setStudents((st) => st.map((s) => (s.id === e.studentId ? ({ ...s, points: Number((s as any).points || 0) - Number(e.amount || 0) } as any) : s)));
+      onNotice(tr('Points restored.', 'تمت استعادة النقاط.'));
+    } catch (err: any) {
+      onNotice(`${tr('Could not undo:', 'تعذّرت الاستعادة:')} ${err?.code || err?.message || ''}`);
+    } finally {
+      setReverting('');
+    }
+  };
   const [grades, setGrades] = useState<GradeEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -380,7 +397,18 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                                         {e.timestamp ? new Date(e.timestamp).toLocaleString() : ''} • {e.awardedBy}
                                       </div>
                                     </div>
-                                    <span className={`font-bold ${e.amount < 0 ? 'text-red-600' : 'text-[#AA820A]'}`}>{e.amount > 0 ? `+${e.amount}` : e.amount}</span>
+                                    <div className="flex items-center gap-2 shrink-0">
+                                      <span className={`font-bold ${e.amount < 0 ? 'text-red-600' : 'text-[#AA820A]'}`}>{e.amount > 0 ? `+${e.amount}` : e.amount}</span>
+                                      <button
+                                        onClick={() => revert(e, r.s.fullName || '')}
+                                        disabled={reverting === e.id}
+                                        className="px-2 py-1 rounded-lg bg-red-50 text-red-700 font-bold flex items-center gap-1 disabled:opacity-50"
+                                        title={tr('Undo this entry', 'استعادة: إلغاء هذه العملية')}
+                                      >
+                                        <Undo2 className="w-3.5 h-3.5" />
+                                        {tr('Undo', 'استعادة')}
+                                      </button>
+                                    </div>
                                   </div>
                                 ))
                               )}
