@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Mic, Lock, ShieldCheck, Globe2, Users, Plus, X, Radio, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { ACTIVE_MS, RoomPrivacy, VoiceRoom, createRoom, watchRooms } from '../services/voiceRooms';
+import { ACTIVE_MS, RoomPrivacy, VoiceRoom, createRoom, watchRooms, roomLink } from '../services/voiceRooms';
+import { nextSession, countdown, formatSession, calendarLink } from '../services/roomSchedule';
 
 const LEVELS = ['', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -77,9 +78,20 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
       .filter((r) => r.status === 'open' || r.ownerId === uid || admin)
       .filter((r) => r.privacy !== 'private' || r.ownerId === uid || admin)
       .map((r) => ({ r, live: now - (r.lastActiveAt || 0) < ACTIVE_MS }))
-      .filter(({ r, live }) => live || r.ownerId === uid || admin || now - (r.createdAt || 0) < 7 * 24 * 3600 * 1000)
+      .filter(({ r, live }) => live || r.ownerId === uid || admin || now - (r.createdAt || 0) < 7 * 24 * 3600 * 1000 || (r.official && nextSession(r, now) !== null))
       .sort((a, b) => Number(b.r.audience === 'teacher') - Number(a.r.audience === 'teacher') || Number(b.live) - Number(a.live) || (b.r.lastActiveAt || 0) - (a.r.lastActiveAt || 0));
   }, [rooms, uid, admin, now]);
+
+  // غرف الأكاديمية الرسمية القادمة (بمواعيد)
+  const upcoming = useMemo(
+    () =>
+      rooms
+        .filter((r) => r.official && r.status === 'open')
+        .map((r) => ({ r, t: nextSession(r, now) }))
+        .filter((x): x is { r: VoiceRoom; t: number } => x.t !== null)
+        .sort((a, b) => a.t - b.t),
+    [rooms, now]
+  );
 
   if (isLoading) return <div className="min-h-[50vh]" />;
 
@@ -149,6 +161,47 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
           )}
         </div>
 
+        {upcoming.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="font-bold text-[#0A192F] flex items-center gap-2">🗓️ {tr('Academy rooms — upcoming', 'مواعيد غرف الأكاديمية')}</h2>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {upcoming.map(({ r, t }) => {
+                const isNow = t <= now;
+                return (
+                  <div key={r.id} className="p-4 rounded-3xl bg-gradient-to-br from-[#0A192F] to-[#1E1B4B] text-white border border-[#D4AF37]/50 shadow-md space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="inline-block px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[10px] font-bold mb-1">{tr('Official', 'رسمية')}</span>
+                        <h3 className="font-bold text-[#F3E5AB] leading-snug">{r.title}</h3>
+                      </div>
+                      {r.level && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 shrink-0">{r.level}</span>}
+                    </div>
+                    {r.topic && <p className="text-xs text-gray-300 line-clamp-2">{r.topic}</p>}
+                    <div className="text-xs text-gray-200">
+                      {formatSession(t, isAr)}
+                      {r.weekly && <span className="text-gray-400"> · {tr('every week', 'كل أسبوع')}</span>}
+                    </div>
+                    <div className="flex items-center justify-between gap-2 pt-1">
+                      <span className={`text-xs font-bold ${isNow ? 'text-emerald-300 animate-pulse' : 'text-[#D4AF37]'}`}>
+                        {isNow ? tr('● Live now', '● مباشرة الآن') : `⏳ ${countdown(t - now, isAr)}`}
+                      </span>
+                      <div className="flex gap-1.5">
+                        <a href={calendarLink(r, t, roomLink(r.id))} target="_blank" rel="noopener noreferrer" className="px-2.5 py-1.5 rounded-lg bg-white/10 text-[11px] font-bold">
+                          {tr('Add to calendar', 'أضف للتقويم')}
+                        </a>
+                        <button onClick={() => navigate('room/' + r.id)} className="px-3 py-1.5 rounded-lg bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold">
+                          {isNow ? tr('Enter', 'دخول') : tr('Open', 'فتح')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <h2 className="font-bold text-[#0A192F] pt-2">{tr('All rooms', 'كل الغرف')}</h2>
+          </div>
+        )}
+
         {visible.length === 0 ? (
           <div className="p-10 rounded-3xl bg-white border border-dashed border-gray-300 text-center text-sm text-gray-500">
             {tr('No rooms right now. Be the first to open one!', 'لا توجد غرف الآن. {كن|كوني} أول من يفتح غرفة!')}
@@ -202,10 +255,13 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
           isAr={isAr}
           isFemale={isFemale && !teacher}
           teacher={teacher}
+          admin={admin}
           onClose={() => setShowCreate(false)}
           onCreate={async (d) => {
+            const { official, scheduledAt, weekly, ...rest } = d;
             const id = await createRoom({
-              ...d,
+              ...rest,
+              ...(admin && official ? { official: true, scheduledAt, weekly } : {}),
               girlsOnly: teacher ? false : d.girlsOnly,
               audience: teacher ? 'teacher' : 'all',
               ownerId: uid,
@@ -224,9 +280,23 @@ const CreateRoomModal: React.FC<{
   isAr: boolean;
   isFemale: boolean;
   teacher?: boolean;
+  admin?: boolean;
   onClose: () => void;
-  onCreate: (d: { title: string; topic: string; level: string; privacy: RoomPrivacy; girlsOnly: boolean; maxSpeakers: number }) => Promise<void>;
-}> = ({ isAr, isFemale, teacher, onClose, onCreate }) => {
+  onCreate: (d: {
+    title: string;
+    topic: string;
+    level: string;
+    privacy: RoomPrivacy;
+    girlsOnly: boolean;
+    maxSpeakers: number;
+    official?: boolean;
+    scheduledAt?: number;
+    weekly?: boolean;
+  }) => Promise<void>;
+}> = ({ isAr, isFemale, teacher, admin, onClose, onCreate }) => {
+  const [official, setOfficial] = useState(false);
+  const [when, setWhen] = useState('');
+  const [weekly, setWeekly] = useState(true);
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [title, setTitle] = useState('');
   const [topic, setTopic] = useState('');
@@ -305,14 +375,40 @@ const CreateRoomModal: React.FC<{
             {tr('Girls only (boys will not see the room)', 'للبنات فقط (لا تظهر الغرفة للطلاب)')}
           </label>
         )}
+        {admin && (
+          <div className="p-3 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/50 space-y-2">
+            <label className="flex items-center gap-2 text-sm font-bold text-[#0A192F] cursor-pointer">
+              <input type="checkbox" checked={official} onChange={(e) => setOfficial(e.target.checked)} className="w-4 h-4" />
+              {tr('Official academy room with a set time', 'غرفة رسمية للأكاديمية بموعد محدد')}
+            </label>
+            {official && (
+              <>
+                <input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm bg-white" />
+                <label className="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer">
+                  <input type="checkbox" checked={weekly} onChange={(e) => setWeekly(e.target.checked)} className="w-4 h-4" />
+                  {tr('Repeats every week', 'تتكرر كل أسبوع في نفس اليوم والساعة')}
+                </label>
+                <p className="text-[11px] text-gray-500">{tr('Members see it at the top with a countdown and can add it to their calendar.', 'تظهر للمسجّلين في أعلى الصفحة مع عدّ تنازلي وزر «أضف للتقويم».')}</p>
+              </>
+            )}
+          </div>
+        )}
         {err && <p className="text-xs text-red-600">{err}</p>}
         <button
-          disabled={busy || !title.trim()}
+          disabled={busy || !title.trim() || (official && !when)}
           onClick={async () => {
             setBusy(true);
             setErr('');
             try {
-              await onCreate({ title: title.trim(), topic: topic.trim(), level, privacy, girlsOnly: isFemale && girlsOnly, maxSpeakers });
+              await onCreate({
+                title: title.trim(),
+                topic: topic.trim(),
+                level,
+                privacy,
+                girlsOnly: isFemale && girlsOnly,
+                maxSpeakers,
+                ...(official && when ? { official: true, scheduledAt: new Date(when).getTime(), weekly } : {}),
+              });
             } catch (e) {
               console.error(e);
               setErr(tr('Could not create the room. Please try again.', 'تعذر إنشاء الغرفة. {حاول|حاولي} مرة أخرى.'));

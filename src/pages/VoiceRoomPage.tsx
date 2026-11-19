@@ -30,6 +30,7 @@ import {
   ImagePlus,
 } from 'lucide-react';
 import { ROOM_BGS, bgById, getMyBg, setMyBg, shrinkImage } from '../services/roomBackgrounds';
+import { nextSession, countdown, formatSession } from '../services/roomSchedule';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -733,6 +734,13 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         {room.level && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F]">{room.level}</span>}
         {room.status === 'closed' && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">{tr('Closed', 'مغلقة')}</span>}
       </div>
+      {room.official && nextSession(room, now) !== null && (
+        <div className="text-xs text-[#F3E5AB] font-bold">
+          🗓️ {formatSession(nextSession(room, now)!, isAr)}
+          {room.weekly ? ` · ${tr('every week', 'كل أسبوع')}` : ''} ·{' '}
+          {nextSession(room, now)! <= now ? tr('live now', 'مباشرة الآن') : countdown(nextSession(room, now)! - now, isAr)}
+        </div>
+      )}
     </div>
   );
 

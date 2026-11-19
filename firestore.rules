@@ -598,7 +598,10 @@ service cloud.firestore {
       return isSignedIn() && vrCanSee(vrRoom(roomId)) && vrMyStatus(roomId) == 'in';
     }
     function vrValidRoom(d) {
-      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount', 'chatSince', 'bg', 'audience']) &&
+      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount', 'chatSince', 'bg', 'audience', 'official', 'scheduledAt', 'weekly']) &&
+        (!('official' in d) || d.official is bool) &&
+        (!('scheduledAt' in d) || d.scheduledAt is int) &&
+        (!('weekly' in d) || d.weekly is bool) &&
         (!('audience' in d) || d.audience in ['all', 'teacher']) &&
         d.title is string && d.title.size() > 0 && d.title.size() <= 80 &&
         d.topic is string && d.topic.size() <= 300 &&
@@ -618,6 +621,7 @@ service cloud.firestore {
         request.resource.data.ownerId == request.auth.uid &&
         vrValidRoom(request.resource.data) &&
         request.resource.data.status == 'open' &&
+        (request.resource.data.get('official', false) == false || isAdmin()) &&
         (
           (request.resource.data.audience == 'all' && isAdmin()) ||
           (request.resource.data.audience == 'all' && isMember() && !isTeacherDoc() &&
@@ -628,6 +632,7 @@ service cloud.firestore {
         (isSignedIn() && resource.data.ownerId == request.auth.uid &&
           request.resource.data.ownerId == resource.data.ownerId &&
           request.resource.data.get('audience', 'all') == resource.data.get('audience', 'all') &&
+          request.resource.data.get('official', false) == resource.data.get('official', false) &&
           vrValidRoom(request.resource.data) &&
           (request.resource.data.girlsOnly == false || (vrIsFemale() && request.resource.data.get('audience', 'all') == 'all'))) ||
         (vrIsIn(roomId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastActiveAt', 'liveCount', 'chatSince']) &&

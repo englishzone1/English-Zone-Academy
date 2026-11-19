@@ -39,6 +39,9 @@ export interface VoiceRoom {
   lastActiveAt: number;
   liveCount: number;
   audience?: 'all' | 'teacher'; // teacher: لطلاب المعلم صاحب الغرفة فقط
+  official?: boolean; // غرفة رسمية من الأكاديمية
+  scheduledAt?: number; // موعد الجلسة (ms)
+  weekly?: boolean; // تتكرر كل أسبوع
   bg?: string; // خلفية الغرفة الافتراضية (يختارها صاحب/ة الغرفة)
   chatSince?: number; // الدردشة تبدأ من هنا (تُمسح عند إغلاق الغرفة أو بدء جلسة جديدة)
 }
