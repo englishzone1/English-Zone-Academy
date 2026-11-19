@@ -208,6 +208,13 @@ main{max-width:920px}
 .recs{font-size:.85rem;color:#5b6a7c}
 .rec audio{height:34px;max-width:100%}
 .wl{margin:2px 0}.wl.ok{color:#1e7a46}.wl.no{color:#b3261e}
+/* تخطيط مضغوط: السؤال والإجابة وزر التحقق في سطر واحد، والملاحظة تحتها مباشرة */
+.item{padding:6px 0}
+.q{line-height:1.9}
+.q .chk{display:inline-flex;align-items:center;gap:4px;margin:0 0 0 8px;padding:1px 11px;font-size:.78rem;font-weight:700;line-height:1.7;vertical-align:middle;border-radius:14px;white-space:nowrap}
+[dir=rtl] .q .chk{margin:0 8px 0 0}
+.fb{margin-top:4px;padding:6px 10px;font-size:.88rem;line-height:1.6;border-radius:8px}
+.cor{line-height:1.5}
 </style>
 </head>
 <body>
@@ -1416,7 +1423,7 @@ function build(root,secs,exam){
           }
         });
         [...q.childNodes].filter(x=>x.nodeName==="BR").forEach(br=>{ let n=br.nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling; if(n&&n.nodeName==="INPUT"&&!n.closest(".ovl")) br.replaceWith(document.createTextNode(" ")); });
-        const b = document.createElement("button"); b.type="button"; b.className="chk"; b.textContent="Check Answer";
+        const b = document.createElement("button"); b.type="button"; b.className="chk"; b.textContent="Check ✓";
         const fb = document.createElement("div"); fb.className="fb hidden";
         b.onclick = ()=>check(row,it,s.review,ex); if(exam) b.style.display="none"; if(it.x){ b.style.display="none"; row.isX=1; row.classList.add("xm"); } if(it.free) row.isFree=1;
         q.appendChild(b); row.append(q,fb); row.fbEl = fb; e.appendChild(row);
@@ -1444,15 +1451,26 @@ function shortExp(e){
 function afterBlock(q){ let n=q.lastChild; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.previousSibling; return !!(n&&n.nodeType===1&&/^(IMG|DIV)$/.test(n.tagName)); }
 function updScore(e){ const rows=[...e.querySelectorAll(".item")].filter(r=>!r.isX&&!r.isFree); const sc=e.querySelector(".score"); if(!sc) return; if(!rows.length){ sc.textContent=""; return; } const n=rows.filter(r=>r.isOk).length; sc.textContent=`✔ ${n} / ${rows.length}`; sc.classList.toggle("full",n===rows.length); updExRep(e,rows); updLesson(); }
 function hintFor(f){ const a=f.dataset.a.split("|")[0]; if(f.tagName==="SELECT") return ``; const w=a.trim().split(/\s+/); if(w.length>=3) return `الإجابة ${w.length} كلمات وتبدأ بـ «${w[0]}».`; const k=Math.min(3,Math.max(1,Math.ceil(a.length/3))); const L=a.replace(/\s/g,``).length; return a.length<=1?``:`تبدأ بـ «${a.slice(0,k)}…» (${L==2?`حرفان`:L<=10?L+` حروف`:L+` حرفًا`}).`; }
+/* مطابقة أمرن: تتجاهل الفواصل وعلامات الترقيم داخل الجملة والشرطات، وتقبل الصيغة الكاملة بدل المختصرة
+   (isn't = is not، I'm = I am…) إلا في تمارين الاختصارات نفسها. */
+const CONTR=[[/\bcan't\b/g,`cannot`],[/\bcan not\b/g,`cannot`],[/\bwon't\b/g,`will not`],[/\bshan't\b/g,`shall not`],[/\b([a-z]+)n't\b/g,`$1 not`],[/\bi'm\b/g,`i am`],[/\b(you|we|they|who|what)'re\b/g,`$1 are`],[/\b(i|you|we|they|who|what|could|should|would|might|must)'ve\b/g,`$1 have`],[/\b(i|you|he|she|it|we|they|there|that|who|what)'ll\b/g,`$1 will`],[/\b(i|you|he|she|we|they)'d\b/g,`$1 would`],[/\b(he|she|it|that|there|what|where|who|how|here)'s\b/g,`$1 is`]];
+const looseA = s => norm(s).replace(/[,.;:!?"“”]/g,` `).replace(/-/g,` `).replace(/\s+/g,` `).trim();
+const expandA = s => CONTR.reduce((a,[re,r])=>a.replace(re,r), s);
+function ansMatch(alts,v,row){
+  const nv=norm(v); if(alts.includes(nv)) return true;
+  const lv=looseA(v); if(!lv) return false; const la=alts.map(looseA); if(la.includes(lv)) return true;
+  if(row&&row.exRef&&/contraction|short form/i.test(row.exRef.t||``)) return false;
+  const ev=expandA(lv); return la.some(a=>expandA(a)===ev);
+}
 function evalRow(row,it,fields){
   let ok = true;
   fields.forEach(f=>{
     const alts = f.dataset.a.split("|").map(norm);
-    const good = it.kw ? it.kw.every(k=>new RegExp(k).test(norm(f.value))) : it.dg ? f.value.replace(/\D/g,``)===f.dataset.a : it.free ? (f.tagName==="SELECT" ? f.value!=="" : freeOK(f.value, Array.isArray(it.v)?it.v[fields.indexOf(f)]:it.v)) : alts.includes(norm(f.value));
+    const good = it.kw ? it.kw.every(k=>new RegExp(k).test(norm(f.value))) : it.dg ? f.value.replace(/\D/g,``)===f.dataset.a : it.free ? (f.tagName==="SELECT" ? f.value!=="" : freeOK(f.value, Array.isArray(it.v)?it.v[fields.indexOf(f)]:it.v)) : ansMatch(alts,f.value,row);
     f.classList.toggle("good",good); f.classList.toggle("bad",!good);
     if(!good) ok = false;
   });
-  if(it.combos){ let best=null,bs=-1; it.combos.forEach(c=>{ const sc=fields.filter((f,i)=>c[i].split("|").map(norm).includes(norm(f.value))).length; if(sc>bs){bs=sc;best=c;} }); ok=true; fields.forEach((f,i)=>{ const g=best[i].split("|").map(norm).includes(norm(f.value)); f.classList.toggle("good",g); f.classList.toggle("bad",!g); if(!g) ok=false; }); }
+  if(it.combos){ let best=null,bs=-1; it.combos.forEach(c=>{ const sc=fields.filter((f,i)=>ansMatch(c[i].split("|").map(norm),f.value,row)).length; if(sc>bs){bs=sc;best=c;} }); ok=true; fields.forEach((f,i)=>{ const g=ansMatch(best[i].split("|").map(norm),f.value,row); f.classList.toggle("good",g); f.classList.toggle("bad",!g); if(!g) ok=false; }); }
   if(it.uq){ const seen={}; fields.forEach(f=>{ const v=norm(f.value); if(v&&seen[v]){ f.classList.remove("good"); f.classList.add("bad"); ok=false; } seen[v]=1; }); }
   return ok;
 }
@@ -1462,7 +1480,7 @@ function check(row,it,review,ex){
   row.querySelectorAll(".cor").forEach(c=>c.remove());
   const fb = row.fbEl; fb.classList.remove("hidden"); fb.dir="auto";
   const exEl = row.closest(".ex");
-  if(fields.every(f=>f.value.trim()==="")){ fb.className="fb try"; fb.textContent=`✍️ اكتبي إجابتك أولًا ثم اضغطي Check Answer.`; return; }
+  if(fields.every(f=>f.value.trim()==="")){ fb.className="fb try"; fb.textContent=`✍️ اكتبي إجابتك أولًا ثم اضغطي Check ✓.`; return; }
   let ok = evalRow(row,it,fields);
   row.isOk = ok; if(exEl) updScore(exEl);
   if(ok && it.pend){ fb.className="fb try"; fb.textContent=`📝 كتابتك سليمة، لكن الإجابة النموذجية لهذا السؤال لم تُضَف بعد. استمعي مرة أخرى وتأكدي من إجابتك.`; return; }
