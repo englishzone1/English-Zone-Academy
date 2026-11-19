@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { ReferralTeaser } from '../components/student/ReferralOffers';
 import { useAuth } from '../context/AuthContext';
 import { contentManagementService, DynamicPromotionOffer } from '../services/contentManagementService';
 import { useLanguage } from '../context/LanguageContext';
@@ -22,7 +21,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
 
   // العروض المنشورة من لوحة الإدارة فقط (promotions_offers)، ويُخفى العرض بعد تاريخ انتهائه
   const [offersRaw, setOffersRaw] = useState<DynamicPromotionOffer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     contentManagementService
@@ -59,11 +58,9 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
             {t.offers.sectionSubtitle}
           </p>
           <div className="mt-6">
-            {isAuthenticated ? (
-              <ReferralTeaser isAr={language === 'ar'} onClick={() => navigate('portal')} />
-            ) : (
+            {(
               <button
-                onClick={() => navigate('join-offer')}
+                onClick={() => navigate(isAuthenticated ? 'portal' : 'join-offer')}
                 className="ez-float-glow w-full rounded-2xl px-5 py-5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] flex flex-col items-center gap-2"
               >
                 {isAr ? (
@@ -90,11 +87,6 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {!loading && offers.length === 0 && isAuthenticated && (
-          <div className="p-10 rounded-3xl bg-white border border-gray-200 text-center text-sm text-gray-500">
-            {isAr ? 'لا توجد عروض حاليًا.' : 'There are no offers at the moment.'}
-          </div>
-        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {offers.map((offer) => (
