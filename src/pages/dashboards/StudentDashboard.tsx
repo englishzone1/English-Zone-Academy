@@ -10,7 +10,7 @@ import {
   GradeRecord,
   TimetableRecord
 } from '../../services/studentDataService';
-import { Sparkles, Calendar, LogOut, Edit3, Phone, AlertCircle, MessageCircle, Gift, Mic, BookOpenCheck } from 'lucide-react';
+import { Sparkles, LogOut, Edit3, Phone, AlertCircle, MessageCircle, Gift, Mic, BookOpenCheck, Library, Map as MapIcon, Users } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import {
   groupService,
@@ -318,8 +318,8 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex flex-col gap-2">
-              <div className="px-4 py-2 rounded-2xl bg-[#0A192F] border border-[#D4AF37]/40 text-[#F3E5AB] flex items-center gap-2 shadow-sm">
+            <div className="grid grid-cols-2 gap-2 w-full md:w-auto">
+              <div className="col-span-2 px-4 py-2 rounded-2xl bg-[#0A192F] border border-[#D4AF37]/40 text-[#F3E5AB] flex items-center gap-2 shadow-sm">
                 <Sparkles className="w-4 h-4 text-[#D4AF37]" />
                 <div className="text-left rtl:text-right">
                   <span className="text-[10px] text-gray-400 block leading-none">English Zone Stars</span>
@@ -357,6 +357,28 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                 <BookOpenCheck className="w-4 h-4 text-[#AA820A]" />
                 <span>{isAr ? 'الواجبات والاختبارات' : 'Homework & tests'}</span>
               </button>
+              {/* المكتبة، والمنهج والمراحل، ومجموعتي: وصول سريع */}
+              {(
+                [
+                  { id: 'library', icon: Library, ar: 'المكتبة', en: 'Library' },
+                  { id: 'curriculum', icon: MapIcon, ar: 'المنهج والمراحل', en: 'Curriculum' },
+                  { id: 'group', icon: Users, ar: 'مجموعتي', en: 'My group' }
+                ] as const
+              ).map((b) => (
+                <button
+                  key={b.id}
+                  onClick={() => {
+                    setActiveTab(b.id);
+                    setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                  }}
+                  className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm transition-all ${
+                    activeTab === b.id ? 'bg-[#D4AF37] text-[#0A192F] border-[#D4AF37]' : 'bg-white text-[#0A192F] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
+                  }`}
+                >
+                  <b.icon className="w-4 h-4 text-[#AA820A]" />
+                  <span>{isAr ? b.ar : b.en}</span>
+                </button>
+              ))}
               {/* الغرف الصوتية */}
               <button
                 onClick={() => navigate('rooms')}
@@ -371,7 +393,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                   setActiveTab('offers');
                   setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
                 }}
-                className="ez-float-glow px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] border border-[#D4AF37]"
+                className="ez-float-glow col-span-2 px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] border border-[#D4AF37]"
               >
                 <Gift className="w-4 h-4" />
                 <span>{isAr ? 'العروض: {ادعُ|ادعي} {واربح|واربحي}' : 'Offers: invite & earn'}</span>
@@ -403,12 +425,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-2">
           {[
             { id: 'overview', labelEn: 'Overview & Lessons', labelAr: 'نظرة عامة والدروس' },
-            { id: 'group', labelEn: 'My Group', labelAr: 'مجموعتي' },
             { id: 'community', labelEn: 'Community', labelAr: 'مجتمع English Zone' },
-            { id: 'stars', labelEn: 'English Zone Stars', labelAr: 'نجوم التحفيز ونقاطي' },
-            { id: 'curriculum', labelEn: 'Curriculum & Stages', labelAr: 'المنهج والمراحل' },
-            { id: 'library', labelEn: 'Library', labelAr: 'المكتبة' },
-            { id: 'homework', labelEn: 'Homework & Tests', labelAr: 'الواجبات والاختبارات' },
             { id: 'feedback', labelEn: 'My Feedback', labelAr: 'رأيي' },
             { id: 'subscription', labelEn: 'Tuition & Invoices', labelAr: 'الاشتراك والفواتير' }
           ].map((tab) => (
@@ -491,44 +508,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                 )}
               </div>
 
-              {/* Next session */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-4">
-                <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F] flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-[#AA820A]" />
-                  <span>{isAr ? 'الحصة القادمة' : 'Next Scheduled Live Session'}</span>
-                </h3>
-
-                {timetable.length > 0 ? (
-                  <div className="p-5 rounded-2xl bg-gradient-to-r from-[#0A192F] to-[#102445] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
-                      <span className="text-[11px] font-bold text-[#F3E5AB] uppercase tracking-wider block mb-1">
-                        {timetable[0].time}
-                      </span>
-                      <h4 className="font-bold text-base text-white">{timetable[0].topic}</h4>
-                      {timetable[0].teacherName && (
-                        <p className="text-xs text-gray-300 mt-1">
-                          {isAr ? 'المعلم:' : 'Instructor:'} {timetable[0].teacherName}
-                        </p>
-                      )}
-                    </div>
-
-                    {timetable[0].zoomLink && (
-                      <a
-                        href={timetable[0].zoomLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-6 py-2.5 rounded-xl font-bold text-xs bg-[#D4AF37] text-[#0A192F] hover:bg-[#F3E5AB] transition-colors whitespace-nowrap shadow"
-                      >
-                        {isAr ? 'دخول الفصل الافتراضي' : 'Join Live Classroom'}
-                      </a>
-                    )}
-                  </div>
-                ) : (
-                  <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-gray-200 text-xs text-gray-500 text-center">
-                    {isAr ? 'لم يُحدد موعد حصتك القادمة بعد.' : 'Your next session has not been scheduled yet.'}
-                  </div>
-                )}
-              </div>
             </div>
 
             <div className="lg:col-span-4 space-y-6">
@@ -539,6 +518,8 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                 homework={homeworkList}
                 grades={gradesList}
                 pointsLog={pointsLog}
+                groupMembers={groupMembers}
+                groupLog={groupLog}
               />
 
               {/* مواعيد الدرس التي كتبتها الإدارة */}
@@ -662,8 +643,8 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
 
                 <p className="text-[11px] text-gray-400">
                   {isAr
-                    ? 'تفاصيل نجومك في تبويب "نجوم التحفيز ونقاطي"، ودرجاتك في تبويب "الواجبات والاختبارات".'
-                    : 'Your star details are in the Stars tab, and your grades in the Homework & Tests tab.'}
+                    ? 'تقريرك الأسبوعي والشهري في «نظرة عامة»، ودرجاتك في «الواجبات والاختبارات».'
+                    : 'Your weekly and monthly report is in Overview, and your grades in Homework & tests.'}
                 </p>
               </>
             )}
@@ -686,46 +667,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         {/* TAB: FEEDBACK */}
         {activeTab === 'offers' && <ReferralOffers uid={firebaseUser.uid} isAr={isAr} active />}
         {activeTab === 'feedback' && <StudentFeedback uid={firebaseUser.uid} name={student.fullName || ''} level={level} isAr={isAr} />}
-
-        {/* TAB 2: STARS */}
-        {activeTab === 'stars' && (
-          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div>
-                <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
-                  {isAr ? 'سجل نجوم التحفيز' : 'English Zone Stars Recognition Log'}
-                </h2>
-                <p className="text-xs text-gray-500 mt-1">
-                  {isAr ? 'النجوم التي منحها لك معلموك.' : 'Stars awarded by your teachers.'}
-                </p>
-              </div>
-              <div className="px-5 py-2.5 rounded-2xl bg-[#0A192F] text-[#F3E5AB] font-bold text-lg">
-                {isAr ? 'المجموع:' : 'Total:'} {student.points || 0}
-              </div>
-            </div>
-
-            {pointsLog.length === 0 ? (
-              <div className="text-center py-12 text-gray-500 text-sm">
-                <Sparkles className="w-10 h-10 text-[#D4AF37] mx-auto mb-2 opacity-50" />
-                <p>{isAr ? 'لا توجد نجوم مسجلة بعد.' : 'No stars have been recorded yet.'}</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-100">
-                {pointsLog.map((log) => (
-                  <div key={log.id} className="py-3 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="font-bold text-[#0A192F] block">{log.reason}</span>
-                      <span className="text-gray-400 text-[10px]">
-                        {isAr ? 'بواسطة:' : 'Awarded by:'} {log.awardedBy} • {log.timestamp}
-                      </span>
-                    </div>
-                    <span className="font-bold text-emerald-600 text-sm">+{log.amount}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* TAB 3: CURRICULUM */}
         {activeTab === 'curriculum' && (

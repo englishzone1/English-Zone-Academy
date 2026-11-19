@@ -232,6 +232,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .ex div[style*="italic"]{font-size:.8rem!important}
   .pic{max-width:100%;height:auto}
 }
+.halves{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.half{border-radius:16px;padding:10px 10px 2px}
+.half h3{margin:2px 4px 10px;font-size:1rem}
+.hwh{background:#eef7ff;border:1px solid #bfe0fb}
+.tsh{background:#f5f0ff;border:1px solid #dacbfa}
+@media (max-width:640px){.halves{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -259,11 +265,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   <section id="levels" class="hidden">
     <button class="back" id="backLv">⬅ Back</button>
     <h2>A1 Beginners</h2>
+    <div class="halves">
+    <div class="half hwh"><h3>📘 Homework <span class="arh">الواجبات</span></h3>
     <button class="lesson hub" id="cHW">📘 Homework &amp; Reviews<b class="ar">الواجبات والمراجعات</b><span>Lessons, practical English and reviews – Level 1, 2 and 3</span></button>
+    </div>
+    <div class="half tsh"><h3>📝 Tests <span class="arh">الاختبارات</span></h3>
     <button class="lesson hub tst" id="cTS">📝 Unit Tests<b class="ar">اختبارات الوحدات</b><span>File tests and progress tests – Level 1, 2 and 3</span></button>
     <button class="lesson exam" id="cPT1">📊 Progress Test: Units 1–6<b class="ar">الاختبار المرحلي للوحدات من الأولى إلى السادسة</b><span>Grammar, vocabulary, pronunciation, practical English, reading, writing and listening</span></button>
     <button class="lesson exam" id="cPT2">📊 Progress Test: Units 7–12<b class="ar">الاختبار المرحلي للوحدات من السابعة إلى الثانية عشرة</b><span>Grammar, vocabulary, pronunciation, practical English, reading, writing and listening</span></button>
     <button class="lesson exam" id="cEX">🏆 Final exam<b class="ar">الاختبار النهائي الشامل</b><span>End of course test – all units</span></button>
+    </div>
+    </div>
   </section>
   <section id="hwLevels" class="hidden">
     <button class="back" id="backHW">⬅ Back</button>

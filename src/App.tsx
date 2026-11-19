@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TawkChat } from './components/common/TawkChat';
 import { ChatAssistant } from './components/common/ChatAssistant';
+import { AccountFab } from './components/common/AccountFab';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
@@ -299,6 +300,13 @@ function MainApp() {
     );
   }
 
+  // خارج الحساب (الصفحة الرئيسية، المدونة، المكتبة، الغرف…): زر «حسابي» بدل زر الرد الآلي
+  const showAccountFab =
+    isAuthenticated &&
+    !isLoading &&
+    !['portal', 'student-dashboard', 'teacher-dashboard', 'admin-dashboard', 'admin-login', 'login', 'student-login', 'homework'].includes(currentRoute) &&
+    !currentRoute.startsWith('room/');
+
   return (
     <div className="flex flex-col min-h-screen">
       {!bare && <Navbar currentRoute={currentRoute} navigate={navigate} />}
@@ -307,8 +315,10 @@ function MainApp() {
       </main>
       {!bare && <Footer navigate={navigate} />}
       <TawkChat hidden={bare || currentRoute.startsWith('room/') || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
+      {showAccountFab && <AccountFab isAr={language === 'ar'} onClick={() => navigate('portal')} />}
       <ChatAssistant
         hidden={
+          showAccountFab ||
           ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) ||
           currentRoute.startsWith('hw-answers/') ||
           currentRoute.startsWith('room/') ||

@@ -210,25 +210,50 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
       </div>
 
       {!preview && results.length > 0 && (
-        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200 shadow-sm space-y-3">
-          <h3 className="font-bold text-sm text-[#0A192F]">{isAr ? 'نتائجي في الواجبات التفاعلية' : 'My interactive results'}</h3>
-          <div className="space-y-2">
-            {results.slice(0, 20).map((r) => (
-              <div key={r.id} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#FAF8F5] border border-gray-100 text-xs">
-                <div>
-                  <span className="font-bold text-[#0A192F]">{r.title}</span>
-                  <span className="text-gray-400"> • {kindLabel(r.kind, isAr)} • {new Date(r.createdAt).toLocaleDateString()}</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {(
+            [
+              { key: 'hw', ar: '📘 الواجبات', en: '📘 Homework', list: results.filter((r) => r.kind === 'lesson') },
+              { key: 'ts', ar: '📝 الاختبارات', en: '📝 Tests', list: results.filter((r) => r.kind !== 'lesson') }
+            ] as const
+          ).map((half) => {
+            const avg = half.list.length ? Math.round(half.list.reduce((a, r) => a + (r.percent || 0), 0) / half.list.length) : null;
+            return (
+              <div key={half.key} className={`bg-white rounded-3xl p-5 border shadow-sm space-y-3 ${half.key === 'hw' ? 'border-sky-200' : 'border-violet-200'}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-bold text-sm text-[#0A192F]">{isAr ? half.ar : half.en}</h3>
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${half.key === 'hw' ? 'bg-sky-50 text-sky-700' : 'bg-violet-50 text-violet-700'}`}>
+                    {half.list.length} {avg !== null ? `• ${isAr ? 'المعدل' : 'avg'} ${avg}%` : ''}
+                  </span>
                 </div>
-                <span
-                  className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap ${
-                    r.percent >= 70 ? 'bg-emerald-50 text-emerald-700' : r.percent >= 50 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700'
-                  }`}
-                >
-                  {r.score}/{r.total} ({r.percent}%)
-                </span>
+                {half.list.length === 0 ? (
+                  <p className="text-xs text-gray-400 text-center py-4">{isAr ? 'لا توجد نتائج بعد.' : 'No results yet.'}</p>
+                ) : (
+                  <div className="space-y-2">
+                    {half.list.slice(0, 20).map((r) => (
+                      <div key={r.id} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#FAF8F5] border border-gray-100 text-xs">
+                        <div className="min-w-0">
+                          <span className="font-bold text-[#0A192F]">{r.title}</span>
+                          <span className="text-gray-400">
+                            {' '}
+                            • {half.key === 'ts' ? `${kindLabel(r.kind, isAr)} • ` : ''}
+                            {new Date(r.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <span
+                          className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap ${
+                            r.percent >= 70 ? 'bg-emerald-50 text-emerald-700' : r.percent >= 50 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700'
+                          }`}
+                        >
+                          {r.score}/{r.total} ({r.percent}%)
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       )}
     </div>
