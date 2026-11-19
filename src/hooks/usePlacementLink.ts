@@ -1,10 +1,14 @@
 import { useAuth } from '../context/AuthContext';
-import { useAcademySettings } from './useAcademySettings';
 
-// اختبار تحديد المستوى من مكافآت التسجيل: الزائرة تُوجَّه للتسجيل المجاني أولًا، والعضوة تفتح الاختبار مباشرة
-export const usePlacementLink = (): { href: string; target?: string; rel?: string } => {
+// أزرار الاختبار العامة لا تفتح الاختبار مباشرة: الزائرة ← التسجيل المجاني، والعضوة ← صفحتها (فيها الاختبار وحفظ النتيجة)
+export const usePlacementLink = (): { href: string; target?: string; rel?: string; loggedIn: boolean; label: (isAr: boolean) => string } => {
   const { isAuthenticated } = useAuth();
-  const { placementTestUrl } = useAcademySettings();
-  if (isAuthenticated && placementTestUrl) return { href: placementTestUrl, target: '_blank', rel: 'noopener noreferrer' };
-  return { href: '#/join-us' };
+  return {
+    href: isAuthenticated ? '#/portal' : '#/join-us',
+    loggedIn: isAuthenticated,
+    label: (isAr: boolean) =>
+      isAuthenticated
+        ? isAr ? 'اختبري مستواكِ من حسابكِ' : 'Test your level from your account'
+        : isAr ? 'سجّلي مجانًا واختبري مستواكِ' : 'Sign up free & test your level'
+  };
 };

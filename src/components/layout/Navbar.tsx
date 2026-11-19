@@ -97,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               className="text-[#F3E5AB] hover:text-[#D4AF37] transition-colors flex items-center gap-1 font-medium"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>{pt.target ? t.hero.ctaTest : (language === 'ar' ? 'سجّلي مجانًا واختبري مستواكِ' : 'Sign up free & test your level')}</span>
+              <span>{pt.label(language === 'ar')}</span>
             </a>
             )}
             <span className="text-gray-500">|</span>
