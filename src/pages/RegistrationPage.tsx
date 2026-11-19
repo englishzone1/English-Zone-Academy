@@ -59,7 +59,9 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
       fullName: prev.fullName || u.fullName || '',
       whatsappNumber: prev.whatsappNumber || u.phone || '',
       country: prev.country || u.country || '',
-      age: prev.age || (u.age ? String(u.age) : '')
+      age: prev.age || (u.age ? String(u.age) : ''),
+      // مستواها من اختبار تحديد المستوى
+      mainLevel: !initialLevel && u.placementLevel ? u.placementLevel : prev.mainLevel
     }));
   }, [user]);
 

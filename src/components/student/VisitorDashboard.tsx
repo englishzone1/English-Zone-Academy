@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { ReferralOffers } from './ReferralOffers';
 import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift, Target, Users, BadgePercent } from 'lucide-react';
 import { CommunityFeed } from '../community/CommunityFeed';
@@ -19,6 +20,19 @@ interface Props {
 // صفحة الحساب المجاني: الكتب والمجلة المفتوحة للمسجّلين، ودعوة للاشتراك
 export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, navigate, onLogout }) => {
   const { placementTestUrl } = useAcademySettings();
+  const { user, updateProfile } = useAuth();
+  const [ptLevel, setPtLevel] = useState<string>(((user as any)?.placementLevel as string) || '');
+  const [ptSaved, setPtSaved] = useState('');
+  const savePlacement = async (lvl: string) => {
+    setPtLevel(lvl);
+    setPtSaved('');
+    try {
+      await updateProfile({ placementLevel: lvl, placementAt: new Date().toISOString() } as any);
+      setPtSaved(tr('Saved ✓', 'تم الحفظ ✓'));
+    } catch {
+      setPtSaved(tr('Could not save', 'تعذر الحفظ'));
+    }
+  };
   const [tab, setTab] = useState<'library' | 'community' | 'offers'>('library');
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [items, setItems] = useState<any[]>([]);
@@ -123,6 +137,39 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
             <BadgePercent className="w-6 h-6 text-[#0A192F]" />
             {tr('🎁 Offers — invite & earn', '🎁 العروض: ادعي واربحي')}
           </button>
+        </div>
+
+        {/* نتيجة اختبار تحديد المستوى */}
+        <div className="bg-white rounded-3xl p-5 border border-[#D4AF37]/40 shadow-sm space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-bold text-[#0A192F] flex items-center gap-2">
+                <Target className="w-5 h-5 text-[#D4AF37]" />
+                {tr('Your free placement test', 'اختبار تحديد المستوى المجاني')}
+              </h2>
+              <p className="text-xs text-gray-600 mt-1">
+                {tr('Take the test, then choose your result here so the academy knows your level.', 'ادخلي الاختبار، ثم اختاري نتيجتكِ هنا لتعرف الأكاديمية مستواكِ.')}
+              </p>
+            </div>
+            {placementTestUrl && (
+              <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+                {tr('Start the test', 'ابدئي الاختبار')}
+              </a>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-[#0A192F]">{tr('My result:', 'نتيجتي:')}</span>
+            {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((l) => (
+              <button
+                key={l}
+                onClick={() => savePlacement(l)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${ptLevel === l ? 'bg-[#D4AF37] text-[#0A192F] border-[#D4AF37]' : 'bg-white text-gray-600 border-gray-200'}`}
+              >
+                {l}
+              </button>
+            ))}
+            {ptSaved && <span className="text-[11px] text-emerald-700">{ptSaved}</span>}
+          </div>
         </div>
 
         <div className={`bg-white rounded-3xl p-5 border border-gray-200 shadow-sm flex-col sm:flex-row sm:items-center justify-between gap-4 ${whatsapp ? 'flex' : 'hidden'}`}>

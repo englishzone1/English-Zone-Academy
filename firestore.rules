@@ -119,8 +119,9 @@ service cloud.firestore {
       ) || (
         isOwner(userId) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'fullName', 'phone', 'country', 'age', 'avatarUrl', 'avatarConfig', 'updatedAt'
-        ])
+          'fullName', 'phone', 'country', 'age', 'avatarUrl', 'avatarConfig', 'updatedAt', 'placementLevel', 'placementAt'
+        ]) &&
+        (!('placementLevel' in request.resource.data) || request.resource.data.placementLevel in ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
       );
 
       allow delete: if isAdmin();

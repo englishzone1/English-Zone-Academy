@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { usePlacementLink } from '../hooks/usePlacementLink';
 import { ReferralTeaser } from '../components/student/ReferralOffers';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -35,6 +36,7 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
   const contacts = useAcademySettings();
+  const pt = usePlacementLink();
   const { t, language, dir } = useLanguage();
   const { isAuthenticated } = useAuth();
   const heroAnnouncement = useSiteSection('hero_announcement', language);
@@ -87,13 +89,13 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
 
               {contacts.placementTestUrl && (
               <a
-                href={contacts.placementTestUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={pt.href}
+                target={pt.target}
+                rel={pt.rel}
                 className="w-full sm:w-auto px-7 py-4 rounded-xl font-semibold text-base border-2 border-[#D4AF37]/60 text-[#F3E5AB] hover:bg-[#D4AF37]/15 hover:border-[#D4AF37] transition-all flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-                <span>{t.hero.ctaTest}</span>
+                <span>{pt.target ? t.hero.ctaTest : (language === 'ar' ? 'سجّلي مجانًا واختبري مستواكِ' : 'Sign up free & test your level')}</span>
                 <ExternalLink className="w-4 h-4 text-[#D4AF37]" />
               </a>
               )}
@@ -150,13 +152,13 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             <div className="pt-4 border-t border-gray-100">
               {contacts.placementTestUrl && (
               <a
-                href={contacts.placementTestUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={pt.href}
+                target={pt.target}
+                rel={pt.rel}
                 aria-label={t.features.placementAriaLabel}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-md hover:shadow-lg hover:brightness-105 active:scale-95 transition-all"
               >
-                <span>{t.features.placementCta}</span>
+                <span>{pt.target ? t.features.placementCta : (language === 'ar' ? 'سجّلي مجانًا واختبري مستواكِ' : 'Sign up free & test your level')}</span>
                 <ExternalLink className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
               </a>
               )}
@@ -453,14 +455,14 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
 
             {contacts.placementTestUrl && (
             <a
-              href={contacts.placementTestUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={pt.href}
+              target={pt.target}
+              rel={pt.rel}
               aria-label={t.features.placementAriaLabel}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] hover:brightness-105 active:scale-95 transition-all shadow-md"
             >
               <ClipboardCheck className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-              <span>{t.hero.ctaTest}</span>
+              <span>{pt.target ? t.hero.ctaTest : (language === 'ar' ? 'سجّلي مجانًا واختبري مستواكِ' : 'Sign up free & test your level')}</span>
               <ExternalLink className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
             </a>
             )}

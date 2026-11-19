@@ -84,6 +84,7 @@ export const AdminVisitors: React.FC<Props> = ({ users, isAr, enrolledIds = [], 
                   <span className="ms-1.5 px-1.5 py-0.5 rounded bg-[#F3E5AB] text-[#0A192F] text-[10px] font-bold">{tr('Asked to subscribe', 'طلبت الاشتراك')}</span>
                 )}
                 <span className="text-gray-400">
+                  {u.placementLevel ? ` • ${tr('Level', 'المستوى')} ${u.placementLevel}` : ''}
                   {u.country ? ` • ${u.country}` : ''}
                   {u.age ? ` • ${tr('age', 'العمر')} ${u.age}` : ''} • {u.createdAt ? new Date(u.createdAt).toLocaleDateString(isAr ? 'ar' : 'en') : ''}
                 </span>

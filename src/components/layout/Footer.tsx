@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePlacementLink } from '../../hooks/usePlacementLink';
 import { useLanguage } from '../../context/LanguageContext';
 import { Logo } from '../common/Logo';
 import { useAcademySettings, whatsappDisplay } from '../../hooks/useAcademySettings';
@@ -21,6 +22,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ navigate }) => {
   const contacts = useAcademySettings();
+  const pt = usePlacementLink();
   const { t, language } = useLanguage();
   const accreditation = useSiteSection('footer_accreditation', language);
 
@@ -159,9 +161,9 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
               {contacts.placementTestUrl && (
               <li>
                 <a
-                  href={contacts.placementTestUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={pt.href}
+                  target={pt.target}
+                  rel={pt.rel}
                   className="hover:text-[#F3E5AB] text-gray-300 transition-colors inline-flex items-center gap-1"
                 >
                   <span>{t.nav.placementTest}</span>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { usePlacementLink } from '../../hooks/usePlacementLink';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
@@ -27,6 +28,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   const contacts = useAcademySettings();
+  const pt = usePlacementLink();
   const { t, language } = useLanguage();
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -61,7 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
   const moreLinks = [
     { id: 'english-club', label: t.nav.englishClub, icon: MessageSquare, badge: 'New' },
-    { id: 'placement-test', label: t.nav.placementTest, icon: Sparkles, badge: 'Free', externalUrl: contacts.placementTestUrl },
+    { id: 'placement-test', label: t.nav.placementTest, icon: Sparkles, badge: 'Free', externalUrl: pt.href },
     { id: 'faq', label: t.nav.faq, icon: HelpCircle },
     { id: 'testimonials', label: t.nav.testimonials, icon: UserCheck },
     { id: 'blog', label: t.nav.blog, icon: FileText },
@@ -89,13 +91,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
           <div className="flex items-center gap-4">
             {contacts.placementTestUrl && (
             <a
-              href={contacts.placementTestUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={pt.href}
+              target={pt.target}
+              rel={pt.rel}
               className="text-[#F3E5AB] hover:text-[#D4AF37] transition-colors flex items-center gap-1 font-medium"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>{t.hero.ctaTest}</span>
+              <span>{pt.target ? t.hero.ctaTest : (language === 'ar' ? 'سجّلي مجانًا واختبري مستواكِ' : 'Sign up free & test your level')}</span>
             </a>
             )}
             <span className="text-gray-500">|</span>
@@ -168,8 +170,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                         <a
                           key={item.id}
                           href={item.externalUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          target={pt.target}
+                          rel={pt.rel}
                           onClick={() => setIsMoreDropdownOpen(false)}
                           className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-left transition-colors text-gray-200 hover:bg-white/10 hover:text-white"
                         >
@@ -280,9 +282,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             </button>
             {contacts.placementTestUrl && (
             <a
-              href={contacts.placementTestUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={pt.href}
+              target={pt.target}
+              rel={pt.rel}
               onClick={() => setIsMobileMenuOpen(false)}
               className="w-full py-2.5 rounded-xl font-semibold text-xs border border-[#D4AF37]/50 text-[#F3E5AB] flex items-center justify-center gap-1"
             >
@@ -316,8 +318,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 <a
                   key={item.id}
                   href={item.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={pt.target}
+                  rel={pt.rel}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full flex items-center justify-between py-2.5 px-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5"
                 >
