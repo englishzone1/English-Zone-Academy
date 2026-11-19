@@ -312,3 +312,61 @@ export class P2PMesh {
     this.local = {};
   }
 }
+
+// ===== تحسين إضاءة الكاميرا =====
+// تُعالَج الصورة قبل إرسالها (تفتيح لطيف مع تباين وألوان متوازنة) فيراها الجميع بنفس الإضاءة.
+export const LIGHT_LEVELS = [
+  { id: 0, ar: 'عادية', en: 'Normal', filter: 'none' },
+  { id: 1, ar: 'مشرقة', en: 'Bright', filter: 'brightness(1.22) contrast(1.03) saturate(1.1)' },
+  { id: 2, ar: 'أكثر إشراقًا', en: 'Brighter', filter: 'brightness(1.4) contrast(0.97) saturate(1.12)' },
+  { id: 3, ar: 'دافئة ومشرقة', en: 'Warm & bright', filter: 'brightness(1.32) contrast(1) saturate(1.15) sepia(0.08)' },
+];
+
+export interface LightProcessor {
+  track: MediaStreamTrack;
+  setLevel: (lvl: number) => void;
+  stop: () => void;
+}
+
+export function createLightProcessor(raw: MediaStreamTrack, level: number): LightProcessor {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const supportsFilter = !!ctx && 'filter' in ctx && typeof (canvas as any).captureStream === 'function';
+  if (!ctx || !supportsFilter) {
+    // متصفح قديم لا يدعم المعالجة: نرسل الصورة كما هي
+    return { track: raw, setLevel: () => {}, stop: () => raw.stop() };
+  }
+  const video = document.createElement('video');
+  video.muted = true;
+  video.playsInline = true;
+  video.srcObject = new MediaStream([raw]);
+  video.play().catch(() => {});
+  let filter = LIGHT_LEVELS[level]?.filter || 'none';
+  const s = raw.getSettings();
+  canvas.width = s.width || 480;
+  canvas.height = s.height || 360;
+  const draw = () => {
+    if (video.readyState >= 2) {
+      if (video.videoWidth && (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight)) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      }
+      ctx.filter = filter;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    }
+  };
+  const timer = setInterval(draw, 66); // حوالي 15 صورة في الثانية
+  const out = (canvas as any).captureStream(15).getVideoTracks()[0] as MediaStreamTrack;
+  return {
+    track: out,
+    setLevel: (lvl) => {
+      filter = LIGHT_LEVELS[lvl]?.filter || 'none';
+    },
+    stop: () => {
+      clearInterval(timer);
+      out.stop();
+      raw.stop();
+      video.srcObject = null;
+    },
+  };
+}

@@ -55,7 +55,7 @@ import {
   watchRoom,
 } from '../services/voiceRooms';
 import { LevelMeter } from '../services/voiceRtc';
-import { P2PMesh } from '../services/voiceP2P';
+import { P2PMesh, LIGHT_LEVELS, createLightProcessor, LightProcessor } from '../services/voiceP2P';
 import { PrivacyBadge, userGender } from './VoiceRoomsPage';
 
 const canShareScreen = () => typeof navigator !== 'undefined' && !!navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices;
@@ -107,14 +107,15 @@ const VideoSink: React.FC<{ track: MediaStreamTrack; label?: string; mirror?: bo
 };
 
 // نافذة فيديو عائمة (الكاميرا أو الشاشة): صغيرة بحجم الصورة، تُسحب بالإصبع أو الفأرة، وتُكبَّر وتُصغَّر
-const FloatingVideo: React.FC<{ track: MediaStreamTrack | null; label: string; mirror?: boolean; wide?: boolean; index: number; isAr: boolean }> = ({
-  track,
-  label,
-  mirror,
-  wide,
-  index,
-  isAr,
-}) => {
+const FloatingVideo: React.FC<{
+  track: MediaStreamTrack | null;
+  label: string;
+  mirror?: boolean;
+  wide?: boolean;
+  index: number;
+  isAr: boolean;
+  light?: { label: string; onClick: () => void };
+}> = ({ track, label, mirror, wide, index, isAr, light }) => {
   const ref = useRef<HTMLVideoElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const [big, setBig] = useState(false);
@@ -182,6 +183,11 @@ const FloatingVideo: React.FC<{ track: MediaStreamTrack | null; label: string; m
         </div>
       )}
       <div className="absolute top-1 end-1 flex gap-1">
+        {light && (
+          <button onClick={light.onClick} className="h-7 px-2 rounded-lg bg-black/60 text-white text-[10px] font-bold flex items-center gap-1" title={isAr ? 'الإضاءة' : 'Lighting'}>
+            ☀️ {light.label}
+          </button>
+        )}
         <button onClick={() => setBig((b) => !b)} className="w-7 h-7 rounded-lg bg-black/60 text-white flex items-center justify-center" title={big ? 'Smaller' : 'Bigger'}>
           {big ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
         </button>
@@ -231,6 +237,25 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const screenTrackRef = useRef<MediaStreamTrack | null>(null);
   const camTrackRef = useRef<MediaStreamTrack | null>(null);
   const [camOn, setCamOn] = useState(false);
+  const lightRef = useRef<LightProcessor | null>(null);
+  const [light, setLight] = useState<number>(() => {
+    try {
+      const v = Number(localStorage.getItem('ez-cam-light'));
+      return Number.isFinite(v) && v >= 0 && v < LIGHT_LEVELS.length ? v : 1;
+    } catch {
+      return 1;
+    }
+  });
+  const changeLight = () => {
+    const n = (light + 1) % LIGHT_LEVELS.length;
+    setLight(n);
+    lightRef.current?.setLevel(n);
+    try {
+      localStorage.setItem('ez-cam-light', String(n));
+    } catch {
+      /* ignore */
+    }
+  };
   const meterRef = useRef<LevelMeter | null>(null);
 
   const flash = useCallback((msg: string) => {
@@ -312,6 +337,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       micTrackRef.current = null;
       screenTrackRef.current = null;
       setScreenOn(false);
+      lightRef.current?.stop();
+      lightRef.current = null;
       camTrackRef.current?.stop();
       camTrackRef.current = null;
       setCamOn(false);
@@ -452,6 +479,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       setCamOn(false);
       if (t) {
         meshRef.current?.setLocal('cam', null);
+        lightRef.current?.stop();
+        lightRef.current = null;
         t.stop();
         if (write) updateMember(roomId, uid, { cam: null }).catch(() => {});
       }
@@ -468,13 +497,17 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     } catch {
       return flash(tr('Camera permission is needed.', 'يلزم السماح بالكاميرا.'));
     }
-    const track = stream.getVideoTracks()[0];
+    const raw = stream.getVideoTracks()[0];
     const mesh = meshRef.current;
-    if (!mesh) return track.stop();
+    if (!mesh) return raw.stop();
+    // تحسين الإضاءة قبل الإرسال
+    const proc = createLightProcessor(raw, light);
+    lightRef.current = proc;
+    const track = proc.track;
     camTrackRef.current = track;
     const nonce = mesh.setLocal('cam', track);
     setCamOn(true);
-    track.onended = () => stopCam();
+    raw.onended = () => stopCam();
     await updateMember(roomId, uid, { cam: nonce }).catch(() => {
       stopCam(false);
       flash(tr('Could not start the camera.', 'تعذر تشغيل الكاميرا.'));
@@ -839,7 +872,16 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       {/* الفيديو: نوافذ عائمة صغيرة تُسحب وتُكبَّر */}
       {screenOn && <div className="mx-3 mt-1 px-3 py-1.5 rounded-xl bg-red-500/20 text-red-100 text-xs font-bold shrink-0">{tr('You are sharing your screen', 'أنت تشارك{|ين} شاشتك')}</div>}
       {videoTiles.map((v, i) => (
-        <FloatingVideo key={v.key} index={i} track={v.track} label={v.label} mirror={v.mine} wide={v.kind === 'screen'} isAr={isAr} />
+        <FloatingVideo
+          key={v.key}
+          index={i}
+          track={v.track}
+          label={v.label}
+          mirror={v.mine}
+          wide={v.kind === 'screen'}
+          isAr={isAr}
+          light={v.mine && v.kind === 'cam' ? { label: isAr ? LIGHT_LEVELS[light].ar : LIGHT_LEVELS[light].en, onClick: changeLight } : undefined}
+        />
       ))}
 
       {/* الجزء الأوسط يتمرر إن ضاقت الشاشة، وشريط التحكم يبقى ظاهرًا دائمًا */}
