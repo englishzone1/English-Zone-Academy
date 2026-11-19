@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext';
 
 // دخول المعلمين: صفحة محايدة بلا شعار ولا اسم ولا قوائم
 export const StaffLoginPage: React.FC<{ navigate: (r: string) => void }> = ({ navigate }) => {
-  const { login, loginWithGoogle, isAuthenticated } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated, isTeacher, isAdmin, isSuperAdmin, isLoading, logout, user, firebaseUser } = useAuth();
+  const staff = isTeacher || isAdmin || isSuperAdmin;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -12,8 +13,9 @@ export const StaffLoginPage: React.FC<{ navigate: (r: string) => void }> = ({ na
 
   useEffect(() => {
     document.title = 'لوحة المعلم';
-    if (isAuthenticated) navigate('teacher-dashboard');
-  }, [isAuthenticated]);
+    // يدخل مباشرة فقط إن كان الحساب حساب معلم
+    if (!isLoading && isAuthenticated && staff) navigate('teacher-dashboard');
+  }, [isAuthenticated, staff, isLoading]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +30,16 @@ export const StaffLoginPage: React.FC<{ navigate: (r: string) => void }> = ({ na
     <div className="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-4" dir="rtl">
       <form onSubmit={submit} className="w-full max-w-sm bg-white rounded-2xl p-6 shadow-md border border-gray-200 space-y-4">
         <h1 className="font-bold text-lg text-gray-800 text-center">دخول المعلم</h1>
+        {isAuthenticated && !staff && !isLoading && (
+          <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 space-y-2">
+            <p>
+              هذا الجهاز داخل بحساب ليس حساب معلم: <b dir="ltr">{(user as any)?.email || firebaseUser?.email}</b>
+            </p>
+            <button type="button" onClick={() => logout()} className="px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold">
+              تسجيل الخروج ثم الدخول بحساب المعلم
+            </button>
+          </div>
+        )}
         <input type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="البريد الإلكتروني" className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
         <input type="password" dir="ltr" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="كلمة المرور" className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
         {error && <p className="text-xs text-red-600">{error}</p>}
