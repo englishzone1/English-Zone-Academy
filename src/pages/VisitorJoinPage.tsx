@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Target, Users, BookOpen, Megaphone, BadgePercent, CheckCircle2, MessageCircle } from 'lucide-react';
+import { Target, Users, BookOpen, Megaphone, BadgePercent, CheckCircle2, MessageCircle, Mic } from 'lucide-react';
 import { useAcademySettings, whatsappWithText } from '../hooks/useAcademySettings';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -28,6 +28,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
   }, [isAuthenticated]);
 
   const benefits = [
+    { icon: Mic, text: tr('Live English voice rooms: practise speaking with other learners', 'غرف محادثة صوتية مباشرة بالإنجليزية: {تدرّب|تدرّبي} على الكلام مع متعلمين آخرين') },
     { icon: Target, text: tr('Free placement test to know your exact level', 'تحديد {مستواك|مستواكِ} مجانًا باختبار دقيق') },
     { icon: Users, text: tr('Join a community of English learners like you', 'مشاركة مجتمع من {يشاركنك|يشاركنكِ} الاهتمام بالإنجليزية') },
     { icon: BookOpen, text: tr('Free books and academy magazine issues', 'كتب ومجلات مجانية من الأكاديمية') },

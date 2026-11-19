@@ -21,7 +21,7 @@ import {
   BookOpenCheck,
   CheckCircle2,
   ChevronDown
-} from 'lucide-react';
+, Mic } from 'lucide-react';
 import { EnglishZoneEmblem } from '../components/common/Logo';
 import { EnglishClubHomeSection } from '../components/englishClub/EnglishClubHomeSection';
 import { StudentReviewsSection } from '../components/reviews/StudentReviewsSection';
@@ -201,6 +201,51 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               <span className="text-xs font-bold text-[#D4AF37]">
                 {t.features.cpdFooterNote}
               </span>
+            </div>
+          </div>
+
+          {/* Feature: free voice rooms for registered members */}
+          <div
+            dir={dir}
+            className="md:col-span-2 relative rounded-3xl p-7 sm:p-9 border-2 border-[#D4AF37]/50 shadow-xl overflow-hidden text-white"
+            style={{ background: 'linear-gradient(135deg, #1E1B4B, #0A192F 55%, #102445)' }}
+          >
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]" />
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="flex-1 space-y-3">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold">
+                  <Mic className="w-3.5 h-3.5" aria-hidden="true" />
+                  {language === 'ar' ? 'مجانًا للمسجّلين' : 'Free for members'}
+                </span>
+                <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#F3E5AB]">
+                  {language === 'ar' ? 'غرف المحادثة الصوتية المباشرة' : 'Live English voice rooms'}
+                </h3>
+                <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+                  {language === 'ar'
+                    ? '{ادخل|ادخلي} غرفة، {استمع|استمعي}، ثم {ارفع|ارفعي} يدك {وتحدث|وتحدثي} بالإنجليزية مع متعلمين آخرين. غرف بموافقة صاحب/ة الغرفة، وغرف للبنات فقط، ودردشة كتابية مع الإيموجي.'
+                    : 'Enter a room, listen, then raise your hand and speak English with other learners. Approval-only rooms, girls-only rooms, and a text chat with emoji.'}
+                </p>
+                <div className="flex flex-wrap gap-2 text-[11px] font-bold">
+                  {(language === 'ar'
+                    ? ['🎙️ صوت مباشر', '✋ رفع اليد للكلام', '🔒 غرف خاصة وبموافقة', '🌸 غرف للبنات فقط', '💬 دردشة وإيموجي']
+                    : ['🎙️ Live voice', '✋ Raise hand to speak', '🔒 Private & approval rooms', '🌸 Girls-only rooms', '💬 Chat & emoji']
+                  ).map((x) => (
+                    <span key={x} className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">
+                      {x}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate(isAuthenticated ? 'rooms' : 'join-us')}
+                className="self-start md:self-center inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-md hover:brightness-105 active:scale-95 transition-all whitespace-nowrap"
+              >
+                <Mic className="w-5 h-5" aria-hidden="true" />
+                {isAuthenticated
+                  ? language === 'ar' ? 'افتح الغرف الصوتية' : 'Open voice rooms'
+                  : language === 'ar' ? '{سجّل|سجّلي} مجانًا {وادخل|وادخلي} الغرف' : 'Sign up free and join'}
+              </button>
             </div>
           </div>
 

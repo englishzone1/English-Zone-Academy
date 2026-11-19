@@ -594,8 +594,20 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   }, [room?.status]);
 
 
+  const [showRules, setShowRules] = useState(false);
+  const rulesAccepted = () => {
+    try {
+      return localStorage.getItem('ez-room-rules-v1') === '1';
+    } catch {
+      return true;
+    }
+  };
   const enter = async () => {
     if (!room) return;
+    if (!rulesAccepted()) {
+      setShowRules(true);
+      return;
+    }
     setJoining(true);
     try {
       const st = await joinRoom(room, { uid, name: myName, photo: firebaseUser?.photoURL || '', gender }, admin);
@@ -763,6 +775,21 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
           )}
         </div>
         {showSettings && isMod && <RoomSettings room={room} isAr={isAr} canGirls={gender === 'female' || admin} onClose={() => setShowSettings(false)} onDeleted={() => navigate('rooms')} />}
+        {showRules && (
+          <RoomRules
+            isAr={isAr}
+            onCancel={() => setShowRules(false)}
+            onAccept={() => {
+              try {
+                localStorage.setItem('ez-room-rules-v1', '1');
+              } catch {
+                /* ignore */
+              }
+              setShowRules(false);
+              setTimeout(() => enter(), 0);
+            }}
+          />
+        )}
       </>
     );
   }
@@ -1334,6 +1361,51 @@ const BgPicker: React.FC<{
             {tr('Make it the background for everyone', 'اجعلها خلفية الغرفة للجميع')}
           </button>
         )}
+      </div>
+    </div>
+  );
+};
+
+// قواعد الغرف: تظهر مرة واحدة قبل أول دخول
+const RoomRules: React.FC<{ isAr: boolean; onAccept: () => void; onCancel: () => void }> = ({ isAr, onAccept, onCancel }) => {
+  const tr = (en: string, ar: string) => (isAr ? ar : en);
+  const rules = isAr
+    ? [
+        ['🤝', 'الاحترام أولًا: لا إساءة ولا سخرية ولا كلام جارح.'],
+        ['🇬🇧', 'نتحدث بالإنجليزية قدر الإمكان، والأخطاء طبيعية ومرحّب بها.'],
+        ['✋', '{ارفع|ارفعي} يدك وانتظر/ي دورك، ولا {تقاطع|تقاطعي} المتحدث.'],
+        ['🔒', 'لا تُنشر أرقام الهاتف أو الحسابات الشخصية داخل الغرف.'],
+        ['🚫', 'يُمنع أي محتوى غير لائق أو دعاية أو طلب تواصل خاص.'],
+        ['🚩', 'صاحب/ة الغرفة يستطيع كتم أو إخراج من يخالف، ويمكن لأي أحد الإبلاغ للأكاديمية.'],
+      ]
+    : [
+        ['🤝', 'Respect first: no insults, mockery or hurtful words.'],
+        ['🇬🇧', 'Speak English as much as you can — mistakes are normal and welcome.'],
+        ['✋', 'Raise your hand and wait your turn; do not interrupt.'],
+        ['🔒', 'Do not share phone numbers or personal accounts in rooms.'],
+        ['🚫', 'No inappropriate content, advertising or private-contact requests.'],
+        ['🚩', 'The room owner can mute or remove anyone who breaks the rules, and anyone can report to the academy.'],
+      ];
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-3" dir={isAr ? 'rtl' : 'ltr'}>
+      <div className="bg-white rounded-3xl w-full max-w-md p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+        <h3 className="font-bold text-lg text-[#0A192F]">{tr('Room rules', 'قواعد الغرف')}</h3>
+        <ul className="space-y-2.5">
+          {rules.map(([icon, text]) => (
+            <li key={text} className="flex items-start gap-2.5 text-sm text-gray-700 leading-relaxed">
+              <span className="text-lg leading-none mt-0.5">{icon}</span>
+              <span>{text}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="flex gap-2">
+          <button onClick={onAccept} className="flex-1 py-3 rounded-xl bg-[#0A192F] text-[#F3E5AB] font-bold text-sm">
+            {tr('I agree, enter', 'أوافق، دخول')}
+          </button>
+          <button onClick={onCancel} className="px-4 py-3 rounded-xl bg-gray-100 font-bold text-sm">
+            {tr('Cancel', 'إلغاء')}
+          </button>
+        </div>
       </div>
     </div>
   );
