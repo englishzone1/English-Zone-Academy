@@ -8,7 +8,7 @@ import { EnglishZoneEmblem } from '../components/common/Logo';
 
 // «سجّلي الآن»: تسجيل مجاني كامل، تظهر صاحبته عند الإدارة في «المسجّلون المحتملون»،
 // ومن لوحتها تضغط «للاشتراك في الكورس» متى أرادت
-export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
+export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hideWhatsapp?: boolean }> = ({ navigate, hideWhatsapp }) => {
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
@@ -108,7 +108,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void }> = 
               );
             })}
           </ul>
-          {whatsapp && (
+          {whatsapp && !hideWhatsapp && (
             <a
               href={whatsappWithText(whatsapp, tr('Hello English Zone, I would like to know more.', 'مرحبًا English Zone، أريد معرفة المزيد عن الأكاديمية.'))}
               target="_blank"

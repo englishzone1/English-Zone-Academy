@@ -73,7 +73,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             </p>
 
             <div className="max-w-xl mx-auto pt-2">
-              <ReferralTeaser isAr={language === 'ar'} onClick={() => navigate(isAuthenticated ? 'portal' : 'join-us')} />
+              <ReferralTeaser isAr={language === 'ar'} onClick={() => navigate(isAuthenticated ? 'portal' : 'join-offer')} />
             </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">

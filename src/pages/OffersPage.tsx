@@ -59,7 +59,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
             {t.offers.sectionSubtitle}
           </p>
           <div className="mt-6">
-            <ReferralTeaser isAr={language === 'ar'} onClick={() => navigate(isAuthenticated ? 'portal' : 'join-us')} />
+            <ReferralTeaser isAr={language === 'ar'} onClick={() => navigate(isAuthenticated ? 'portal' : 'join-offer')} />
           </div>
         </div>
       </div>

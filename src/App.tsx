@@ -147,6 +147,9 @@ function MainApp() {
         return <VisitorJoinPage navigate={navigate} />;
       case 'join-us':
         return <VisitorJoinPage navigate={navigate} />;
+      // التسجيل القادم من عروض الدعوة: بدون زر واتساب
+      case 'join-offer':
+        return <VisitorJoinPage navigate={navigate} hideWhatsapp />;
       case 'blog':
         return <BlogPage navigate={navigate} />;
       case 'english-club':
@@ -203,7 +206,7 @@ function MainApp() {
         // رابط الدعوة: يحفظ الكود ثم يفتح التسجيل
         if (currentRoute.startsWith('r/')) {
           storeRefCode(decodeURIComponent(currentRoute.slice(2)));
-          setTimeout(() => navigate(isAuthenticated ? 'register' : 'join-us'), 0);
+          setTimeout(() => navigate(isAuthenticated ? 'register' : 'join-offer'), 0);
           return <LoadingScreen />;
         }
         // صفحة الورشة العامة وصفحة التحقق من الشهادة
