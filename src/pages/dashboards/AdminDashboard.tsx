@@ -59,6 +59,7 @@ import { AdminWorkshops } from '../../components/admin/AdminWorkshops';
 import { AdminReferrals } from '../../components/admin/AdminReferrals';
 import { AdminVoiceRooms } from '../../components/admin/AdminVoiceRooms';
 import { AdminBlockedEmails } from '../../components/admin/AdminBlockedEmails';
+import { AdminDeletedAccounts } from '../../components/admin/AdminDeletedAccounts';
 import { sendTestEmail, resetTodayLimit } from '../../services/emailNotify';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
@@ -1113,6 +1114,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* FREE ACCOUNTS */}
         {activeTab === 'visitors' && <AdminBlockedEmails isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
+        {activeTab === 'visitors' && <AdminDeletedAccounts isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
         {activeTab === 'visitors' && (
           <AdminVisitors
             users={usersList.filter(isPotential)}
