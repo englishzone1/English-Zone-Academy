@@ -215,6 +215,23 @@ main{max-width:920px}
 [dir=rtl] .q .chk{margin:0 8px 0 0}
 .fb{margin-top:4px;padding:6px 10px;font-size:.88rem;line-height:1.6;border-radius:8px}
 .cor{line-height:1.5}
+/* الجوال: خط أصغر قليلًا، وجملة السؤال في سطر أو سطرين، والجداول والصور داخل الشاشة */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.ex table{max-width:100%!important;table-layout:fixed}
+.ex table img{max-width:100%!important;height:auto!important}
+@media(max-width:600px){
+  .q{font-size:.9rem;line-height:1.75}
+  .q input,.q select{font-size:16px;padding:0 3px;line-height:1.25}
+  .q input.fit{min-width:3em;max-width:100%}
+  .item.xm .q{font-size:1.02rem}
+  .ex h4{font-size:1rem}
+  .ins{font-size:.88rem}
+  .ex table{width:100%!important;font-size:.78rem!important}
+  .ex table td{padding:3px 3px!important;font-size:.85rem!important;word-break:break-word;white-space:normal!important}
+  .ex table img{width:100%!important;max-width:96px!important}
+  .ex div[style*="italic"]{font-size:.8rem!important}
+  .pic{max-width:100%;height:auto}
+}
 </style>
 </head>
 <body>
@@ -1415,7 +1432,12 @@ function build(root,secs,exam){
           else if(part.ta){ const ta=document.createElement("textarea"); ta.dataset.a=""; ta.rows=6; ta.className="tarea"; q.appendChild(ta); }
           else if(part.html){ const hd=document.createElement(part.inl?"span":"div"); hd.innerHTML=part.html; q.appendChild(hd); } else if(part.ov){ const o=OV[part.ov]; const ow=document.createElement("div"); ow.className="ovw"; const wr=document.createElement("div"); wr.className="ovl"; const im=document.createElement("img"); im.src=IMG[o.img]; im.alt=""; wr.appendChild(im); o.boxes.forEach(b=>{ const inp=document.createElement("input"); inp.type="text"; inp.autocomplete="off"; inp.autocapitalize="off"; inp.spellcheck=false; inp.className="ovi"; inp.dataset.a=b[4]; inp.style.cssText="left:"+b[0]+"%;top:"+b[1]+"%;width:"+b[2]+"%;height:"+b[3]+"%"; wr.appendChild(inp); }); ow.appendChild(wr); q.appendChild(ow); } else if(part.emo){ const sp=document.createElement("div"); sp.className="emo"; sp.innerHTML=part.emo; q.appendChild(sp); } else if(part.img){ const im=document.createElement("img"); im.src=IMG[part.img]; im.className="pic"+(part.sm==1?" sm":part.sm==2?" md":""); im.alt=""; q.appendChild(im); } else if(Array.isArray(part)){
             const inp = document.createElement("input"); inp.type="text"; inp.autocomplete="off"; inp.autocapitalize="off"; inp.spellcheck=false;
-            inp.dataset.a = part[0]; if(ex.wide) inp.className="w"; q.appendChild(inp);
+            inp.dataset.a = part[0];
+            // عرض الخانة على قدر الإجابة (حتى لا تتكسر الجملة على عدة أسطر في الجوال)
+            const L = it.free ? 0 : Math.max(...String(part[0]).split("|").map(x=>x.length));
+            if(!L){ if(ex.wide) inp.className="w"; }
+            else { inp.classList.add("fit"); inp.style.width = Math.min(16, Math.max(3.2, L*0.5+1.3)).toFixed(1)+"em"; }
+            q.appendChild(inp);
           } else {
             const sel = document.createElement("select"); sel.dataset.a = part.sel;
             sel.innerHTML = `<option value="">choose…</option>` + (part.o||Object.keys(SOUND)).map(k=>`<option>${k}</option>`).join("");
