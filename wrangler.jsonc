@@ -1,9 +1,10 @@
 {
   // الموقع (ملفات dist) + خادم صغير لمسار /api/rtc فقط (الغرف الصوتية)
-  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "english-zone-academy",
   "main": "worker/index.js",
-  "compatibility_date": "2026-11-01",
+  "compatibility_date": "2025-10-01",
+  // يبني الموقع قبل النشر (Workers Builds لم يعد يبنيه تلقائيًا بعد إضافة هذا الملف)
+  "build": { "command": "npm run build" },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
