@@ -727,6 +727,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // مفاتيح خاصة بالإدارة (مثل مفتاح Gemini لتوليد تحدّي اليوم)
+    match /admin_secrets/{secretId} {
+      allow read, write: if isAdmin();
+    }
+
     // ===== تحدّي اليوم =====
     match /daily_challenges/{date} {
       allow get, list: if isMember() || isAdmin() || isTeacherDoc();

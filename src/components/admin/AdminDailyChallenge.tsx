@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Trash2, Pencil, Plus, Loader2 } from 'lucide-react';
+import { Trash2, Pencil, Plus, Loader2, Sparkles } from 'lucide-react';
+import { generateChallenges, loadGeminiKey, saveGeminiKey } from '../../services/challengeAI';
 import { Challenge, addDays, dayKey, deleteChallenge, listChallenges, saveChallenge } from '../../services/dailyChallenge';
 
 // الإدارة: أسئلة «تحدّي اليوم» لكل تاريخ
@@ -9,6 +10,68 @@ export const AdminDailyChallenge: React.FC<{ isAr: boolean; onNotice: (m: string
   const [list, setList] = useState<Challenge[]>([]);
   const [edit, setEdit] = useState<Challenge | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // ===== التوليد بالذكاء الاصطناعي =====
+  const [key, setKey] = useState('');
+  const [keyInput, setKeyInput] = useState('');
+  const [showKey, setShowKey] = useState(false);
+  const [gen, setGen] = useState({ level: 'A1', count: 7, topic: '' });
+  const [genBusy, setGenBusy] = useState(false);
+  const [drafts, setDrafts] = useState<Omit<Challenge, 'date'>[]>([]);
+  useEffect(() => {
+    loadGeminiKey().then(setKey);
+  }, []);
+
+  const freeDates = (n: number) => {
+    const used = new Set(list.map((c) => c.date));
+    const out: string[] = [];
+    let d = today;
+    while (out.length < n) {
+      if (!used.has(d)) out.push(d);
+      d = addDays(d, 1);
+    }
+    return out;
+  };
+
+  const runGen = async () => {
+    if (!key) return setShowKey(true);
+    setGenBusy(true);
+    try {
+      const qs = await generateChallenges(key, { ...gen, avoid: list.map((c) => c.question) });
+      if (!qs.length) onNotice(tr('Nothing was generated, try again.', 'لم يُولَّد شيء، حاولي مرة أخرى.'));
+      setDrafts(qs);
+    } catch (e: any) {
+      const m = String(e?.message || '');
+      onNotice(
+        m === 'bad_key'
+          ? tr('The Gemini key is not valid.', 'مفتاح Gemini غير صحيح.')
+          : m === 'quota'
+            ? tr('Free limit reached for now, try again later.', 'وصلتِ للحد المجاني مؤقتًا، حاولي بعد قليل.')
+            : tr('Could not generate, try again.', 'تعذّر التوليد، حاولي مرة أخرى.')
+      );
+    }
+    setGenBusy(false);
+  };
+
+  const saveDrafts = async () => {
+    const dates = freeDates(drafts.length);
+    setGenBusy(true);
+    try {
+      for (let i = 0; i < drafts.length; i++) {
+        const d = drafts[i];
+        const options = d.options.map((o) => o.trim()).filter(Boolean);
+        if (!d.question.trim() || options.length < 2) continue;
+        await saveChallenge({ date: dates[i], question: d.question.trim(), options, answer: Math.min(d.answer, options.length - 1), explanation: d.explanation.trim() });
+      }
+      setDrafts([]);
+      await load();
+      onNotice(tr('Saved on the next free days.', 'تم الحفظ على الأيام الفارغة القادمة.'));
+    } catch {
+      onNotice(tr('Could not save (publish the latest rules).', 'تعذر الحفظ (انشري آخر ملف قواعد).'));
+    }
+    setGenBusy(false);
+  };
+  const setDraft = (i: number, d: Omit<Challenge, 'date'>) => setDrafts((all) => all.map((x, j) => (j === i ? d : x)));
 
   const load = () => listChallenges(today).then(setList).catch(() => onNotice(tr('Could not load (publish the latest rules).', 'تعذر التحميل (انشري آخر ملف قواعد).')));
   useEffect(() => {
@@ -57,6 +120,112 @@ export const AdminDailyChallenge: React.FC<{ isAr: boolean; onNotice: (m: string
           <Plus className="w-4 h-4" />
           {tr('Add', 'إضافة سؤال')}
         </button>
+      </div>
+
+      {/* التوليد بالذكاء الاصطناعي */}
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-200 space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <h4 className="font-bold text-indigo-900 text-sm flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4" />
+            {tr('Generate with AI', 'توليد بالذكاء الاصطناعي')}
+          </h4>
+          <button onClick={() => setShowKey((v) => !v)} className="text-[11px] font-bold text-indigo-700 underline">
+            {key ? tr('Gemini key ✓', 'مفتاح Gemini ✓') : tr('Add Gemini key', 'إضافة مفتاح Gemini')}
+          </button>
+        </div>
+        {showKey && (
+          <div className="space-y-2">
+            <p className="text-[11px] text-gray-600 leading-relaxed">
+              {tr(
+                'Free key from Google AI Studio → “Get API key”. It is stored for the administration only and never shown to students.',
+                'مفتاح مجاني من Google AI Studio ← «Get API key». يُحفظ للإدارة فقط ولا يظهر للطالبات.'
+              )}
+            </p>
+            <div className="flex gap-2">
+              <input value={keyInput} onChange={(e) => setKeyInput(e.target.value)} dir="ltr" placeholder="AIza…" className="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-sm" />
+              <button
+                onClick={async () => {
+                  try {
+                    await saveGeminiKey(keyInput);
+                    setKey(keyInput.trim());
+                    setKeyInput('');
+                    setShowKey(false);
+                    onNotice(tr('Key saved.', 'تم حفظ المفتاح.'));
+                  } catch {
+                    onNotice(tr('Could not save (publish the latest rules).', 'تعذر الحفظ (انشري آخر ملف قواعد).'));
+                  }
+                }}
+                disabled={!keyInput.trim()}
+                className="px-4 py-2 rounded-xl bg-indigo-700 text-white text-xs font-bold disabled:opacity-50"
+              >
+                {tr('Save', 'حفظ')}
+              </button>
+            </div>
+          </div>
+        )}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <select value={gen.level} onChange={(e) => setGen({ ...gen, level: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-300 text-sm bg-white">
+            {['A1', 'A2', 'B1', 'B2', 'C1'].map((l) => (
+              <option key={l}>{l}</option>
+            ))}
+          </select>
+          <select value={gen.count} onChange={(e) => setGen({ ...gen, count: Number(e.target.value) })} className="px-3 py-2 rounded-xl border border-gray-300 text-sm bg-white">
+            {[7, 14, 30].map((n) => (
+              <option key={n} value={n}>
+                {n === 7 ? tr('1 week', 'أسبوع') : n === 14 ? tr('2 weeks', 'أسبوعان') : tr('1 month', 'شهر')}
+              </option>
+            ))}
+          </select>
+          <input
+            value={gen.topic}
+            onChange={(e) => setGen({ ...gen, topic: e.target.value.slice(0, 120) })}
+            placeholder={tr('Topic (optional)', 'الموضوع (اختياري)')}
+            className="col-span-2 px-3 py-2 rounded-xl border border-gray-300 text-sm"
+          />
+        </div>
+        <button onClick={runGen} disabled={genBusy} className="w-full py-2.5 rounded-xl bg-indigo-700 text-white text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50">
+          {genBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+          {tr('Generate drafts', 'توليد مسودة الأسئلة')}
+        </button>
+
+        {drafts.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-[11px] text-gray-600">
+              {tr('Review and edit, then save. They go on the next free days from today.', 'راجعي وعدّلي ما تريدين ثم احفظي. تُوزَّع على الأيام الفارغة القادمة بدءًا من اليوم.')}
+            </p>
+            {drafts.map((d, i) => (
+              <div key={i} className="p-3 rounded-xl bg-white border border-gray-200 space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="text-[10px] font-bold text-indigo-700 mt-2 shrink-0">{freeDates(drafts.length)[i]}</span>
+                  <textarea value={d.question} dir="auto" rows={2} onChange={(e) => setDraft(i, { ...d, question: e.target.value.slice(0, 400) })} className="flex-1 px-2 py-1.5 rounded-lg border border-gray-200 text-sm font-bold" />
+                  <button onClick={() => setDrafts((all) => all.filter((_, j) => j !== i))} className="p-1.5 text-gray-400 hover:text-red-600" title={tr('Remove', 'حذف')}>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                {d.options.map((o, k) => (
+                  <label key={k} className="flex items-center gap-2">
+                    <input type="radio" name={`d${i}`} checked={d.answer === k} onChange={() => setDraft(i, { ...d, answer: k })} className="w-4 h-4" />
+                    <input
+                      value={o}
+                      dir="auto"
+                      onChange={(e) => setDraft(i, { ...d, options: d.options.map((x, j) => (j === k ? e.target.value.slice(0, 150) : x)) })}
+                      className={`flex-1 px-2 py-1 rounded-lg border text-sm ${d.answer === k ? 'border-emerald-400 bg-emerald-50' : 'border-gray-200'}`}
+                    />
+                  </label>
+                ))}
+                <textarea value={d.explanation} dir="auto" rows={2} onChange={(e) => setDraft(i, { ...d, explanation: e.target.value.slice(0, 600) })} className="w-full px-2 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-700" />
+              </div>
+            ))}
+            <div className="flex gap-2">
+              <button onClick={saveDrafts} disabled={genBusy} className="flex-1 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-sm font-bold disabled:opacity-50">
+                {tr(`Save all (${drafts.length})`, `حفظ الكل (${drafts.length})`)}
+              </button>
+              <button onClick={() => setDrafts([])} className="px-4 py-2.5 rounded-xl bg-gray-100 text-sm font-bold">
+                {tr('Discard', 'إلغاء')}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {edit && (
