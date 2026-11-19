@@ -81,7 +81,7 @@ export const translations = {
       cpdFooterNote: 'All three certificates are free of charge',
       cpdItems: [
         { icon: '🎓', title: 'English Professional Development Certificate', desc: 'Verified by a British professional-development platform; add it to your CV and LinkedIn profile.' },
-        { icon: '🌍', title: 'Level Certificate (EF SET)', desc: 'A global test that sets your level on the Common European Framework (CEFR), from A1 to C2.' },
+        { icon: '🌍', title: 'Level Certificate', desc: 'A global test that sets your level on the Common European Framework (CEFR), from A1 to C2.' },
         { icon: '🏅', title: 'English Zone Academy Completion Certificate', desc: 'Verified with a unique serial number and QR code that anyone can check on our platform.' }
       ],
       packageTitle: 'Complete Learning Package',
@@ -447,7 +447,7 @@ export const translations = {
       cpdFooterNote: 'الشهادات الثلاث متاحة مجانًا دون أي رسوم إضافية',
       cpdItems: [
         { icon: '🎓', title: 'شهادة تطوير مهني في اللغة الإنجليزية', desc: 'موثّقة من منصة بريطانية متخصصة في التطوير المهني، تضيفينها إلى سيرتكِ الذاتية (CV) وملفكِ على LinkedIn.' },
-        { icon: '🌍', title: 'شهادة إثبات المستوى (EF SET)', desc: 'اختبار عالمي يحدد مستواكِ وفق الإطار الأوروبي المرجعي للغات (CEFR) من A1 إلى C2.' },
+        { icon: '🌍', title: 'شهادة إثبات المستوى', desc: 'اختبار عالمي يحدد مستواكِ وفق الإطار الأوروبي المرجعي للغات (CEFR) من A1 إلى C2.' },
         { icon: '🏅', title: 'شهادة إتمام من أكاديمية English Zone', desc: 'موثّقة برقم تسلسلي فريد ورمز QR، يمكن لأي جهة التحقق منها مباشرة عبر منصتنا.' }
       ],
       packageTitle: 'حقيبة تعليمية متكاملة',
