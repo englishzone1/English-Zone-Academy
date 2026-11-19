@@ -42,6 +42,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
   const heroAnnouncement = useSiteSection('hero_announcement', language);
   const methodologyIntro = useSiteSection('methodology_intro', language);
   const placementNotice = useSiteSection('placement_notice', language);
+  const ar = language === 'ar';
   const [isPackageExpanded, setIsPackageExpanded] = useState(false);
 
   return (
@@ -111,45 +112,43 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
         </div>
       </section>
 
-      {/* 1. ACADEMY FEATURES & BENEFITS */}
+      {/* 1. ACADEMY FEATURES & BENEFITS (نسخة تجريبية بأسلوب تسويقي) */}
       <section className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
-            {t.features.sectionEyebrow}
-          </span>
-          <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-2">
-            {t.features.sectionTitle}
+          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">LEARN • PRACTICE • ACHIEVE</span>
+          <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-2 leading-snug">
+            {ar ? 'ليست مجرد دورة إنجليزية… بل تجربة متكاملة {تصنع مستقبلك|تصنع مستقبلكِ}!' : 'Not just an English course… a complete experience that shapes your future!'}
           </h2>
+          <p className="text-gray-600 mt-4 text-base leading-relaxed">
+            {ar
+              ? 'مع English Zone، {ستحصل|ستحصلين} على أكثر من دروس اللغة. {اكتشف|اكتشفي} تجربة تعليمية تجمع بين التعلم المنظم، والممارسة الحقيقية، والشهادات، والموارد التعليمية، والأدوات الذكية التي تساعدك على التقدم بثقة.'
+              : 'With English Zone, you get more than language lessons. Discover a learning experience that brings together structured learning, real practice, certificates, learning resources and smart tools that help you progress with confidence.'}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
-          {/* Feature 1: Free Placement Test */}
-          <div
-            dir={dir}
-            className="relative bg-white rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37]/35 shadow-lg hover:border-[#D4AF37] transition-all flex flex-col justify-between overflow-hidden"
-          >
+          {/* الميزة الأولى: اختبار تحديد المستوى */}
+          <div dir={dir} className="relative bg-white rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37]/35 shadow-lg hover:border-[#D4AF37] transition-all flex flex-col justify-between overflow-hidden">
             <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#0A192F] via-[#D4AF37] to-[#0A192F]" />
             <div>
               <div className="flex items-center justify-between gap-4 mb-5">
                 <div className="w-14 h-14 rounded-2xl bg-[#0A192F] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shadow-md flex-shrink-0">
                   <ClipboardCheck className="w-7 h-7" aria-hidden="true" />
                 </div>
-                <span className="text-xs font-bold text-[#AA820A] tracking-wide">
-                  {t.features.placementBadge}
-                </span>
+                <span className="text-xs font-bold text-[#AA820A] tracking-wide">{ar ? 'مجاني • وفق معايير CEFR' : 'Free • CEFR standards'}</span>
               </div>
-
+              <span className="block text-xs font-bold text-gray-400 mb-1">{ar ? 'اختبار تحديد المستوى' : 'Placement test'}</span>
               <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#0A192F] mb-3">
-                {t.features.placementTitle}
+                {ar ? 'لا {تبدأ|تبدئي} عشوائيًا… {اكتشف|اكتشفي} {مستواك|مستواكِ} أولًا!' : "Don't start randomly… discover your level first!"}
               </h3>
-
               <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-7">
-                {placementNotice || t.features.placementDesc}
+                {placementNotice ||
+                  (ar
+                    ? '{اختبر|اختبري} {مستواك|مستواكِ} في اللغة الإنجليزية، {وتعرّف|وتعرّفي} على نقطة البداية المناسبة لك من خلال اختبار تحديد المستوى وفق الإطار الأوروبي المرجعي للغات CEFR، {لتبدأ|لتبدئي} رحلة التعلم بخطوات واضحة.'
+                    : 'Test your English level and find the right starting point through a placement test based on the Common European Framework (CEFR), so you start your learning journey with clear steps.')}
               </p>
             </div>
-
             <div className="pt-4 border-t border-gray-100">
-              {contacts.placementTestUrl && (
               <a
                 href={pt.href}
                 target={pt.target}
@@ -157,54 +156,60 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 aria-label={t.features.placementAriaLabel}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-md hover:shadow-lg hover:brightness-105 active:scale-95 transition-all"
               >
-                <span>{pt.label(language === 'ar')}</span>
+                {ar ? '{اختبر|اختبري} {مستواك|مستواكِ} مجانًا' : 'Test your level for free'}
               </a>
-              )}
             </div>
           </div>
 
-          {/* Feature 2: Three free certificates */}
-          <div
-            dir={dir}
-            className="relative bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37]/50 shadow-xl hover:border-[#D4AF37] transition-all flex flex-col justify-between overflow-hidden"
-          >
+          {/* الميزة الثانية: الشهادات */}
+          <div dir={dir} className="relative bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37]/50 shadow-xl hover:border-[#D4AF37] transition-all flex flex-col justify-between overflow-hidden">
             <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]" />
             <div>
               <div className="flex items-center justify-between gap-4 mb-5">
                 <div className="w-14 h-14 rounded-2xl bg-white/10 text-[#F3E5AB] border border-[#D4AF37]/50 flex items-center justify-center shadow-md flex-shrink-0">
                   <Award className="w-7 h-7 text-[#D4AF37]" aria-hidden="true" />
                 </div>
-                <span className="text-xs font-bold text-[#F3E5AB] tracking-wide">
-                  {t.features.cpdBadge}
-                </span>
+                <span className="text-xs font-bold text-[#F3E5AB] tracking-wide">{ar ? '3 مزايا وشهادات مجانية' : '3 free benefits & certificates'}</span>
               </div>
-
-              <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#F3E5AB] mb-3">
-                {t.features.cpdTitle}
+              <span className="block text-xs font-bold text-gray-400 mb-1">{ar ? 'الشهادات' : 'Certificates'}</span>
+              <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#F3E5AB] mb-2">
+                {ar ? '{تعلّم|تعلّمي}، {أنجز|أنجزي}، {واحصل|واحصلي} على ما يوثّق {تطورك|تطوركِ}!' : 'Learn, achieve, and get proof of your progress!'}
               </h3>
-
+              <p className="text-sm text-gray-300 leading-relaxed mb-4">
+                {ar
+                  ? '{استثمر|استثمري} في {مستقبلك|مستقبلكِ}، {واجعل|واجعلي} رحلتك التعليمية تضيف قيمة حقيقية إلى إنجازاتك وملفك المهني.'
+                  : 'Invest in your future and let your learning journey add real value to your achievements and professional profile.'}
+              </p>
               <ul className="space-y-3.5">
-                {((t.features as any).cpdItems || []).map((it: { icon: string; title: string; desc: string }) => (
-                  <li key={it.title} className="flex items-start gap-3">
-                    <span className="text-xl leading-none mt-0.5" aria-hidden="true">{it.icon}</span>
+                {(ar
+                  ? [
+                      ['🏅', 'شهادة إتمام موثقة من الأكاديمية', 'شهادة خاصة بإنجازك، تحمل رقمًا فريدًا للتحقق من صحتها وتوثيقها.'],
+                      ['🌍', 'شهادة إثبات مستوى اللغة الإنجليزية', 'فرصة لقياس مستواك اللغوي والحصول على شهادة تثبت مستواك وفق معايير دولية.'],
+                      ['🎓', 'شهادة تطوير مهني', 'شهادة تضيف إلى خبراتك، وتعزز ملفك المهني، وتدعم تطورك في مجال التعليم والعمل.']
+                    ]
+                  : [
+                      ['🏅', 'Verified academy completion certificate', 'A certificate of your achievement with a unique number to verify it.'],
+                      ['🌍', 'English level certificate', 'A chance to measure your English and get a certificate proving your level to international standards.'],
+                      ['🎓', 'Professional development certificate', 'A certificate that adds to your experience, strengthens your profile and supports your growth in education and work.']
+                    ]
+                ).map(([icon, title, desc]) => (
+                  <li key={title} className="flex items-start gap-3">
+                    <span className="text-xl leading-none mt-0.5" aria-hidden="true">{icon}</span>
                     <div>
-                      <div className="font-bold text-sm sm:text-base text-[#F3E5AB]">{it.title}</div>
-                      <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">{it.desc}</p>
+                      <div className="font-bold text-sm sm:text-base text-[#F3E5AB]">{title}</div>
+                      <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">{desc}</p>
                     </div>
                   </li>
                 ))}
               </ul>
             </div>
-
             <div className="mt-7 pt-4 border-t border-white/10 flex items-center justify-between gap-3">
               <div className="h-1 w-14 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]" />
-              <span className="text-xs font-bold text-[#D4AF37]">
-                {t.features.cpdFooterNote}
-              </span>
+              <span className="text-xs font-bold text-[#D4AF37]">{ar ? 'مزايا مجانية ضمن رحلتك التعليمية، دون رسوم إضافية.' : 'Free benefits within your learning journey, at no extra cost.'}</span>
             </div>
           </div>
 
-          {/* Feature: free voice rooms for registered members */}
+          {/* الميزة الثالثة: غرف المحادثة الصوتية */}
           <div
             dir={dir}
             className="md:col-span-2 relative rounded-3xl p-7 sm:p-9 border-2 border-[#D4AF37]/50 shadow-xl overflow-hidden text-white"
@@ -215,24 +220,23 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               <div className="flex-1 space-y-3">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold">
                   <Mic className="w-3.5 h-3.5" aria-hidden="true" />
-                  {language === 'ar' ? 'مجانًا للمسجّلين' : 'Free for members'}
+                  {ar ? 'فرصة مجانية للمسجلين' : 'Free for registered members'}
                 </span>
+                <span className="block text-xs font-bold text-gray-400">{ar ? 'غرف المحادثة الصوتية' : 'Voice conversation rooms'}</span>
                 <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#F3E5AB]">
-                  {language === 'ar' ? 'غرف المحادثة الصوتية المباشرة' : 'Live English voice rooms'}
+                  {ar ? 'هل {تفهم|تفهمين} الإنجليزية {ولكنك تخجل|ولكنكِ تخجلين} من التحدث؟ حان وقت التغيير!' : 'Do you understand English but feel shy to speak? It’s time for a change!'}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
-                  {language === 'ar'
-                    ? '{ادخل|ادخلي} غرفة، {استمع|استمعي}، ثم {ارفع|ارفعي} يدك {وتحدث|وتحدثي} بالإنجليزية مع متعلمين آخرين. غرف بموافقة صاحب/ة الغرفة، وغرف للبنات فقط، ودردشة كتابية مع الإيموجي.'
-                    : 'Enter a room, listen, then raise your hand and speak English with other learners. Approval-only rooms, girls-only rooms, and a text chat with emoji.'}
+                  {ar
+                    ? 'المعرفة وحدها لا تصنع الطلاقة؛ الممارسة هي المفتاح. {انضم|انضمي} إلى غرف المحادثة الصوتية، {وتحدث|وتحدثي} بالإنجليزية، {وشارك|وشاركي} في نقاشات حقيقية، {وتدرّب|وتدرّبي} على التعبير عن أفكارك في بيئة تفاعلية تشجعك على التحدث بثقة.'
+                    : 'Knowledge alone does not create fluency; practice is the key. Join the voice rooms, speak English, take part in real discussions and practise expressing your ideas in an interactive space that encourages you to speak with confidence.'}
                 </p>
                 <div className="flex flex-wrap gap-2 text-[11px] font-bold">
-                  {(language === 'ar'
-                    ? ['🎙️ صوت مباشر', '✋ رفع اليد للكلام', '🔒 غرف خاصة وبموافقة', '🌸 غرف للبنات فقط', '💬 دردشة وإيموجي']
-                    : ['🎙️ Live voice', '✋ Raise hand to speak', '🔒 Private & approval rooms', '🌸 Girls-only rooms', '💬 Chat & emoji']
+                  {(ar
+                    ? ['🎙️ محادثات صوتية مباشرة', '👥 ممارسة الإنجليزية مع الآخرين', '💡 موضوعات ونقاشات متنوعة', '🚀 تطوير الطلاقة والثقة في التحدث', '🤝 بيئة تفاعلية تشجع على المشاركة']
+                    : ['🎙️ Live voice conversations', '👥 Practise English with others', '💡 Varied topics and discussions', '🚀 Build fluency and confidence', '🤝 An interactive, encouraging space']
                   ).map((x) => (
-                    <span key={x} className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">
-                      {x}
-                    </span>
+                    <span key={x} className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">{x}</span>
                   ))}
                 </div>
               </div>
@@ -242,70 +246,117 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 className="self-start md:self-center inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-md hover:brightness-105 active:scale-95 transition-all whitespace-nowrap"
               >
                 <Mic className="w-5 h-5" aria-hidden="true" />
-                {isAuthenticated
-                  ? language === 'ar' ? 'افتح الغرف الصوتية' : 'Open voice rooms'
-                  : language === 'ar' ? '{سجّل|سجّلي} مجانًا {وادخل|وادخلي} الغرف' : 'Sign up free and join'}
+                {ar ? '{انضم|انضمي} إلى غرف المحادثة' : 'Join the voice rooms'}
               </button>
             </div>
           </div>
 
-          {/* Feature 3: Complete Learning Package */}
-          <div
-            dir={dir}
-            className="md:col-span-2 relative bg-white rounded-3xl p-7 sm:p-9 border-2 border-[#D4AF37]/40 shadow-lg hover:border-[#D4AF37] transition-all overflow-hidden"
-          >
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#0A192F] via-[#D4AF37] to-[#0A192F]" />
-
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-[#0A192F] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shadow-md flex-shrink-0">
-                  <BookOpenCheck className="w-7 h-7" aria-hidden="true" />
+          {/* الميزة الرابعة والخامسة: الحقيبة التعليمية والمنصة الذكية */}
+          {(
+            [
+              {
+                key: 'pkg',
+                icon: BookOpenCheck,
+                badge: ar ? 'مواردك التعليمية بين يديك' : 'Your learning resources in your hands',
+                name: ar ? 'الحقيبة التعليمية' : 'Learning package',
+                title: ar ? 'كل ما {تحتاجه|تحتاجينه} للتعلم… في مكان واحد!' : 'Everything you need to learn… in one place!',
+                desc: ar
+                  ? 'لن {تحتاج|تحتاجي} إلى البحث عن مصادر متفرقة؛ {ستحصل|ستحصلين} على حقيبة تعليمية متكاملة تضم مواد وموارد منظمة تساعدك على فهم الدروس، ومراجعة ما {تعلمته|تعلمتِه}، وتطوير مهاراتك خطوة بخطوة.'
+                  : 'No need to search for scattered sources; you get a complete learning package of organised materials that help you understand lessons, review what you learned and build your skills step by step.',
+                items: ar
+                  ? ['منهج تعليمي منظم حسب المستوى.', 'مواد إضافية وموارد داعمة.', 'تدريبات وأنشطة تطبيقية.', 'أدوات للمراجعة وتثبيت المعلومات.', 'محتوى يساعدك على مواصلة التعلم خارج الدرس.']
+                  : ['A structured curriculum by level.', 'Extra materials and supporting resources.', 'Practical exercises and activities.', 'Tools for review and retention.', 'Content that helps you keep learning outside class.'],
+                cta: ar ? '{اكتشف|اكتشفي} حقيبتك التعليمية' : 'Discover your learning package'
+              },
+              {
+                key: 'platform',
+                icon: Sparkles,
+                badge: ar ? '{تعلمك|تعلمكِ} أصبح أكثر تنظيمًا' : 'Your learning, better organised',
+                name: ar ? 'المنصة التعليمية الذكية' : 'Smart learning platform',
+                title: ar ? 'منصة متكاملة… تتابع {تقدمك|تقدمكِ} وتساعدك على التطور!' : 'An all-in-one platform… that tracks your progress and helps you grow!',
+                desc: ar
+                  ? 'تجربة تعليمية تجمع دروسك واختباراتك وواجباتك ونتائجك في مكان واحد، {لتتعلم|لتتعلمي} بوضوح {وتعرف|وتعرفي} دائمًا أين {وصلت|وصلتِ} وما المهارات التي {تحتاج|تحتاجين} إلى تطويرها.'
+                  : 'A learning experience that gathers your lessons, tests, homework and results in one place, so you learn clearly and always know where you are and which skills to develop.',
+                items: ar
+                  ? ['اختبارات إلكترونية مع تصحيح تلقائي.', 'واجبات وأنشطة تفاعلية.', 'تقارير بعد الاختبارات والدروس.', 'تحليل نقاط القوة والضعف.', 'متابعة التقدم والإنجازات.', 'حساب شخصي للطالب ومحتواه التعليمي.']
+                  : ['Online tests with automatic marking.', 'Interactive homework and activities.', 'Reports after tests and lessons.', 'Strengths and weaknesses analysis.', 'Progress and achievement tracking.', 'A personal student account with its content.'],
+                cta: ar ? '{اكتشف|اكتشفي} منصتك التعليمية' : 'Discover your learning platform'
+              }
+            ] as const
+          ).map((f) => (
+            <div key={f.key} dir={dir} className="relative bg-white rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37]/40 shadow-lg hover:border-[#D4AF37] transition-all flex flex-col justify-between overflow-hidden">
+              <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#0A192F] via-[#D4AF37] to-[#0A192F]" />
+              <div>
+                <div className="flex items-center justify-between gap-4 mb-5">
+                  <div className="w-14 h-14 rounded-2xl bg-[#0A192F] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shadow-md flex-shrink-0">
+                    <f.icon className="w-7 h-7" aria-hidden="true" />
+                  </div>
+                  <span className="text-xs font-bold text-[#AA820A] tracking-wide">{f.badge}</span>
                 </div>
-                <div>
-                  <span className="block text-xs font-bold text-[#AA820A] mb-1">
-                    {t.features.packageBadge}
-                  </span>
-                  <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#0A192F]">
-                    {t.features.packageTitle}
-                  </h3>
-                  <p className="text-sm sm:text-base text-gray-700 mt-2 leading-relaxed">
-                    {t.features.packageDesc}
-                  </p>
-                </div>
+                <span className="block text-xs font-bold text-gray-400 mb-1">{f.name}</span>
+                <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#0A192F] mb-3">{f.title}</h3>
+                <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-4">{f.desc}</p>
+                <ul className="space-y-2.5 mb-6">
+                  {f.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm text-gray-700 leading-relaxed">
+                      <CheckCircle2 className="w-4 h-4 text-[#D4AF37] flex-shrink-0 mt-1" aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              <button
-                type="button"
-                onClick={() => setIsPackageExpanded((prev) => !prev)}
-                aria-expanded={isPackageExpanded}
-                className="w-full sm:w-auto self-start inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-[#0A192F] text-[#F3E5AB] hover:bg-[#D4AF37] hover:text-[#0A192F] transition-all shadow-sm flex-shrink-0 whitespace-nowrap"
-              >
-                <span>{isPackageExpanded ? t.features.hideDetails : t.features.viewDetails}</span>
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    isPackageExpanded ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
+              <div className="pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => navigate(isAuthenticated ? 'portal' : 'join-us')}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-[#0A192F] text-[#F3E5AB] hover:bg-[#D4AF37] hover:text-[#0A192F] transition-all shadow-sm"
+                >
+                  {f.cta}
+                </button>
+              </div>
             </div>
+          ))}
 
-            <div className="mt-6 pt-5 border-t border-gray-100">
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
-                {(isPackageExpanded
-                  ? t.features.packageItems
-                  : t.features.packageItems.slice(0, 4)
-                ).map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-sm text-gray-700 leading-relaxed">
-                    <CheckCircle2
-                      className="w-4 h-4 text-[#D4AF37] flex-shrink-0 mt-1"
-                      aria-hidden="true"
-                    />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+          {/* الميزة السادسة: مجتمع المتعلمين */}
+          <div dir={dir} className="md:col-span-2 relative bg-[#FAF8F5] rounded-3xl p-7 sm:p-9 border-2 border-[#D4AF37]/40 shadow-lg overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#0A192F] via-[#D4AF37] to-[#0A192F]" />
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-[#0A192F] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shadow-md flex-shrink-0">
+                <GraduationCap className="w-7 h-7" aria-hidden="true" />
+              </div>
+              <div>
+                <span className="block text-xs font-bold text-[#AA820A] mb-1">{ar ? 'مجتمع المتعلمين • معًا نحو مستوى أفضل' : 'Learner community • Together toward a better level'}</span>
+                <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#0A192F]">
+                  {ar ? 'لا {تتعلم|تتعلمي} {وحدك|وحدكِ}… {كن|كوني} جزءًا من مجتمع ملهم!' : "Don't learn alone… be part of an inspiring community!"}
+                </h3>
+                <p className="text-sm sm:text-base text-gray-700 mt-2 leading-relaxed">
+                  {ar
+                    ? '{انضم|انضمي} إلى مجتمع English Zone، {وشارك|وشاركي} رحلتك مع متعلمين يملكون أهدافًا مشابهة لأهدافك. {تبادل|تبادلي} الخبرات، {وشارك|وشاركي} في الأنشطة، {واستفد|واستفيدي} من أجواء تعليمية تشجعك على الاستمرار وتحقيق المزيد.'
+                    : 'Join the English Zone community and share your journey with learners who have goals like yours. Exchange experiences, take part in activities and enjoy an atmosphere that encourages you to keep going and achieve more.'}
+                </p>
+              </div>
             </div>
+          </div>
+
+          {/* القسم الختامي: دعوة للتسجيل */}
+          <div dir={dir} className="md:col-span-2 relative rounded-3xl p-8 sm:p-12 bg-gradient-to-br from-[#0A192F] via-[#102445] to-[#0A192F] border-2 border-[#D4AF37] shadow-2xl text-center overflow-hidden">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">YOUR JOURNEY STARTS HERE</span>
+            <h3 className="font-serif-luxury font-bold text-2xl sm:text-4xl text-[#F3E5AB] mt-3">
+              {ar ? '{مستقبلك|مستقبلكِ} باللغة الإنجليزية يبدأ من هنا!' : 'Your future in English starts here!'}
+            </h3>
+            <p className="text-gray-300 mt-4 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+              {ar
+                ? '{ابدأ|ابدئي} من الصفر، {طوّر|طوّري} مهاراتك، {اكتسب|اكتسبي} الثقة، {واصنع|واصنعي} فرصًا جديدة لنفسك. نحن نوفر لك الأدوات، {وأنت تصنع|وأنتِ تصنعين} الإنجاز.'
+                : 'Start from zero, build your skills, gain confidence and create new opportunities for yourself. We give you the tools; you create the achievement.'}
+            </p>
+            <p className="text-[#D4AF37] font-bold mt-4">{ar ? '{خطوتك|خطوتكِ} الأولى قد تصنع فرقًا كبيرًا.' : 'Your first step can make a big difference.'}</p>
+            <button
+              type="button"
+              onClick={() => navigate(isAuthenticated ? 'portal' : 'join-us')}
+              className="mt-6 ez-float-glow inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-lg"
+            >
+              {isAuthenticated ? (ar ? 'حسابي' : 'My account') : ar ? '{انضم|انضمي} الآن' : 'Join now'}
+            </button>
           </div>
         </div>
       </section>
