@@ -50,9 +50,29 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
   const [log, setLog] = useState<PointsEntry[]>([]);
   const [reverting, setReverting] = useState('');
   // استعادة نقاط مُنحت بالخطأ
+  // حذف كل نقاط الطالبة: ضغطتان (الأولى تجهّز، والثانية تنفّذ) بلا نافذة تأكيد
+  const [resetArm, setResetArm] = useState('');
+  const [resetting, setResetting] = useState('');
+  const resetAll = async (studentId: string) => {
+    if (resetArm !== studentId) {
+      setResetArm(studentId);
+      setTimeout(() => setResetArm((x) => (x === studentId ? '' : x)), 4000);
+      return;
+    }
+    setResetArm('');
+    setResetting(studentId);
+    try {
+      await groupService.resetStudentPoints(studentId, log.filter((l) => l.studentId === studentId), { asTeacher: teacherMode });
+      setLog((l) => l.filter((x) => x.studentId !== studentId));
+      setStudents((st) => st.map((s) => (s.id === studentId ? ({ ...s, points: 0 } as any) : s)));
+      onNotice(tr('All points deleted.', 'تم حذف كل النقاط.'));
+    } catch (err: any) {
+      onNotice(`${tr('Could not delete:', 'تعذّر الحذف:')} ${err?.code || err?.message || ''}`);
+    } finally {
+      setResetting('');
+    }
+  };
   const revert = async (e: PointsEntry, name: string) => {
-    const amt = e.amount > 0 ? `+${e.amount}` : String(e.amount);
-    if (!window.confirm(tr(`Undo ${amt} for ${name}? The student's balance will change by ${-e.amount}.`, `إلغاء ${amt} من ${name}؟ سيتغير رصيدها بمقدار ${-e.amount}.`))) return;
     setReverting(e.id);
     try {
       await groupService.revertPoints(e, { asTeacher: teacherMode });
@@ -385,7 +405,17 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                         {open && (
                           <div className="px-4 pb-4 grid grid-cols-1 lg:grid-cols-2 gap-4 text-xs">
                             <div className="space-y-2">
-                              <div className="font-bold text-[#0A192F]">{tr('Stars history', 'سجل النجوم')}</div>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="font-bold text-[#0A192F]">{tr('Stars history', 'سجل النجوم')}</div>
+                                <button
+                                  onClick={() => resetAll(r.s.id)}
+                                  disabled={resetting === r.s.id}
+                                  className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 disabled:opacity-50 ${resetArm === r.s.id ? 'bg-red-600 text-white animate-pulse' : 'bg-red-50 text-red-700'}`}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  {resetArm === r.s.id ? tr('Tap again to delete all', 'اضغطي مرة أخرى لحذف الكل') : tr('Delete all points', 'حذف كل النقاط')}
+                                </button>
+                              </div>
                               {entries.length === 0 ? (
                                 <div className="text-gray-500">{tr('No entries yet.', 'لا توجد عمليات بعد.')}</div>
                               ) : (

@@ -261,6 +261,21 @@ export const groupService = {
     }
   },
 
+  // حذف كل نقاط الطالب: يحذف عملياته من السجل ويجعل رصيده صفرًا
+  async resetStudentPoints(studentId: string, entries: PointsEntry[], opts: { asTeacher?: boolean } = {}): Promise<void> {
+    for (let i = 0; i < entries.length; i += 400) {
+      const batch = writeBatch(db);
+      entries.slice(i, i + 400).forEach((e) => batch.delete(doc(db, 'points_log', e.id)));
+      await batch.commit();
+    }
+    await updateDoc(doc(db, 'users', studentId), { points: 0, updatedAt: new Date().toISOString() });
+    try {
+      await groupService.syncMember(studentId, { asTeacher: opts.asTeacher });
+    } catch (err) {
+      console.error('Could not update group board:', err);
+    }
+  },
+
   // ---- Group board (group_members) ----
   // ينسخ اسم الطالب ونقاطه ومجموعته من users إلى group_members، أو يحذفه إن لم تكن له مجموعة
   async syncMember(studentId: string, opts: { asTeacher?: boolean } = {}): Promise<void> {

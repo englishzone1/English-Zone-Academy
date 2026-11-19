@@ -57,7 +57,6 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
   // إلغاء نجوم مُنحت بالخطأ على هذا الواجب (تُحذف العملية من السجل ويُطرح الرصيد)
   const undoStars = async (r: HomeworkResult) => {
     if (!r.starsGiven) return;
-    if (!window.confirm(tr(`Undo the ${r.starsGiven} stars given to ${r.studentName}?`, `إلغاء ${r.starsGiven} نجوم مُنحت لـ ${r.studentName}؟`))) return;
     setBusy(r.id);
     try {
       const log = await groupService.getPointsLog();
