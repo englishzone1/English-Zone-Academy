@@ -56,7 +56,9 @@ export const AdminReferrals: React.FC<{ isAr: boolean; onNotice: (m: string) => 
           const friend = byId.get(r.studentId) || byId.get(r.linkedUserId) || byEmail.get(String(r.email || '').toLowerCase());
           let type: Row['type'] = 'unknown';
           if (referrer) {
-            if (!friend?.groupId || !referrer.groupId) type = 'pending-group';
+            // صاحبة الدعوة غير مشتركة أو بلا مجموعة = سفيرة (لا يشترط اشتراكها)
+            if (!isActiveSub(referrer) || !referrer.groupId) type = 'ambassador';
+            else if (!friend?.groupId) type = 'pending-group';
             else type = friend.groupId === referrer.groupId ? 'group' : 'ambassador';
           }
           return { regId: r.id, code, submittedAt: r.submittedAt || '', friendName: friend?.fullName || r.fullName || '—', friend, referrer, type };
@@ -95,7 +97,7 @@ export const AdminReferrals: React.FC<{ isAr: boolean; onNotice: (m: string) => 
   const ambassadorsDue = useMemo(() => {
     const m = new Map<string, { name: string; total: number; cur: string }>();
     rows
-      .filter((r) => r.type === 'ambassador' && isActiveSub(r.friend) && isActiveSub(r.referrer) && fee(r.friend) !== undefined)
+      .filter((r) => r.type === 'ambassador' && isActiveSub(r.friend) && fee(r.friend) !== undefined)
       .forEach((r) => {
         const paidThisMonth = (status[r.regId]?.payouts || []).some((p) => p.month === thisMonth());
         if (paidThisMonth) return;
@@ -157,7 +159,7 @@ export const AdminReferrals: React.FC<{ isAr: boolean; onNotice: (m: string) => 
               const paidTotal = payouts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
               const nextAmount = friendFee !== undefined ? (friendFee * (payouts.length ? AMBASSADOR_MONTHLY : AMBASSADOR_FIRST)) / 100 : undefined;
               const paidThisMonth = payouts.some((p) => p.month === thisMonth());
-              const bothActive = isActiveSub(r.friend) && isActiveSub(r.referrer);
+              const bothActive = isActiveSub(r.friend);
               return (
                 <div key={r.regId} className="p-4 rounded-2xl border border-gray-200 space-y-2 text-xs">
                   <div className="flex flex-wrap items-center gap-2">
@@ -186,7 +188,7 @@ export const AdminReferrals: React.FC<{ isAr: boolean; onNotice: (m: string) => 
                     <div className="p-2 rounded-xl bg-[#FAF8F5]">
                       <div className="text-[10px] text-gray-500">{tr('Invited by', 'صاحبة الدعوة')}</div>
                       <b className="text-[#0A192F]">{r.referrer?.fullName || '—'}</b>
-                      {r.referrer && !isActiveSub(r.referrer) && <span className="ms-1 text-red-600">({tr('not subscribed', 'غير مشتركة')})</span>}
+                      {r.referrer && !isActiveSub(r.referrer) && <span className="ms-1 text-gray-500">({tr('not a course student', 'ليست مشتركة في الكورس')})</span>}
                     </div>
                     <div className="p-2 rounded-xl bg-[#FAF8F5]">
                       <div className="text-[10px] text-gray-500">{tr('New friend', 'الصديقة الجديدة')}</div>
@@ -216,7 +218,7 @@ export const AdminReferrals: React.FC<{ isAr: boolean; onNotice: (m: string) => 
                           </div>
                           {payouts.length > 0 && <div className="text-[10px] text-gray-500" dir="ltr">{payouts.map((p) => p.month).join(' • ')}</div>}
                           {!bothActive ? (
-                            <div className="text-[11px] text-gray-500">{tr('Monthly reward stops while either is not subscribed.', 'المكافأة الشهرية متوقفة لأن إحداهما غير مشتركة.')}</div>
+                            <div className="text-[11px] text-gray-500">{tr('Monthly reward is paused while the friend is not subscribed.', 'المكافأة الشهرية متوقفة لأن الصديقة غير مشتركة.')}</div>
                           ) : paidThisMonth ? (
                             <div className="text-[11px] text-emerald-700 flex items-center gap-1">
                               <CheckCircle2 className="w-3.5 h-3.5" />

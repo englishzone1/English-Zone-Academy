@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Gift, Gem, Copy, MessageCircle, CheckCircle2, Lock } from 'lucide-react';
+import { useAcademySettings, whatsappWithText } from '../../hooks/useAcademySettings';
 import { referralCodeFor, referralLink, REFERRER_GROUP_DISCOUNT, FRIEND_DISCOUNT, AMBASSADOR_FIRST, AMBASSADOR_MONTHLY } from '../../services/referralService';
 
 // عروض الدعوة داخل المنصة (للعضوات والطالبات)، مع كود الدعوة للطالبة المشتركة
@@ -8,6 +9,10 @@ export const ReferralOffers: React.FC<{ uid: string; isAr: boolean; active: bool
   const code = referralCodeFor(uid);
   const link = referralLink(code);
   const [copied, setCopied] = useState('');
+  const { whatsapp } = useAcademySettings();
+  const ambassadorWa = whatsapp
+    ? whatsappWithText(whatsapp, tr(`Hello English Zone, I would like to become an ambassador. My code: ${code}`, `مرحبًا English Zone، أريد أن أصبح سفيرة للأكاديمية. كودي: ${code}`))
+    : '';
 
   const copy = async (text: string, what: string) => {
     try {
@@ -53,7 +58,11 @@ export const ReferralOffers: React.FC<{ uid: string; isAr: boolean; active: bool
             <Gem className="w-6 h-6 text-[#D4AF37]" />
             <h3 className="font-bold text-lg">{tr('“English Zone Ambassador”', 'عرض «سفيرة English Zone»')}</h3>
           </div>
-          <p className="text-xs text-gray-300">{tr('Invite any friend to any other group:', 'ادعي أي صديقة إلى أي مجموعة أخرى في الأكاديمية:')}</p>
+          <p className="text-xs text-gray-300">
+            {active
+              ? tr('Invite any friend to any other group:', 'ادعي أي صديقة إلى أي مجموعة أخرى في الأكاديمية:')
+              : tr('No course subscription needed — invite any friend to the academy:', 'لا يشترط اشتراككِ في الكورس، ادعي أي صديقة إلى الأكاديمية:')}
+          </p>
           <ul className="space-y-2 text-sm">
             <li>
               • <b>{tr('You:', 'أنتِ:')}</b>{' '}
@@ -64,12 +73,23 @@ export const ReferralOffers: React.FC<{ uid: string; isAr: boolean; active: bool
             </li>
             <li>• {tr('No limit on the number of friends.', 'بلا حد لعدد الصديقات.')}</li>
           </ul>
+          {ambassadorWa && (
+            <a href={ambassadorWa} target="_blank" rel="noopener noreferrer" className="inline-flex px-4 py-2 rounded-xl bg-[#25D366] text-white text-xs font-bold items-center gap-1.5">
+              <MessageCircle className="w-4 h-4" />
+              {tr('Become an ambassador: message us on WhatsApp', 'كوني سفيرة: تواصلي معنا على واتساب')}
+            </a>
+          )}
         </div>
       </div>
 
       <div className="rounded-3xl p-6 bg-white border border-gray-200 shadow-sm space-y-3">
         <h3 className="font-bold text-[#0A192F]">{tr('Your invitation code', 'كود الدعوة الخاص بكِ')}</h3>
-        {active ? (
+        {!active && (
+          <p className="text-[11px] text-gray-500">
+            {tr('Before subscribing, your code works for the Ambassador offer. The “My friend in my group” offer starts once you subscribe.', 'قبل الاشتراك يعمل كودكِ لعرض «السفيرة». وعرض «صديقتي في مجموعتي» يبدأ بعد اشتراككِ في الكورس.')}
+          </p>
+        )}
+        {true ? (
           <>
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-4 py-2 rounded-xl bg-[#FAF8F5] border-2 border-dashed border-[#D4AF37] font-mono font-bold text-lg text-[#0A192F] tracking-widest" dir="ltr">
@@ -115,7 +135,9 @@ export const ReferralOffers: React.FC<{ uid: string; isAr: boolean; active: bool
       <div className="rounded-2xl p-4 bg-[#FAF8F5] border border-gray-200 text-[11px] text-gray-600 space-y-1">
         <b className="text-[#0A192F]">{tr('Terms', 'الشروط')}</b>
         <p>• {tr('Rewards count after your friend’s subscription is activated and paid.', 'تُحتسب المكافأة بعد تفعيل اشتراك الصديقة ودفعها.')}</p>
-        <p>• {tr(`The monthly ${AMBASSADOR_MONTHLY}% is due while both you and your friend stay subscribed.`, `تُستحق مكافأة ${AMBASSADOR_MONTHLY}% الشهرية ما دامت صاحبة الدعوة والصديقة مشتركتين.`)}</p>
+        <p>• {tr(`The monthly ${AMBASSADOR_MONTHLY}% is due while your friend stays subscribed.`, `تُستحق مكافأة ${AMBASSADOR_MONTHLY}% الشهرية ما دامت الصديقة مشتركة.`)}</p>
+        <p>• {tr('The ambassador offer does not require a course subscription.', 'عرض السفيرة لا يشترط الاشتراك في الكورس.')}</p>
+        <p>• {tr('“My friend in my group” is for subscribed students.', 'عرض «صديقتي في مجموعتي» للطالبات المشتركات.')}</p>
         <p>• {tr('The ambassador reward is paid by the academy directly.', 'تُسلَّم مكافأة السفيرة من الأكاديمية مباشرة.')}</p>
         <p>• {tr('Your friend must register with your invitation code.', 'يجب أن تسجّل الصديقة بكود الدعوة الخاص بكِ.')}</p>
       </div>
