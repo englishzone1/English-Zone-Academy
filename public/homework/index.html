@@ -1550,6 +1550,8 @@ $("loginForm").addEventListener("submit",ev=>{
   show("dash");
 });
 ezPost({type:`ready`});
+// داخل المنصة: لا زر خروج هنا (الخروج من المنصة فقط، وبيد الطالبة نفسها)
+if(EZ_EMBED){ const lo=$("logout"); if(lo) lo.style.display="none"; }
 $("logout").onclick = ()=>{
   $("app").classList.add("hidden"); $("hdr").classList.add("hidden"); $("login").classList.remove("hidden");
   $("loginForm").reset(); build(); student = {};

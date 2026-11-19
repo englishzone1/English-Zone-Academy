@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore, initializeFirestore, doc, getDocFromServer, Firestore } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -20,6 +20,8 @@ try {
 
 export const db = firestoreInstance;
 export const auth = getAuth(app);
+// يبقى الطالب مسجّلًا في جهازه دائمًا حتى يضغط «تسجيل الخروج» بنفسه
+setPersistence(auth, browserLocalPersistence).catch(() => undefined);
 
 export enum OperationType {
   CREATE = 'create',
