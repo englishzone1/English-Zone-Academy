@@ -241,6 +241,26 @@ export class P2PMesh {
     this.onRemove(key);
   }
 
+  /** حالة الاتصالات لعرضها للمستخدم: كم مشاركًا يصله صوتي، وكم متحدثًا أسمعه */
+  status() {
+    let outTotal = 0,
+      outOk = 0,
+      inTotal = 0,
+      inOk = 0;
+    this.outs.forEach((o) => {
+      if (o.kind !== 'mic') return;
+      outTotal++;
+      if (o.pc.connectionState === 'connected') outOk++;
+    });
+    const speakers = this.present.filter((m) => m.uid !== this.uid && m.pub && (m.role === 'owner' || m.role === 'speaker'));
+    inTotal = speakers.length;
+    speakers.forEach((m) => {
+      const i = this.ins.get(`${m.uid}:mic`);
+      if (i && i.pc.connectionState === 'connected') inOk++;
+    });
+    return { outTotal, outOk, inTotal, inOk };
+  }
+
   close() {
     this.closed = true;
     clearInterval(this.timer);

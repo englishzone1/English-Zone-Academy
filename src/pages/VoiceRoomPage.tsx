@@ -64,12 +64,12 @@ const Avatar: React.FC<{ m: RoomMember; size?: string; speaking?: boolean }> = (
   </div>
 );
 
-const AudioSink: React.FC<{ track: MediaStreamTrack }> = ({ track }) => {
+const AudioSink: React.FC<{ track: MediaStreamTrack; onBlocked: () => void }> = ({ track, onBlocked }) => {
   const ref = useRef<HTMLAudioElement>(null);
   useEffect(() => {
     if (ref.current) {
       ref.current.srcObject = new MediaStream([track]);
-      ref.current.play().catch(() => {});
+      ref.current.play().catch(() => onBlocked());
     }
   }, [track]);
   return <audio ref={ref} autoPlay playsInline />;
@@ -122,6 +122,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const [showSettings, setShowSettings] = useState(false);
   const [menuFor, setMenuFor] = useState<RoomMember | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [audioBlocked, setAudioBlocked] = useState(false);
+  const [conn, setConn] = useState({ outTotal: 0, outOk: 0, inTotal: 0, inOk: 0 });
 
   const meshRef = useRef<P2PMesh | null>(null);
   const micTrackRef = useRef<MediaStreamTrack | null>(null);
@@ -214,6 +216,21 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   useEffect(() => {
     meshRef.current?.sync(present);
   }, [present]);
+
+  useEffect(() => {
+    if (!inRoom) return;
+    const t = setInterval(() => {
+      const st = meshRef.current?.status();
+      if (st) setConn((o) => (o.outTotal === st.outTotal && o.outOk === st.outOk && o.inTotal === st.inTotal && o.inOk === st.inOk ? o : st));
+    }, 2000);
+    return () => clearInterval(t);
+  }, [inRoom]);
+
+  const unlockAudio = () => {
+    document.querySelectorAll('audio').forEach((a) => (a as HTMLAudioElement).play().catch(() => {}));
+    meterRef.current?.levels();
+    setAudioBlocked(false);
+  };
 
   // ===== الصوت: النشر للمتحدثين =====
   useEffect(() => {
@@ -574,8 +591,32 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       {Object.entries(tracks)
         .filter(([k]) => k.endsWith(':mic'))
         .map(([k, t]) => (
-          <AudioSink key={k} track={t} />
+          <AudioSink key={k} track={t} onBlocked={() => setAudioBlocked(true)} />
         ))}
+
+      {audioBlocked && (
+        <button onClick={unlockAudio} className="w-full p-4 rounded-2xl bg-[#D4AF37] text-[#0A192F] font-bold text-base animate-pulse">
+          🔊 {tr('Tap here to hear the room', 'اضغط/ي هنا لتشغيل صوت الغرفة')}
+        </button>
+      )}
+
+      <div className="flex flex-wrap gap-2 text-[11px] font-bold">
+        {isSpeaker && (
+          <span className={`px-2.5 py-1 rounded-full border ${conn.outTotal > 0 && conn.outOk === conn.outTotal ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+            {tr('Your voice reaches', 'صوتك يصل إلى')} {conn.outOk}/{conn.outTotal}
+          </span>
+        )}
+        {conn.inTotal > 0 && (
+          <span className={`px-2.5 py-1 rounded-full border ${conn.inOk === conn.inTotal ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+            {tr('You hear', 'تسمع/ين')} {conn.inOk}/{conn.inTotal} {tr('speakers', 'متحدث')}
+          </span>
+        )}
+        {isSpeaker && me?.muted && micReady && (
+          <span className="px-2.5 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200">
+            {tr('Your mic is off — tap “Unmute” below', 'المايك مغلق: اضغط/ي «تشغيل المايك» في الأسفل ليسمعوك')}
+          </span>
+        )}
+      </div>
 
       {/* طلبات الدخول للمشرفة */}
       {isMod && pending.length > 0 && (
