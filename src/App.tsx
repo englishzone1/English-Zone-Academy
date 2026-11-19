@@ -122,7 +122,17 @@ function MainApp() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // المعلم لا يرى صفحات الموقع العامة (الأسعار والعروض والتسجيل…): لوحته فقط
+  const teacherOnly = isTeacher && !isAdmin && !isSuperAdmin;
+
   const renderCurrentPage = () => {
+    if (
+      teacherOnly &&
+      !['teacher-dashboard', 'portal', 'homework', 'avatar-studio', 'login', 'student-login'].includes(currentRoute) &&
+      !currentRoute.startsWith('hw-answers/')
+    ) {
+      return <TeacherDashboard navigate={navigate} />;
+    }
     switch (currentRoute) {
       case 'home':
         return <HomePage navigate={navigate} />;
@@ -278,11 +288,12 @@ function MainApp() {
         {renderCurrentPage()}
       </main>
       <Footer navigate={navigate} />
-      <TawkChat hidden={['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
+      <TawkChat hidden={teacherOnly || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
       <ChatAssistant
         hidden={
           ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) ||
           currentRoute.startsWith('hw-answers/') ||
+          teacherOnly ||
           (currentRoute === 'portal' && (isAdmin || isTeacher || isSuperAdmin))
         }
       />

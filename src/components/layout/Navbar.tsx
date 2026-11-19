@@ -59,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
     { id: 'offers', label: t.nav.offers },
     { id: 'about', label: t.nav.about },
     { id: 'contact', label: t.nav.contact },
-  ];
+  ].filter((l) => !((user as any)?.role === 'teacher' && ['pricing', 'offers', 'programs', 'curriculum'].includes(l.id)));
 
   const moreLinks = [
     { id: 'english-club', label: t.nav.englishClub, icon: MessageSquare, badge: 'New' },
