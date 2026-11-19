@@ -226,6 +226,26 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     return () => clearInterval(t);
   }, [inRoom]);
 
+  // تنبيه الـ VPN: إن بقي الاتصال ناقصًا 30 ثانية
+  const badSince = useRef(0);
+  const [showVpnHint, setShowVpnHint] = useState(false);
+  useEffect(() => {
+    const bad = (conn.inTotal > 0 && conn.inOk < conn.inTotal) || (conn.outTotal > 0 && conn.outOk < conn.outTotal);
+    if (!bad) {
+      badSince.current = 0;
+      setShowVpnHint(false);
+      return;
+    }
+    if (!badSince.current) badSince.current = Date.now();
+    const left = 30000 - (Date.now() - badSince.current);
+    if (left <= 0) {
+      setShowVpnHint(true);
+      return;
+    }
+    const t = setTimeout(() => setShowVpnHint(true), left);
+    return () => clearTimeout(t);
+  }, [conn]);
+
   const unlockAudio = () => {
     document.querySelectorAll('audio').forEach((a) => (a as HTMLAudioElement).play().catch(() => {}));
     meterRef.current?.levels();
@@ -600,6 +620,16 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         </button>
       )}
 
+      {showVpnHint && (
+        <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300 text-sm text-amber-900 font-bold leading-relaxed">
+          ⚠️{' '}
+          {tr(
+            'The sound is not connecting. If you use a VPN, turn it off during the room, then leave and enter again.',
+            'الصوت لا يتصل. إذا كان لديك VPN {أوقفه|أوقفيه} أثناء الغرفة، ثم {اخرج|اخرجي} {وادخل|وادخلي} من جديد.'
+          )}
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2 text-[11px] font-bold">
         {isSpeaker && (
           <span className={`px-2.5 py-1 rounded-full border ${conn.outTotal > 0 && conn.outOk === conn.outTotal ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
@@ -611,9 +641,11 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
             {tr('You hear', 'تسمع/ين')} {conn.inOk}/{conn.inTotal} {tr('speakers', 'متحدث')}
           </span>
         )}
-        <span className={`px-2.5 py-1 rounded-full border ${conn.turn ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-gray-50 text-gray-500 border-gray-200'}`}>
-          {conn.turn ? tr('Relay server: on', 'خادم الاتصال: مفعّل') : tr('Relay server: off', 'خادم الاتصال: غير مفعّل')}
-        </span>
+        {admin && (
+          <span className={`px-2.5 py-1 rounded-full border ${conn.turn ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-gray-50 text-gray-500 border-gray-200'}`}>
+            {conn.turn ? tr('Relay server: on', 'خادم الاتصال: مفعّل') : tr('Relay server: off', 'خادم الاتصال: غير مفعّل')}
+          </span>
+        )}
         {isSpeaker && me?.muted && micReady && (
           <span className="px-2.5 py-1 rounded-full border bg-gray-100 text-gray-700 border-gray-200">
             {tr('Your mic is off — tap “Unmute” below', 'المايك مغلق: اضغط/ي «تشغيل المايك» في الأسفل ليسمعوك')}
