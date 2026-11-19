@@ -147,6 +147,15 @@ function MainApp() {
         return <VisitorJoinPage navigate={navigate} />;
       case 'join-us':
         return <VisitorJoinPage navigate={navigate} />;
+      case 'blocked':
+        return (
+          <div className="min-h-[60vh] flex items-center justify-center px-4">
+            <div className="max-w-md text-center space-y-3 bg-white rounded-3xl p-8 border border-red-200 shadow-sm">
+              <h1 className="font-bold text-xl text-red-700">هذا الحساب محظور من المنصة</h1>
+              <p className="text-sm text-gray-600">This account has been blocked from the platform.</p>
+            </div>
+          </div>
+        );
       // التسجيل القادم من عروض الدعوة: بدون زر واتساب
       case 'join-offer':
         return <VisitorJoinPage navigate={navigate} hideWhatsapp />;

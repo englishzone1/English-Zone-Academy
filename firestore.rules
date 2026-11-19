@@ -7,8 +7,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // الحساب المسجّل وغير المحظور (البريد المحظور لا يصل لأي بيانات داخل المنصة)
     function isSignedIn() {
-      return request.auth != null;
+      return request.auth != null &&
+        (!('email' in request.auth.token) ||
+          !exists(/databases/$(database)/documents/blocked_emails/$(request.auth.token.email.lower())));
     }
 
     function isOwner(userId) {
@@ -362,6 +365,12 @@ service cloud.firestore {
         request.resource.data.status == 'read'
       );
       allow delete: if isAdmin();
+    }
+
+    // --- البريد المحظور: الإدارة تضيف وتحذف، وصاحبة البريد تقرأ مستندها فقط (لتعرف أنها محظورة) ---
+    match /blocked_emails/{email} {
+      allow get: if request.auth != null && ('email' in request.auth.token) && email == request.auth.token.email.lower();
+      allow get, list, write: if isAdmin();
     }
 
     // --- متابعة الدعوات ومكافآت السفيرات: الإدارة فقط ---

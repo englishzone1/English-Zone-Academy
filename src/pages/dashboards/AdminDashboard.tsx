@@ -57,6 +57,7 @@ import { CURRENCIES } from '../../hooks/useAcademySettings';
 import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 import { AdminWorkshops } from '../../components/admin/AdminWorkshops';
 import { AdminReferrals } from '../../components/admin/AdminReferrals';
+import { AdminBlockedEmails } from '../../components/admin/AdminBlockedEmails';
 import { sendTestEmail, resetTodayLimit } from '../../services/emailNotify';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 
@@ -1107,6 +1108,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         {activeTab === 'hwresults' && <AdminHomeworkResults onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* FREE ACCOUNTS */}
+        {activeTab === 'visitors' && <AdminBlockedEmails isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
         {activeTab === 'visitors' && (
           <AdminVisitors
             users={usersList.filter(isPotential)}

@@ -217,6 +217,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setAuthError(null);
 
       if (currentFbUser) {
+        // البريد المحظور من الإدارة: خروج فوري ولا يرى شيئًا داخل المنصة
+        const em = String(currentFbUser.email || '').toLowerCase();
+        if (em) {
+          const blocked = await getDoc(doc(db, 'blocked_emails', em))
+            .then((s) => s.exists())
+            .catch(() => false);
+          if (blocked) {
+            await signOut(auth).catch(() => undefined);
+            setFirebaseUser(null);
+            setUser(null);
+            setHasProfile(false);
+            setAuthError('blocked');
+            setIsLoading(false);
+            window.location.hash = '#/blocked';
+            return;
+          }
+        }
         setFirebaseUser(currentFbUser);
         await fetchProfile(currentFbUser);
       } else {
