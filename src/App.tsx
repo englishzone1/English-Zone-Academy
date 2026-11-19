@@ -296,12 +296,12 @@ function MainApp() {
         {renderCurrentPage()}
       </main>
       {!bare && <Footer navigate={navigate} />}
-      <TawkChat hidden={teacherOnly || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
+      <TawkChat hidden={bare || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
       <ChatAssistant
         hidden={
           ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) ||
           currentRoute.startsWith('hw-answers/') ||
-          teacherOnly ||
+          bare ||
           (currentRoute === 'portal' && (isAdmin || isTeacher || isSuperAdmin))
         }
       />
