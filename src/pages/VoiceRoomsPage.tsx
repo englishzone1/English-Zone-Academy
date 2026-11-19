@@ -49,8 +49,10 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
-  const { user, firebaseUser, isAuthenticated, isLoading, isAdmin, isSuperAdmin } = useAuth();
+  const { user, firebaseUser, isAuthenticated, isLoading, isAdmin, isSuperAdmin, isTeacher } = useAuth();
   const admin = isAdmin || isSuperAdmin;
+  const teacher = isTeacher && !admin; // المعلم: غرف خاصة بطلابه فقط
+  const myTeacherId = String((user as any)?.teacherId || '');
   const gender = userGender(user);
   const isFemale = gender === 'female';
   const uid = firebaseUser?.uid || '';
@@ -67,8 +69,8 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
 
   useEffect(() => {
     if (!uid) return;
-    return watchRooms(uid, isFemale, admin, setRooms, () => setLoadErr(tr('Could not load rooms.', 'تعذر تحميل الغرف.')));
-  }, [uid, isFemale, admin]);
+    return watchRooms(uid, isFemale, admin, { isTeacher: teacher, myTeacherId }, setRooms, () => setLoadErr(tr('Could not load rooms.', 'تعذر تحميل الغرف.')));
+  }, [uid, isFemale, admin, teacher, myTeacherId]);
 
   const visible = useMemo(() => {
     return rooms
@@ -76,7 +78,7 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
       .filter((r) => r.privacy !== 'private' || r.ownerId === uid || admin)
       .map((r) => ({ r, live: now - (r.lastActiveAt || 0) < ACTIVE_MS }))
       .filter(({ r, live }) => live || r.ownerId === uid || admin || now - (r.createdAt || 0) < 7 * 24 * 3600 * 1000)
-      .sort((a, b) => Number(b.live) - Number(a.live) || (b.r.lastActiveAt || 0) - (a.r.lastActiveAt || 0));
+      .sort((a, b) => Number(b.r.audience === 'teacher') - Number(a.r.audience === 'teacher') || Number(b.live) - Number(a.live) || (b.r.lastActiveAt || 0) - (a.r.lastActiveAt || 0));
   }, [rooms, uid, admin, now]);
 
   if (isLoading) return <div className="min-h-[50vh]" />;
@@ -121,10 +123,12 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
             )}
             <h1 className="font-serif-luxury font-bold text-2xl text-[#F3E5AB] flex items-center gap-2">
               <Mic className="w-6 h-6 text-[#D4AF37]" />
-              {tr('Voice rooms', 'الغرف الصوتية')}
+              {teacher ? tr('Voice rooms with my students', 'الغرف الصوتية مع طلابي') : tr('Voice rooms', 'الغرف الصوتية')}
             </h1>
             <p className="text-sm text-gray-300">
-              {tr('Join a room to practise speaking, or open your own.', '{ادخل|ادخلي} غرفة {وتدرّب|وتدرّبي} على المحادثة، أو {افتح|افتحي} غرفتك.')}
+              {teacher
+                ? tr('Only your own students (your groups and private students) can see and enter your rooms.', 'لا يرى غرفك ويدخلها إلا طلابك (مجموعاتك وطلابك الخاصّون) فقط.')
+                : tr('Join a room to practise speaking, or open your own.', '{ادخل|ادخلي} غرفة {وتدرّب|وتدرّبي} على المحادثة، أو {افتح|افتحي} غرفتك.')}
             </p>
           </div>
           <button
@@ -162,6 +166,11 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
                   {r.level && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FAF8F5] text-[#AA820A] border border-[#D4AF37]/40 shrink-0">{r.level}</span>}
                 </div>
                 {r.topic && <p className="text-xs text-gray-600 line-clamp-2">{r.topic}</p>}
+                {r.audience === 'teacher' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-200">
+                    {teacher ? tr('My students only', 'لطلابي فقط') : tr("Your teacher's room", 'غرفة المعلم/ة')}
+                  </span>
+                )}
                 <PrivacyBadge privacy={r.privacy} girlsOnly={r.girlsOnly} isAr={isAr} />
                 <div className="flex items-center justify-between text-[11px] text-gray-500">
                   <span>{r.ownerName}</span>
@@ -191,10 +200,17 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
       {showCreate && (
         <CreateRoomModal
           isAr={isAr}
-          isFemale={isFemale}
+          isFemale={isFemale && !teacher}
+          teacher={teacher}
           onClose={() => setShowCreate(false)}
           onCreate={async (d) => {
-            const id = await createRoom({ ...d, ownerId: uid, ownerName: ((user as any)?.fullName || firebaseUser?.displayName || '').slice(0, 80) });
+            const id = await createRoom({
+              ...d,
+              girlsOnly: teacher ? false : d.girlsOnly,
+              audience: teacher ? 'teacher' : 'all',
+              ownerId: uid,
+              ownerName: ((user as any)?.fullName || firebaseUser?.displayName || '').slice(0, 80),
+            });
             setShowCreate(false);
             navigate('room/' + id);
           }}
@@ -207,24 +223,28 @@ export const VoiceRoomsPage: React.FC<{ navigate: (r: string) => void; embedded?
 const CreateRoomModal: React.FC<{
   isAr: boolean;
   isFemale: boolean;
+  teacher?: boolean;
   onClose: () => void;
   onCreate: (d: { title: string; topic: string; level: string; privacy: RoomPrivacy; girlsOnly: boolean; maxSpeakers: number }) => Promise<void>;
-}> = ({ isAr, isFemale, onClose, onCreate }) => {
+}> = ({ isAr, isFemale, teacher, onClose, onCreate }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [title, setTitle] = useState('');
   const [topic, setTopic] = useState('');
   const [level, setLevel] = useState('');
-  const [privacy, setPrivacy] = useState<RoomPrivacy>('approval');
+  const [privacy, setPrivacy] = useState<RoomPrivacy>(teacher ? 'public' : 'approval');
   const [girlsOnly, setGirlsOnly] = useState(isFemale);
   const [maxSpeakers, setMaxSpeakers] = useState(5);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
 
-  const opts: { v: RoomPrivacy; en: string; ar: string; dEn: string; dAr: string }[] = [
-    { v: 'public', en: 'Open', ar: 'عامة', dEn: 'Anyone can enter and listen.', dAr: 'أي أحد يدخل ويستمع مباشرة.' },
+  const allOpts: { v: RoomPrivacy; en: string; ar: string; dEn: string; dAr: string }[] = [
+    teacher
+      ? { v: 'public', en: 'Open to my students', ar: 'مفتوحة لطلابي', dEn: 'Your students enter directly.', dAr: 'طلابك يدخلون مباشرة.' }
+      : { v: 'public', en: 'Open', ar: 'عامة', dEn: 'Anyone can enter and listen.', dAr: 'أي أحد يدخل ويستمع مباشرة.' },
     { v: 'approval', en: 'By approval', ar: 'بموافقتي', dEn: 'People ask to enter; you accept or refuse.', dAr: 'يطلبون الدخول {وأنت تقبل أو ترفض|وأنتِ تقبلين أو ترفضين}.' },
     { v: 'private', en: 'Private', ar: 'خاصة', dEn: 'Hidden from the list; only via your link, with approval.', dAr: 'لا تظهر في القائمة؛ بالرابط فقط ومع {موافقتك|موافقتكِ}.' },
   ];
+  const opts = teacher ? allOpts.filter((o) => o.v !== 'private') : allOpts;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" dir={isAr ? 'rtl' : 'ltr'}>

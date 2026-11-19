@@ -38,6 +38,7 @@ export interface VoiceRoom {
   createdAt: number;
   lastActiveAt: number;
   liveCount: number;
+  audience?: 'all' | 'teacher'; // teacher: لطلاب المعلم صاحب الغرفة فقط
   bg?: string; // خلفية الغرفة الافتراضية (يختارها صاحب/ة الغرفة)
   chatSince?: number; // الدردشة تبدأ من هنا (تُمسح عند إغلاق الغرفة أو بدء جلسة جديدة)
 }
@@ -74,7 +75,7 @@ const roomsCol = collection(db, 'voice_rooms');
 const toRoom = (d: any): VoiceRoom => ({ id: d.id, ...(d.data() as any) });
 
 /** الغرف المفتوحة: المختلطة للجميع، وغرف البنات للمشتركات فقط */
-export function watchRooms(uid: string, isFemale: boolean, isAdmin: boolean, cb: (rooms: VoiceRoom[]) => void, onError?: (e: any) => void) {
+export function watchRooms(uid: string, isFemale: boolean, isAdmin: boolean, opts: { isTeacher: boolean; myTeacherId: string }, cb: (rooms: VoiceRoom[]) => void, onError?: (e: any) => void) {
   const parts: Record<string, VoiceRoom[]> = {};
   const emit = () => {
     const all = Object.values(parts).flat();
@@ -95,16 +96,17 @@ export function watchRooms(uid: string, isFemale: boolean, isAdmin: boolean, cb:
     );
   if (isAdmin) {
     listen('all', query(roomsCol, limit(200)));
+  } else if (opts.isTeacher) {
+    // المعلم: غرفه مع طلابه فقط
+    listen('mine', query(roomsCol, where('ownerId', '==', uid), limit(50)));
   } else {
-    listen('mixed', query(roomsCol, where('girlsOnly', '==', false), where('status', '==', 'open'), limit(100)));
-    if (isFemale) listen('girls', query(roomsCol, where('girlsOnly', '==', true), where('status', '==', 'open'), limit(100)));
+    listen('mixed', query(roomsCol, where('audience', '==', 'all'), where('girlsOnly', '==', false), where('status', '==', 'open'), limit(100)));
+    if (isFemale) listen('girls', query(roomsCol, where('audience', '==', 'all'), where('girlsOnly', '==', true), where('status', '==', 'open'), limit(100)));
     // غرفي (ومنها المغلقة)
-    listen(
-      'mine',
-      isFemale
-        ? query(roomsCol, where('ownerId', '==', uid), limit(50))
-        : query(roomsCol, where('ownerId', '==', uid), where('girlsOnly', '==', false), limit(50))
-    );
+    listen('mine', query(roomsCol, where('ownerId', '==', uid), limit(50)));
+    // غرف معلمي
+    if (opts.myTeacherId)
+      listen('teacher', query(roomsCol, where('audience', '==', 'teacher'), where('ownerId', '==', opts.myTeacherId), where('status', '==', 'open'), limit(20)));
   }
   return () => unsubs.forEach((u) => u());
 }

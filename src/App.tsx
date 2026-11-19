@@ -136,8 +136,9 @@ function MainApp() {
   const renderCurrentPage = () => {
     if (
       teacherOnly &&
-      !['teacher-dashboard', 'portal', 'homework', 'avatar-studio', 'login', 'student-login', 'staff'].includes(currentRoute) &&
-      !currentRoute.startsWith('hw-answers/')
+      !['teacher-dashboard', 'portal', 'homework', 'avatar-studio', 'login', 'student-login', 'staff', 'rooms'].includes(currentRoute) &&
+      !currentRoute.startsWith('hw-answers/') &&
+      !currentRoute.startsWith('room/')
     ) {
       return <TeacherDashboard navigate={navigate} />;
     }

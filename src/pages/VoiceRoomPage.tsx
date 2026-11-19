@@ -984,7 +984,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
           }}
         />
       )}
-      {showSettings && isMod && <RoomSettings room={room} isAr={isAr} canGirls={gender === 'female' || admin} onClose={() => setShowSettings(false)} onDeleted={() => navigate('rooms')} />}
+      {showSettings && isMod && <RoomSettings room={room} isAr={isAr} canGirls={(gender === 'female' || admin) && room.audience !== 'teacher'} onClose={() => setShowSettings(false)} onDeleted={() => navigate('rooms')} />}
     </div>
   );
 };

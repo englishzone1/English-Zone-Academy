@@ -577,8 +577,14 @@ service cloud.firestore {
       return isMember() && myProfile().get('gender', '') == 'female';
     }
     // من يرى الغرفة: كل من سجّل في المنصة، وغرف «البنات فقط» للمشتركات فقط
+    // غرف المعلم (audience == 'teacher') لا يراها إلا المعلم صاحبها وطلابه (users.teacherId)،
+    // والمعلم لا يرى الغرف العامة.
     function vrCanSee(r) {
-      return isAdmin() || (isMember() && (r.girlsOnly == false || vrIsFemale()));
+      return isAdmin() ||
+        (isSignedIn() && r.ownerId == request.auth.uid) ||
+        (r.audience == 'teacher'
+          ? (isMember() && myProfile().get('teacherId', '') == r.ownerId)
+          : (isMember() && !isTeacherDoc() && (r.girlsOnly == false || vrIsFemale())));
     }
     function vrIsMod(roomId) {
       return isAdmin() || (isSignedIn() && vrRoom(roomId).ownerId == request.auth.uid);
@@ -592,7 +598,8 @@ service cloud.firestore {
       return isSignedIn() && vrCanSee(vrRoom(roomId)) && vrMyStatus(roomId) == 'in';
     }
     function vrValidRoom(d) {
-      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount', 'chatSince', 'bg']) &&
+      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount', 'chatSince', 'bg', 'audience']) &&
+        (!('audience' in d) || d.audience in ['all', 'teacher']) &&
         d.title is string && d.title.size() > 0 && d.title.size() <= 80 &&
         d.topic is string && d.topic.size() <= 300 &&
         d.level is string && d.level.size() <= 20 &&
@@ -607,16 +614,22 @@ service cloud.firestore {
 
     match /voice_rooms/{roomId} {
       allow get, list: if isSignedIn() && vrCanSee(resource.data);
-      allow create: if (isMember() || isAdmin()) &&
+      allow create: if isSignedIn() &&
         request.resource.data.ownerId == request.auth.uid &&
         vrValidRoom(request.resource.data) &&
         request.resource.data.status == 'open' &&
-        (request.resource.data.girlsOnly == false || vrIsFemale() || isAdmin());
+        (
+          (request.resource.data.audience == 'all' && isAdmin()) ||
+          (request.resource.data.audience == 'all' && isMember() && !isTeacherDoc() &&
+            (request.resource.data.girlsOnly == false || vrIsFemale())) ||
+          (request.resource.data.audience == 'teacher' && isTeacherDoc() && request.resource.data.girlsOnly == false)
+        );
       allow update: if isAdmin() ||
-        (isMember() && resource.data.ownerId == request.auth.uid &&
+        (isSignedIn() && resource.data.ownerId == request.auth.uid &&
           request.resource.data.ownerId == resource.data.ownerId &&
+          request.resource.data.get('audience', 'all') == resource.data.get('audience', 'all') &&
           vrValidRoom(request.resource.data) &&
-          (request.resource.data.girlsOnly == false || vrIsFemale())) ||
+          (request.resource.data.girlsOnly == false || (vrIsFemale() && request.resource.data.get('audience', 'all') == 'all'))) ||
         (vrIsIn(roomId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastActiveAt', 'liveCount', 'chatSince']) &&
           request.resource.data.liveCount is int &&
           (!('chatSince' in request.resource.data) || request.resource.data.chatSince is int));
@@ -705,7 +718,7 @@ service cloud.firestore {
 
     // إعدادات خادم TURN للغرف الصوتية: يقرؤها المسجّلون، وتكتبها الإدارة
     match /voice_config/{cfgId} {
-      allow get: if isMember() || isAdmin();
+      allow get: if isMember() || isAdmin() || isTeacherDoc();
       allow write: if isAdmin();
     }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck, UserRound } from 'lucide-react';
+import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck, UserRound, Mic } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { useAuth } from '../../context/AuthContext';
@@ -90,6 +90,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
               <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
           </div>
+          <div className="flex flex-wrap gap-2 self-start">
+          <button
+            onClick={() => navigate('rooms')}
+            className="px-4 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5"
+          >
+            <Mic className="w-4 h-4" />
+            {tr('Voice rooms with my students', 'الغرف الصوتية مع طلابي')}
+          </button>
           <button
             onClick={async () => {
               await logout();
@@ -100,6 +108,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
             <LogOut className="w-4 h-4" />
             {tr('Sign out', 'تسجيل الخروج')}
           </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
