@@ -42,6 +42,7 @@ import {
   updateMember,
   updateRoom,
   watchChat,
+  clearChat,
   watchMembers,
   watchMyMember,
   watchRoom,
@@ -164,8 +165,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
 
   useEffect(() => {
     if (!inRoom) return;
-    return watchChat(roomId, setChat);
-  }, [roomId, inRoom]);
+    return watchChat(roomId, room?.chatSince || 0, setChat);
+  }, [roomId, inRoom, room?.chatSince]);
 
   const fresh = useCallback((m: RoomMember) => now - (m.seenAt || 0) < ACTIVE_MS, [now]);
   const present = useMemo(() => members.filter((m) => m.status === 'in' && (fresh(m) || m.uid === uid)), [members, fresh, uid]);
@@ -366,7 +367,9 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       updateMember(roomId, uid, { seenAt: t }).catch(() => {});
       const r = roomRef.current;
       if (r && t - (r.lastActiveAt || 0) > HEARTBEAT_MS - 5000) {
-        updateRoom(roomId, { lastActiveAt: t, liveCount: presentRef.current.length } as any).catch(() => {});
+        const fresh = t - (r.lastActiveAt || 0) > ACTIVE_MS; // الغرفة كانت فارغة: جلسة جديدة بدردشة جديدة
+        updateRoom(roomId, { lastActiveAt: t, liveCount: presentRef.current.length, ...(fresh ? { chatSince: t } : {}) } as any).catch(() => {});
+        if (fresh && (r.ownerId === uid || admin)) clearChat(roomId);
       }
     };
     beat();
@@ -865,9 +868,13 @@ const MemberMenu: React.FC<{ m: RoomMember; isMod: boolean; isAr: boolean; onClo
   );
 };
 
+const EMOJIS = ['😊', '😂', '😍', '🥰', '😎', '🤔', '😅', '😢', '😮', '🙏', '👏', '👍', '👋', '💪', '🎉', '❤️', '🌸', '🌟', '🔥', '✅', '💯', '📚', '✍️', '🗣️'];
+
 const RoomChat: React.FC<{ roomId: string; uid: string; name: string; msgs: ChatMsg[]; isMod: boolean; isAr: boolean }> = ({ roomId, uid, name, msgs, isMod, isAr }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [text, setText] = useState('');
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -877,7 +884,12 @@ const RoomChat: React.FC<{ roomId: string; uid: string; name: string; msgs: Chat
     const t = text.trim();
     if (!t) return;
     setText('');
+    setEmojiOpen(false);
     await sendChat(roomId, uid, name, t).catch(() => setText(t));
+  };
+  const addEmoji = (e: string) => {
+    setText((t) => (t + e).slice(0, 500));
+    inputRef.current?.focus();
   };
   return (
     <div className="bg-white rounded-3xl border border-gray-200 flex flex-col h-[380px]">
@@ -888,7 +900,7 @@ const RoomChat: React.FC<{ roomId: string; uid: string; name: string; msgs: Chat
             <span className="text-[10px] font-bold text-gray-400 block">{m.name}</span>
             <span className={`inline-block px-3 py-1.5 rounded-2xl break-words max-w-full ${m.uid === uid ? 'bg-[#0A192F] text-white' : 'bg-gray-100 text-[#0A192F]'}`}>{m.text}</span>
             {(isMod || m.uid === uid) && (
-              <button onClick={() => deleteChat(roomId, m.id).catch(() => {})} className="opacity-0 group-hover:opacity-100 ms-1 text-gray-400 hover:text-red-600 align-middle">
+              <button onClick={() => deleteChat(roomId, m.id).catch(() => {})} className="sm:opacity-0 sm:group-hover:opacity-100 ms-1 text-gray-300 hover:text-red-600 align-middle">
                 <Trash2 className="w-3.5 h-3.5 inline" />
               </button>
             )}
@@ -896,8 +908,21 @@ const RoomChat: React.FC<{ roomId: string; uid: string; name: string; msgs: Chat
         ))}
         <div ref={endRef} />
       </div>
+      {emojiOpen && (
+        <div className="px-2 pt-2 border-t border-gray-100 grid grid-cols-8 gap-1">
+          {EMOJIS.map((e) => (
+            <button key={e} onClick={() => addEmoji(e)} className="text-xl py-1 rounded-lg hover:bg-gray-100">
+              {e}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="p-2 border-t border-gray-100 flex gap-2">
+        <button onClick={() => setEmojiOpen((o) => !o)} className={`px-2.5 rounded-xl text-xl ${emojiOpen ? 'bg-[#FAF8F5] ring-1 ring-[#D4AF37]' : ''}`} title="Emoji">
+          😊
+        </button>
         <input
+          ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value.slice(0, 500))}
           onKeyDown={(e) => e.key === 'Enter' && send()}
@@ -957,7 +982,11 @@ const RoomSettings: React.FC<{ room: VoiceRoom; isAr: boolean; canGirls: boolean
         )}
         <button
           disabled={busy}
-          onClick={() => set({ status: room.status === 'open' ? 'closed' : 'open' })}
+          onClick={async () => {
+            const closing = room.status === 'open';
+            await set(closing ? { status: 'closed', chatSince: Date.now() } : { status: 'open', chatSince: Date.now() });
+            if (closing) clearChat(room.id);
+          }}
           className="w-full py-2.5 rounded-xl border border-gray-300 text-sm font-bold"
         >
           {room.status === 'open' ? tr('Close the room', 'إغلاق الغرفة') : tr('Reopen the room', 'إعادة فتح الغرفة')}

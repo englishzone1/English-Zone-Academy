@@ -592,7 +592,7 @@ service cloud.firestore {
       return isSignedIn() && vrCanSee(vrRoom(roomId)) && vrMyStatus(roomId) == 'in';
     }
     function vrValidRoom(d) {
-      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount']) &&
+      return d.keys().hasOnly(['title', 'topic', 'level', 'ownerId', 'ownerName', 'privacy', 'girlsOnly', 'maxSpeakers', 'status', 'createdAt', 'lastActiveAt', 'liveCount', 'chatSince']) &&
         d.title is string && d.title.size() > 0 && d.title.size() <= 80 &&
         d.topic is string && d.topic.size() <= 300 &&
         d.level is string && d.level.size() <= 20 &&
@@ -616,8 +616,9 @@ service cloud.firestore {
           request.resource.data.ownerId == resource.data.ownerId &&
           vrValidRoom(request.resource.data) &&
           (request.resource.data.girlsOnly == false || vrIsFemale())) ||
-        (vrIsIn(roomId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastActiveAt', 'liveCount']) &&
-          request.resource.data.liveCount is int);
+        (vrIsIn(roomId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastActiveAt', 'liveCount', 'chatSince']) &&
+          request.resource.data.liveCount is int &&
+          (!('chatSince' in request.resource.data) || request.resource.data.chatSince is int));
       allow delete: if isAdmin() || (isSignedIn() && resource.data.ownerId == request.auth.uid);
 
       match /members/{uid} {

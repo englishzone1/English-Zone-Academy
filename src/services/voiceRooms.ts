@@ -38,6 +38,7 @@ export interface VoiceRoom {
   createdAt: number;
   lastActiveAt: number;
   liveCount: number;
+  chatSince?: number; // الدردشة تبدأ من هنا (تُمسح عند إغلاق الغرفة أو بدء جلسة جديدة)
 }
 
 export interface RoomMember {
@@ -186,9 +187,9 @@ export async function joinRoom(
 export const updateMember = (roomId: string, uid: string, data: Partial<RoomMember>) => updateDoc(memberRef(roomId, uid), data as any);
 export const removeMember = (roomId: string, uid: string) => deleteDoc(memberRef(roomId, uid));
 
-export function watchChat(roomId: string, cb: (m: ChatMsg[]) => void) {
+export function watchChat(roomId: string, since: number, cb: (m: ChatMsg[]) => void) {
   return onSnapshot(
-    query(collection(db, 'voice_rooms', roomId, 'chat'), orderBy('createdAt', 'desc'), limit(60)),
+    query(collection(db, 'voice_rooms', roomId, 'chat'), where('createdAt', '>=', since || 0), orderBy('createdAt', 'desc'), limit(60)),
     (s) => cb(s.docs.map((d) => ({ id: d.id, ...(d.data() as any) })).reverse()),
     () => cb([])
   );
@@ -196,6 +197,16 @@ export function watchChat(roomId: string, cb: (m: ChatMsg[]) => void) {
 
 export const sendChat = (roomId: string, uid: string, name: string, text: string) =>
   addDoc(collection(db, 'voice_rooms', roomId, 'chat'), { uid, name: name.slice(0, 60), text: text.slice(0, 500), createdAt: Date.now() });
+
+/** مسح الدردشة (للمشرفة): عند إغلاق الغرفة أو بدء جلسة جديدة */
+export async function clearChat(roomId: string) {
+  try {
+    const snap = await getDocs(collection(db, 'voice_rooms', roomId, 'chat'));
+    await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+  } catch {
+    /* ignore */
+  }
+}
 
 export const deleteChat = (roomId: string, id: string) => deleteDoc(doc(db, 'voice_rooms', roomId, 'chat', id));
 
