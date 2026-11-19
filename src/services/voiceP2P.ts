@@ -6,7 +6,7 @@ import { collection, deleteDoc, doc, getDoc, onSnapshot, query, setDoc, updateDo
 import { db } from './firebase';
 import type { RoomMember } from './voiceRooms';
 
-export type MediaKind = 'mic' | 'screen';
+export type MediaKind = 'mic' | 'screen' | 'cam';
 
 const STUN: RTCIceServer = { urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] };
 let ICE: RTCIceServer[] = [STUN];
@@ -162,8 +162,8 @@ export class P2PMesh {
     const now = Date.now();
     this.ins.forEach((i, k) => {
       const m = others.find((x) => x.uid === i.from);
-      const cur = m ? (i.kind === 'mic' ? m.pub : m.screen) : null;
-      const allowed = !!m && (i.kind === 'screen' || m.role === 'owner' || m.role === 'speaker');
+      const cur = m ? (i.kind === 'mic' ? m.pub : i.kind === 'screen' ? m.screen : m.cam || null) : null;
+      const allowed = !!m && (i.kind !== 'mic' || m.role === 'owner' || m.role === 'speaker');
       if (!m || !allowed || (cur && cur !== i.nonce) || (!cur && now - i.at > 15000)) this.closeIn(k);
     });
   }
@@ -178,7 +178,9 @@ export class P2PMesh {
     const docId = `${loc.nonce}_${to}_${Date.now().toString(36)}`;
     const out: Out = { pc, docId, to, kind, nonce: loc.nonce };
     this.outs.set(key, out);
-    pc.addTransceiver(loc.track, { direction: 'sendonly' });
+    // الكاميرا والشاشة بجودة معتدلة لأن كل اتصال يُرسل من جهاز المتحدث نفسه
+    const maxBitrate = kind === 'cam' ? 250_000 : kind === 'screen' ? 700_000 : 0;
+    pc.addTransceiver(loc.track, maxBitrate ? { direction: 'sendonly', sendEncodings: [{ maxBitrate }] } : { direction: 'sendonly' });
     pc.addEventListener('connectionstatechange', () => {
       if (pc.connectionState === 'failed') {
         this.fails.set(key, (this.fails.get(key) || 0) + 1);
@@ -225,7 +227,7 @@ export class P2PMesh {
 
   private async onOffer(docId: string, d: any) {
     if (!d || !d.offer || d.answer || this.handled.has(docId) || this.closed) return;
-    if (d.kind !== 'mic' && d.kind !== 'screen') return;
+    if (d.kind !== 'mic' && d.kind !== 'screen' && d.kind !== 'cam') return;
     this.handled.add(docId);
     const key = `${d.from}:${d.kind}`;
     this.closeIn(key);

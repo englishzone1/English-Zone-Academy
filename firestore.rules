@@ -628,7 +628,8 @@ service cloud.firestore {
         // الدخول: المستمعة تدخل مباشرة في الغرفة العامة، وتنتظر الموافقة في غيرها
         allow create: if isSignedIn() && uid == request.auth.uid &&
           vrCanSee(vrRoom(roomId)) && vrRoom(roomId).status == 'open' &&
-          request.resource.data.keys().hasOnly(['uid', 'name', 'photo', 'gender', 'role', 'status', 'hand', 'muted', 'canScreen', 'pub', 'screen', 'joinedAt', 'seenAt']) &&
+          request.resource.data.keys().hasOnly(['uid', 'name', 'photo', 'gender', 'role', 'status', 'hand', 'muted', 'canScreen', 'pub', 'screen', 'cam', 'joinedAt', 'seenAt']) &&
+          request.resource.data.get('cam', null) == null &&
           request.resource.data.uid == uid &&
           request.resource.data.name is string && request.resource.data.name.size() <= 60 &&
           request.resource.data.photo is string && request.resource.data.photo.size() <= 500 &&
@@ -644,7 +645,8 @@ service cloud.firestore {
         allow update: if
           // صاحبة الغرفة أو الإدارة: الموافقة، رفع/إنزال المتحدثات، الكتم، الطرد، السماح بمشاركة الشاشة
           (vrIsMod(roomId) && uid != request.auth.uid &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'status', 'muted', 'canScreen', 'hand', 'pub', 'screen']) &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'status', 'muted', 'canScreen', 'hand', 'pub', 'screen', 'cam']) &&
+            (request.resource.data.get('cam', null) == resource.data.get('cam', null) || request.resource.data.get('cam', null) == null) &&
             (request.resource.data.role == resource.data.role || (resource.data.role != 'owner' && request.resource.data.role in ['speaker', 'listener'])) &&
             request.resource.data.status in ['in', 'pending', 'left', 'kicked'] &&
             request.resource.data.canScreen is bool &&
@@ -653,7 +655,9 @@ service cloud.firestore {
             (request.resource.data.screen == resource.data.screen || request.resource.data.screen == null)) ||
           // العضو نفسه: اليد، الميكروفون، النشر، الخروج والعودة (والمطرود لا يغيّر شيئًا)
           (uid == request.auth.uid && resource.data.status != 'kicked' &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hand', 'muted', 'pub', 'screen', 'seenAt', 'joinedAt', 'status', 'name', 'role']) &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hand', 'muted', 'pub', 'screen', 'cam', 'seenAt', 'joinedAt', 'status', 'name', 'role']) &&
+            (request.resource.data.get('cam', null) == null ||
+              (request.resource.data.cam is string && request.resource.data.status == 'in' && resource.data.canScreen == true)) &&
             (request.resource.data.role == resource.data.role || (resource.data.role == 'speaker' && request.resource.data.role == 'listener')) &&
             request.resource.data.name is string && request.resource.data.name.size() <= 60 &&
             request.resource.data.hand is bool && request.resource.data.muted is bool &&
@@ -676,7 +680,7 @@ service cloud.firestore {
           request.resource.data.keys().hasOnly(['from', 'to', 'kind', 'nonce', 'offer', 'answer', 'createdAt']) &&
           request.resource.data.from == request.auth.uid &&
           request.resource.data.to is string && request.resource.data.to != request.auth.uid &&
-          request.resource.data.kind in ['mic', 'screen'] &&
+          request.resource.data.kind in ['mic', 'screen', 'cam'] &&
           request.resource.data.nonce is string && request.resource.data.nonce.size() <= 64 &&
           request.resource.data.offer is string && request.resource.data.offer.size() <= 30000 &&
           request.resource.data.answer == null &&

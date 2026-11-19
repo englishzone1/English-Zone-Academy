@@ -54,6 +54,7 @@ export interface RoomMember {
   canScreen: boolean;
   pub: string | null; // جلسة نشر الصوت
   screen: string | null; // جلسة نشر الشاشة
+  cam?: string | null; // الكاميرا
   joinedAt: number;
   seenAt: number;
 }
@@ -162,7 +163,7 @@ export async function joinRoom(
       return existing.status;
     }
     const status: MemberStatus = isOwner || isAdmin || room.privacy === 'public' ? 'in' : 'pending';
-    await updateDoc(memberRef(room.id, me.uid), { status, seenAt: now, joinedAt: now, hand: false, muted: true, pub: null, screen: null, name: me.name });
+    await updateDoc(memberRef(room.id, me.uid), { status, seenAt: now, joinedAt: now, hand: false, muted: true, pub: null, screen: null, cam: null, name: me.name });
     return status;
   }
   const status: MemberStatus = isOwner || isAdmin || room.privacy === 'public' ? 'in' : 'pending';
@@ -178,6 +179,7 @@ export async function joinRoom(
     canScreen: isOwner,
     pub: null,
     screen: null,
+    cam: null,
     joinedAt: now,
     seenAt: now,
   };

@@ -23,6 +23,8 @@ import {
   Loader2,
   ArrowRight,
   Palette,
+  Video,
+  VideoOff,
   ImagePlus,
 } from 'lucide-react';
 import { ROOM_BGS, bgById, getMyBg, setMyBg, shrinkImage } from '../services/roomBackgrounds';
@@ -79,7 +81,7 @@ const AudioSink: React.FC<{ track: MediaStreamTrack; onBlocked: () => void }> = 
   return <audio ref={ref} autoPlay playsInline />;
 };
 
-const VideoSink: React.FC<{ track: MediaStreamTrack }> = ({ track }) => {
+const VideoSink: React.FC<{ track: MediaStreamTrack; label?: string; mirror?: boolean; compact?: boolean }> = ({ track, label, mirror, compact }) => {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     if (ref.current) {
@@ -89,7 +91,8 @@ const VideoSink: React.FC<{ track: MediaStreamTrack }> = ({ track }) => {
   }, [track]);
   return (
     <div className="relative bg-black rounded-2xl overflow-hidden">
-      <video ref={ref} autoPlay playsInline muted className="w-full max-h-[60vh] object-contain" />
+      <video ref={ref} autoPlay playsInline muted className={`w-full object-contain ${compact ? 'max-h-[22vh]' : 'max-h-[34vh]'} ${mirror ? '-scale-x-100' : ''}`} />
+      {label && <span className="absolute bottom-2 start-2 px-2 py-0.5 rounded-lg bg-black/60 text-white text-[11px] font-bold">{label}</span>}
       <button
         onClick={() => ref.current?.requestFullscreen?.().catch(() => {})}
         className="absolute top-2 end-2 p-2 rounded-lg bg-black/60 text-white"
@@ -134,6 +137,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const meshRef = useRef<P2PMesh | null>(null);
   const micTrackRef = useRef<MediaStreamTrack | null>(null);
   const screenTrackRef = useRef<MediaStreamTrack | null>(null);
+  const camTrackRef = useRef<MediaStreamTrack | null>(null);
+  const [camOn, setCamOn] = useState(false);
   const meterRef = useRef<LevelMeter | null>(null);
 
   const flash = useCallback((msg: string) => {
@@ -215,6 +220,9 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       micTrackRef.current = null;
       screenTrackRef.current = null;
       setScreenOn(false);
+      camTrackRef.current?.stop();
+      camTrackRef.current = null;
+      setCamOn(false);
       setTracks({});
     };
   }, [inRoom, roomId, uid]);
@@ -344,6 +352,47 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     });
   };
 
+  // ===== الكاميرا (لصاحب/ة الغرفة ومن يُسمح له) =====
+  const stopCam = useCallback(
+    (write = true) => {
+      const t = camTrackRef.current;
+      camTrackRef.current = null;
+      setCamOn(false);
+      if (t) {
+        meshRef.current?.setLocal('cam', null);
+        t.stop();
+        if (write) updateMember(roomId, uid, { cam: null }).catch(() => {});
+      }
+    },
+    [roomId, uid]
+  );
+
+  const startCam = async () => {
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 480 }, height: { ideal: 360 }, frameRate: { ideal: 15, max: 15 }, facingMode: 'user' },
+      });
+    } catch {
+      return flash(tr('Camera permission is needed.', 'يلزم السماح بالكاميرا.'));
+    }
+    const track = stream.getVideoTracks()[0];
+    const mesh = meshRef.current;
+    if (!mesh) return track.stop();
+    camTrackRef.current = track;
+    const nonce = mesh.setLocal('cam', track);
+    setCamOn(true);
+    track.onended = () => stopCam();
+    await updateMember(roomId, uid, { cam: nonce }).catch(() => {
+      stopCam(false);
+      flash(tr('Could not start the camera.', 'تعذر تشغيل الكاميرا.'));
+    });
+  };
+
+  useEffect(() => {
+    if (camTrackRef.current && (!inRoom || !me?.canScreen)) stopCam(inRoom);
+  }, [inRoom, me?.canScreen, stopCam]);
+
   useEffect(() => {
     if (screenTrackRef.current && (!inRoom || !me?.canScreen)) stopScreen(inRoom);
   }, [inRoom, me?.canScreen, stopScreen]);
@@ -387,7 +436,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   useEffect(() => {
     if (!inRoom) return;
     const bye = () => {
-      updateMember(roomId, uid, { status: 'left', pub: null, screen: null, hand: false }).catch(() => {});
+      updateMember(roomId, uid, { status: 'left', pub: null, screen: null, cam: null, hand: false }).catch(() => {});
     };
     window.addEventListener('pagehide', bye);
     return () => window.removeEventListener('pagehide', bye);
@@ -442,10 +491,11 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
 
   const leave = async (goBack = true) => {
     stopScreen(false);
+    stopCam(false);
     setEntered(false);
     setMe(null);
     setMembers([]);
-    await updateMember(roomId, uid, { status: 'left', pub: null, screen: null, hand: false }).catch(() => {});
+    await updateMember(roomId, uid, { status: 'left', pub: null, screen: null, cam: null, hand: false }).catch(() => {});
     if (goBack) navigate('rooms');
   };
 
@@ -455,7 +505,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const mod = {
     approve: (m: RoomMember) => updateMember(roomId, m.uid, { status: 'in' }),
     decline: (m: RoomMember) => removeMember(roomId, m.uid),
-    ban: (m: RoomMember) => updateMember(roomId, m.uid, { status: 'kicked', pub: null, screen: null, hand: false, role: m.role === 'owner' ? 'owner' : 'listener' }),
+    ban: (m: RoomMember) => updateMember(roomId, m.uid, { status: 'kicked', pub: null, screen: null, cam: null, hand: false, role: m.role === 'owner' ? 'owner' : 'listener' }),
     toStage: async (m: RoomMember) => {
       if (stage.length >= (room?.maxSpeakers || 6)) {
         flash(tr('The stage is full.', 'المنصة ممتلئة بالمتحدثين.'));
@@ -463,9 +513,9 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       }
       await updateMember(roomId, m.uid, { role: 'speaker', hand: false, muted: true });
     },
-    toAudience: (m: RoomMember) => updateMember(roomId, m.uid, { role: 'listener', pub: null, screen: null, canScreen: false, muted: true }),
+    toAudience: (m: RoomMember) => updateMember(roomId, m.uid, { role: 'listener', pub: null, screen: null, cam: null, canScreen: false, muted: true }),
     mute: (m: RoomMember) => updateMember(roomId, m.uid, { muted: true }),
-    screen: (m: RoomMember, on: boolean) => updateMember(roomId, m.uid, on ? { canScreen: true } : { canScreen: false, screen: null }),
+    screen: (m: RoomMember, on: boolean) => updateMember(roomId, m.uid, on ? { canScreen: true } : { canScreen: false, screen: null, cam: null }),
   };
 
   const copyLink = async () => {
@@ -598,6 +648,14 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const seats: (RoomMember | null)[] = Array.from({ length: Math.max(room.maxSpeakers || 5, stage.length) }, (_, i) => stage[i] || null);
   const photoOf = (id: string) => members.find((m) => m.uid === id) || null;
   const roundBtn = 'w-11 h-11 shrink-0 rounded-full flex items-center justify-center';
+  const videoTiles: { key: string; kind: 'screen' | 'cam'; label: string; track: MediaStreamTrack | null; mine: boolean }[] = [];
+  if (screenOwner && screenOwner.uid !== uid) videoTiles.push({ key: screenOwner.uid + ':screen', kind: 'screen', label: `${tr('Screen of', 'شاشة')} ${screenOwner.name}`, track: tracks[screenOwner.uid + ':screen'] || null, mine: false });
+  present.forEach((m) => {
+    if (!m.cam) return;
+    if (m.uid === uid) {
+      if (camOn && camTrackRef.current) videoTiles.push({ key: 'me:cam', kind: 'cam', label: tr('You', 'أنت'), track: camTrackRef.current, mine: true });
+    } else videoTiles.push({ key: m.uid + ':cam', kind: 'cam', label: m.name, track: tracks[m.uid + ':cam'] || null, mine: false });
+  });
 
   // الخلفية: اختياري الشخصي، ثم خلفية الغرفة، ثم الليلي
   const bgStyle: React.CSSProperties =
@@ -686,19 +744,27 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         )}
       </div>
 
-      {/* الشاشة المشتركة */}
-      {screenOwner && screenOwner.uid !== uid && (
-        <div className="px-3 pt-2">
-          {tracks[screenOwner.uid + ':screen'] ? (
-            <VideoSink track={tracks[screenOwner.uid + ':screen']} />
-          ) : (
-            <div className="h-32 rounded-2xl bg-white/5 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      {/* الفيديو: الشاشة المشتركة والكاميرات */}
+      {(videoTiles.length > 0 || screenOn) && (
+        <div className="px-3 pt-2 space-y-2 shrink-0">
+          {screenOn && <div className="px-3 py-1.5 rounded-xl bg-red-500/20 text-red-100 text-xs font-bold">{tr('You are sharing your screen', 'أنت تشارك{|ين} شاشتك')}</div>}
+          {videoTiles.length > 0 && (
+            <div className={`grid gap-2 ${videoTiles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+              {videoTiles.map((v) => (
+                <div key={v.key} className={v.kind === 'screen' && videoTiles.length > 1 ? 'col-span-2' : ''}>
+                  {v.track ? (
+                    <VideoSink track={v.track} label={v.label} mirror={v.mine} compact={videoTiles.length > 1} />
+                  ) : (
+                    <div className="h-28 rounded-2xl bg-white/5 flex items-center justify-center">
+                      <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
       )}
-      {screenOn && <div className="mx-3 mt-2 px-3 py-1.5 rounded-xl bg-red-500/20 text-red-100 text-xs font-bold">{tr('You are sharing your screen', 'أنت تشارك{|ين} شاشتك')}</div>}
 
       {/* المسرح: مقاعد المتحدثين */}
       <div className="grid grid-cols-4 gap-y-3 px-2 pt-3 shrink-0">
@@ -714,6 +780,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                   </span>
                 )}
                 {m.screen && <MonitorUp className="absolute -bottom-1 -end-1 w-5 h-5 p-0.5 rounded-full bg-[#D4AF37] text-[#0A192F]" />}
+                {m.cam && <Video className="absolute -bottom-1 -start-1 w-5 h-5 p-0.5 rounded-full bg-sky-500 text-white" />}
               </div>
               <span className="text-[11px] font-bold truncate max-w-[80px]">{m.uid === uid ? tr('You', 'أنت') : m.name}</span>
             </button>
@@ -780,11 +847,20 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
             )}
             {me?.role === 'speaker' && (
               <button
-                onClick={() => updateMember(roomId, uid, { role: 'listener', pub: null, screen: null, muted: true, hand: false }).catch(() => {})}
+                onClick={() => updateMember(roomId, uid, { role: 'listener', pub: null, screen: null, cam: null, muted: true, hand: false }).catch(() => {})}
                 className={`${roundBtn} bg-white/15`}
                 title={tr('Leave the stage', 'النزول إلى المستمعين')}
               >
                 <UserMinus className="w-5 h-5" />
+              </button>
+            )}
+            {me?.canScreen && (
+              <button
+                onClick={() => (camOn ? stopCam() : startCam())}
+                className={`${roundBtn} ${camOn ? 'bg-sky-500 text-white' : 'bg-white/15'}`}
+                title={camOn ? tr('Turn camera off', 'إيقاف الكاميرا') : tr('Turn camera on', 'تشغيل الكاميرا')}
+              >
+                {camOn ? <VideoOff className="w-5 h-5" /> : <Video className="w-5 h-5" />}
               </button>
             )}
             {me?.canScreen && canShareScreen() && (
