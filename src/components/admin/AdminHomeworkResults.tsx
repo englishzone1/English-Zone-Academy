@@ -305,15 +305,17 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                     {r.speakingScore !== undefined ? `${r.speakingScore}/${r.speakingMax}` : tr('to grade', 'بانتظار درجتك')}
                   </span>
                 )}
-                {(r.hasAnswers || !!r.audioCount) && (
-                  <button
-                    onClick={() => window.open(`/#/hw-answers/${r.id}`, '_blank')}
-                    className="px-2.5 py-1 rounded-lg border border-[#0A192F] text-[#0A192F] font-bold whitespace-nowrap flex items-center gap-1"
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                    {tr('Answers', 'الإجابات')}
-                  </button>
+                {(r as any).manual && (
+                  <span className="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold whitespace-nowrap">{tr('edited', 'معدّلة يدويًا')}</span>
                 )}
+                {/* الإجابات والتصحيح اليدوي (للنتائج القديمة: تعديل الدرجة فقط) */}
+                <button
+                  onClick={() => window.open(`/#/hw-answers/${r.id}`, '_blank')}
+                  className="px-2.5 py-1 rounded-lg border border-[#0A192F] text-[#0A192F] font-bold whitespace-nowrap flex items-center gap-1"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  {r.hasAnswers || !!r.audioCount ? tr('Answers & marking', 'الإجابات والتصحيح') : tr('Edit score', 'تعديل الدرجة')}
+                </button>
                 {r.starsGiven ? (
                   <>
                     <span className="px-2.5 py-1 rounded-lg bg-[#F3E5AB]/50 text-[#8a6d10] font-bold whitespace-nowrap flex items-center gap-1">

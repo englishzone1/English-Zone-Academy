@@ -514,10 +514,16 @@ service cloud.firestore {
       // الإدارة أو معلم الطالب: النجوم الممنوحة ودرجة المحادثة فقط
       // والإدارة وحدها تسجّل حذف التسجيلات الصوتية (audioCount = 0)
       allow update: if (
-          (isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax', 'audioCount', 'audioDeleted'])) ||
+          (isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax', 'audioCount', 'audioDeleted', 'score', 'percent', 'origScore', 'manual'])) ||
           (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax']))
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax', 'score', 'percent', 'origScore', 'manual']))
         ) &&
+        // التصحيح اليدوي: الدرجة بين 0 والدرجة الكلية (الدرجة الكلية لا تتغير)
+        request.resource.data.total == resource.data.total &&
+        request.resource.data.score is number && request.resource.data.score >= 0 && request.resource.data.score <= request.resource.data.total &&
+        request.resource.data.percent is number && request.resource.data.percent >= 0 && request.resource.data.percent <= 100 &&
+        request.resource.data.get('origScore', 0) is number &&
+        request.resource.data.get('manual', false) is bool &&
         request.resource.data.get('audioCount', 0) <= resource.data.get('audioCount', 0) &&
         request.resource.data.get('starsGiven', 0) is number && request.resource.data.get('starsGiven', 0) >= 0 && request.resource.data.get('starsGiven', 0) <= 10 &&
         request.resource.data.get('speakingScore', 0) is number && request.resource.data.get('speakingScore', 0) >= 0 &&
@@ -532,6 +538,10 @@ service cloud.firestore {
         request.resource.data.keys().hasOnly(['studentId', 'teacherId', 'json', 'createdAt']) &&
         request.resource.data.studentId == request.auth.uid &&
         (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', '')) &&
+        request.resource.data.json is string && request.resource.data.json.size() <= 650000;
+      // تصحيح الأسئلة يدويًا: الإدارة أو معلمة الطالب (الإجابات نفسها فقط)
+      allow update: if (isAdmin() || (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid)) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['json']) &&
         request.resource.data.json is string && request.resource.data.json.size() <= 650000;
       allow get: if isAdmin() ||
         (isSignedIn() && resource.data.studentId == request.auth.uid) ||

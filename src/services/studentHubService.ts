@@ -271,6 +271,9 @@ export interface HomeworkResult {
   // درجة المحادثة التي تضعها المعلمة بعد سماع التسجيلات
   speakingScore?: number;
   speakingMax?: number;
+  // تصحيح يدوي من الإدارة أو المعلمة: الدرجة الأصلية التي أعطاها الموقع تبقى محفوظة
+  manual?: boolean;
+  origScore?: number;
 }
 
 export interface HomeworkAnswer {
@@ -282,6 +285,7 @@ export interface HomeworkAnswer {
   g: number; // الدرجة
   m: number; // من
   n?: string; // ملاحظة التصحيح
+  og?: number; // درجة الموقع الأصلية إذا عدّلتها المعلمة
 }
 
 export interface HomeworkAudio {
@@ -609,6 +613,20 @@ export const studentHubService = {
       }
     }
     await updateDoc(doc(db, 'homework_results', id), { audioCount: 0, audioDeleted: true });
+  },
+
+  // تعديل الدرجة يدويًا (الإدارة أو معلمة الطالب). origScore تُحفظ مرة واحدة فقط
+  async setHomeworkScore(r: HomeworkResult, score: number): Promise<{ score: number; percent: number; origScore: number }> {
+    const sc = Math.max(0, Math.min(r.total, Math.round(score * 100) / 100));
+    const percent = r.total ? Math.round((sc / r.total) * 100) : 0;
+    const origScore = r.origScore !== undefined ? r.origScore : r.score;
+    await updateDoc(doc(db, 'homework_results', r.id), { score: sc, percent, origScore, manual: sc !== origScore });
+    return { score: sc, percent, origScore };
+  },
+
+  // حفظ تصحيح الأسئلة يدويًا (درجة كل سؤال)
+  async saveHomeworkAnswers(id: string, answers: HomeworkAnswer[]): Promise<void> {
+    await updateDoc(doc(db, 'homework_answers', id), { json: JSON.stringify(answers) });
   },
 
   // درجة المحادثة من المعلمة

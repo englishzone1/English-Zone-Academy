@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, CheckCircle2, XCircle, Mic, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Mic, Save, Trash2, PencilLine, RotateCcw, Check, X } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { studentHubService, HomeworkResult, HomeworkAnswer, HomeworkAudio } from '../../services/studentHubService';
@@ -30,6 +30,12 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
   const [spMax, setSpMax] = useState('10');
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState('');
+  // ===== التصحيح اليدوي =====
+  const [baseG, setBaseG] = useState<number[]>([]); // درجات الأسئلة كما هي محفوظة الآن
+  const [scoreIn, setScoreIn] = useState('');
+  const [gradeNote, setGradeNote] = useState('');
+  const dirty = answers.some((a, i) => a.g !== baseG[i]);
+  const r2 = (x: number) => Math.round(x * 100) / 100;
 
   useEffect(() => {
     (async () => {
@@ -47,6 +53,8 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
           r.audioCount ? studentHubService.getHomeworkAudio(resultId, r.audioCount) : Promise.resolve([])
         ]);
         setAnswers(a);
+        setBaseG(a.map((x) => x.g));
+        setScoreIn(String(r.score));
         setAudio(au);
       } catch (err: any) {
         setError(`${tr('Could not load:', 'تعذّر التحميل:')} ${err?.code || err?.message || ''}`);
@@ -57,14 +65,62 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
   }, [resultId]);
 
   const groups = useMemo(() => {
-    const list = onlyWrong ? answers.filter((a) => a.g < a.m) : answers;
-    const m = new Map<string, HomeworkAnswer[]>();
-    list.forEach((a) => {
-      const k = a.s || '—';
-      m.set(k, [...(m.get(k) || []), a]);
+    const list = answers.map((a, idx) => ({ a, idx })).filter(({ a, idx }) => !onlyWrong || a.g < a.m || (baseG[idx] ?? a.g) < a.m);
+    const m = new Map<string, { a: HomeworkAnswer; idx: number }[]>();
+    list.forEach((x) => {
+      const k = x.a.s || '—';
+      m.set(k, [...(m.get(k) || []), x]);
     });
     return [...m.entries()];
-  }, [answers, onlyWrong]);
+  }, [answers, onlyWrong, baseG]);
+
+  // تغيير درجة سؤال واحد (محليًا حتى تضغطي «حفظ التصحيح»)
+  const setG = (idx: number, g: number) =>
+    setAnswers((all) =>
+      all.map((a, i) => (i === idx ? { ...a, g: r2(Math.max(0, Math.min(a.m, g))), og: a.og !== undefined ? a.og : baseG[i] } : a))
+    );
+
+  // حفظ تصحيح الأسئلة: الدرجة الكلية تتغيّر بمقدار الفرق
+  const saveQuestions = async () => {
+    if (!result) return;
+    setSaving(true);
+    setGradeNote('');
+    try {
+      const delta = answers.reduce((s2, a, i) => s2 + (a.g - (baseG[i] ?? a.g)), 0);
+      await studentHubService.saveHomeworkAnswers(result.id, answers);
+      const out = await studentHubService.setHomeworkScore(result, result.score + delta);
+      setResult({ ...result, ...out, manual: out.score !== out.origScore });
+      setScoreIn(String(out.score));
+      setBaseG(answers.map((a) => a.g));
+      setGradeNote(tr('Marking saved.', 'تم حفظ التصحيح.'));
+    } catch (err: any) {
+      setGradeNote(`${tr('Could not save (publish the latest rules):', 'تعذّر الحفظ (انشري آخر ملف قواعد):')} ${err?.code || ''}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // كتابة الدرجة الكلية مباشرة
+  const saveTotal = async (value?: number) => {
+    if (!result) return;
+    const v = value !== undefined ? value : Number(String(scoreIn).replace(',', '.'));
+    if (!Number.isFinite(v) || v < 0 || v > result.total) {
+      setGradeNote(tr(`Enter a score from 0 to ${result.total}.`, `اكتبي درجة من 0 إلى ${result.total}.`));
+      return;
+    }
+    setSaving(true);
+    setGradeNote('');
+    try {
+      const out = await studentHubService.setHomeworkScore(result, v);
+      setResult({ ...result, ...out, manual: out.score !== out.origScore });
+      setScoreIn(String(out.score));
+      setGradeNote(tr('Score saved.', 'تم حفظ الدرجة.'));
+    } catch (err: any) {
+      setGradeNote(`${tr('Could not save (publish the latest rules):', 'تعذّر الحفظ (انشري آخر ملف قواعد):')} ${err?.code || ''}`);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const saveSpeaking = async () => {
     if (!result) return;
@@ -130,6 +186,12 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                 <span className={`px-3 py-1.5 rounded-xl font-bold text-sm ${color(result.percent)}`}>
                   {result.score}/{result.total} ({result.percent}%)
                 </span>
+                {result.manual && (
+                  <span className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-indigo-50 text-indigo-700 flex items-center gap-1">
+                    <PencilLine className="w-3.5 h-3.5" />
+                    {tr(`Edited by hand (site gave ${result.origScore})`, `عُدّلت يدويًا (درجة الموقع ${result.origScore})`)}
+                  </span>
+                )}
                 {result.speakingScore !== undefined && (
                   <span className="px-3 py-1.5 rounded-xl font-bold text-sm bg-[#F3E5AB]/50 text-[#0A192F] flex items-center gap-1">
                     <Mic className="w-4 h-4" />
@@ -138,6 +200,41 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                 )}
               </div>
             </div>
+
+            {staff && (
+              <div className="p-3 rounded-2xl bg-indigo-50/60 border border-indigo-100 flex flex-wrap items-center gap-2">
+                <PencilLine className="w-4 h-4 text-indigo-700" />
+                <span className="text-xs font-bold text-[#0A192F]">{tr('Final score', 'الدرجة النهائية')}</span>
+                <input
+                  value={scoreIn}
+                  onChange={(e) => setScoreIn(e.target.value)}
+                  inputMode="decimal"
+                  className="w-20 px-2 py-1.5 rounded-lg border border-gray-300 text-sm text-center bg-white"
+                />
+                <span className="text-xs">
+                  {tr('out of', 'من')} {result.total}
+                </span>
+                <button
+                  onClick={() => saveTotal()}
+                  disabled={saving}
+                  className="px-3 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1 disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" />
+                  {tr('Save score', 'حفظ الدرجة')}
+                </button>
+                {result.manual && result.origScore !== undefined && (
+                  <button
+                    onClick={() => saveTotal(result.origScore)}
+                    disabled={saving}
+                    className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-700 flex items-center gap-1 disabled:opacity-50"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    {tr("Restore the site's score", 'إرجاع درجة الموقع')}
+                  </button>
+                )}
+                {gradeNote && <span className="text-xs text-gray-700">{gradeNote}</span>}
+              </div>
+            )}
 
             {!!result.sections?.length && (
               <div className="grid sm:grid-cols-2 gap-2">
@@ -247,32 +344,93 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                 {tr('Answers were not saved for this attempt (older results).', 'لم تُحفظ الإجابات في هذه المحاولة (نتيجة قديمة).')}
               </p>
             ) : (
-              groups.map(([sec, rows]) => (
+              <>
+              {staff && (
+                <p className="text-[11px] text-gray-500">
+                  {tr(
+                    'Use ✓ / ✗ or type a mark for any question, then press “Save marking”. The final score changes by the difference.',
+                    'استخدمي ✓ أو ✗ أو اكتبي درجة لأي سؤال، ثم اضغطي «حفظ التصحيح». تتغيّر الدرجة النهائية بمقدار الفرق.'
+                  )}
+                </p>
+              )}
+              {groups.map(([sec, rows]) => (
                 <div key={sec} className="space-y-1.5">
                   <h3 className="text-sm font-bold text-[#0A192F] border-b border-gray-100 pb-1" dir="ltr">
                     {sec}
                   </h3>
-                  {rows.map((a, i) => {
+                  {rows.map(({ a, idx }) => {
                     const ok = a.g >= a.m;
+                    const changed = a.g !== baseG[idx] || (a.og !== undefined && a.og !== a.g);
                     return (
-                      <div key={i} className={`p-2.5 rounded-xl text-xs border ${ok ? 'bg-emerald-50/50 border-emerald-100' : a.g > 0 ? 'bg-amber-50/50 border-amber-100' : 'bg-red-50/50 border-red-100'}`}>
+                      <div key={idx} className={`p-2.5 rounded-xl text-xs border ${ok ? 'bg-emerald-50/50 border-emerald-100' : a.g > 0 ? 'bg-amber-50/50 border-amber-100' : 'bg-red-50/50 border-red-100'}`}>
                         <div className="flex items-start justify-between gap-2">
                           <div dir="ltr" className="text-left flex-1">
                             <div className="text-gray-500">{a.q || a.e}</div>
                             <div className="font-bold text-[#0A192F] whitespace-pre-line">{a.a || tr('(no answer)', '(بلا إجابة)')}</div>
                             {!ok && a.c && <div className="text-emerald-700">✓ {a.c}</div>}
                           </div>
-                          <span className="flex items-center gap-1 font-bold whitespace-nowrap">
-                            {ok ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <XCircle className="w-4 h-4 text-red-500" />}
-                            {a.m > 1 ? `${a.g}/${a.m}` : ''}
-                          </span>
+                          {staff ? (
+                            <span className="flex items-center gap-1 whitespace-nowrap">
+                              <button
+                                onClick={() => setG(idx, a.m)}
+                                title={tr('Correct', 'صحيح')}
+                                className={`w-7 h-7 rounded-lg flex items-center justify-center border ${ok ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-emerald-700 border-emerald-200'}`}
+                              >
+                                <Check className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => setG(idx, 0)}
+                                title={tr('Wrong', 'خطأ')}
+                                className={`w-7 h-7 rounded-lg flex items-center justify-center border ${a.g === 0 ? 'bg-red-500 text-white border-red-500' : 'bg-white text-red-600 border-red-200'}`}
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                              <input
+                                value={a.g}
+                                onChange={(e) => {
+                                  const v = Number(e.target.value.replace(',', '.'));
+                                  if (Number.isFinite(v)) setG(idx, v);
+                                }}
+                                type="number"
+                                step="0.25"
+                                min={0}
+                                max={a.m}
+                                className="w-14 px-1 py-1 rounded-lg border border-gray-300 text-xs text-center bg-white"
+                              />
+                              <span className="text-[11px] text-gray-500">/{a.m}</span>
+                              {changed && a.og !== undefined && (
+                                <span className="text-[10px] text-indigo-700 font-bold" title={tr("Site's mark", 'درجة الموقع')}>
+                                  ({tr('site', 'الموقع')} {a.og})
+                                </span>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1 font-bold whitespace-nowrap">
+                              {ok ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <XCircle className="w-4 h-4 text-red-500" />}
+                              {a.m > 1 ? `${a.g}/${a.m}` : ''}
+                            </span>
+                          )}
                         </div>
                         {a.n && a.m > 1 && <div className="mt-1.5 text-gray-700 whitespace-pre-line" dir="rtl">{a.n}</div>}
                       </div>
                     );
                   })}
                 </div>
-              ))
+              ))}
+              {staff && (
+                <div className="sticky bottom-3 flex items-center justify-end gap-2">
+                  {gradeNote && <span className="text-xs text-gray-700 bg-white/90 px-2 py-1 rounded-lg">{gradeNote}</span>}
+                  <button
+                    onClick={saveQuestions}
+                    disabled={saving || !dirty}
+                    className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-sm font-bold shadow-lg flex items-center gap-1.5 disabled:opacity-40"
+                  >
+                    <Save className="w-4 h-4" />
+                    {tr('Save marking', 'حفظ التصحيح')}
+                  </button>
+                </div>
+              )}
+              </>
             )}
           </div>
         </>
