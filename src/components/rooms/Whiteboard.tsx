@@ -227,7 +227,14 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
         x.textBaseline = 'top';
         x.fillStyle = it.k === 't' ? it.c : '#000';
         const [a, b] = P(it.x, it.y);
-        it.v.split('\n').forEach((line, i) => x.fillText(line, a, b + i * it.s * sc * 1.2));
+        it.v.split('\n').forEach((line, i) => {
+          // اتجاه السطر حسب أول حرف (عربي أو إنجليزي)
+          const m = line.match(/[A-Za-z\u0600-\u06FF]/);
+          (x as any).direction = m && /[\u0600-\u06FF]/.test(m[0]) ? 'rtl' : 'ltr';
+          x.textAlign = 'left';
+          x.fillText(line, a, b + i * it.s * sc * 1.2);
+        });
+        (x as any).direction = 'ltr';
       } else if (it.k === 'i') {
         const im = imgOf(it.src);
         const [a, b] = P(it.x, it.y);
@@ -483,6 +490,13 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
   useEffect(() => {
     if (selected && !store.snap.items.some((x) => x.id === selected)) setSelected(null);
   });
+
+  // على السبورة الداكنة يصبح القلم الأسود أبيض تلقائيًا (والعكس)
+  const bgDark = dark(store.snap.bg);
+  useEffect(() => {
+    if (bgDark && color === '#111827') setColor('#FFFFFF');
+    if (!bgDark && color === '#FFFFFF') setColor('#111827');
+  }, [bgDark]);
 
   // زر الإغلاق والتصغير، وأدوات الكتابة
   const tb = 'w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-colors';
