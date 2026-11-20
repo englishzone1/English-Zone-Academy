@@ -274,19 +274,36 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-[#D4AF37]/20 bg-[#0A192F] px-4 pt-4 pb-6 space-y-2 max-h-[85vh] overflow-y-auto">
           <div className="grid grid-cols-2 gap-2 mb-4">
-            <button
-              onClick={() => handleNav('join-us')}
-              className="w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-center"
-            >
-              {t.nav.register}
-            </button>
+            {user ? (
+              <button
+                onClick={() => handleNav('portal')}
+                className="col-span-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-center"
+              >
+                {language === 'ar' ? 'حسابي' : 'My account'}
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => handleNav('join-us')}
+                  className="w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-center"
+                >
+                  {t.nav.register}
+                </button>
+                <button
+                  onClick={() => handleNav('login')}
+                  className="w-full py-2.5 rounded-xl font-bold text-sm border border-white/30 text-white text-center hover:bg-white/10"
+                >
+                  {t.nav.login}
+                </button>
+              </>
+            )}
             {contacts.placementTestUrl && (
             <a
               href={pt.href}
               target={pt.target}
               rel={pt.rel}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full py-2.5 rounded-xl font-semibold text-xs border border-[#D4AF37]/50 text-[#F3E5AB] flex items-center justify-center gap-1"
+              className="col-span-2 w-full py-2.5 rounded-xl font-semibold text-xs border border-[#D4AF37]/50 text-[#F3E5AB] flex items-center justify-center gap-1"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
               {t.nav.placementTest}
@@ -350,14 +367,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               )
             )}
 
-            <div className="border-t border-white/10 pt-3">
-              <button
-                onClick={() => handleNav('login')}
-                className="w-full py-2.5 rounded-lg text-sm font-semibold text-center border border-white/20 text-white hover:bg-white/10"
-              >
-                {t.nav.login}
-              </button>
-            </div>
           </div>
         </div>
       )}
