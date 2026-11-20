@@ -238,6 +238,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hwh{background:#eef7ff;border:1px solid #bfe0fb}
 .tsh{background:#f5f0ff;border:1px solid #dacbfa}
 @media (max-width:640px){.halves{grid-template-columns:1fr}}
+.corw{display:inline-flex;flex-direction:column;align-items:center;vertical-align:top;margin:0 2px}
+.corw .cor{margin:3px 0 0;padding:0 6px;border-radius:6px;font-family:inherit;font-size:.78rem;line-height:1.45;white-space:nowrap}
+.corw .cor::before{content:"✓ "}
 </style>
 </head>
 <body>
@@ -1313,7 +1316,7 @@ function updExRep(e,rows){
   if(ok===n) h+=`<div>🌟 ممتاز! كل إجاباتك صحيحة. ✅ هذه نقطة قوة عندك.</div>`;
   else {
     const tips=[...new Set(rows.filter(r=>!r.isOk).map(r=>r.itRef.ea).filter(Boolean))].slice(0,3);
-    h+=`<div>❌ أخطأتِ في ${n-ok===1?`سؤال واحد`:n-ok===2?`سؤالين`:n-ok<=10?`${n-ok} أسئلة`:`${n-ok} سؤالًا`}. راجعي الإجابات الصحيحة المكتوبة بالأخضر.</div>`;
+    h+=`<div>❌ أخطأتِ في ${n-ok===1?`سؤال واحد`:n-ok===2?`سؤالين`:n-ok<=10?`${n-ok} أسئلة`:`${n-ok} سؤالًا`}. راجعي الإجابات الصحيحة المكتوبة بالأخضر تحت الخانات.</div>`;
     if(e.exRef.ea) h+=`<div>📘 القاعدة: ${e.exRef.ea}</div>`;
     if(tips.length) h+=`<div>💡 ${tips.join(`<br>💡 `)}</div>`;
     h+=`<div class="how">🎯 طريقة التحسين: ${howTo(e.secRef)}</div>`;
@@ -1511,6 +1514,7 @@ function evalRow(row,it,fields){
 function check(row,it,review,ex){
   if(it.x || row.locked) return;
   const fields = [...row.querySelectorAll("input,select")];
+  row.querySelectorAll(".corw").forEach(w=>{ const inp=w.querySelector("input,select,textarea"); if(inp) w.before(inp); w.remove(); });
   row.querySelectorAll(".cor").forEach(c=>c.remove());
   const fb = row.fbEl; fb.classList.remove("hidden"); fb.dir="auto";
   const exEl = row.closest(".ex");
@@ -1538,9 +1542,9 @@ function check(row,it,review,ex){
     fb.textContent = `🔁 حاولي مرة أخرى.\n💡 تلميح: ${many}${hs.length?hs.join(` / `)+`\n`:``}${rule}`;
     return;
   }
-  if(!it.uq) bad.forEach(f=>{ const c=document.createElement("span"); c.className="cor"; c.textContent=f.dataset.a.split("|")[0]; f.after(c); });
+  if(!it.uq) bad.forEach(f=>{ const w=document.createElement("span"); w.className="corw"; f.before(w); const c=document.createElement("span"); c.className="cor"; c.textContent=f.dataset.a.split("|")[0]; w.append(f,c); });
   const ans = it.ans ? it.ans : (fields.length>1 ? bad.map(f=>f.dataset.a.split("|")[0]) : fields.map(f=>f.dataset.a.split("|")[0])).join(" / ");
-  const where = fields.length>1 && !it.uq ? ` (مكتوبة بالأخضر بجانب كل خانة خاطئة)` : ``;
+  const where = fields.length>1 && !it.uq ? ` (مكتوبة بالأخضر تحت كل خانة خاطئة)` : ``;
   fb.className = "fb no";
   fb.textContent = `❌ إجابة خاطئة. الإجابة الصحيحة: ${ans}${where}\n💡 ${(it.ea||(ex&&ex.ea)||`راجعي القاعدة في الدرس.`)}`;
   lockRow(row);
