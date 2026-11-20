@@ -663,7 +663,8 @@ service cloud.firestore {
         allow update: if
           // صاحبة الغرفة أو الإدارة: الموافقة، رفع/إنزال المتحدثات، الكتم، الطرد، السماح بمشاركة الشاشة
           (vrIsMod(roomId) && uid != request.auth.uid &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'status', 'muted', 'canScreen', 'hand', 'pub', 'screen', 'cam']) &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'status', 'muted', 'canScreen', 'canBoard', 'hand', 'pub', 'screen', 'cam']) &&
+            (!('canBoard' in request.resource.data) || request.resource.data.canBoard is bool) &&
             (request.resource.data.get('cam', null) == resource.data.get('cam', null) || request.resource.data.get('cam', null) == null) &&
             (request.resource.data.role == resource.data.role || (resource.data.role != 'owner' && request.resource.data.role in ['speaker', 'listener'])) &&
             request.resource.data.status in ['in', 'pending', 'left', 'kicked'] &&

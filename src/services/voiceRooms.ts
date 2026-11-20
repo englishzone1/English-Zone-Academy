@@ -56,6 +56,8 @@ export interface RoomMember {
   hand: boolean;
   muted: boolean;
   canScreen: boolean;
+  // السماح بالكتابة على السبورة (تمنحه صاحبة الغرفة لمتحدثة)
+  canBoard?: boolean;
   pub: string | null; // جلسة نشر الصوت
   screen: string | null; // جلسة نشر الشاشة
   cam?: string | null; // الكاميرا

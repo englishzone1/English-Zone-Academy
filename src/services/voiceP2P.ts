@@ -65,7 +65,11 @@ interface Pair {
   docId: string;
   initiator: boolean;
   at: number;
+  dc?: RTCDataChannel;
 }
+
+// قناة بيانات السبورة: الرسائل الكبيرة (الصور) تُقسَّم إلى أجزاء
+const CHUNK = 15000;
 
 const canPublish = (m: RoomMember) => m.role === 'owner' || m.role === 'speaker' || !!m.canScreen;
 
@@ -90,6 +94,11 @@ export class P2PMesh {
   private timer: any;
   onTrack: (key: string, track: MediaStreamTrack) => void;
   onRemove: (key: string) => void;
+  /** رسالة من قناة البيانات (السبورة) */
+  onData: (peer: string, msg: string) => void = () => {};
+  /** فُتحت قناة البيانات مع مشارك (لإرسال حالة السبورة لمن دخل متأخرًا) */
+  onDataOpen: (peer: string) => void = () => {};
+  private parts = new Map<string, string[]>();
 
   constructor(roomId: string, uid: string, onTrack: (key: string, track: MediaStreamTrack) => void, onRemove: (key: string) => void) {
     this.roomId = roomId;
@@ -177,6 +186,57 @@ export class P2PMesh {
     });
   }
 
+  private addChannel(pc: RTCPeerConnection, peer: string, pair: Pair) {
+    try {
+      // قناة متفق عليها مسبقًا (id ثابت) تُنشأ عند الطرفين بلا تفاوض إضافي
+      const dc = pc.createDataChannel('board', { negotiated: true, id: 7, ordered: true });
+      pair.dc = dc;
+      dc.onopen = () => {
+        if (this.pairs.get(peer) === pair) this.onDataOpen(peer);
+      };
+      dc.onmessage = (e) => {
+        if (this.pairs.get(peer) !== pair || typeof e.data !== 'string') return;
+        const d = e.data as string;
+        if (d[0] === 'F') return this.onData(peer, d.slice(1));
+        if (d[0] !== 'C') return;
+        // C<id>|<i>|<n>|<part>
+        const m = d.match(/^C([^|]+)\|(\d+)\|(\d+)\|/);
+        if (!m) return;
+        const key = `${peer}:${m[1]}`;
+        const n = Number(m[3]);
+        const arr = this.parts.get(key) || new Array(n).fill('');
+        arr[Number(m[2])] = d.slice(m[0].length);
+        this.parts.set(key, arr);
+        if (arr.every((x) => x !== '')) {
+          this.parts.delete(key);
+          this.onData(peer, arr.join(''));
+        }
+      };
+    } catch {
+      /* متصفح قديم: بلا سبورة */
+    }
+  }
+
+  /** إرسال رسالة لكل من فُتحت معه القناة (أو لمشارك واحد) */
+  sendData(msg: string, to?: string) {
+    const out: string[] = [];
+    if (msg.length <= CHUNK) out.push('F' + msg);
+    else {
+      const id = Math.random().toString(36).slice(2, 9);
+      const n = Math.ceil(msg.length / CHUNK);
+      for (let i = 0; i < n; i++) out.push(`C${id}|${i}|${n}|${msg.slice(i * CHUNK, (i + 1) * CHUNK)}`);
+    }
+    this.pairs.forEach((p) => {
+      if (to && p.peer !== to) return;
+      if (!p.dc || p.dc.readyState !== 'open') return;
+      try {
+        out.forEach((x) => p.dc!.send(x));
+      } catch {
+        /* ignore */
+      }
+    });
+  }
+
   /** يُستدعى كلما تغيّرت قائمة الحاضرين */
   sync(present: RoomMember[]) {
     if (this.closed) return;
@@ -220,6 +280,7 @@ export class P2PMesh {
     const pair: Pair = { pc, peer, docId, initiator: true, at: Date.now() };
     this.pairs.set(peer, pair);
     KINDS.forEach((k) => pc.addTransceiver(k === 'mic' ? 'audio' : 'video', { direction: 'sendrecv' }));
+    this.addChannel(pc, peer, pair);
     KINDS.forEach((k) => this.applyLocal(pc, k));
     this.wire(pc, peer, () => pair);
     setTimeout(() => {
@@ -276,6 +337,7 @@ export class P2PMesh {
     const pc = new RTCPeerConnection({ iceServers: ICE });
     const pair: Pair = { pc, peer, docId, initiator: false, at: Date.now() };
     this.pairs.set(peer, pair);
+    this.addChannel(pc, peer, pair);
     this.wire(pc, peer, () => pair);
     try {
       await pc.setRemoteDescription({ type: 'offer', sdp: d.offer });

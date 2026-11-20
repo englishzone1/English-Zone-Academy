@@ -28,6 +28,7 @@ import {
   Video,
   VideoOff,
   ImagePlus,
+  PenLine,
 } from 'lucide-react';
 import { ROOM_BGS, bgById, getMyBg, setMyBg, shrinkImage } from '../services/roomBackgrounds';
 import { nextSession, countdown, formatSession } from '../services/roomSchedule';
@@ -58,6 +59,8 @@ import {
 import { LevelMeter } from '../services/voiceRtc';
 import { P2PMesh, LIGHT_LEVELS, createLightProcessor, LightProcessor } from '../services/voiceP2P';
 import { PrivacyBadge, userGender } from './VoiceRoomsPage';
+import { Whiteboard } from '../components/rooms/Whiteboard';
+import { BoardStore, BoardOp } from '../components/rooms/boardStore';
 
 const canShareScreen = () => typeof navigator !== 'undefined' && !!navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices;
 
@@ -234,6 +237,13 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const [conn, setConn] = useState({ outTotal: 0, outOk: 0, inTotal: 0, inOk: 0, turn: false });
 
   const meshRef = useRef<P2PMesh | null>(null);
+  // ===== السبورة: في الذاكرة فقط، وتنتقل عبر قناة البيانات =====
+  const boardRef = useRef<BoardStore | null>(null);
+  if (!boardRef.current) boardRef.current = new BoardStore();
+  const board = boardRef.current;
+  const [, boardTick] = useState(0);
+  useEffect(() => board.subscribe(() => boardTick((x) => x + 1)), [board]);
+  const [boardMin, setBoardMin] = useState(false);
   const micTrackRef = useRef<MediaStreamTrack | null>(null);
   const screenTrackRef = useRef<MediaStreamTrack | null>(null);
   const camTrackRef = useRef<MediaStreamTrack | null>(null);
@@ -307,6 +317,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   const pending = useMemo(() => members.filter((m) => m.status === 'pending'), [members]);
   const presentRef = useRef<RoomMember[]>([]);
   presentRef.current = present;
+  const ownerIdRef = useRef('');
+  ownerIdRef.current = room?.ownerId || '';
   const screenOwner = present.find((m) => m.screen);
 
   // ===== الصوت: شبكة الاتصالات المباشرة =====
@@ -330,6 +342,26 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       }
     );
     meshRef.current = mesh;
+    // رسائل السبورة: نقبلها من صاحبة الغرفة ومن سُمح لها بالكتابة فقط
+    mesh.onData = (peer, raw) => {
+      let op: BoardOp;
+      try {
+        op = JSON.parse(raw);
+      } catch {
+        return;
+      }
+      if (!op || typeof op !== 'object' || typeof (op as any).t !== 'string') return;
+      const fromOwner = peer === ownerIdRef.current;
+      const m = presentRef.current.find((x) => x.uid === peer);
+      const writer = fromOwner || (!!m && m.role === 'speaker' && !!m.canBoard);
+      if (['open', 'close', 'snap', 'bg', 'clear'].includes(op.t) ? !fromOwner : !writer) return;
+      if (op.t === 'open' || op.t === 'snap') setBoardMin(false);
+      board.apply(op);
+    };
+    // من دخل متأخرًا: صاحبة الغرفة ترسل له السبورة كاملة
+    mesh.onDataOpen = (peer) => {
+      if (ownerIdRef.current === uid && board.snap.open) mesh.sendData(JSON.stringify({ t: 'snap', s: board.snap }), peer);
+    };
     mesh.start();
     mesh.sync(presentRef.current);
     return () => {
@@ -344,8 +376,18 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       camTrackRef.current = null;
       setCamOn(false);
       setTracks({});
+      board.apply({ t: 'close' });
     };
   }, [inRoom, roomId, uid]);
+
+  const boardSend = useCallback(
+    (op: BoardOp) => {
+      board.apply(op);
+      meshRef.current?.sendData(JSON.stringify(op));
+    },
+    [board]
+  );
+  const boardEmit = useCallback((op: BoardOp) => meshRef.current?.sendData(JSON.stringify(op)), []);
 
   useEffect(() => {
     meshRef.current?.sync(present);
@@ -448,6 +490,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
 
   const startScreen = async () => {
     if (screenOwner && screenOwner.uid !== uid) return flash(tr('Someone is already sharing their screen.', 'هناك من يشارك شاشته الآن.'));
+    // السبورة ومشاركة الشاشة لا تعملان معًا
+    if (board.snap.open) boardSend({ t: 'close' });
     let stream: MediaStream;
     try {
       stream = await (navigator.mediaDevices as any).getDisplayMedia({ video: { frameRate: 10 }, audio: false });
@@ -652,7 +696,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       }
       await updateMember(roomId, m.uid, { role: 'speaker', hand: false, muted: true });
     },
-    toAudience: (m: RoomMember) => updateMember(roomId, m.uid, { role: 'listener', pub: null, screen: null, cam: null, canScreen: false, muted: true }),
+    toAudience: (m: RoomMember) => updateMember(roomId, m.uid, { role: 'listener', pub: null, screen: null, cam: null, canScreen: false, muted: true, ...(m.canBoard ? { canBoard: false } : {}) }),
+    board: (m: RoomMember, on: boolean) => updateMember(roomId, m.uid, { canBoard: on }),
     mute: (m: RoomMember) => updateMember(roomId, m.uid, { muted: true }),
     screen: (m: RoomMember, on: boolean) => updateMember(roomId, m.uid, on ? { canScreen: true } : { canScreen: false, screen: null, cam: null }),
   };
@@ -1026,6 +1071,23 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                 {camOn ? <VideoOff className="w-5 h-5" /> : <Video className="w-5 h-5" />}
               </button>
             )}
+            {me?.role === 'owner' && (
+              <button
+                onClick={() => {
+                  if (board.snap.open) {
+                    setBoardMin(false);
+                    return;
+                  }
+                  if (screenOn) stopScreen();
+                  boardSend({ t: 'open' });
+                  setBoardMin(false);
+                }}
+                className={`${roundBtn} ${board.snap.open ? 'bg-[#D4AF37] text-[#0A192F]' : 'bg-white/15'}`}
+                title={tr('Whiteboard', 'السبورة')}
+              >
+                <PenLine className="w-5 h-5" />
+              </button>
+            )}
             {me?.role === 'owner' && canShareScreen() && (
               <button
                 onClick={() => (screenOn ? stopScreen() : startScreen())}
@@ -1038,6 +1100,28 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
           </>
         }
       />
+
+      {/* السبورة: تملأ الشاشة، ويمكن تصغيرها */}
+      {inRoom && board.snap.open && !boardMin && (
+        <Whiteboard
+          store={board}
+          canDraw={!!me && (me.role === 'owner' || (me.role === 'speaker' && !!me.canBoard))}
+          isOwner={me?.role === 'owner'}
+          isAr={isAr}
+          send={boardSend}
+          emit={boardEmit}
+          onMinimize={() => setBoardMin(true)}
+          onClose={() => boardSend({ t: 'close' })}
+        />
+      )}
+      {inRoom && board.snap.open && boardMin && (
+        <button
+          onClick={() => setBoardMin(false)}
+          className="fixed top-16 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 z-40 px-4 py-2 rounded-full bg-[#D4AF37] text-[#0A192F] text-xs font-bold shadow-xl animate-pulse"
+        >
+          🖊️ {tr('The whiteboard is open – view', 'السبورة مفتوحة – عرض')}
+        </button>
+      )}
 
       {/* طلبات الدخول والأيدي المرفوعة */}
       {showRequests && isMod && (
@@ -1125,6 +1209,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
               if (a === 'mute') await mod.mute(m);
               if (a === 'screenOn') await mod.screen(m, true);
               if (a === 'screenOff') await mod.screen(m, false);
+              if (a === 'boardOn') await mod.board(m, true);
+              if (a === 'boardOff') await mod.board(m, false);
               if (a === 'kick') await mod.ban(m);
               if (a === 'report') {
                 const reason = window.prompt(tr('What happened? (sent to the academy)', 'ماذا حدث؟ (يُرسل إلى الأكاديمية)'));
@@ -1152,7 +1238,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   );
 };
 
-type MenuAction = 'stage' | 'audience' | 'mute' | 'screenOn' | 'screenOff' | 'kick' | 'report';
+type MenuAction = 'stage' | 'audience' | 'mute' | 'screenOn' | 'screenOff' | 'boardOn' | 'boardOff' | 'kick' | 'report';
 
 const MemberMenu: React.FC<{ m: RoomMember; isMod: boolean; isAr: boolean; onClose: () => void; act: (a: MenuAction) => void }> = ({ m, isMod, isAr, onClose, act }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
@@ -1174,6 +1260,8 @@ const MemberMenu: React.FC<{ m: RoomMember; isMod: boolean; isAr: boolean; onClo
         {isMod && m.role !== 'listener' && !m.muted && item('mute', <MicOff className="w-4 h-4" />, tr('Mute', 'كتم الميكروفون'))}
         {isMod && m.role !== 'owner' && !m.canScreen && item('screenOn', <Video className="w-4 h-4" />, tr('Allow camera', 'السماح بالكاميرا'))}
         {isMod && m.role !== 'owner' && m.canScreen && item('screenOff', <VideoOff className="w-4 h-4" />, tr('Stop camera', 'منع الكاميرا'))}
+        {isMod && m.role === 'speaker' && !m.canBoard && item('boardOn', <PenLine className="w-4 h-4" />, tr('Allow the whiteboard', 'السماح بالسبورة'))}
+        {isMod && m.role === 'speaker' && m.canBoard && item('boardOff', <PenLine className="w-4 h-4" />, tr('Stop the whiteboard', 'منع السبورة'))}
         {isMod && m.role !== 'owner' && item('kick', <Ban className="w-4 h-4" />, tr('Remove and block from room', 'إخراج وحظر من الغرفة'), true)}
         {item('report', <Flag className="w-4 h-4" />, tr('Report to the academy', 'إبلاغ الأكاديمية'), true)}
         <button onClick={onClose} className="w-full mt-1 py-2.5 rounded-xl bg-gray-100 text-sm font-bold">
