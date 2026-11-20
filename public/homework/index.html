@@ -939,6 +939,10 @@ function wNote(g){
 /* ---------- ملخّص النتيجة والإجابات للمنصة ---------- */
 function qText(r){ const qc=r.querySelector(`.q`).cloneNode(true); qc.querySelectorAll(`.n,.chk,select,input,textarea,.cor,img,.emo,.ovw,.rec`).forEach(x=>x.remove()); return qc.textContent.replace(/\s+/g,` `).trim().slice(0,240); }
 function rowGot(r){ return r.got!=null?r.got:(r.isOk?1:0); }
+/* الدرجة الجزئية: نسبة الخانات الصحيحة في السؤال الذي فيه أكثر من خانة */
+function partOf(f){ const g=f.filter(x=>x.tagName!==`TEXTAREA`); if(g.length<2) return 0; return Math.round(g.filter(x=>x.classList.contains(`good`)).length/g.length*100)/100; }
+function fmtN(x){ x=Math.round(x*100)/100; return Number.isInteger(x)?String(x):String(x); }
+function partNote(f){ const g=f.filter(x=>x.tagName!==`TEXTAREA`); const k=g.filter(x=>x.classList.contains(`good`)).length; return g.length>1&&k>0?`✔ ${k} من ${g.length} خانات صحيحة (حصلتِ على جزء من الدرجة).\n`:``; }
 function rowMax(r){ return r.marks||1; }
 function collectAnswers(rows){
   return rows.map(r=>{ const f=[...r.querySelectorAll(`input,select,textarea`)]; const it=r.itRef||{};
@@ -968,12 +972,12 @@ function gradeTest(){
   const all=testRows(), rows=all.filter(r=>!r.isFree);
   rows.forEach(r=>{
     const it=r.itRef, f=[...r.querySelectorAll(`input,select,textarea`)];
-    const ok=evalRow(r,it,f); r.isOk=ok; r.locked=1;
+    const ok=evalRow(r,it,f); r.isOk=ok; r.locked=1; r.marks=1; r.got=ok?1:partOf(f);
     if(!ok&&!it.uq) f.filter(x=>x.classList.contains(`bad`)).forEach(x=>{ const c=document.createElement(`span`); c.className=`cor`; c.textContent=x.dataset.a.split(`|`)[0]; x.after(c); });
     const fb=r.fbEl; fb.classList.remove(`hidden`); fb.dir=`auto`;
     const ans=it.ans||f.map(x=>x.dataset.a.split(`|`)[0]).join(` / `);
     if(ok){ fb.className=`fb ok`; fb.textContent=`أحسنتِ! 🌟 إجابة صحيحة، استمري في التميّز! ❤️`; }
-    else { fb.className=`fb no`; fb.textContent=`❌ إجابة خاطئة. الإجابة الصحيحة: ${ans}\n💡 ${it.ea||(r.exRef&&r.exRef.ea)||`راجعي القاعدة في الدرس.`}`; }
+    else { fb.className=`fb no`; fb.textContent=`${partNote(f)}❌ الإجابة الصحيحة: ${ans}\n💡 ${it.ea||(r.exRef&&r.exRef.ea)||`راجعي القاعدة في الدرس.`}`; }
   });
   all.filter(r=>r.isFree).forEach(r=>{ const f=[...r.querySelectorAll(`input,select,textarea`)]; const fb=r.fbEl; fb.classList.remove(`hidden`); fb.dir=`rtl`;
     const ta=f.find(x=>x.tagName===`TEXTAREA`);
@@ -985,13 +989,13 @@ function gradeTest(){
   if(RECNOW) try{ RECNOW.mr.stop(); }catch(e){}
   document.querySelectorAll(`#tsecs .recb`).forEach(b=>b.disabled=true);
   document.querySelectorAll(`#tsecs input,#tsecs select,#tsecs textarea`).forEach(x=>x.disabled=true);
-  const graded=all; const ok=graded.reduce((a,r)=>a+rowGot(r),0), n=graded.reduce((a,r)=>a+rowMax(r),0), pct=n?Math.round(ok/n*100):0;
+  const graded=all; const ok=Math.round(graded.reduce((a,r)=>a+rowGot(r),0)*100)/100, n=graded.reduce((a,r)=>a+rowMax(r),0), pct=n?Math.round(ok/n*100):0;
   const nrec=REC.filter(Boolean).length;
   setTimeout(()=>ezSendTest(graded,ok,n),400);
   const msg=pct>=90?`عمل ممتاز! 🏆`:pct>=70?`عمل جيد! ⭐`:pct>=50?`مقبول – واصلي التدريب. 👍`:`تحتاجين مزيدًا من التدريب – راجعي الدروس. 💪`;
   const secs=[]; graded.forEach(r=>{ let g=secs.find(x=>x.s===r.secRef); if(!g){ g={s:r.secRef,n:0,ok:0}; secs.push(g); } g.n+=rowMax(r); g.ok+=rowGot(r); });
   let h=`<div class="scorebox" dir="rtl"><div>درجتك</div><div class="big">${ok} / ${n}</div><div>${pct}% – ${msg}</div></div>`;
-  h+=secs.map(g=>`<div class="panel"><b>${g.s.name}</b>: ${g.ok} / ${g.n}<div class="bar"><i style="width:${g.ok/g.n*100}%"></i></div></div>`).join(``);
+  h+=secs.map(g=>`<div class="panel"><b>${g.s.name}</b>: ${fmtN(g.ok)} / ${g.n}<div class="bar"><i style="width:${g.ok/g.n*100}%"></i></div></div>`).join(``);
   const nf=all.filter(r=>r.isFree).length;
   if(TCUR.parts.some(p=>p.speak)) h+=`<div class="panel work" dir="rtl">🎙️ ${nrec?`أُرسلت تسجيلاتك الصوتية (${nrec}) في جزء المحادثة، وتضيف المعلمة درجتها بعد الاستماع.`:`لم تسجّلي إجاباتك في جزء المحادثة.`}</div>`;
   h+=lessonReport(rows);
@@ -1287,12 +1291,12 @@ const HOWTO={
  Other:`أعيدي قراءة التعليمات والمثال قبل الحل، ثم أعيدي التمرين وركّزي على الأسئلة الخاطئة.`};
 function howTo(sec){ const t=(sec.review||sec.name||``)+` `+sec.name; if(/Grammar/i.test(t)) return HOWTO.Grammar; if(/Vocabulary|How You Feel|Time|Prices/i.test(t)) return HOWTO.Vocabulary; if(/Pronunciation|rhythm/i.test(t)) return HOWTO.Pronunciation; if(/Words|Phrases|Lunch|Hotel/i.test(t)) return HOWTO.Words; return HOWTO.Other; }
 function lessonReport(rows){
-  const secs=[]; rows.forEach(r=>{ let g=secs.find(x=>x.s===r.secRef); if(!g){ g={s:r.secRef,n:0,ok:0,ex:[]}; secs.push(g); } g.n++; if(r.isOk) g.ok++; else { let e=g.ex.find(x=>x.ex===r.exRef); if(!e){ e={ex:r.exRef,rows:[]}; g.ex.push(e); } e.rows.push(r); } });
+  const secs=[]; rows.forEach(r=>{ let g=secs.find(x=>x.s===r.secRef); if(!g){ g={s:r.secRef,n:0,ok:0,ex:[]}; secs.push(g); } g.n++; g.ok+=rowGot(r); if(!r.isOk) { let e=g.ex.find(x=>x.ex===r.exRef); if(!e){ e={ex:r.exRef,rows:[]}; g.ex.push(e); } e.rows.push(r); } });
   const label=g=>{ const rv=String(g.s.review||``); return rv&&!/^(Words and phrases|Useful phrases)$/i.test(rv)?rv:g.s.name; };
   const strong=secs.filter(g=>g.ok/g.n>=0.8), weak=secs.filter(g=>g.ok/g.n<0.8);
   let h=`<div class="rep" dir="rtl"><h3>📋 تقرير الدرس</h3>`;
-  h+=`<div class="panel good"><b>✅ نقاط القوة</b><br>`+(strong.length?strong.map(g=>`• <bdi dir="ltr">${label(g)}</bdi> — ${g.ok} من ${g.n}`).join(`<br>`):`لم تظهر نقاط قوة واضحة بعد. استمري في التدريب وستتحسنين! 💪`)+`</div>`;
-  h+=`<div class="panel bad"><b>❌ نقاط الضعف</b><br>`+(weak.length?weak.map(g=>`• <bdi dir="ltr">${label(g)}</bdi> — ${g.ok} من ${g.n}`).join(`<br>`):`لا توجد نقاط ضعف. أحسنتِ! 🌟`)+`</div>`;
+  h+=`<div class="panel good"><b>✅ نقاط القوة</b><br>`+(strong.length?strong.map(g=>`• <bdi dir="ltr">${label(g)}</bdi> — ${fmtN(g.ok)} من ${g.n}`).join(`<br>`):`لم تظهر نقاط قوة واضحة بعد. استمري في التدريب وستتحسنين! 💪`)+`</div>`;
+  h+=`<div class="panel bad"><b>❌ نقاط الضعف</b><br>`+(weak.length?weak.map(g=>`• <bdi dir="ltr">${label(g)}</bdi> — ${fmtN(g.ok)} من ${g.n}`).join(`<br>`):`لا توجد نقاط ضعف. أحسنتِ! 🌟`)+`</div>`;
   if(weak.length){
     h+=`<div class="panel work"><b>📝 ما تحتاجين العمل عليه</b>`;
     weak.forEach(g=>{
@@ -1311,12 +1315,12 @@ function lessonReport(rows){
 function updExRep(e,rows){
   const xr=e.exRep; if(!xr) return;
   const fin=rows.filter(r=>r.isOk||r.locked).length; if(fin<rows.length){ xr.classList.add("hidden"); return; }
-  const ok=rows.filter(r=>r.isOk).length, n=rows.length;
-  let h=`<b>📋 نتيجة التمرين: ${ok} من ${n}</b>`;
-  if(ok===n) h+=`<div>🌟 ممتاز! كل إجاباتك صحيحة. ✅ هذه نقطة قوة عندك.</div>`;
+  const ok=rows.reduce((a,r)=>a+rowGot(r),0), n=rows.length, nbad=rows.filter(r=>!r.isOk).length;
+  let h=`<b>📋 نتيجة التمرين: ${fmtN(ok)} من ${n}</b>`;
+  if(!nbad) h+=`<div>🌟 ممتاز! كل إجاباتك صحيحة. ✅ هذه نقطة قوة عندك.</div>`;
   else {
     const tips=[...new Set(rows.filter(r=>!r.isOk).map(r=>r.itRef.ea).filter(Boolean))].slice(0,3);
-    h+=`<div>❌ أخطأتِ في ${n-ok===1?`سؤال واحد`:n-ok===2?`سؤالين`:n-ok<=10?`${n-ok} أسئلة`:`${n-ok} سؤالًا`}. راجعي الإجابات الصحيحة المكتوبة بالأخضر تحت الخانات.</div>`;
+    h+=`<div>❌ أخطأتِ في ${nbad===1?`سؤال واحد`:nbad===2?`سؤالين`:nbad<=10?`${nbad} أسئلة`:`${nbad} سؤالًا`}. راجعي الإجابات الصحيحة المكتوبة بالأخضر تحت الخانات.</div>`;
     if(e.exRef.ea) h+=`<div>📘 القاعدة: ${e.exRef.ea}</div>`;
     if(tips.length) h+=`<div>💡 ${tips.join(`<br>💡 `)}</div>`;
     h+=`<div class="how">🎯 طريقة التحسين: ${howTo(e.secRef)}</div>`;
@@ -1329,13 +1333,13 @@ let REPSHOWN=false;
 function updLesson(){
   const rows=[...document.querySelectorAll(`#sections .item`)].filter(r=>!r.isX&&!r.isFree);
   const n=rows.length; if(!n){ $(`lprog`).innerHTML=``; $(`ldone`).classList.add(`hidden`); return; }
-  const ok=rows.filter(r=>r.isOk).length, fin=rows.filter(r=>r.isOk||r.locked).length;
-  $(`lprog`).innerHTML=`<div class="lp" dir="rtl"><span>التقدّم في الدرس: ${fin} / ${n} · الصحيح: ${ok}</span><div class="bar"><i style="width:${fin/n*100}%"></i></div>${fin<n?`<button class="gonext" onclick="goNext()">بقي ${n-fin} من الأسئلة دون حل، اضغطي للانتقال إلى أول سؤال ⬇</button><div class="lpn">يظهر تقرير الدرس (نقاط القوة والضعف) في آخر الصفحة بعد حل كل الأسئلة.</div>`:`<button class="gonext" onclick="goRep()">✅ أنهيتِ الدرس، اضغطي لعرض التقرير ⬇</button>`}</div>`;
+  const ok=Math.round(rows.reduce((a,r)=>a+rowGot(r),0)*100)/100, fin=rows.filter(r=>r.isOk||r.locked).length;
+  $(`lprog`).innerHTML=`<div class="lp" dir="rtl"><span>التقدّم في الدرس: ${fin} / ${n} · الصحيح: ${fmtN(ok)}</span><div class="bar"><i style="width:${fin/n*100}%"></i></div>${fin<n?`<button class="gonext" onclick="goNext()">بقي ${n-fin} من الأسئلة دون حل، اضغطي للانتقال إلى أول سؤال ⬇</button><div class="lpn">يظهر تقرير الدرس (نقاط القوة والضعف) في آخر الصفحة بعد حل كل الأسئلة.</div>`:`<button class="gonext" onclick="goRep()">✅ أنهيتِ الدرس، اضغطي لعرض التقرير ⬇</button>`}</div>`;
   const dn=$(`ldone`);
   if(fin===n){
     dn.classList.remove(`hidden`);
     const pct=Math.round(ok/n*100), star=pct>=90?`🏆`:pct>=70?`⭐`:`👍`;
-    dn.innerHTML=`<div class="dn" dir="rtl"><div class="dnb">${star}</div><b>أحسنتِ يا ${student&&student.name?student.name:``}! أنهيتِ هذا الدرس.</b><div>درجتك: ${ok} / ${n} (${pct}%)</div>${pct<70?`<div>راجعي الأسئلة الخاطئة ثم أعيدي الدرس.</div>`:``}</div>`+lessonReport(rows);
+    dn.innerHTML=`<div class="dn" dir="rtl"><div class="dnb">${star}</div><b>أحسنتِ يا ${student&&student.name?student.name:``}! أنهيتِ هذا الدرس.</b><div>درجتك: ${fmtN(ok)} / ${n} (${pct}%)</div>${pct<70?`<div>راجعي الأسئلة الخاطئة ثم أعيدي الدرس.</div>`:``}</div>`+lessonReport(rows);
     if(!REPSHOWN){ REPSHOWN=true; setTimeout(()=>dn.scrollIntoView({behavior:`smooth`,block:`start`}),300); setTimeout(()=>ezResult(`lesson`,CURCARD,$(`ltitle`).textContent,ok,n,Object.assign(summarize(rows),{answers:collectAnswers(rows)})),50); }
     try{ const D=getDone(); if(!D[CURCARD]||D[CURCARD].s<ok){ D[CURCARD]={s:ok,t:n}; localStorage.setItem(doneKey(),JSON.stringify(D)); } }catch(e){}
   } else dn.classList.add(`hidden`);
@@ -1486,7 +1490,7 @@ function shortExp(e){
   return r.length>170?r.slice(0,167)+`\u2026`:r;
 }
 function afterBlock(q){ let n=q.lastChild; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.previousSibling; return !!(n&&n.nodeType===1&&/^(IMG|DIV)$/.test(n.tagName)); }
-function updScore(e){ const rows=[...e.querySelectorAll(".item")].filter(r=>!r.isX&&!r.isFree); const sc=e.querySelector(".score"); if(!sc) return; if(!rows.length){ sc.textContent=""; return; } const n=rows.filter(r=>r.isOk).length; sc.textContent=`✔ ${n} / ${rows.length}`; sc.classList.toggle("full",n===rows.length); updExRep(e,rows); updLesson(); }
+function updScore(e){ const rows=[...e.querySelectorAll(".item")].filter(r=>!r.isX&&!r.isFree); const sc=e.querySelector(".score"); if(!sc) return; if(!rows.length){ sc.textContent=""; return; } const n=rows.reduce((a,r)=>a+rowGot(r),0); sc.textContent=`✔ ${fmtN(n)} / ${rows.length}`; sc.classList.toggle("full",n===rows.length); updExRep(e,rows); updLesson(); }
 function hintFor(f){ const a=f.dataset.a.split("|")[0]; if(f.tagName==="SELECT") return ``; const w=a.trim().split(/\s+/); if(w.length>=3) return `الإجابة ${w.length} كلمات وتبدأ بـ «${w[0]}».`; const k=Math.min(3,Math.max(1,Math.ceil(a.length/3))); const L=a.replace(/\s/g,``).length; return a.length<=1?``:`تبدأ بـ «${a.slice(0,k)}…» (${L==2?`حرفان`:L<=10?L+` حروف`:L+` حرفًا`}).`; }
 /* مطابقة أمرن: تتجاهل الفواصل وعلامات الترقيم داخل الجملة والشرطات، وتقبل الصيغة الكاملة بدل المختصرة
    (isn't = is not، I'm = I am…) إلا في تمارين الاختصارات نفسها. */
@@ -1520,7 +1524,7 @@ function check(row,it,review,ex){
   const exEl = row.closest(".ex");
   if(fields.every(f=>f.value.trim()==="")){ fb.className="fb try"; fb.textContent=`✍️ اكتبي إجابتك أولًا ثم اضغطي Check ✓.`; return; }
   let ok = evalRow(row,it,fields);
-  row.isOk = ok; if(exEl) updScore(exEl);
+  row.isOk = ok; row.got = null; if(exEl) updScore(exEl);
   if(ok && it.pend){ fb.className="fb try"; fb.textContent=`📝 كتابتك سليمة، لكن الإجابة النموذجية لهذا السؤال لم تُضَف بعد. استمعي مرة أخرى وتأكدي من إجابتك.`; return; }
   if(ok){ row.tries=0; fb.className = "fb ok"; fb.textContent = `أحسنتِ! 🌟 إجابة صحيحة، استمري في التميّز! ❤️`; return; }
   if(it.free){
@@ -1546,8 +1550,10 @@ function check(row,it,review,ex){
   const ans = it.ans ? it.ans : (fields.length>1 ? bad.map(f=>f.dataset.a.split("|")[0]) : fields.map(f=>f.dataset.a.split("|")[0])).join(" / ");
   const where = fields.length>1 && !it.uq ? ` (مكتوبة بالأخضر تحت كل خانة خاطئة)` : ``;
   fb.className = "fb no";
-  fb.textContent = `❌ إجابة خاطئة. الإجابة الصحيحة: ${ans}${where}\n💡 ${(it.ea||(ex&&ex.ea)||`راجعي القاعدة في الدرس.`)}`;
+  row.got = partOf(fields); row.marks = 1;
+  fb.textContent = `${partNote(fields)}❌ الإجابة الصحيحة: ${ans}${where}\n💡 ${(it.ea||(ex&&ex.ea)||`راجعي القاعدة في الدرس.`)}`;
   lockRow(row);
+  if(exEl) updScore(exEl);
 }
 
 function show(view){
