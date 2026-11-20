@@ -199,7 +199,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
     return d;
   };
   const gap = 18;
-  const H = w + 310;
+  const H = w + 290;
   const imgH = Math.round(w * 0.68);
   const PrevIcon = ar ? ChevronRight : ChevronLeft;
   const NextIcon = ar ? ChevronLeft : ChevronRight;
@@ -249,7 +249,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
                 height: H,
                 left: '50%',
                 transform: `translateX(calc(-50% + ${x}px)) scale(${active ? 1 : 0.9})`,
-                opacity: visible ? (active ? 1 : 0.55) : 0,
+                opacity: visible ? (active ? 1 : 0.6) : 0,
                 zIndex: active ? 3 : visible ? 2 : 1,
                 pointerEvents: visible ? 'auto' : 'none',
                 transition: 'transform .55s cubic-bezier(.2,.8,.2,1), opacity .45s ease'
@@ -270,7 +270,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
                     ✨ {ar ? 'انضموا لنا' : 'Join us'}
                   </button>
                 )}
-                <span className="absolute bottom-2.5 end-3 text-[10px] font-bold text-[#F3E5AB] bg-black/35 rounded-full px-2 py-0.5">
+                <span dir="ltr" className="absolute bottom-2.5 end-3 text-[10px] font-bold text-[#F3E5AB] bg-black/35 rounded-full px-2 py-0.5">
                   {i + 1} / {n}
                 </span>
               </div>
