@@ -309,6 +309,8 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
 
   const onDown = (e: React.PointerEvent) => {
     if (!canDraw) return;
+    // يمنع المتصفح من سحب التركيز (حتى يبقى مربع النص مفتوحًا)
+    e.preventDefault();
     setPanel('');
     const [lx, ly] = toLogic(e);
     if (tool === 'pen' || tool === 'hl') {
@@ -508,7 +510,9 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
       {/* مربع كتابة النص */}
       {textBox && (
         <textarea
-          autoFocus
+          ref={(el) => {
+            if (el && document.activeElement !== el) setTimeout(() => el.focus(), 0);
+          }}
           dir="auto"
           value={textBox.v}
           onChange={(e) => setTextBox({ ...textBox, v: e.target.value })}
