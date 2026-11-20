@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { TawkChat } from './components/common/TawkChat';
 import { ChatAssistant } from './components/common/ChatAssistant';
 import { AccountFab } from './components/common/AccountFab';
+import { Whiteboard } from './components/rooms/Whiteboard';
+import { BoardStore } from './components/rooms/boardStore';
+const qaStore = new BoardStore();
+qaStore.apply({ t: 'open' });
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
@@ -268,6 +272,9 @@ function MainApp() {
     }
   };
 
+  if (currentRoute === 'board-test') {
+    return <Whiteboard store={qaStore} canDraw isOwner isAr={language === 'ar'} send={(op) => qaStore.apply(op)} emit={() => {}} onMinimize={() => {}} onClose={() => {}} />;
+  }
   // صفحة الواجبات الكاملة: تملأ الشاشة بلا شريط علوي ولا تذييل، وتحفظ النتائج باسم الطالب
   if (currentRoute === 'homework') {
     if (isLoading) return <LoadingScreen />;

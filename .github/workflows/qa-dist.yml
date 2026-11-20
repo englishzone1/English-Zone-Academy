@@ -1,0 +1,58 @@
+name: QA dist
+on:
+  push:
+    branches: [qa-dist]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx vite build
+      - run: npm i -g playwright@1 && npx playwright install --with-deps chromium
+      - name: Screenshots (base64 in log)
+        run: |
+          cd dist && (python3 -m http.server 8080 >/dev/null 2>&1 &) && sleep 2 && cd ..
+          cat > shot.cjs <<'JS'
+          const { chromium } = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright');
+          (async () => {
+            const b = await chromium.launch();
+            for (const [name, w, h] of [['m', 390, 844], ['d', 1280, 800]]) {
+              const ctx = await b.newContext({ viewport: { width: w, height: h }, hasTouch: false });
+              await ctx.addInitScript(() => localStorage.setItem('english_zone_lang', 'ar'));
+              const p = await ctx.newPage();
+              p.on('pageerror', (e) => console.log('PAGEERR', e.message));
+              await p.goto('http://localhost:8080/#/board-test', { waitUntil: 'networkidle' }).catch(() => {});
+              await p.waitForTimeout(2000);
+              const shot = async (tag) => { await p.waitForTimeout(700); const b64 = (await p.screenshot({ type: 'jpeg', quality: 55 })).toString('base64'); for (let i = 0; i < b64.length; i += 3000) console.log('SHOT_' + name + tag + '_' + String(i / 3000).padStart(4, '0') + ' ' + b64.slice(i, i + 3000)); };
+              // رسم خطوط
+              const cx = w / 2, cy = h / 2;
+              await p.mouse.move(cx - 120, cy - 60); await p.mouse.down();
+              for (let i = 0; i < 30; i++) await p.mouse.move(cx - 120 + i * 8, cy - 60 + Math.sin(i / 3) * 40);
+              await p.mouse.up();
+              await p.click('button[title="اللون والحجم"]'); await p.waitForTimeout(300);
+              const reds = await p.$$('button[style*="rgb(220, 38, 38)"]'); if (reds[0]) await reds[0].click();
+              await shot('a');
+              await p.mouse.move(cx - 100, cy + 40); await p.mouse.down();
+              for (let i = 0; i < 25; i++) await p.mouse.move(cx - 100 + i * 9, cy + 40 + i * 2);
+              await p.mouse.up();
+              // نص
+              await p.click('button[title="كتابة"]');
+              await p.mouse.click(cx - 150, cy - 160);
+              await p.keyboard.type('Hello class! مرحبا');
+              await p.keyboard.press('Enter');
+              // إيموجي
+              await p.click('button[title="إيموجي"]'); await p.waitForTimeout(200);
+              await p.click('text=⭐').catch(() => {});
+              await p.mouse.click(cx + 150, cy - 120);
+              // خلفية وسطور
+              await p.click('button[title="لون السبورة والسطور"]'); await p.waitForTimeout(200);
+              await p.click('text=سبورة خضراء').catch(() => {}); await p.click('text=سطور').catch(() => {});
+              await p.click('button[title="لون السبورة والسطور"]');
+              await shot('b');
+            }
+            await b.close();
+          })();
+          JS
+          node shot.cjs
