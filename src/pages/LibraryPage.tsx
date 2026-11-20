@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { imgSrc } from '../services/imageLinks';
 import { BookOpen, Newspaper, Gift } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -67,7 +68,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
                 {mags.map((b) => (
                   <div key={b.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                     {b.coverUrl ? (
-                      <img src={b.coverUrl} alt="" className="w-full h-56 object-cover" />
+                      <img src={imgSrc(b.coverUrl)} alt="" className="w-full h-56 object-cover" />
                     ) : (
                       <div className="w-full h-32 bg-[#0A192F] flex items-center justify-center">
                         <Newspaper className="w-10 h-10 text-[#D4AF37]" />
@@ -94,7 +95,8 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {books.map((b) => (
                   <div key={b.id} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-start justify-between gap-3">
-                    <div>
+                    {b.coverUrl && <img src={imgSrc(b.coverUrl)} alt="" className="w-14 h-20 object-cover rounded-lg border border-gray-200 shrink-0" />}
+                    <div className="flex-1 min-w-0">
                       <span className="font-bold text-sm text-[#0A192F] block">{title(b)}</span>
                       {b.level && b.level !== 'All Levels' && <span className="text-[11px] text-gray-500">{b.level}</span>}
                       {b.description && <p className="text-xs text-gray-600 mt-1">{b.description}</p>}

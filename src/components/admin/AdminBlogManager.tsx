@@ -3,6 +3,7 @@ import { Plus, Save, Trash2, Eye, EyeOff, Pencil, X, Download, Image as ImageIco
 import { useLanguage } from '../../context/LanguageContext';
 import { contentManagementService, BlogPostRecord } from '../../services/contentManagementService';
 import { compressImage } from '../../services/studentHubService';
+import { imgSrc } from '../../services/imageLinks';
 
 interface Props {
   onNotice: (message: string) => void;
@@ -174,7 +175,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
       </div>
 
       {draft && (
-        <div className="p-5 rounded-2xl border border-[#D4AF37]/40 bg-[#FAF8F5] space-y-4">
+        <div id="ez-blog-form" className="p-5 rounded-2xl border border-[#D4AF37]/40 bg-[#FAF8F5] space-y-4 scroll-mt-4">
           <div className="flex items-center justify-between">
             <h4 className="font-bold text-xs text-[#0A192F]">
               {draft.id ? tr('Edit post', 'تعديل المقال') : tr('New post', 'مقال جديد')}
@@ -197,7 +198,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
             <div className="sm:col-span-2 space-y-2">
               <label className={labelCls}>{tr('Post image (optional)', 'صورة المقال (اختياري)')}</label>
               <div className="flex flex-wrap items-center gap-3">
-                {draft.imageUrl && <img src={draft.imageUrl} alt="" className="h-20 rounded-xl border border-gray-200 object-cover" />}
+                {draft.imageUrl && <img src={imgSrc(draft.imageUrl)} alt="" className="h-20 rounded-xl border border-gray-200 object-cover" />}
                 <label className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold cursor-pointer flex items-center gap-1.5">
                   <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
                   {draft.imageUrl ? tr('Change image', 'تغيير الصورة') : tr('Upload image', 'رفع صورة')}
@@ -278,7 +279,10 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
                   <span>{p.isPublished ? tr('Published', 'منشور') : tr('Hidden', 'مخفي')}</span>
                 </button>
                 <button
-                  onClick={() => setDraft({ ...EMPTY, ...(p as any) })}
+                  onClick={() => {
+                    setDraft({ ...EMPTY, ...(p as any) });
+                    setTimeout(() => document.getElementById('ez-blog-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                  }}
                   className="p-2 text-gray-500 hover:text-[#0A192F] rounded-lg"
                   title={tr('Edit', 'تعديل')}
                 >

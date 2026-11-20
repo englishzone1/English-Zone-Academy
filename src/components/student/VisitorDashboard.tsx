@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { imgSrc } from '../../services/imageLinks';
 import { useAuth } from '../../context/AuthContext';
 import { ReferralOffers } from './ReferralOffers';
 import { BookOpen, Newspaper, GraduationCap, MessageCircle, LogOut, Gift, Target, Users, BadgePercent, Mic } from 'lucide-react';
@@ -55,7 +56,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
     <div key={b.id} className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 flex items-start justify-between gap-3">
       <div className="flex items-start gap-3">
         {b.coverUrl ? (
-          <img src={b.coverUrl} alt="" className="w-10 h-14 object-cover rounded-md border border-gray-200 shrink-0" />
+          <img src={imgSrc(b.coverUrl)} alt="" className="w-10 h-14 object-cover rounded-md border border-gray-200 shrink-0" />
         ) : (
           <Icon className="w-5 h-5 text-[#AA820A] mt-0.5 shrink-0" />
         )}

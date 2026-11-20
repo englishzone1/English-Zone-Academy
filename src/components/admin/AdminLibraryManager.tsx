@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Trash2, Download, BookOpen, Newspaper, Globe, GraduationCap, EyeOff, UserPlus } from 'lucide-react';
+import { Plus, Trash2, Download, BookOpen, Newspaper, Globe, GraduationCap, EyeOff, UserPlus, Pencil, Save, X, Image as ImageIcon } from 'lucide-react';
 import { contentManagementService, LibraryBookMaterial, LibraryAudience, audienceOf } from '../../services/contentManagementService';
-import { isSafeUrl } from '../../services/studentHubService';
+import { isSafeUrl, compressImage } from '../../services/studentHubService';
+import { imgSrc } from '../../services/imageLinks';
 
 interface Props {
   kind: 'library' | 'magazine';
@@ -38,6 +39,28 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
     audience: 'public' as LibraryAudience
   };
   const [f, setF] = useState(empty);
+  // تعديل مادة موجودة: نفس النموذج يمتلئ ببياناتها
+  const [editing, setEditing] = useState<LibraryBookMaterial | null>(null);
+  const formRef = React.useRef<HTMLDivElement | null>(null);
+  const startEdit = (b: LibraryBookMaterial) => {
+    setEditing(b);
+    setF({
+      titleAr: b.titleAr || '',
+      titleEn: b.titleEn || '',
+      category: b.category,
+      level: b.level || 'All Levels',
+      downloadUrl: b.downloadUrl || '',
+      issue: b.issue || '',
+      description: b.description || '',
+      coverUrl: b.coverUrl || '',
+      audience: audienceOf(b)
+    });
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  };
+  const cancelEdit = () => {
+    setEditing(null);
+    setF(empty);
+  };
 
   const load = async () => {
     setLoading(true);
@@ -67,7 +90,7 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
       onNotice(tr('Write a title first.', 'اكتبي العنوان أولًا.'));
       return;
     }
-    for (const u of [f.downloadUrl, f.coverUrl]) {
+    for (const u of [f.downloadUrl, f.coverUrl.startsWith('data:image/') ? '' : f.coverUrl]) {
       if (u.trim() && !isSafeUrl(u)) {
         onNotice(tr('Links must start with https://', 'الروابط يجب أن تبدأ بـ https://'));
         return;
@@ -76,7 +99,7 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
     setBusy(true);
     try {
       const item: LibraryBookMaterial = {
-        id: `${mag ? 'mag' : 'book'}_${Date.now()}`,
+        id: editing ? editing.id : `${mag ? 'mag' : 'book'}_${Date.now()}`,
         titleAr: f.titleAr.trim() || f.titleEn.trim(),
         titleEn: f.titleEn.trim() || f.titleAr.trim(),
         category: mag ? 'magazine' : f.category,
@@ -84,15 +107,22 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
         downloadUrl: f.downloadUrl.trim() || undefined,
         issue: mag ? f.issue.trim() || undefined : undefined,
         description: f.description.trim() || undefined,
-        coverUrl: mag ? f.coverUrl.trim() || undefined : undefined,
+        coverUrl: f.coverUrl.trim() || undefined,
         audience: f.audience,
         isPublic: f.audience !== 'hidden',
-        addedAt: new Date().toISOString()
+        addedAt: editing?.addedAt || new Date().toISOString()
       };
       await contentManagementService.saveLibraryMaterial(item);
-      setItems((prev) => [item, ...prev]);
-      setF({ ...empty, audience: f.audience, category: f.category, level: f.level });
-      onNotice(mag ? tr('Issue added.', 'تمت إضافة العدد.') : tr('Material added.', 'تمت إضافة المادة.'));
+      if (editing) {
+        setItems((prev) => prev.map((x) => (x.id === item.id ? item : x)));
+        setEditing(null);
+        setF(empty);
+        onNotice(tr('Changes saved.', 'تم حفظ التعديل.'));
+      } else {
+        setItems((prev) => [item, ...prev]);
+        setF({ ...empty, audience: f.audience, category: f.category, level: f.level });
+        onNotice(mag ? tr('Issue added.', 'تمت إضافة العدد.') : tr('Material added.', 'تمت إضافة المادة.'));
+      }
     } catch (err: any) {
       onNotice(`${tr('Failed:', 'تعذّرت الإضافة:')} ${err?.code || ''}`);
     } finally {
@@ -147,11 +177,22 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
 
   return (
     <div className="space-y-6">
-      <div className="p-5 rounded-2xl border border-gray-200 bg-[#FAF8F5] space-y-3">
-        <h4 className="font-bold text-xs text-[#0A192F] flex items-center gap-2">
-          <Icon className="w-4 h-4 text-[#AA820A]" />
-          {mag ? tr('Add a magazine issue', 'إضافة عدد من مجلة الأكاديمية') : tr('Add library material', 'إضافة مادة إلى المكتبة')}
-        </h4>
+      <div ref={formRef} className={`p-5 rounded-2xl border space-y-3 scroll-mt-4 ${editing ? 'border-[#D4AF37] bg-[#FFF9E6]' : 'border-gray-200 bg-[#FAF8F5]'}`}>
+        <div className="flex items-center justify-between gap-2">
+          <h4 className="font-bold text-xs text-[#0A192F] flex items-center gap-2">
+            {editing ? <Pencil className="w-4 h-4 text-[#AA820A]" /> : <Icon className="w-4 h-4 text-[#AA820A]" />}
+            {editing
+              ? tr('Edit', 'تعديل') + ': ' + (isAr ? editing.titleAr : editing.titleEn)
+              : mag
+                ? tr('Add a magazine issue', 'إضافة عدد من مجلة الأكاديمية')
+                : tr('Add library material', 'إضافة مادة إلى المكتبة')}
+          </h4>
+          {editing && (
+            <button onClick={cancelEdit} className="p-1.5 text-gray-400 hover:text-gray-700" title={tr('Cancel', 'إلغاء')}>
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className={labelCls}>{tr('Title (AR)', 'العنوان (عربي)')}</label>
@@ -166,10 +207,6 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
               <div>
                 <label className={labelCls}>{tr('Issue / month', 'رقم العدد أو الشهر')}</label>
                 <input value={f.issue} onChange={(e) => setF({ ...f, issue: e.target.value })} placeholder={tr('Issue 1 – Nov 2026', 'العدد 1 – نوفمبر 2026')} className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>{tr('Cover image link (optional)', 'رابط صورة الغلاف (اختياري)')}</label>
-                <input dir="ltr" value={f.coverUrl} onChange={(e) => setF({ ...f, coverUrl: e.target.value })} placeholder="https://..." className={inputCls} />
               </div>
             </>
           ) : (
@@ -197,6 +234,46 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
             <label className={labelCls}>{tr('Short description (optional)', 'نبذة قصيرة (اختيارية)')}</label>
             <textarea rows={2} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} className={inputCls} />
           </div>
+          <div className="sm:col-span-2 space-y-2">
+            <label className={labelCls}>{tr('Cover image (optional)', 'صورة الغلاف (اختيارية)')}</label>
+            <div className="flex flex-wrap items-center gap-3">
+              {f.coverUrl && <img src={imgSrc(f.coverUrl)} alt="" className="w-14 h-20 object-cover rounded-lg border border-gray-200" />}
+              <label className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold cursor-pointer flex items-center gap-1.5">
+                <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
+                {f.coverUrl ? tr('Change image', 'تغيير الصورة') : tr('Upload image', 'رفع صورة')}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = '';
+                    if (!file) return;
+                    try {
+                      const data = await compressImage(file, 900);
+                      setF((cur) => ({ ...cur, coverUrl: data }));
+                    } catch {
+                      onNotice(tr('This image is too large.', 'الصورة كبيرة جدًا.'));
+                    }
+                  }}
+                />
+              </label>
+              {f.coverUrl && (
+                <button type="button" onClick={() => setF({ ...f, coverUrl: '' })} className="text-xs font-bold text-red-600">
+                  {tr('Remove image', 'حذف الصورة')}
+                </button>
+              )}
+            </div>
+            {!f.coverUrl.startsWith('data:') && (
+              <input
+                dir="ltr"
+                value={f.coverUrl}
+                onChange={(e) => setF({ ...f, coverUrl: e.target.value })}
+                placeholder={tr('...or paste an image link (Google Drive works)', '...أو الصقي رابط صورة (رابط Google Drive يعمل)')}
+                className={inputCls}
+              />
+            )}
+          </div>
           <div className="sm:col-span-2">
             <label className={labelCls}>{tr('PDF link', 'رابط الملف (PDF)')}</label>
             <input dir="ltr" value={f.downloadUrl} onChange={(e) => setF({ ...f, downloadUrl: e.target.value })} placeholder="https://drive.google.com/..." className={inputCls} />
@@ -208,8 +285,8 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
             {audButtons(f.audience, (a) => setF({ ...f, audience: a }))}
           </div>
           <button onClick={add} disabled={busy} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
-            <Plus className="w-4 h-4" />
-            {mag ? tr('Add issue', 'إضافة العدد') : tr('Add material', 'إضافة المادة')}
+            {editing ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            {editing ? tr('Save changes', 'حفظ التعديل') : mag ? tr('Add issue', 'إضافة العدد') : tr('Add material', 'إضافة المادة')}
           </button>
         </div>
         <p className="text-[11px] text-gray-500">
@@ -233,7 +310,7 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
             <div key={b.id} className="p-4 rounded-xl border border-gray-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-start gap-3 min-w-0">
                 {b.coverUrl ? (
-                  <img src={b.coverUrl} alt="" className="w-10 h-14 object-cover rounded-md border border-gray-200 shrink-0" />
+                  <img src={imgSrc(b.coverUrl)} alt="" className="w-10 h-14 object-cover rounded-md border border-gray-200 shrink-0" />
                 ) : (
                   <Icon className="w-5 h-5 text-[#AA820A] shrink-0 mt-0.5" />
                 )}
@@ -252,6 +329,9 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
                     <Download className="w-4 h-4" />
                   </a>
                 )}
+                <button onClick={() => startEdit(b)} className="p-2 text-gray-500 hover:text-[#0A192F] rounded-lg" title={tr('Edit', 'تعديل')}>
+                  <Pencil className="w-4 h-4" />
+                </button>
                 <button onClick={() => remove(b)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg" title={tr('Delete', 'حذف')}>
                   <Trash2 className="w-4 h-4" />
                 </button>

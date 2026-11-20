@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { imgSrc } from '../services/imageLinks';
 import { useLanguage } from '../context/LanguageContext';
 import { BlogPost } from '../types';
 import { contentManagementService } from '../services/contentManagementService';
@@ -62,7 +63,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
                 <div className="relative h-48 overflow-hidden bg-gray-100">
                   {post.imageUrl && (
                     <img 
-                      src={post.imageUrl} 
+                      src={imgSrc(post.imageUrl)} 
                       alt={post.titleEn}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                       loading="lazy"
