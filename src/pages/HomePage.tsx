@@ -114,7 +114,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
       </section>
 
       {/* 1. ACADEMY FEATURES & BENEFITS: نظرة عامة ثم شرائح دائرية */}
-      <FeaturesShowcase ar={ar} isAuthenticated={isAuthenticated} navigate={navigate} placementNotice={placementNotice || undefined} />
+      <FeaturesShowcase ar={ar} isAuthenticated={isAuthenticated} navigate={navigate} />
 
       {/* 2. ENGLISH COURSES (SUMMARY CARDS ONLY) */}
       <section className="py-16 sm:py-20 bg-[#F3EDE2]/60 border-y border-[#D4AF37]/20">

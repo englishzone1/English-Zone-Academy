@@ -1,7 +1,7 @@
 import React from 'react';
 
 // رسومات خاصة بكل ميزة (SVG خفيفة) بألوان English Zone: الكحلي والذهبي
-export type FeatureKind = 'placement' | 'certs' | 'rooms' | 'package' | 'platform' | 'community';
+export type FeatureKind = 'all' | 'placement' | 'certs' | 'rooms' | 'package' | 'platform' | 'community';
 
 const NAVY = '#0A192F';
 const NAVY2 = '#102445';
@@ -46,6 +46,33 @@ const Frame: React.FC<{ id: string; children: React.ReactNode; tint?: string }> 
 export const FeatureArt: React.FC<{ kind: FeatureKind }> = ({ kind }) => {
   const g = (id: string) => `url(#gold-${id})`;
   switch (kind) {
+    case 'all':
+      return (
+        <Frame id="al" tint="#14204A">
+          {/* شعار في الوسط وحوله المميزات الست */}
+          <circle cx="200" cy="150" r="46" fill={g('al')} />
+          <text x="200" y="146" textAnchor="middle" fontSize="15" fontWeight="800" fill={NAVY} fontFamily="serif">
+            ENGLISH
+          </text>
+          <text x="200" y="164" textAnchor="middle" fontSize="15" fontWeight="800" fill={NAVY} fontFamily="serif">
+            ZONE
+          </text>
+          {[0, 1, 2, 3, 4, 5].map((i) => {
+            const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
+            const x = 200 + Math.cos(a) * 105;
+            const y = 150 + Math.sin(a) * 95;
+            return (
+              <g key={i}>
+                <line x1="200" y1="150" x2={x} y2={y} stroke={GOLD} strokeOpacity="0.35" strokeWidth="2" strokeDasharray="4 5" />
+                <circle cx={x} cy={y} r="24" fill={NAVY2} stroke={GOLD} strokeWidth="2.5" />
+                <text x={x} y={y + 7} textAnchor="middle" fontSize="20">
+                  {['📝', '🏅', '🎙️', '🎒', '💻', '🤝'][i]}
+                </text>
+              </g>
+            );
+          })}
+        </Frame>
+      );
     case 'placement':
       return (
         <Frame id="pl">
