@@ -100,6 +100,8 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
             strengths: Array.isArray(ex.strengths) ? ex.strengths : undefined,
             weaknesses: Array.isArray(ex.weaknesses) ? ex.weaknesses : undefined
           }, { answers: Array.isArray(ex.answers) ? ex.answers : [], audio: Array.isArray(ex.audio) ? ex.audio : [] });
+          // أكملت الدرس: نحذف «غير المكتمل»
+          if (m.kind === 'lesson') studentHubService.deletePartialResult(uid, String(m.id || m.title || '').slice(0, 80));
           setSaveError('');
           setSavedNote(isAr ? `تم حفظ نتيجتك: ${m.title} (${score}/${total})` : `Result saved: ${m.title} (${score}/${total})`);
           window.setTimeout(() => setSavedNote(''), 5000);
@@ -110,6 +112,30 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
             (isAr ? 'لم تُحفظ النتيجة، {أخبر|أخبري} المعلمة بهذا الخطأ: ' : 'Result was not saved, tell your teacher: ') + (err?.code || err?.message || '')
           );
         }
+      } else if (m.type === 'partial') {
+        // حل غير مكتمل: يصل للمعلمة ويُحدَّث كلما تقدّمت الطالبة
+        const score = Number(m.score);
+        const total = Number(m.total);
+        const done = Number(m.done);
+        if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0 || !Number.isFinite(done)) return;
+        const ex = m.extra && typeof m.extra === 'object' ? m.extra : {};
+        studentHubService
+          .savePartialResult({
+            studentId: uid,
+            studentName: name,
+            groupId,
+            teacherId,
+            itemId: String(m.id || m.title || '').slice(0, 80),
+            title: String(m.title || ''),
+            score,
+            total,
+            done,
+            sections: Array.isArray(ex.sections) ? ex.sections : undefined,
+            strengths: Array.isArray(ex.strengths) ? ex.strengths : undefined,
+            weaknesses: Array.isArray(ex.weaknesses) ? ex.weaknesses : undefined
+          })
+          .then(() => loadResults())
+          .catch((err) => console.error('Error saving partial result:', err));
       } else if (m.type === 'progress' && m.data && typeof m.data === 'object') {
         if (progressTimer.current) window.clearTimeout(progressTimer.current);
         progressTimer.current = window.setTimeout(() => {
@@ -234,6 +260,11 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
                       <div key={r.id} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#FAF8F5] border border-gray-100 text-xs">
                         <div className="min-w-0">
                           <span className="font-bold text-[#0A192F]">{r.title}</span>
+                          {r.partial && (
+                            <span className="ms-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold">
+                              {isAr ? `غير مكتمل ${r.done}/${r.total}` : `unfinished ${r.done}/${r.total}`}
+                            </span>
+                          )}
                           <span className="text-gray-400">
                             {' '}
                             • {half.key === 'ts' ? `${kindLabel(r.kind, isAr)} • ` : ''}

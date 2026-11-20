@@ -305,6 +305,11 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                     {r.speakingScore !== undefined ? `${r.speakingScore}/${r.speakingMax}` : tr('to grade', 'بانتظار درجتك')}
                   </span>
                 )}
+                {r.partial && (
+                  <span className="px-2 py-1 rounded-lg bg-amber-100 text-amber-800 font-bold whitespace-nowrap">
+                    {tr(`unfinished: ${r.done}/${r.total} questions`, `غير مكتمل: حلّت ${r.done} من ${r.total} سؤالًا`)}
+                  </span>
+                )}
                 {(r as any).manual && (
                   <span className="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold whitespace-nowrap">{tr('edited', 'معدّلة يدويًا')}</span>
                 )}

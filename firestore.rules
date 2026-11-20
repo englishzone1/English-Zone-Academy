@@ -499,7 +499,9 @@ service cloud.firestore {
     // --- Interactive homework site results (موقع الواجبات التفاعلية) ---
     match /homework_results/{resultId} {
       allow create: if isSignedIn() && isValidId(resultId) &&
-        request.resource.data.keys().hasOnly(['id', 'studentId', 'studentName', 'groupId', 'teacherId', 'kind', 'itemId', 'title', 'score', 'total', 'percent', 'createdAt', 'sections', 'strengths', 'weaknesses', 'hasAnswers', 'audioCount']) &&
+        request.resource.data.keys().hasOnly(['id', 'studentId', 'studentName', 'groupId', 'teacherId', 'kind', 'itemId', 'title', 'score', 'total', 'percent', 'createdAt', 'sections', 'strengths', 'weaknesses', 'hasAnswers', 'audioCount', 'partial', 'done']) &&
+        // الحل غير المكتمل: معرّف يبدأ بـ PART_ ودرس فقط
+        (!('partial' in request.resource.data) || (request.resource.data.partial == true && resultId.matches('^PART_.*') && request.resource.data.kind == 'lesson' && request.resource.data.done is number)) &&
         (!('audioCount' in request.resource.data) || (request.resource.data.audioCount is int && request.resource.data.audioCount >= 0 && request.resource.data.audioCount <= 10)) &&
         request.resource.data.studentId == request.auth.uid &&
         (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', '')) &&
@@ -528,7 +530,17 @@ service cloud.firestore {
         request.resource.data.get('starsGiven', 0) is number && request.resource.data.get('starsGiven', 0) >= 0 && request.resource.data.get('starsGiven', 0) <= 10 &&
         request.resource.data.get('speakingScore', 0) is number && request.resource.data.get('speakingScore', 0) >= 0 &&
         request.resource.data.get('speakingScore', 0) <= request.resource.data.get('speakingMax', 100) && request.resource.data.get('speakingMax', 0) <= 100;
-      allow delete: if isAdmin();
+      // الطالبة تحدّث حلّها غير المكتمل وتحذفه عند إكمال الدرس
+      allow update: if isSignedIn() && resource.data.studentId == request.auth.uid && resource.data.get('partial', false) == true &&
+        request.resource.data.keys().hasOnly(['id', 'studentId', 'studentName', 'groupId', 'teacherId', 'kind', 'itemId', 'title', 'score', 'total', 'percent', 'createdAt', 'sections', 'strengths', 'weaknesses', 'hasAnswers', 'audioCount', 'partial', 'done']) &&
+        request.resource.data.studentId == request.auth.uid && request.resource.data.get('partial', false) == true &&
+        request.resource.data.kind == 'lesson' && request.resource.data.done is number &&
+        (!('teacherId' in request.resource.data) || request.resource.data.teacherId == myProfile().get('teacherId', '')) &&
+        request.resource.data.score is number && request.resource.data.total is number &&
+        request.resource.data.total > 0 && request.resource.data.total <= 500 &&
+        request.resource.data.score >= 0 && request.resource.data.score <= request.resource.data.total &&
+        request.resource.data.title is string && request.resource.data.title.size() <= 150;
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.studentId == request.auth.uid && resource.data.get('partial', false) == true);
     }
 
     // تقدّم الطالب في موقع الواجبات (لاسترجاعه من أي جهاز)

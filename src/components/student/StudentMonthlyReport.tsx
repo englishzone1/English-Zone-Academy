@@ -67,7 +67,7 @@ export const StudentMonthlyReport: React.FC<Props> = ({ uid, isAr, homework, gra
   // نتائج موقع الواجبات التفاعلي في هذه الفترة (أفضل محاولة لكل درس أو اختبار)
   const best = new Map<string, HomeworkResult>();
   online
-    .filter((r) => inRange(r.createdAt))
+    .filter((r) => inRange(r.createdAt) && !r.partial)
     .forEach((r) => {
       const k = `${r.kind}:${r.itemId}`;
       const prev = best.get(k);

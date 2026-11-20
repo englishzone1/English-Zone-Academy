@@ -274,6 +274,9 @@ export interface HomeworkResult {
   // تصحيح يدوي من الإدارة أو المعلمة: الدرجة الأصلية التي أعطاها الموقع تبقى محفوظة
   manual?: boolean;
   origScore?: number;
+  // حل غير مكتمل: يُحدَّث كلما تقدّمت الطالبة، ويُحذف عند إكمال الدرس
+  partial?: boolean;
+  done?: number;
 }
 
 export interface HomeworkAnswer {
@@ -535,7 +538,8 @@ export const studentHubService = {
       .filter((a) => typeof a?.data === 'string' && a.data.startsWith('data:audio/') && a.data.length <= 900000)
       .slice(0, 10);
     const total = Math.max(0, Math.round(p.total));
-    const score = Math.max(0, Math.min(total, Math.round(p.score)));
+    // الدرجة الجزئية تبقى بكسورها (مثل 37.75)
+    const score = Math.max(0, Math.min(total, Math.round(p.score * 100) / 100));
     await setDoc(
       doc(db, 'homework_results', id),
       clean({
@@ -574,6 +578,64 @@ export const studentHubService = {
       }
     }
     return id;
+  },
+
+  // معرّف ثابت للحل غير المكتمل لكل طالبة ودرس
+  partialId(studentId: string, itemId: string) {
+    return `PART_${studentId}_${String(itemId).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 60)}`.slice(0, 128);
+  },
+
+  async savePartialResult(p: {
+    studentId: string;
+    studentName: string;
+    groupId?: string;
+    teacherId?: string;
+    itemId: string;
+    title: string;
+    score: number;
+    total: number;
+    done: number;
+    sections?: { name: string; ok: number; n: number }[];
+    strengths?: string[];
+    weaknesses?: string[];
+  }): Promise<void> {
+    const id = this.partialId(p.studentId, p.itemId);
+    const total = Math.max(1, Math.round(p.total));
+    const score = Math.max(0, Math.min(total, Math.round(p.score * 100) / 100));
+    const strList = (a: any, max: number) => (Array.isArray(a) ? a.slice(0, max).map((x) => String(x).slice(0, 80)) : undefined);
+    await setDoc(
+      doc(db, 'homework_results', id),
+      clean({
+        id,
+        studentId: p.studentId,
+        studentName: p.studentName.slice(0, 100),
+        groupId: p.groupId || undefined,
+        teacherId: p.teacherId || undefined,
+        kind: 'lesson',
+        itemId: p.itemId.slice(0, 80),
+        title: p.title.slice(0, 150),
+        score,
+        total,
+        percent: Math.round((score / total) * 100),
+        createdAt: new Date().toISOString(),
+        sections: Array.isArray(p.sections)
+          ? p.sections.slice(0, 20).map((x) => ({ name: String(x.name || '').slice(0, 60), ok: Math.max(0, Number(x.ok) || 0), n: Math.max(0, Number(x.n) || 0) }))
+          : undefined,
+        strengths: strList(p.strengths, 12),
+        weaknesses: strList(p.weaknesses, 12),
+        hasAnswers: false,
+        partial: true,
+        done: Math.max(0, Math.min(total, Math.round(p.done)))
+      })
+    );
+  },
+
+  async deletePartialResult(studentId: string, itemId: string): Promise<void> {
+    try {
+      await deleteDoc(doc(db, 'homework_results', this.partialId(studentId, itemId)));
+    } catch {
+      /* لا يوجد حل غير مكتمل */
+    }
   },
 
   async getHomeworkResult(id: string): Promise<HomeworkResult | null> {

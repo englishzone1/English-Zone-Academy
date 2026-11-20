@@ -1264,7 +1264,7 @@ const LESSON_6B = [
 ];
 
 let SECTIONS = LESSON_1A;
-function openLesson(t,s,b){REPSHOWN=false;BACKTO=b||`lvl1`;SECTIONS=s;$(`ltitle`).textContent=t;renderCover(t);build();show(`lesson`);updLesson();}
+function openLesson(t,s,b){REPSHOWN=false;PARTSENT=0;PARTFIN=0;BACKTO=b||`lvl1`;SECTIONS=s;$(`ltitle`).textContent=t;renderCover(t);build();show(`lesson`);const rn=restoreWork();updLesson();if(rn) toast(`📌 رجعنا إلى حيث توقفتِ في هذا الدرس، أكملي الحل.`);}
 const UCOL={u1:`#1b5faa`,u2:`#e0a800`,u3:`#2e9e5b`,u4:`#7b4bb7`,u5:`#ef6c00`,u6:`#00897b`,rev:`#d64545`};
 let CURCARD=null;
 function renderCover(t){
@@ -1331,6 +1331,7 @@ function goRep(){ $(`ldone`).scrollIntoView({behavior:`smooth`}); }
 function goNext(){ const r=[...document.querySelectorAll(`#sections .item`)].find(r=>!r.isX&&!r.isFree&&!r.isOk&&!r.locked); if(!r) return; const d=r.closest(`details`); if(d) d.open=true; r.scrollIntoView({behavior:`smooth`,block:`center`}); const f=r.querySelector(`input,select`); if(f) setTimeout(()=>f.focus({preventScroll:true}),400); }
 let REPSHOWN=false;
 function updLesson(){
+  saveWork(); sendPartial(false);
   const rows=[...document.querySelectorAll(`#sections .item`)].filter(r=>!r.isX&&!r.isFree);
   const n=rows.length; if(!n){ $(`lprog`).innerHTML=``; $(`ldone`).classList.add(`hidden`); return; }
   const ok=Math.round(rows.reduce((a,r)=>a+rowGot(r),0)*100)/100, fin=rows.filter(r=>r.isOk||r.locked).length;
@@ -1340,7 +1341,7 @@ function updLesson(){
     dn.classList.remove(`hidden`);
     const pct=Math.round(ok/n*100), star=pct>=90?`🏆`:pct>=70?`⭐`:`👍`;
     dn.innerHTML=`<div class="dn" dir="rtl"><div class="dnb">${star}</div><b>أحسنتِ يا ${student&&student.name?student.name:``}! أنهيتِ هذا الدرس.</b><div>درجتك: ${fmtN(ok)} / ${n} (${pct}%)</div>${pct<70?`<div>راجعي الأسئلة الخاطئة ثم أعيدي الدرس.</div>`:``}</div>`+lessonReport(rows);
-    if(!REPSHOWN){ REPSHOWN=true; setTimeout(()=>dn.scrollIntoView({behavior:`smooth`,block:`start`}),300); setTimeout(()=>ezResult(`lesson`,CURCARD,$(`ltitle`).textContent,ok,n,Object.assign(summarize(rows),{answers:collectAnswers(rows)})),50); }
+    if(!REPSHOWN&&!RESTORING){ clearWork(); REPSHOWN=true; setTimeout(()=>dn.scrollIntoView({behavior:`smooth`,block:`start`}),300); setTimeout(()=>ezResult(`lesson`,CURCARD,$(`ltitle`).textContent,ok,n,Object.assign(summarize(rows),{answers:collectAnswers(rows)})),50); }
     try{ const D=getDone(); if(!D[CURCARD]||D[CURCARD].s<ok){ D[CURCARD]={s:ok,t:n}; localStorage.setItem(doneKey(),JSON.stringify(D)); } }catch(e){}
   } else dn.classList.add(`hidden`);
 }
@@ -1399,6 +1400,39 @@ function freeOK(raw,key){
   if(V){ if(!V.re.test(v)) return false; if(V.min && v.split(/\s+/).length<V.min) return false; }
   return true;
 }
+/* ---------- حفظ الحل غير المكتمل: تكمل الطالبة لاحقًا، وتصل للمعلمة نتيجة «غير مكتملة» ---------- */
+let RESTORING=false, PARTSENT=0, PARTFIN=0;
+function workKey(){ return `ez_w_`+(student&&student.name?student.name.toLowerCase():`guest`)+`_`+CURCARD; }
+function lessonItems(){ return [...document.querySelectorAll(`#sections .item`)]; }
+function saveWork(){
+  if(RESTORING||!CURCARD||$(`lesson`).classList.contains(`hidden`)) return;
+  const d=lessonItems().map(r=>{ const f=[...r.querySelectorAll(`input,select,textarea`)]; if(!f.length) return 0; const v=f.map(x=>x.value); const st=r.isOk?1:r.locked?2:(r.tries||0)?3:0; if(!st&&v.every(x=>!x)) return 0; return {v,st}; });
+  try{ if(d.some(Boolean)) localStorage.setItem(workKey(),JSON.stringify({t:Date.now(),d})); }catch(e){}
+}
+function clearWork(){ try{ localStorage.removeItem(workKey()); }catch(e){} }
+function restoreWork(){
+  let w=null; try{ w=JSON.parse(localStorage.getItem(workKey())||`null`); }catch(e){}
+  if(!w||!Array.isArray(w.d)) return 0;
+  const rows=lessonItems(); RESTORING=true; let n=0;
+  w.d.forEach((s,i)=>{ const r=rows[i]; if(!s||!r||!Array.isArray(s.v)) return; const f=[...r.querySelectorAll(`input,select,textarea`)];
+    s.v.forEach((v,j)=>{ if(f[j]) f[j].value=v; }); n++;
+    const b=r.querySelector(`.chk`); if(!b||r.isFree||b.disabled) return;
+    // نعيد التصحيح كما كان: صحيح، أو مقفل بعد محاولتين، أو محاولة واحدة
+    if(s.st===1){ r.tries=0; b.click(); } else if(s.st===2){ r.tries=1; b.click(); } else if(s.st===3){ r.tries=0; b.click(); } });
+  RESTORING=false; return n;
+}
+function lessonState(){ const rows=lessonItems().filter(r=>!r.isX&&!r.isFree); const n=rows.length; const ok=Math.round(rows.reduce((a,r)=>a+rowGot(r),0)*100)/100; const fin=rows.filter(r=>r.isOk||r.locked).length; return {rows,n,ok,fin}; }
+function sendPartial(force){
+  if(!CURCARD||REPSHOWN||RESTORING) return; const st=lessonState(); if(!st.n||!st.fin||st.fin>=st.n||st.fin===PARTFIN) return;
+  // نرسل بعد كل 5 أسئلة جديدة أو كل دقيقة، وعند الخروج من الدرس
+  if(!force&&st.fin-PARTFIN<5&&Date.now()-PARTSENT<60000) return; PARTSENT=Date.now(); PARTFIN=st.fin;
+  ezPost({type:`partial`,kind:`lesson`,id:String(CURCARD).slice(0,80),title:String($(`ltitle`).textContent||``).slice(0,150),score:st.ok,total:st.n,done:st.fin,extra:summarize(st.rows)});
+}
+function toast(msg){ let t=$(`eztoast`); if(!t){ t=document.createElement(`div`); t.id=`eztoast`; t.dir=`rtl`; t.style.cssText=`position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99;max-width:92vw;background:#0A192F;color:#F3E5AB;padding:10px 14px;border-radius:14px;font:600 .9rem/1.5 inherit;box-shadow:0 8px 24px rgba(0,0,0,.25);text-align:center`; document.body.appendChild(t); } t.textContent=msg; t.style.display=`block`; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display=`none`,6000); }
+let SWT=0; document.addEventListener(`input`,()=>{ clearTimeout(SWT); SWT=setTimeout(saveWork,800); });
+document.addEventListener(`visibilitychange`,()=>{ if(document.visibilityState===`hidden`){ saveWork(); sendPartial(true); ezProgress(); } });
+window.addEventListener(`pagehide`,()=>{ saveWork(); sendPartial(true); });
+
 function lockRow(row){ row.locked=1; setTimeout(updLesson,0); row.querySelectorAll("input,select").forEach(f=>f.disabled=true); const b=row.querySelector(".chk"); if(b){ b.disabled=true; b.textContent=`🔒`; } }
 
 let student = {};
@@ -1598,7 +1632,10 @@ $("cPE2").onclick = ()=>openLesson("Practical English 2: An orange juice, please
 $("c4A").onclick = ()=>openLesson("4A: This is my family",LESSON_4A);
 $("c4B").onclick = ()=>openLesson("4B: The right car for me",LESSON_4B);
 $("cREV34").onclick = ()=>openLesson("Review: Units 3 & 4",LESSON_REV34);
-$("back").onclick = ()=>show(BACKTO);
+$("back").onclick = ()=>{
+  if(!$(`lesson`).classList.contains(`hidden`)){ saveWork(); const st=lessonState(); if(st.fin&&st.fin<st.n){ sendPartial(true); ezProgress(); toast(`💾 حُفظ حلّك (${st.fin} من ${st.n}) ووصلت للمعلمة نتيجة غير مكتملة. أكملي الباقي متى شئتِ.`); } }
+  show(BACKTO);
+};
 $("cA1").onclick = ()=>show("levels");
 $("cL1").onclick = ()=>show("lvl1");
 $("cL2").onclick = ()=>show("lvl2");
