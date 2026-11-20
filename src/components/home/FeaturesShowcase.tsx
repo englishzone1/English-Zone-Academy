@@ -174,11 +174,17 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
   const [idx, setIdx] = useState(0);
   const [tick, setTick] = useState(0);
   const [w, setW] = useState(320);
+  const [wide, setWide] = useState(false);
   const touch = useRef<{ x: number; y: number } | null>(null);
 
   // عرض الشريحة: مربعة تقريبًا، وتبقى مساحة لظهور جزء من الشريحة المجاورة
   useEffect(() => {
-    const fit = () => setW(Math.min(340, Math.round(window.innerWidth * 0.74)));
+    // الكمبيوتر: شريحة أعرض وأقصر (مربعة أو أطول قليلًا)، والجوال كما هي
+    const fit = () => {
+      const big = window.innerWidth >= 768;
+      setWide(big);
+      setW(big ? 470 : Math.min(340, Math.round(window.innerWidth * 0.74)));
+    };
     fit();
     window.addEventListener('resize', fit);
     return () => window.removeEventListener('resize', fit);
@@ -199,8 +205,8 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
     return d;
   };
   const gap = 18;
-  const H = w + 290;
-  const imgH = Math.round(w * 0.68);
+  const H = wide ? Math.round(w * 1.08) : w + 290;
+  const imgH = wide ? Math.round(w * 0.46) : Math.round(w * 0.68);
   const PrevIcon = ar ? ChevronRight : ChevronLeft;
   const NextIcon = ar ? ChevronLeft : ChevronRight;
 
