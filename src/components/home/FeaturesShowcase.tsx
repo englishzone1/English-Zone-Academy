@@ -272,7 +272,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
               </div>
 
               {/* المحتوى */}
-              <div key={`txt-${tick}`} className={`p-6 sm:p-9 flex flex-col justify-center ${dirAnim === 'next' ? 'ez-in-next' : 'ez-in-prev'}`}>
+              <div key={`txt-${tick}`} className={`p-6 sm:p-9 md:pe-20 flex flex-col justify-center ${dirAnim === 'next' ? 'ez-in-next' : 'ez-in-prev'}`}>
                 <div className="flex items-center gap-2 mb-3 flex-wrap">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold">
                     <f.icon className="w-3.5 h-3.5" aria-hidden="true" />

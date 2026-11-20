@@ -9,7 +9,7 @@ const GOLD = '#D4AF37';
 const CREAM = '#F3E5AB';
 
 const Frame: React.FC<{ id: string; children: React.ReactNode; tint?: string }> = ({ id, children, tint = '#1E1B4B' }) => (
-  <svg viewBox="0 0 400 300" className="w-full h-full block" role="img" aria-hidden="true">
+  <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 w-full h-full block" role="img" aria-hidden="true">
     <defs>
       <linearGradient id={`bg-${id}`} x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stopColor={tint} />
