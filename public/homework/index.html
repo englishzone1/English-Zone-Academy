@@ -1507,7 +1507,15 @@ function evalRow(row,it,fields){
   let ok = true;
   fields.forEach(f=>{
     const alts = f.dataset.a.split("|").map(norm);
-    const good = it.kw ? it.kw.every(k=>new RegExp(k).test(norm(f.value))) : it.dg ? f.value.replace(/\D/g,``)===f.dataset.a : it.free ? (f.tagName==="SELECT" ? f.value!=="" : freeOK(f.value, Array.isArray(it.v)?it.v[fields.indexOf(f)]:it.v)) : ansMatch(alts,f.value,row);
+    let good = it.kw ? it.kw.every(k=>new RegExp(k).test(norm(f.value))) : it.dg ? f.value.replace(/\D/g,``)===f.dataset.a : it.free ? (f.tagName==="SELECT" ? f.value!=="" : freeOK(f.value, Array.isArray(it.v)?it.v[fields.indexOf(f)]:it.v)) : ansMatch(alts,f.value,row);
+    delete f.dataset.sp;
+    if(!good && !it.kw && !it.dg && !it.free && f.tagName!=="SELECT"){
+      // تسامح: مسافة ناقصة بين الكلمات (toschool = to school) تُقبل مع تنبيه
+      const ns=x=>looseA(x).replace(/\s+/g,``); const nv=ns(f.value);
+      const hitA=f.dataset.a.split(`|`).find(a=>ns(a)===nv); if(nv && hitA){ good=true; f.dataset.sp=hitA; }
+      // في جداول بنك الكلمات: الكلمة بدون a/an مقبولة (coffee = a coffee)
+      if(!good && it.uq){ const lv=looseA(f.value); if(lv && alts.map(looseA).some(a=>a===`a ${lv}`||a===`an ${lv}`)) good=true; }
+    }
     f.classList.toggle("good",good); f.classList.toggle("bad",!good);
     if(!good) ok = false;
   });
@@ -1526,7 +1534,7 @@ function check(row,it,review,ex){
   let ok = evalRow(row,it,fields);
   row.isOk = ok; row.got = null; if(exEl) updScore(exEl);
   if(ok && it.pend){ fb.className="fb try"; fb.textContent=`📝 كتابتك سليمة، لكن الإجابة النموذجية لهذا السؤال لم تُضَف بعد. استمعي مرة أخرى وتأكدي من إجابتك.`; return; }
-  if(ok){ row.tries=0; fb.className = "fb ok"; fb.textContent = `أحسنتِ! 🌟 إجابة صحيحة، استمري في التميّز! ❤️`; return; }
+  if(ok){ row.tries=0; fb.className = "fb ok"; const sp=fields.find(f=>f.dataset.sp); fb.textContent = `أحسنتِ! 🌟 إجابة صحيحة، استمري في التميّز! ❤️`+(sp?`\n✏️ انتبهي فقط للمسافة بين الكلمات: ${sp.dataset.sp}`:``); return; }
   if(it.free){
     row.tries = (row.tries||0)+1;
     const keys = fields.map((f,i)=>Array.isArray(it.v)?it.v[i]:it.v);
