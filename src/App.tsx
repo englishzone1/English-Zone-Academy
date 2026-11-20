@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TawkChat } from './components/common/TawkChat';
 import { ChatAssistant } from './components/common/ChatAssistant';
 import { AccountFab } from './components/common/AccountFab';
+import { StandaloneBoard } from './components/rooms/StandaloneBoard';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
@@ -137,7 +138,7 @@ function MainApp() {
   const renderCurrentPage = () => {
     if (
       teacherOnly &&
-      !['teacher-dashboard', 'portal', 'homework', 'avatar-studio', 'login', 'student-login', 'staff', 'rooms'].includes(currentRoute) &&
+      !['teacher-dashboard', 'portal', 'homework', 'avatar-studio', 'login', 'student-login', 'staff', 'rooms', 'board'].includes(currentRoute) &&
       !currentRoute.startsWith('hw-answers/') &&
       !currentRoute.startsWith('room/')
     ) {
@@ -267,6 +268,14 @@ function MainApp() {
         return <HomePage navigate={navigate} />;
     }
   };
+
+  // السبورة المستقلة للمعلم والإدارة: تملأ الشاشة، ولا يُحفظ عليها شيء
+  if (currentRoute === 'board') {
+    if (isLoading) return <LoadingScreen />;
+    if (!isAuthenticated) return <LoginPage navigate={navigate} targetRedirect="board" />;
+    if (!(isTeacher || isAdmin || isSuperAdmin)) return <UnauthorizedScreen navigate={navigate} requiredRole="Faculty Instructor" />;
+    return <StandaloneBoard isAr={language === 'ar'} onClose={() => navigate('portal')} />;
+  }
 
   // صفحة الواجبات الكاملة: تملأ الشاشة بلا شريط علوي ولا تذييل، وتحفظ النتائج باسم الطالب
   if (currentRoute === 'homework') {

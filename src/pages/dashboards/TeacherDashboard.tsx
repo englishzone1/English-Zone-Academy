@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck, UserRound, Mic } from 'lucide-react';
+import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck, UserRound, Mic, PenLine } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { useAuth } from '../../context/AuthContext';
@@ -97,6 +97,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
           >
             <Mic className="w-4 h-4" />
             {tr('Voice rooms with my students', 'الغرف الصوتية مع طلابي')}
+          </button>
+          <button
+            onClick={() => navigate('board')}
+            className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold flex items-center gap-1.5"
+          >
+            <PenLine className="w-4 h-4" />
+            {tr('Whiteboard', 'السبورة')}
           </button>
           <button
             onClick={async () => {

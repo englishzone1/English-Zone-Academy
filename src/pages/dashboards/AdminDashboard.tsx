@@ -25,7 +25,8 @@ import {
   FolderPlus,
   Tag,
   Star,
-  Download
+  Download,
+  PenLine,
 } from 'lucide-react';
 import { englishClubService, DEFAULT_ENGLISH_CLUB_SETTINGS } from '../../services/englishClubService';
 import { EnglishClubSettings } from '../../types/englishClub';
@@ -802,6 +803,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('board')}
+              className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold flex items-center gap-1.5"
+            >
+              <PenLine className="w-3.5 h-3.5" />
+              <span>{tr('Whiteboard', 'السبورة')}</span>
+            </button>
             <button
               onClick={() => {
                 logout();

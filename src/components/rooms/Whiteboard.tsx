@@ -33,6 +33,8 @@ interface Props {
   emit: (op: BoardOp) => void;
   onMinimize: () => void;
   onClose: () => void;
+  /** سبورة مستقلة (خارج الغرف): زر رجوع بدل التصغير والإغلاق */
+  standalone?: boolean;
 }
 
 type Tool = 'pen' | 'hl' | 'eraser' | 'text' | 'emoji' | 'move';
@@ -95,7 +97,7 @@ const fileToJpeg = (file: File, max = 1200): Promise<{ src: string; w: number; h
 
 const imgCache = new Map<string, HTMLImageElement>();
 
-export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, send, emit, onMinimize, onClose }) => {
+export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, send, emit, onMinimize, onClose, standalone = false }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [, force] = useReducer((x: number) => x + 1, 0);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -552,6 +554,13 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
           {!canDraw && <span className="text-gray-300 font-normal"> • {tr('view only', 'للمشاهدة')}</span>}
         </span>
         <div className="flex items-center gap-1.5 pointer-events-auto">
+          {standalone ? (
+            <button onClick={onClose} className="h-10 px-4 rounded-full bg-[#0A192F]/85 text-[#F3E5AB] text-xs font-bold shadow flex items-center gap-1.5" title={tr('Back', 'رجوع')}>
+              <X className="w-4 h-4" />
+              {tr('Close the board', 'إغلاق السبورة')}
+            </button>
+          ) : (
+          <>
           <button onClick={onMinimize} className={`${tb} bg-[#0A192F]/85 text-white`} title={tr('Minimize', 'تصغير')}>
             <Minimize2 className="w-4 h-4" />
           </button>
@@ -559,6 +568,8 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
             <button onClick={onClose} className={`${tb} bg-red-600 text-white`} title={tr('Close the board for everyone', 'إغلاق السبورة للجميع')}>
               <X className="w-5 h-5" />
             </button>
+          )}
+          </>
           )}
         </div>
       </div>
