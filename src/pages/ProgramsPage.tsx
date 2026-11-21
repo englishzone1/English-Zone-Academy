@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { PROGRAM_CATEGORIES, CEFR_LEVELS_INFO } from '../data/academyData';
 import { ProgramShowcase } from '../components/programs/ProgramShowcase';
+import { OxfordBadge } from '../components/programs/OxfordBadge';
 import { 
   BookOpen, 
   Clock, 
@@ -75,10 +76,11 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                 <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mt-1">
                   {language === 'ar' ? 'هيكلية المستويات الستة والـ 18 مرحلة' : '6 Core CEFR Levels & 18 Internal Stages'}
                 </h2>
+                <OxfordBadge language={language} className="mt-3 mb-2" />
                 <p className="text-sm text-gray-500 mt-1">
                   {language === 'ar' 
-                    ? 'بمنهج أكسفورد (Oxford) المعتمد والتفاعلي. يستغرق كل مستوى 6 أشهر مقسمة إلى 3 مراحل داخلية (شهران لكل مرحلة) لتدرج مستمر ونتائج ملموسة.'
-                    : 'Taught with the accredited, interactive Oxford curriculum. Each main level is a 6-month program with 3 progressive stages of 2 months each.'
+                    ? 'يستغرق كل مستوى 6 أشهر مقسمة إلى 3 مراحل داخلية (شهران لكل مرحلة) لتدرج مستمر ونتائج ملموسة.'
+                    : 'Each main level is a 6-month program with 3 progressive stages of 2 months each.'
                   }
                 </p>
               </div>
@@ -137,6 +139,8 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                     <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F]">
                       {language === 'ar' ? prog.titleAr : prog.titleEn}
                     </h2>
+
+                    <OxfordBadge language={language} />
 
                     <p className="text-base text-gray-700 leading-relaxed">
                       {language === 'ar' ? prog.fullDescAr : prog.fullDescEn}

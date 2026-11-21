@@ -183,8 +183,8 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                     <Users className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
                     <span>
                       {language === 'ar'
-                        ? `مجموعات صغيرة (4–6 طلاب) • ${item.stagesCount} مراحل`
-                        : `Small Groups (4–6 students) • ${item.stagesCount} Stages`}
+                        ? `منهج أكسفورد التفاعلي • ${item.stagesCount} مراحل`
+                        : `Interactive Oxford curriculum • ${item.stagesCount} Stages`}
                     </span>
                   </div>
                 </div>

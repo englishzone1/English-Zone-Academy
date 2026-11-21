@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { PROGRAM_CATEGORIES } from '../data/academyData';
 import { ProgramShowcase } from '../components/programs/ProgramShowcase';
+import { OxfordBadge } from '../components/programs/OxfordBadge';
 import { usePricing } from '../hooks/usePricing';
 import { useAcademySettings, formatMoney } from '../hooks/useAcademySettings';
 import { CEFRLevel } from '../types';
@@ -99,6 +100,8 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
           <h1 className="font-serif-luxury font-bold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-4">
             {language === 'ar' ? course.titleAr : course.titleEn}
           </h1>
+
+          <OxfordBadge language={language} dark className="mb-5" />
 
           <p className="text-base sm:text-lg text-gray-200 max-w-3xl leading-relaxed mb-8">
             {language === 'ar' ? course.fullDescAr : course.fullDescEn}

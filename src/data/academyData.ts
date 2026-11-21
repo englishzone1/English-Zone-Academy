@@ -203,8 +203,8 @@ export const GENERAL_ENGLISH_PROGRAM_DATA: ProgramCategory = {
   ],
   suitableForEn: 'Learners of all ages seeking a solid, systematic foundation.',
   suitableForAr: 'الراغبون في تأسيس شامل ومنهجي بمختلف الأعمار.',
-  formatEn: 'Small Group (90 min, 4–6 students)',
-  formatAr: 'مجموعات صغيرة (90 دقيقة، 4 إلى 6 طلاب)',
+  formatEn: 'Small Group (90 min, Oxford curriculum)',
+  formatAr: 'مجموعات صغيرة (90 دقيقة، منهج أكسفورد)',
   durationEn: '6 Months per CEFR Level (3 Stages of 2 Months)',
   durationAr: '6 أشهر لكل مستوى (3 مراحل، كل مرحلة شهران)',
   iconName: 'BookOpen',
@@ -222,27 +222,27 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     shortDescAr:
       'برنامج إنجليزي متكامل بمستويات متدرجة من A1 إلى C2، يعتمد على منهج أكسفورد (Oxford) المعتمد والتفاعلي، ويجمع بين القواعد والمفردات والمهارات اللغوية والتطبيق العملي. نركز على بناء قدرتك على التحدث والتعبير بثقة، ونساعدك على تطوير المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
     fullDescEn:
-      'A structured small-group English program from A1 to C2 based on the accredited, interactive Oxford curriculum (4–6 learners per class, 90-minute sessions) combining grammar, vocabulary, reading, writing, listening, and active speaking practice. Build real communication confidence step by step and develop the academic and practical language skills needed to prepare for IELTS and TOEFL.',
+      'A structured small-group English program from A1 to C2 based on the accredited, interactive Oxford curriculum (90-minute sessions) combining grammar, vocabulary, reading, writing, listening, and active speaking practice. Build real communication confidence step by step and develop the academic and practical language skills needed to prepare for IELTS and TOEFL.',
     fullDescAr:
-      'برنامج متكامل للمجموعات الصغيرة من المستوى A1 إلى C2 قائم على منهج أكسفورد (Oxford) المعتمد والتفاعلي (4 إلى 6 طلاب في الفصل، حصص مدتها 90 دقيقة) يجمع بين القواعد والمفردات والقراءة والكتابة والاستماع والتطبيق العملي للتحدث. ابنِ ثقتك في التواصل خطوة بخطوة وطوّر المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
+      'برنامج متكامل للمجموعات الصغيرة من المستوى A1 إلى C2 قائم على منهج أكسفورد (Oxford) المعتمد والتفاعلي (حصص مدتها 90 دقيقة) يجمع بين القواعد والمفردات والقراءة والكتابة والاستماع والتطبيق العملي للتحدث. ابنِ ثقتك في التواصل خطوة بخطوة وطوّر المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
     objectivesEn: [
       'Learn with the accredited, interactive Oxford curriculum',
       'Progress systematically across CEFR levels A1 to C2 with clear stage milestones',
       'Integrate grammar, vocabulary, reading, writing, listening, and real speaking practice',
-      'Build lasting speaking confidence in small interactive groups of 4–6 learners',
+      'Build lasting speaking confidence in small interactive groups',
       'Develop the core academic and communication skills needed to prepare for IELTS and TOEFL'
     ],
     objectivesAr: [
       'التعلم بمنهج أكسفورد (Oxford) المعتمد والتفاعلي',
       'التدرج المنهجي عبر مستويات الإطار الأوروبي A1 إلى C2 وفق مراحل تعليمية واضحة',
       'دمج القواعد والمفردات ومهارات القراءة والكتابة والاستماع مع الممارسة العملية للتحدث',
-      'بناء ثقة حقيقية في التحدث والتعبير داخل مجموعات صغيرة تفاعلية (4 إلى 6 طلاب)',
+      'بناء ثقة حقيقية في التحدث والتعبير داخل مجموعات صغيرة تفاعلية',
       'تطوير المهارات اللغوية والأكاديمية اللازمة للاستعداد لاختبارات IELTS وTOEFL'
     ],
     suitableForEn: 'Learners from beginner to advanced levels seeking structured A1–C2 progression and speaking confidence.',
     suitableForAr: 'المتعلمون من المبتدئ إلى المتقدم الباحثون عن تدرج منظم من A1 إلى C2 وثقة في التحدث.',
-    formatEn: 'Small Groups of 4–6 students (90 min per lesson)',
-    formatAr: 'مجموعات صغيرة من 4 إلى 6 طلاب (90 دقيقة لكل حصة)',
+    formatEn: 'Small Groups (90 min per lesson)',
+    formatAr: 'مجموعات صغيرة (90 دقيقة لكل حصة)',
     durationEn: '6 Months per level (2 Months per stage)',
     durationAr: '6 أشهر لكل مستوى (شهران لكل مرحلة)',
     iconName: 'Users',
@@ -764,8 +764,8 @@ export const FAQ_LIST: FAQItem[] = [
     category: 'format',
     questionEn: 'How are Small Group lessons structured?',
     questionAr: 'كيف يتم تنظيم حصص المجموعات الصغيرة؟',
-    answerEn: 'Our A1–C2 group lessons last 90 minutes and feature small, interactive classes limited to 4 to 6 students, ensuring every learner receives generous speaking time, direct instructor guidance, and engaging collaborative activities.',
-    answerAr: 'تمتد حصص المجموعات (من A1 حتى C2) لمدة 90 دقيقة كاملة وتضم من 4 إلى 6 طلاب فقط، مما يضمن لكل طالب وقتاً وافراً للتحدث وتصحيحاً مباشراً من المعلم وأنشطة حوارية تفاعلية.'
+    answerEn: 'Our A1–C2 group lessons last 90 minutes and feature small, interactive classes based on the accredited Oxford curriculum, ensuring every learner receives generous speaking time, direct instructor guidance, and engaging collaborative activities.',
+    answerAr: 'تمتد حصص المجموعات (من A1 حتى C2) لمدة 90 دقيقة كاملة في مجموعات صغيرة بمنهج أكسفورد المعتمد والتفاعلي، مما يضمن لكل طالب وقتاً وافراً للتحدث وتصحيحاً مباشراً من المعلم وأنشطة حوارية تفاعلية.'
   },
   {
     id: 'faq-3',

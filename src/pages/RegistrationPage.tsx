@@ -523,8 +523,8 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                   <div className="font-bold text-sm">{t.register.formatGroup}</div>
                   <div className="text-xs text-gray-300 mt-1">
                     {language === 'ar'
-                      ? 'من 4 إلى 6 طلاب فقط، حصة تفاعلية ممتدة لمدة 90 دقيقة'
-                      : '4–6 students, 90 minutes extended interactive session'}
+                      ? 'منهج أكسفورد المعتمد والتفاعلي، حصة تفاعلية ممتدة لمدة 90 دقيقة'
+                      : 'Accredited, interactive Oxford curriculum, 90-minute interactive session'}
                   </div>
                 </div>
               </div>
