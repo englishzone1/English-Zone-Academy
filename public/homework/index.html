@@ -1376,7 +1376,7 @@ const LESSON_7B = [
  ]}
 ];
 const DT = (n,m)=>{ const o=[``,`first`,`second`,`third`,`fourth`,`fifth`,`sixth`,`seventh`,`eighth`,`ninth`,`tenth`,`eleventh`,`twelfth`,`thirteenth`,`fourteenth`,`fifteenth`,`sixteenth`,`seventeenth`,`eighteenth`,`nineteenth`,`twentieth`,`twenty-first`,`twenty-second`,`twenty-third`,`twenty-fourth`,`twenty-fifth`,`twenty-sixth`,`twenty-seventh`,`twenty-eighth`,`twenty-ninth`,`thirtieth`,`thirty-first`][n]; const sf=n%10===1&&n!==11?`st`:n%10===2&&n!==12?`nd`:n%10===3&&n!==13?`rd`:`th`; const d=`${n}${sf}`; const forms=[`${d} ${m}`,`${n} ${m}`,`${n} ${m}`,`the ${d} of ${m}`,`${m} ${d}`,`${m} the ${d}`,`the ${o} of ${m}`,`${o} of ${m}`,`${m} the ${o}`]; return forms.concat(forms.map(f=>`It's ${f}`),forms.map(f=>`It's on ${f}`),forms.map(f=>`It is ${f}`)).join(`|`); };
-Object.assign(IMG,{pe4phone:`img/pe4phone.jpg`,pe4cal:`img/pe4cal.jpg`,pe4cake:`img/pe4cake.jpg`});
+Object.assign(IMG,{pe4phone:`img/pe4phone2.jpg`,pe4cal:`img/pe4cal2.jpg`,pe4cake:`img/pe4cake.jpg`});
 const LESSON_PE4 = [
  {name:`Vocabulary`, review:`Vocabulary: months`, ex:[
   {t:`1. Complete the months with the missing vowels.`, ea:`أشهر السنة تبدأ بحرف كبير: January, February, March, April, May, June, July, August, September, October, November, December.`, ins:`Write the whole month. Example: J_n__ry → January.`, pics:[`pe4phone`], wide:1, items:[{x:1,p:[`J_n_ _ry → January (example)`]}].concat([[`F_br_ _ry`,`February`],[`M_rch`,`March`],[`Apr_l`,`April`],[`M_y`,`May`],[`J_n_`,`June`],[`J_ly`,`July`],[`A_g_st`,`August`],[`S_pt_mb_r`,`September`],[`Oct_b_r`,`October`],[`N_v_mb_r`,`November`],[`D_c_mb_r`,`December`]].map(r=>({p:[r[0]+` → `,[r[1]]],e:`The month is ${r[1]}.`})))}
