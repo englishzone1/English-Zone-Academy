@@ -1,0 +1,21 @@
+name: QA dist
+on:
+  push:
+    branches: [qa-dist]
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download audio, transcribe, print
+        run: |
+          set -e
+          pip install -q openai-whisper >/dev/null 2>&1 || true
+          sudo apt-get -qq install -y ffmpeg >/dev/null 2>&1 || true
+          for pair in "wb7-3:1IZKBI-o93NlFk4m54bDUni5tlUkfbKjV"; do
+            n=${pair%%:*}; id=${pair##*:}
+            curl -sSL -o "$n.mp3" "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
+            echo "INFO $n $(stat -c%s $n.mp3) $(file -b $n.mp3 | cut -c1-60)"
+            whisper "$n.mp3" --model small --language en --output_format txt --output_dir . >/dev/null 2>&1 || true
+            sed 's/^/TXT /' "$n.txt" || true
+            base64 -w 3000 "$n.mp3" | awk -v n="$n" '{printf "AUD_%s_%05d %s\n", n, NR, $0}'
+          done
