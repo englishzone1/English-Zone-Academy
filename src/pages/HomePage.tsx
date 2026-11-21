@@ -177,7 +177,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 <div
                   key={prog.id}
                   dir={dir}
-                  className="bg-white rounded-2xl p-6 sm:p-7 border-2 border-[#D4AF37]/25 shadow-md hover:border-[#D4AF37] hover:shadow-lg transition-all flex flex-col justify-between"
+                  className={`${(PROGRAM_CATEGORIES.length - 1) % 2 === 1 && idx === PROGRAM_CATEGORIES.length - 1 ? 'md:col-span-2 ' : ''}bg-white rounded-2xl p-6 sm:p-7 border-2 border-[#D4AF37]/25 shadow-md hover:border-[#D4AF37] hover:shadow-lg transition-all flex flex-col justify-between`}
                 >
                   <div>
                     <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F] mb-3">

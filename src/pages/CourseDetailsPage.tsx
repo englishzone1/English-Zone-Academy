@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { PROGRAM_CATEGORIES } from '../data/academyData';
+import { ProgramShowcase } from '../components/programs/ProgramShowcase';
 import { usePricing } from '../hooks/usePricing';
 import { useAcademySettings, formatMoney } from '../hooks/useAcademySettings';
 import { CEFRLevel } from '../types';
@@ -146,6 +147,12 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
             </button>
           </div>
         </div>
+
+        {(course.galleryImages?.length || course.videoIds?.length) ? (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#D4AF37]/30 shadow-md">
+            <ProgramShowcase prog={course} language={language} />
+          </div>
+        ) : null}
 
         {/* Learning Objectives */}
         <div className="bg-white rounded-3xl p-7 sm:p-10 border border-[#D4AF37]/30 shadow-md">

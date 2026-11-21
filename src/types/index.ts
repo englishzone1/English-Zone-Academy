@@ -68,6 +68,8 @@ export interface ProgramCategory {
   iconName: string;
   badgeEn?: string;
   badgeAr?: string;
+  galleryImages?: string[];
+  videoIds?: string[];
 }
 
 export interface CurriculumStage {

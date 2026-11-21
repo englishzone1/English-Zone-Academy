@@ -310,6 +310,38 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     iconName: 'Briefcase',
     badgeEn: 'Executive',
     badgeAr: 'تنفيذي'
+  },
+  {
+    id: 'university-english',
+    titleEn: 'English at University',
+    titleAr: 'الإنجليزية في الجامعة',
+    shortDescEn: 'Practical English for university life: introducing yourself, campus vocabulary, asking questions in class, and group work and discussions.',
+    shortDescAr: 'إنجليزية عملية للحياة الجامعية: التعريف بنفسك، ومفردات الجامعة، وطرح الأسئلة في المحاضرة، والعمل الجماعي والنقاشات.',
+    fullDescEn: 'An interactive program that prepares students to use English with confidence at university. Through realistic situations with characters like Lina and Omar, learners practise introducing themselves, understanding professors, asking polite questions in class, and taking part in group projects and discussions.',
+    fullDescAr: 'برنامج تفاعلي يجهّز الطلاب لاستخدام الإنجليزية بثقة في الجامعة. من خلال مواقف واقعية مع شخصيات مثل لينا وعمر، يتدرّب الطالب على التعريف بنفسه، وفهم الأستاذ، وطرح الأسئلة بأدب في المحاضرة، والمشاركة في المشاريع الجماعية والنقاشات.',
+    objectivesEn: [
+      'Introduce yourself confidently and meet new classmates',
+      'Learn essential university vocabulary (major, course, assignment, project…)',
+      'Ask for clarification and use polite requests in class (Could you… / Would you mind…)',
+      'Agree and disagree politely, suggest compromises, and divide tasks in group work'
+    ],
+    objectivesAr: [
+      'التعريف بالنفس بثقة والتعارف مع زملاء جدد',
+      'تعلّم مفردات الجامعة الأساسية (التخصص، المقرر، الواجب، المشروع…)',
+      'طلب التوضيح واستخدام الطلب المهذب في المحاضرة (Could you… / Would you mind…)',
+      'الموافقة والاعتراض بأدب، واقتراح الحلول الوسط، وتقسيم المهام في العمل الجماعي'
+    ],
+    suitableForEn: 'University students and those preparing to start university.',
+    suitableForAr: 'طلاب الجامعات والمقبلون على الدراسة الجامعية.',
+    formatEn: 'Interactive small groups (90 min)',
+    formatAr: 'مجموعات تفاعلية صغيرة (90 دقيقة)',
+    durationEn: 'Practical lessons based on real university situations',
+    durationAr: 'دروس عملية مبنية على مواقف جامعية حقيقية',
+    iconName: 'GraduationCap',
+    badgeEn: 'New',
+    badgeAr: 'جديد',
+    videoIds: ['1SeY9DvWEoC37vevV7biyxbGu3HDc2nPa', '1K26Bh7Jj6jKGQuJWtEpz66O5BJbpma25', '1HsoNYAKY-HbQcEIbZNcC4XgSiO7CCzB9'],
+    galleryImages: Array.from({ length: 18 }, (_, i) => `/programs/university/slide-${String(i + 1).padStart(2, '0')}.jpg`)
   }
 ];
 

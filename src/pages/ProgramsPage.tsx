@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { PROGRAM_CATEGORIES, CEFR_LEVELS_INFO } from '../data/academyData';
+import { ProgramShowcase } from '../components/programs/ProgramShowcase';
 import { 
   BookOpen, 
   Clock, 
@@ -212,6 +213,11 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                   </div>
 
                 </div>
+                {(prog.galleryImages?.length || prog.videoIds?.length) ? (
+                  <div className="mt-8 pt-8 border-t border-gray-100">
+                    <ProgramShowcase prog={prog} language={language} />
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
