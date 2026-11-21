@@ -68,6 +68,8 @@ export interface ProgramCategory {
   iconName: string;
   badgeEn?: string;
   badgeAr?: string;
+  offerNoteAr?: string;
+  offerNoteEn?: string;
   galleryImages?: string[];
   videoIds?: string[];
 }

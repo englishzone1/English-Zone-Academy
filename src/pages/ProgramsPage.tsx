@@ -3,6 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { PROGRAM_CATEGORIES, CEFR_LEVELS_INFO } from '../data/academyData';
 import { ProgramShowcase } from '../components/programs/ProgramShowcase';
 import { OxfordBadge } from '../components/programs/OxfordBadge';
+import { ProgramPrice } from '../components/programs/ProgramPrice';
 import { 
   BookOpen, 
   Clock, 
@@ -188,6 +189,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                       <p className="text-xs text-gray-600 leading-relaxed">
                         {language === 'ar' ? prog.formatAr : prog.formatEn}
                       </p>
+                      <ProgramPrice prog={prog} language={language} className="mt-2" />
                     </div>
 
                     <div className="pt-6 space-y-3">

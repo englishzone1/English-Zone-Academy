@@ -3,6 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { PROGRAM_CATEGORIES } from '../data/academyData';
 import { ProgramShowcase } from '../components/programs/ProgramShowcase';
 import { OxfordBadge } from '../components/programs/OxfordBadge';
+import { ProgramPrice } from '../components/programs/ProgramPrice';
 import { usePricing } from '../hooks/usePricing';
 import { useAcademySettings, formatMoney } from '../hooks/useAcademySettings';
 import { CEFRLevel } from '../types';
@@ -102,6 +103,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
           </h1>
 
           <OxfordBadge language={language} dark className="mb-5" />
+          <ProgramPrice prog={course} language={language} dark className="mb-6 max-w-sm" />
 
           <p className="text-base sm:text-lg text-gray-200 max-w-3xl leading-relaxed mb-8">
             {language === 'ar' ? course.fullDescAr : course.fullDescEn}

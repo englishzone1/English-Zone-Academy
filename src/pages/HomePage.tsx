@@ -8,6 +8,7 @@ import {
   CEFR_LEVELS_INFO
 } from '../data/academyData';
 import { OxfordBadge } from '../components/programs/OxfordBadge';
+import { ProgramPrice } from '../components/programs/ProgramPrice';
 import { useAcademySettings } from '../hooks/useAcademySettings';
 import { useSiteSection } from '../hooks/useSiteContent';
 import { CEFRLevel } from '../types';
@@ -187,6 +188,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                       {language === 'ar' ? prog.titleAr : prog.titleEn}
                     </h3>
                     <OxfordBadge language={language} className="mb-4" />
+                    <ProgramPrice prog={prog} language={language} className="mb-4" />
                     <p className="text-sm text-gray-600 leading-relaxed mb-6">
                       {language === 'ar' ? prog.shortDescAr : prog.shortDescEn}
                     </p>
