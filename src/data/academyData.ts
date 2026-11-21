@@ -309,7 +309,8 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     durationAr: 'مسارات مخصصة من شهرين إلى 6 أشهر',
     iconName: 'Briefcase',
     badgeEn: 'Executive',
-    badgeAr: 'تنفيذي'
+    badgeAr: 'تنفيذي',
+    notOxford: true
   },
   {
     id: 'university-english',
