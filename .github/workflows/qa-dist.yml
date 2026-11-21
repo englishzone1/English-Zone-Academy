@@ -11,11 +11,11 @@ jobs:
           set -e
           pip install -q openai-whisper >/dev/null 2>&1 || true
           sudo apt-get -qq install -y ffmpeg >/dev/null 2>&1 || true
-          for pair in "wb8-2:1uKxj8RXt4sfxqTNqwF9AsDYe3-G_0KyL" "wb8-3:1BUZom_MAMoZvvBi_latXzG-41izK3OIP" "wb8-4:1lNJmiWL1tpE87XICQOD_9eqnVgXFeK8a"; do
+          for pair in "r78a:1fDOCLhaMx2RzZ-YHzknPKo4wJearmzyA" "r78b:1khozT11YO20Tn54wCgM7ASGro2Kb-kz8"; do
             n=${pair%%:*}; id=${pair##*:}
             curl -sSL -o "$n.mp3" "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
             echo "INFO $n $(stat -c%s $n.mp3) $(file -b $n.mp3 | cut -c1-60)"
             whisper "$n.mp3" --model small --language en --output_format txt --output_dir . >/dev/null 2>&1 || true
             sed 's/^/TXT /' "$n.txt" || true
-            base64 -w 3000 "$n.mp3" | awk -v n="$n" '{printf "AUD_%s_%05d %s\n", n, NR, $0}'
+            if file -b $n.mp3 | grep -qi audio; then base64 -w 3000 "$n.mp3"; fi | awk -v n="$n" '{printf "AUD_%s_%05d %s\n", n, NR, $0}'
           done
