@@ -1330,7 +1330,7 @@ const LESSON_7A = [
   ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The missing word is ${r[1]}.`})))}
  ]}
 ];
-Object.assign(IMG,{"a7b1":"img/a7b1.jpg","a7b2":"img/a7b2.jpg","a7b4":"img/a7b4.jpg","a7b5":"img/a7b5.jpg","a7b7":"img/a7b7.jpg"});
+Object.assign(IMG,{"a7b1":"img/a7b1.jpg","a7b2":"img/a7b2.jpg","a7b3":"img/a7b3.jpg","a7b6":"img/a7b6.jpg","a7b4":"img/a7b4.jpg","a7b5":"img/a7b5.jpg","a7b7":"img/a7b7.jpg"});
 const LOVE7 = `<div style='background:#f3f4f6;border-radius:12px;padding:10px 12px;line-height:1.7;margin-top:8px'><b style='font-size:1.1rem'>Three famous love stories in films</b><br><b>Ghost</b><br>Molly loves Sam and Sam loves Molly, but he never says 'I love <b>you</b>'. Sam dies, and now <b>(2)</b>… is a ghost. He watches Molly every day, but she can't see <b>(3)</b>…. Sam meets a woman who is a psychic, and he uses <b>(4)</b>… to speak to Molly…<br><b>My Fair Lady</b><br>Eliza Doolittle is a poor girl who sells flowers and Henry Higgins is a university professor. He teaches <b>(5)</b>… to speak English 'like a princess'. She falls in love with <b>(6)</b>…, but he just thinks <b>(7)</b>… is an interesting student. She is angry and leaves <b>(8)</b>…<br><b>Titanic</b><br>17-year-old Rose is on a ship travelling from the UK to the USA with her mother and a man called Cal Hockley. Her family want Rose to marry Cal because <b>(9)</b>… is rich, but on the ship she meets a poor artist, Jack Dawson, and falls in love with <b>(10)</b>…. But one night, the ship hits an iceberg…</div>`;
 const LESSON_7B = [
  {name:`Grammar`, review:`Grammar: imperatives, object pronouns: me, him, etc.`, ex:[
@@ -1353,7 +1353,7 @@ const LESSON_7B = [
  ]},
  {name:`Vocabulary`, review:`Vocabulary: kinds of film`, ex:[
   {t:`2a. Write the kinds of film.`, ea:`أنواع الأفلام: action، comedy، drama، science fiction، western، horror، animation.`, ins:`Look at the picture and write the kind of film. The first letters are given. Example: an action film.`, wide:1, items:[{x:1,p:[{img:`a7b1`},`\nan action film (example)`]}].concat([
-   [`@a7b2`,`a (c…) `,`comedy|comedy film`,``],[`😢🫂`,`a (dr…) `,`drama|drama film`,``],[`@a7b4`,`a (sc…) (f…) `,`science fiction|science fiction film|science-fiction|sci-fi`,` film`],[`@a7b5`,`a (w…) `,`western|western film`,``],[`👻🏚️`,`a (h…) `,`horror|horror film`,` film`],[`@a7b7`,`an (an…) `,`animation|animated film|animation film`,``]
+   [`@a7b2`,`a (c…) `,`comedy|comedy film`,``],[`@a7b3`,`a (dr…) `,`drama|drama film`,``],[`@a7b4`,`a (sc…) (f…) `,`science fiction|science fiction film|science-fiction|sci-fi`,` film`],[`@a7b5`,`a (w…) `,`western|western film`,``],[`@a7b6`,`a (h…) `,`horror|horror film`,` film`],[`@a7b7`,`an (an…) `,`animation|animated film|animation film`,``]
   ].map(r=>({p:[r[0][0]===`@`?{img:r[0].slice(1)}:{emo:r[0]},`\n`+r[1],[r[2]],r[3]],e:`The kind of film is ${r[2].split(`|`)[0]}.`})))},
   {t:`2b. Answer the questions about you.`, ins:`Write about you.`, wide:1, items:[`What kinds of film do you like?`,`What's your favourite film?`,`Do you have a favourite TV series? What is it?`,`Who's your favourite actor?`].map(q=>({v:`sentence`,free:1,sample:`Write your own answer.`,p:[q+` → `,[``]],e:`Write your own answer in a full sentence, e.g. I like comedies.`}))}
  ]},
