@@ -218,20 +218,22 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     titleEn: 'From Beginner to Confident English Speaker',
     titleAr: 'من الصفر إلى الطلاقة: رحلتك نحو الإنجليزية بثقة',
     shortDescEn:
-      'A structured English program from A1 to C2, combining grammar, vocabulary, all essential language skills, and practical communication. Build real speaking confidence and develop the language skills needed to prepare for IELTS and TOEFL.',
+      'A structured English program from A1 to C2 based on the accredited, interactive Oxford curriculum, combining grammar, vocabulary, all essential language skills, and practical communication. Build real speaking confidence and develop the language skills needed to prepare for IELTS and TOEFL.',
     shortDescAr:
-      'برنامج إنجليزي متكامل بمستويات متدرجة من A1 إلى C2، يعتمد على منهج تعليمي عالمي منظم، ويجمع بين القواعد والمفردات والمهارات اللغوية والتطبيق العملي. نركز على بناء قدرتك على التحدث والتعبير بثقة، ونساعدك على تطوير المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
+      'برنامج إنجليزي متكامل بمستويات متدرجة من A1 إلى C2، يعتمد على منهج أكسفورد (Oxford) المعتمد والتفاعلي، ويجمع بين القواعد والمفردات والمهارات اللغوية والتطبيق العملي. نركز على بناء قدرتك على التحدث والتعبير بثقة، ونساعدك على تطوير المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
     fullDescEn:
-      'A structured small-group English program from A1 to C2 (4–6 learners per class, 90-minute sessions) combining grammar, vocabulary, reading, writing, listening, and active speaking practice. Build real communication confidence step by step and develop the academic and practical language skills needed to prepare for IELTS and TOEFL.',
+      'A structured small-group English program from A1 to C2 based on the accredited, interactive Oxford curriculum (4–6 learners per class, 90-minute sessions) combining grammar, vocabulary, reading, writing, listening, and active speaking practice. Build real communication confidence step by step and develop the academic and practical language skills needed to prepare for IELTS and TOEFL.',
     fullDescAr:
-      'برنامج متكامل للمجموعات الصغيرة من المستوى A1 إلى C2 (4 إلى 6 طلاب في الفصل، حصص مدتها 90 دقيقة) يجمع بين القواعد والمفردات والقراءة والكتابة والاستماع والتطبيق العملي للتحدث. ابنِ ثقتك في التواصل خطوة بخطوة وطوّر المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
+      'برنامج متكامل للمجموعات الصغيرة من المستوى A1 إلى C2 قائم على منهج أكسفورد (Oxford) المعتمد والتفاعلي (4 إلى 6 طلاب في الفصل، حصص مدتها 90 دقيقة) يجمع بين القواعد والمفردات والقراءة والكتابة والاستماع والتطبيق العملي للتحدث. ابنِ ثقتك في التواصل خطوة بخطوة وطوّر المهارات اللغوية اللازمة للاستعداد لاختبارات IELTS وTOEFL.',
     objectivesEn: [
+      'Learn with the accredited, interactive Oxford curriculum',
       'Progress systematically across CEFR levels A1 to C2 with clear stage milestones',
       'Integrate grammar, vocabulary, reading, writing, listening, and real speaking practice',
       'Build lasting speaking confidence in small interactive groups of 4–6 learners',
       'Develop the core academic and communication skills needed to prepare for IELTS and TOEFL'
     ],
     objectivesAr: [
+      'التعلم بمنهج أكسفورد (Oxford) المعتمد والتفاعلي',
       'التدرج المنهجي عبر مستويات الإطار الأوروبي A1 إلى C2 وفق مراحل تعليمية واضحة',
       'دمج القواعد والمفردات ومهارات القراءة والكتابة والاستماع مع الممارسة العملية للتحدث',
       'بناء ثقة حقيقية في التحدث والتعبير داخل مجموعات صغيرة تفاعلية (4 إلى 6 طلاب)',
@@ -253,15 +255,17 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     titleAr: 'الإنجليزية للأطفال والناشئة',
     shortDescEn: 'Fun, gamified, engaging English learning tailored for young learners aged 6–14.',
     shortDescAr: 'تعلم ممتع وتفاعلي قائم على اللعب والتحفيز مخصص للأطفال من سن 6 إلى 14 عاماً.',
-    fullDescEn: 'Built specifically for children and teenagers with gamified stars, visual storytelling, pronunciation songs, phonics, and the English Zone Stars reward system.',
-    fullDescAr: 'صُمم خصيصاً للناشئة باستخدام نظام نجوم English Zone Stars، والقصص المصورة، والألعاب الصوتية لغرس حب اللغة الإنجليزية منذ الصغر.',
+    fullDescEn: 'Built specifically for children and teenagers on the accredited, interactive Oxford curriculum, with gamified stars, visual storytelling, pronunciation songs, phonics, and the English Zone Stars reward system.',
+    fullDescAr: 'صُمم خصيصاً للناشئة بمنهج أكسفورد (Oxford) المعتمد والتفاعلي، مع نظام نجوم English Zone Stars، والقصص المصورة، والألعاب الصوتية لغرس حب اللغة الإنجليزية منذ الصغر.',
     objectivesEn: [
+      'Learn with the accredited, interactive Oxford curriculum for kids',
       'Master phonics, reading foundations, and clear pronunciation',
       'Build confidence through interactive games, songs, and visual media',
       'Earn English Zone Stars, collect badges, and customize digital avatars',
       'Learn polite everyday expressions and simple storytelling'
     ],
     objectivesAr: [
+      'التعلم بمنهج أكسفورد (Oxford) المعتمد والتفاعلي المخصص للأطفال',
       'إتقان الصوتيات وأسس القراءة والنطق السليم للأحرف',
       'تعزيز الثقة من خلال الألعاب التربوية والقصص المشوقة',
       'كسب نجوم English Zone Stars وتخصيص الأفاتار المميز',

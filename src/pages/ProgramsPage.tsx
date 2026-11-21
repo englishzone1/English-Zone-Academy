@@ -76,8 +76,8 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
                   {language === 'ar' 
-                    ? 'يستغرق كل مستوى 6 أشهر مقسمة إلى 3 مراحل داخلية (شهران لكل مرحلة) لتدرج مستمر ونتائج ملموسة.'
-                    : 'Each main level is a 6-month program with 3 progressive stages of 2 months each.'
+                    ? 'بمنهج أكسفورد (Oxford) المعتمد والتفاعلي. يستغرق كل مستوى 6 أشهر مقسمة إلى 3 مراحل داخلية (شهران لكل مرحلة) لتدرج مستمر ونتائج ملموسة.'
+                    : 'Taught with the accredited, interactive Oxford curriculum. Each main level is a 6-month program with 3 progressive stages of 2 months each.'
                   }
                 </p>
               </div>
