@@ -331,6 +331,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <h2>A1 level 3</h2>
     <button class="lesson u7" id="c7A">7A: Free time<span>Free-time verb phrases, word order in questions, /w/ /h/ /eə/ /aʊ/</span></button>
     <button class="lesson u7" id="c7B">7B: Lights, camera, action!<span>Imperatives, object pronouns, kinds of film, sentence rhythm</span></button>
+    <button class="lesson u7" id="cPE4">Practical English 4: What's the date?<span>Months, ordinal numbers, saying the date, talking on the phone</span></button>
   </section>
   <section id="exam" class="hidden">
     <button class="back" id="backEx">⬅ Back</button>
@@ -858,7 +859,7 @@ let CUR = null, WARNED = false;
 const AUDCDN=`https://cdn.jsdelivr.net/gh/englishzone1/EFHOMEWORK-@main/`, AUDRAW=`https://raw.githubusercontent.com/englishzone1/EFHOMEWORK-/main/`;
 
 const WBTRACKS=`1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.1 2.2 2.3 2.4 3.1 3.2 3.3 3.4 3.5 4.1 4.2 4.3 5.1 5.2 5.3 5.4 5.5 5.6 5.7 6.1 6.2 6.3 6.4 6.5`.split(` `);
-const DRIVEAUD={"1gM2-YoMSfNGokcCwTumwOcCBSu72B1JS":[`audio/wb/sb2-26.mp3`,`Track 2.26`],"1n3QBQ3AxWWmMLBa2KIGMzZZNH7fYH1JP":[`audio/wb/sb4-22.mp3`,`Track 4.22`],"15o38UHCenuhMHAo8F2kK6tc0TdGcDIY5":[`audio/wb/wb7-1.mp3`,`Track 7.1`],"1bC2nVKOu0t-ZMkZCaBj0PiasZR8Hs6Wu":[`audio/wb/sb6-18.mp3`,`Track 6.18`],"1VS9fR3eNLoIqrHeMLLff7LgwTf3BLtm4":[`audio/wb/wb7-2.mp3`,`Track 7.2`]};
+const DRIVEAUD={"1gM2-YoMSfNGokcCwTumwOcCBSu72B1JS":[`audio/wb/sb2-26.mp3`,`Track 2.26`],"1n3QBQ3AxWWmMLBa2KIGMzZZNH7fYH1JP":[`audio/wb/sb4-22.mp3`,`Track 4.22`],"15o38UHCenuhMHAo8F2kK6tc0TdGcDIY5":[`audio/wb/wb7-1.mp3`,`Track 7.1`],"1bC2nVKOu0t-ZMkZCaBj0PiasZR8Hs6Wu":[`audio/wb/sb6-18.mp3`,`Track 6.18`],"1VS9fR3eNLoIqrHeMLLff7LgwTf3BLtm4":[`audio/wb/wb7-2.mp3`,`Track 7.2`],"1IZKBI-o93NlFk4m54bDUni5tlUkfbKjV":[`audio/wb/wb7-3.mp3`,`Track 7.3`]};
 function audList(ex){
   if(typeof ex.audio===`string`){ const m=ex.audio.match(/\/d\/([^/]+)/); if(m&&DRIVEAUD[m[1]]) return [DRIVEAUD[m[1]]]; }
   if(!ex.track) return [];
@@ -1374,6 +1375,29 @@ const LESSON_7B = [
   ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The phrase is ${r[1].split(`|`)[0]}.`})))}
  ]}
 ];
+const DT = (n,m)=>{ const o=[``,`first`,`second`,`third`,`fourth`,`fifth`,`sixth`,`seventh`,`eighth`,`ninth`,`tenth`,`eleventh`,`twelfth`,`thirteenth`,`fourteenth`,`fifteenth`,`sixteenth`,`seventeenth`,`eighteenth`,`nineteenth`,`twentieth`,`twenty-first`,`twenty-second`,`twenty-third`,`twenty-fourth`,`twenty-fifth`,`twenty-sixth`,`twenty-seventh`,`twenty-eighth`,`twenty-ninth`,`thirtieth`,`thirty-first`][n]; const sf=n%10===1&&n!==11?`st`:n%10===2&&n!==12?`nd`:n%10===3&&n!==13?`rd`:`th`; const d=`${n}${sf}`; const forms=[`${d} ${m}`,`${n} ${m}`,`${n} ${m}`,`the ${d} of ${m}`,`${m} ${d}`,`${m} the ${d}`,`the ${o} of ${m}`,`${o} of ${m}`,`${m} the ${o}`]; return forms.concat(forms.map(f=>`It's ${f}`),forms.map(f=>`It's on ${f}`),forms.map(f=>`It is ${f}`)).join(`|`); };
+const LESSON_PE4 = [
+ {name:`Vocabulary`, review:`Vocabulary: months`, ex:[
+  {t:`1. Complete the months with the missing vowels.`, ea:`أشهر السنة تبدأ بحرف كبير: January, February, March, April, May, June, July, August, September, October, November, December.`, ins:`Write the whole month. Example: J_n__ry → January.`, wide:1, items:[{x:1,p:[`J_n_ _ry → January (example)`]}].concat([[`F_br_ _ry`,`February`],[`M_rch`,`March`],[`Apr_l`,`April`],[`M_y`,`May`],[`J_n_`,`June`],[`J_ly`,`July`],[`A_g_st`,`August`],[`S_pt_mb_r`,`September`],[`Oct_b_r`,`October`],[`N_v_mb_r`,`November`],[`D_c_mb_r`,`December`]].map(r=>({p:[r[0]+` → `,[r[1]]],e:`The month is ${r[1]}.`})))}
+ ]},
+ {name:`Vocabulary & Pronunciation`, review:`Vocabulary: ordinal numbers, /θ/`, ex:[
+  {t:`2a. Complete the ordinal numbers.`, ea:`الأعداد الترتيبية: first، second، third، ثم نضيف th غالبًا: fourth، fifth، ninth، twelfth، twentieth، thirty-first.`, ins:`Write the ordinal number. Example: 2nd → second.`, wide:1, items:[{x:1,p:[`2nd → second (example)`]}].concat([[`20th`,`twentieth`],[`4th`,`fourth`],[`31st`,`thirty-first|thirty first`],[`5th`,`fifth`],[`9th`,`ninth`],[`3rd`,`third`],[`12th`,`twelfth`],[`8th`,`eighth`],[`6th`,`sixth`]].map(r=>({p:[r[0]+` → `,[r[1]]],e:`${r[0]} = ${r[1].split(`|`)[0]}.`})))},
+  {t:`2b. Write the next ordinal number.`, ea:`العدد الترتيبي التالي: tenth ← eleventh، seventeenth ← eighteenth.`, ins:`Example: first, second.`, wide:1, items:[[`tenth, `,`eleventh`],[`seventeenth, `,`eighteenth`],[`fourteenth, `,`fifteenth`],[`twenty-third, `,`twenty-fourth|twenty fourth`],[`fifteenth, `,`sixteenth`]].map(r=>({p:[r[0],[r[1]]],e:`The next one is ${r[1].split(`|`)[0]}.`}))},
+  {t:`2c. Listen and repeat the sentences. Copy the sounds and rhythm.`, ea:`صوت /θ/: ضعي طرف اللسان بين الأسنان كما في thirteenth وthree وthink.`, ins:`1 It's Thursday the thirteenth. 2 It's three thousand dollars. 3 I think it's three thirty. 4 His third birthday's on the fifth.`, audio:`https://drive.google.com/file/d/1IZKBI-o93NlFk4m54bDUni5tlUkfbKjV/view?usp=drivesdk`, track:`7.3`, items:[{free:1,sample:`Yes, I did.`,p:[`I listened and repeated the sentences → `,{sel:`Yes, I did`,o:[`Yes, I did`,`Not yet`]}],e:`Listen again and repeat until you can say the /θ/ sound well.`}]}
+ ]},
+ {name:`Saying the date`, review:`Saying the date`, ex:[
+  {t:`3a. Match the dates.`, ea:`في التاريخ البريطاني يأتي اليوم أولًا ثم الشهر: 2/9 = 2nd September.`, ins:`Choose the date. Example: 19/2 → 19th February.`, items:[[`2/9`,`2nd September`],[`21/7`,`21st July`],[`11/1`,`11th January`],[`27/4`,`27th April`],[`8/10`,`8th October`],[`6/5`,`6th May`],[`7/11`,`7th November`]].map(r=>({p:[r[0]+` → `,{sel:r[1],o:[`21st July`,`7th November`,`11th January`,`6th May`,`8th October`,`27th April`,`2nd September`]}],e:`${r[0]} = ${r[1]} (day first, then month).`}))},
+  {t:`3b. Practise saying the dates.`, ea:`نقول the و of: the nineteenth of February.`, ins:`Look at 1–8 in a and say the dates. Remember to say the and of, for example, the nineteenth of February.`, items:[{free:1,sample:`Yes, I did.`,p:[`I practised saying the dates → `,{sel:`Yes, I did`,o:[`Yes, I did`,`Not yet`]}],e:`Say: the second of September, the twenty-first of July, the eleventh of January…`}]},
+  {t:`3c. Write the answers using the dates in brackets.`, ea:`اكتبي التاريخ مثل 9th March أو the ninth of March.`, ins:`Example: What's the date today? (9/3) → 9th March.`, wide:1, items:[{x:1,p:[`A: What's the date today? (9/3) B: 9th March. (example)`]}].concat([[`What's the date on Saturday? (1/11)`,1,`November`],[`What's the date tomorrow? (2/6)`,2,`June`],[`When's your birthday? (18/12)`,18,`December`],[`When's your mother's birthday? (4/8)`,4,`August`],[`When's your best friend's birthday? (31/10)`,31,`October`]].map(r=>({p:[`A: ${r[0]} B: `,[DT(r[1],r[2])]],e:`Answer: ${DT(r[1],r[2]).split(`|`)[0]}.`})))},
+  {t:`3d. Answer 1–6 in c with your own answers.`, ins:`Write your own answers.`, wide:1, items:[`What's the date today?`,`What's the date on Saturday?`,`What's the date tomorrow?`,`When's your birthday?`,`When's your mother's birthday?`,`When's your best friend's birthday?`].map(q=>({v:`sentence`,free:1,sample:`Write your own answer.`,p:[q+` → `,[``]],e:`Write the date, for example: It's the tenth of May.`}))}
+ ]},
+ {name:`Talking on the phone`, review:`Talking on the phone`, ex:[
+  {t:`4. Put the conversation in the right order.`, ea:`المكالمة تبدأ بالتحية، ثم السؤال عن الشخص، ثم التعريف بالنفس، ثم سبب المكالمة، ثم الوداع.`, ins:`Choose the number (1–7) for each line. Example: 1 A Hello.`, items:[{x:1,p:[`1 — A: Hello. (example)`]}].concat([[`A: Hi Gloria. Listen, now isn't a good time. I'm in a meeting. Can I call you later?`,`5`],[`A: Yes, it is. Who's that?`,`3`],[`A: OK. Speak later. Bye.`,`7`],[`B: This is Gloria Webster, from the New York office.`,`4`],[`B: Yes, no problem. Call me on this number this afternoon.`,`6`],[`B: Hello, is that Dave Freeman?`,`2`]].map(r=>({p:[{sel:r[1],o:[`2`,`3`,`4`,`5`,`6`,`7`]},` — ${r[0]}`],e:`Order: 1 Hello. 2 Hello, is that Dave Freeman? 3 Yes, it is. Who's that? 4 This is Gloria Webster… 5 Hi Gloria… 6 Yes, no problem… 7 OK. Speak later. Bye.`})))}
+ ]},
+ {name:`Useful Phrases`, review:`Useful phrases`, ex:[
+  {t:`5. Complete the conversations with a phrase from the list.`, ea:`عبارات مفيدة: What's the date today؟ / Is that…؟ / It's my dad's birthday. / This is for you.`, ins:`Use each phrase once. Example: OK. Call me on Monday at work.`, bank:[`Call me on Monday at work`,`Is that`,`It's my dad's birthday`,`This is for you`,`What's the date today`], wide:1, items:[{x:1,p:[`A: We need to talk about our trip to Berlin. B: OK. Call me on Monday at work. (example)`]}].concat([[`A: `,`What's the date today|What is the date today`,`? B: I think it's the 10th.`],[`A: `,`Is that`,` our new teacher? B: Yes. Her name's Mrs Mack.`],[`A: Isn't it the 5th today? B: No, it's the 6th. `,`It's my dad's birthday|It is my dad's birthday`,`.`],[`A: `,`This is for you`,`. Happy birthday! B: Thank you.`]].map(r=>({p:[r[0],[r[1]],r[2]],e:`The phrase is ${r[1].split(`|`)[0]}.`})))}
+ ]}
+];
 const LESSON_REV56 = [
  {name:`Grammar`, review:`Grammar: review of Units 5 & 6`, ex:[
   {t:`Circle a or b.`, ea:`راجعي المضارع البسيط: do/does في السؤال، don't/doesn't في النفي، s مع he/she/it، ومكان ظرف التكرار قبل الفعل.`, ins:`Choose the correct answer. Example: What's your name?`, items:GR56.map(r=>({p:[r[0],{sel:r[1],o:r[2]},r[3]],e:`Present simple: I/you/we/they + verb (don't + verb); he/she/it + verb+s (doesn't + verb). Questions: Do/Does + subject + verb. Adverbs of frequency go before the main verb: always has, never go, do you usually have.`}))}
@@ -1785,6 +1809,7 @@ $("c6B").onclick = ()=>openLesson("6B: Good morning, goodnight",LESSON_6B,"lvl2"
 $("cREV56").onclick = ()=>openLesson("Review: Units 5 & 6",LESSON_REV56,"lvl2");
 $("c7A").onclick = ()=>openLesson("7A: Free time",LESSON_7A,"lvl3");
 $("c7B").onclick = ()=>openLesson("7B: Lights, camera, action!",LESSON_7B,"lvl3");
+$("cPE4").onclick = ()=>openLesson("Practical English 4: What's the date?",LESSON_PE4,"lvl3");
 TQ.c=(s,o,a,ea)=>{ const parts=s.split(`___`), p=[]; parts.forEach((x,i)=>{ if(x) p.push(x); if(i<parts.length-1) p.push({sel:o[Array.isArray(a)?a[i]:a],o:o}); }); return {p,ea}; };
 const SPEAK=(tasks)=>({name:`Speaking`, speak:1, ex:[{t:`Speaking (record your answers)`, ins:`<div dir="rtl">🎙️ سجّلي إجابتك عن كل سؤال بصوتك (حتى دقيقة ونصف لكل سؤال). تستمع المعلمة إلى تسجيلك وتضع درجته.<br>🔒 تسجيلك لا يسمعه إلا معلمتك وإدارة الأكاديمية لتقييمك فقط، ولا يُنشر في أي مكان، ويُحذف بعد التقييم.</div><ol class="spk" style="direction:ltr;text-align:left">${tasks.map(x=>`<li>${x}</li>`).join(``)}</ol>`, items:[]}]});
 const AUD=(n)=>`audio/${n}.mp3`;
