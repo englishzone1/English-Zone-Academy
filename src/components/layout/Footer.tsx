@@ -196,6 +196,26 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                   {t.nav.blog}
                 </button>
               </li>
+              <li>
+                <button onClick={() => handleNav('library')} className="hover:text-[#F3E5AB] transition-colors">
+                  {language === 'ar' ? 'المكتبة' : 'Library'}
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    try {
+                      sessionStorage.setItem('ez-go-magazine', '1');
+                    } catch {
+                      /* ignore */
+                    }
+                    handleNav('library');
+                  }}
+                  className="hover:text-[#F3E5AB] transition-colors"
+                >
+                  {language === 'ar' ? 'مجلة الأكاديمية' : 'Academy magazine'}
+                </button>
+              </li>
             </ul>
           </div>
 

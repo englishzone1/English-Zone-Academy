@@ -21,6 +21,17 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
   }, [isAuthenticated]);
 
   const mags = items.filter((b) => b.category === 'magazine');
+  // رابط «مجلة الأكاديمية» يفتح الصفحة على قسم المجلة
+  React.useEffect(() => {
+    if (!mags.length) return;
+    try {
+      if (sessionStorage.getItem('ez-go-magazine') !== '1') return;
+      sessionStorage.removeItem('ez-go-magazine');
+    } catch {
+      return;
+    }
+    setTimeout(() => document.getElementById('ez-magazine')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+  }, [mags.length]);
   const books = items.filter((b) => b.category !== 'magazine');
   const title = (b: any) => (isAr ? b.titleAr : b.titleEn) || b.titleAr || b.titleEn;
   const open = (b: any) =>
@@ -59,7 +70,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
       ) : (
         <>
           {mags.length > 0 && (
-            <section className="space-y-4">
+            <section id="ez-magazine" className="space-y-4 scroll-mt-24">
               <h2 className="font-bold text-xl text-[#0A192F] flex items-center gap-2">
                 <Newspaper className="w-5 h-5 text-[#D4AF37]" />
                 {isAr ? 'مجلة الأكاديمية' : 'Academy Magazine'}
