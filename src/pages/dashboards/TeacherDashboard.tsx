@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck, UserRound, Mic, PenLine } from 'lucide-react';
+import { LogOut, Users, Star, MessageSquare, Globe2, BookOpenCheck, UserRound, Mic, PenLine, MessagesSquare } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { autoAwardHomeworkStars } from '../../services/autoStars';
 import { useAuth } from '../../context/AuthContext';
@@ -13,12 +13,13 @@ import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { AvatarRenderer } from '../../components/avatar/AvatarRenderer';
 import { toEZAvatar } from '../../components/avatar/ezAvatar';
 import { squarePhoto } from '../../services/studentHubService';
+import { ChatHub } from '../../components/chat/ChatHub';
 
 interface TeacherDashboardProps {
   navigate: (route: string) => void;
 }
 
-type Tab = 'students' | 'results' | 'ledger' | 'messages' | 'community';
+type Tab = 'students' | 'results' | 'ledger' | 'messages' | 'chats' | 'community';
 
 // لوحة المعلم: طلاب مجموعاته فقط، بدون صلاحيات الإدارة
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) => {
@@ -48,6 +49,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
     { id: 'results', ar: 'نتائج الواجبات', en: 'Homework results', icon: BookOpenCheck },
     { id: 'ledger', ar: 'سجل النجوم', en: 'Stars ledger', icon: Star },
     { id: 'messages', ar: 'رسائل الطلاب', en: 'Messages', icon: MessageSquare },
+    { id: 'chats', ar: 'المحادثات', en: 'Chats', icon: MessagesSquare },
     { id: 'community', ar: 'مجتمع الطلاب', en: 'Community', icon: Globe2 }
   ];
 
@@ -118,7 +120,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
           {tabs.map((t) => {
             const Icon = t.icon;
             return (
@@ -147,6 +149,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
         {tab === 'results' && <AdminHomeworkResults onNotice={notify} teacherMode />}
         {tab === 'ledger' && <AdminStarsLedger onNotice={notify} teacherMode />}
         {tab === 'messages' && <AdminMessagesManager onNotice={notify} teacherMode />}
+        {tab === 'chats' && firebaseUser && (
+          <ChatHub me={{ uid: firebaseUser.uid, name: user?.fullName || tr('Teacher', 'المعلم'), role: 'teacher' }} isAr={isAr} />
+        )}
         {tab === 'community' && firebaseUser && (
           <CommunityFeed uid={firebaseUser.uid} name={user?.fullName || tr('Teacher', 'معلم')} role="teacher" isAr={isAr} avatar={(user as any)?.avatarConfig} />
         )}

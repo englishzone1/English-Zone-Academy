@@ -792,11 +792,20 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
 
             {!teacherMode && (selected as any).role !== 'teacher' && (
               <button
+                onClick={() => window.open(`/#/student-preview/${selected.id}`, '_blank')}
+                className="w-full py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold hover:bg-[#162B4D]"
+              >
+                {isAr ? '👁️ عرض صفحة الطالب كما يراها (للعرض فقط)' : '👁️ View the student page as they see it (view only)'}
+              </button>
+            )}
+
+            {!teacherMode && (selected as any).role !== 'teacher' && (
+              <button
                 onClick={async () => {
                   if (!window.confirm(isAr ? `تحويل ${selected.fullName || ''} إلى معلم؟ سيخرج من قائمة الطلاب.` : 'Make this account a teacher?')) return;
                   try {
                     await groupService.makeTeacher(selected);
-                    onNotice(isAr ? 'أصبح الحساب معلمًا. اربطه بمجموعته من سجل النجوم > المجموعات.' : 'Account is now a teacher. Assign a group in Stars Ledger > Groups.');
+                    onNotice(isAr ? 'أصبح الحساب معلمًا. أسندي له مجموعاته وطلابه من تبويب المعلمون.' : 'Account is now a teacher. Assign groups and students in the Teachers tab.');
                     setSelectedId(null);
                     await load(false);
                   } catch (err: any) {
@@ -877,7 +886,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
               </div>
             </div>
 
-            <AdminStudentRecords studentId={selected.id} isAr={isAr} onNotice={onNotice} teacherScope={teacherMode ? firebaseUser?.uid : undefined} lessonDays={form.lessonDays} lessonTime={form.lessonTime} />
+            <AdminStudentRecords studentId={selected.id} isAr={isAr} onNotice={onNotice} teacherScope={teacherMode ? firebaseUser?.uid : undefined} lessonDays={form.lessonDays} lessonTime={form.lessonTime} lessonsAttended={Number(form.lessonsAttended) || 0} lessonsTotal={form.lessonsTotal !== '' ? Number(form.lessonsTotal) : undefined} onAttendedChange={(v) => setField('lessonsAttended', String(v))} />
           </div>
         </div>
       )}

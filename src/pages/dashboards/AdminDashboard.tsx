@@ -64,6 +64,7 @@ import { AdminBlockedEmails } from '../../components/admin/AdminBlockedEmails';
 import { AdminDeletedAccounts } from '../../components/admin/AdminDeletedAccounts';
 import { sendTestEmail, resetTodayLimit } from '../../services/emailNotify';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
+import { ChatHub } from '../../components/chat/ChatHub';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -71,6 +72,7 @@ interface AdminDashboardProps {
 
 type TabId =
   | 'overview'
+  | 'chats'
   | 'hwresults'
   | 'homework'
   | 'assistant'
@@ -110,6 +112,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
   const adminName = user?.fullName || tr('Super Administrator', 'المدير العام');
 
   const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [chatInitial, setChatInitial] = useState<string | undefined>(undefined);
 
   // عند فتح لوحة الإدارة: تحديث لوحات المجموعات التي يراها الطلاب (الاسم والنقاط)
   useEffect(() => {
@@ -710,6 +713,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'hwresults', labelEn: 'Homework results', labelAr: 'نتائج الواجبات' },
     { id: 'teachers', labelEn: 'Teachers', labelAr: 'المعلمون' },
     { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
+    { id: 'chats', labelEn: 'Group & teacher chats', labelAr: 'المحادثات (المجموعات والمعلمون)' },
     { id: 'assistant', labelEn: 'Auto assistant', labelAr: 'المساعد الآلي' },
     { id: 'community', labelEn: 'Community', labelAr: 'مجتمع الطلاب' },
     { id: 'feedback_reviews', labelEn: 'Student Reviews Gallery', labelAr: 'آراء وتقييمات الطلاب' },
@@ -1113,13 +1117,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* CONTACT MESSAGES */}
         {activeTab === 'messages' && <AdminMessagesManager onNotice={(msg) => notify(msg, 4000)} />}
+        {activeTab === 'chats' && firebaseUser && (
+          <ChatHub key={chatInitial || 'hub'} me={{ uid: firebaseUser.uid, name: adminName, role: 'admin' }} isAr={isAr} initial={chatInitial} />
+        )}
         {activeTab === 'workshops' && <AdminWorkshops isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
         {activeTab === 'referrals' && <AdminReferrals isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
         {activeTab === 'voicerooms' && <AdminVoiceRooms isAr={isAr} navigate={navigate} />}
         {activeTab === 'challenge' && <AdminDailyChallenge isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
 
         {/* TEACHERS */}
-        {activeTab === 'teachers' && <AdminTeachersManager onNotice={(msg) => notify(msg, 4000)} />}
+        {activeTab === 'teachers' && (
+          <AdminTeachersManager
+            onNotice={(msg) => notify(msg, 4000)}
+            onOpenChat={(threadId) => {
+              setChatInitial(threadId);
+              setActiveTab('chats');
+            }}
+          />
+        )}
 
         {/* HOMEWORK RESULTS */}
         {activeTab === 'hwresults' && <AdminHomeworkResults onNotice={(msg) => notify(msg, 4000)} />}

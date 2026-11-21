@@ -35,6 +35,7 @@ import { VoiceRoomsPage } from './pages/VoiceRoomsPage';
 import { VoiceRoomPage } from './pages/VoiceRoomPage';
 import { EnglishClubPage } from './pages/EnglishClubPage';
 import { StudentDashboard } from './pages/dashboards/StudentDashboard';
+import { StudentPreviewPage } from './pages/StudentPreviewPage';
 import { TeacherDashboard } from './pages/dashboards/TeacherDashboard';
 import { AdminDashboard } from './pages/dashboards/AdminDashboard';
 import { AvatarStudioPage } from './pages/dashboards/AvatarStudioPage';
@@ -261,6 +262,11 @@ function MainApp() {
           if (isLoading) return <LoadingScreen />;
           if (!isAuthenticated) return <LoginPage navigate={navigate} targetRedirect={currentRoute} />;
           return <HomeworkAnswersPage resultId={currentRoute.replace('hw-answers/', '')} navigate={navigate} />;
+        }
+        if (currentRoute.startsWith('student-preview/')) {
+          if (isLoading) return <LoadingScreen />;
+          if (!isAdmin && !isSuperAdmin) return <LoginPage navigate={navigate} targetRedirect={currentRoute} />;
+          return <StudentPreviewPage key={currentRoute} studentId={currentRoute.replace('student-preview/', '')} navigate={navigate} />;
         }
         if (currentRoute.startsWith('course/')) {
           const courseId = currentRoute.replace('course/', '');

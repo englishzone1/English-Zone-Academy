@@ -10,7 +10,9 @@ import {
   GradeRecord,
   TimetableRecord
 } from '../../services/studentDataService';
-import { Sparkles, LogOut, Edit3, Phone, AlertCircle, MessageCircle, Gift, Mic, BookOpenCheck, Library, Map as MapIcon, Users } from 'lucide-react';
+import { Sparkles, LogOut, Edit3, Phone, AlertCircle, MessageCircle, Gift, Mic, BookOpenCheck, Library, Map as MapIcon, Users, MessagesSquare, Eye } from 'lucide-react';
+import { ChatThread } from '../../components/chat/ChatThread';
+import { groupThread } from '../../services/chatService';
 import { doc, getDoc } from 'firebase/firestore';
 import {
   groupService,
@@ -34,16 +36,24 @@ import { ReferralOffers } from '../../components/student/ReferralOffers';
 
 interface StudentDashboardProps {
   navigate: (route: string) => void;
+  // معاينة الإدارة: صفحة الطالب كما يراها هو، للعرض فقط
+  previewUser?: any;
 }
 
-export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) => {
+export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, previewUser }) => {
   const { currency: siteCurrency } = useAcademySettings();
   const { language } = useLanguage();
-  const { user, firebaseUser, hasProfile, isLoading: isAuthLoading, logout } = useAuth();
+  const auth = useAuth();
+  const preview = !!previewUser;
+  const user: any = preview ? previewUser : auth.user;
+  const firebaseUser: any = preview ? { uid: previewUser.id, email: previewUser.email } : auth.firebaseUser;
+  const hasProfile = preview ? true : auth.hasProfile;
+  const isAuthLoading = preview ? false : auth.isLoading;
+  const logout = auth.logout;
   const unreadMsgs = useUnreadMessages('student', firebaseUser?.uid);
   const isAr = language === 'ar';
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'group' | 'community' | 'stars' | 'curriculum' | 'library' | 'homework' | 'messages' | 'feedback' | 'subscription' | 'offers'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'group' | 'groupchat' | 'community' | 'stars' | 'curriculum' | 'library' | 'homework' | 'messages' | 'feedback' | 'subscription' | 'offers'>('overview');
   const [homeworkList, setHomeworkList] = useState<HomeworkRecord[]>([]);
   const [pointsLog, setPointsLog] = useState<PointsLogRecord[]>([]);
   const [gradesList, setGradesList] = useState<GradeRecord[]>([]);
@@ -275,8 +285,28 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
   const myWeek = sumSince(firebaseUser.uid, weekStart);
   const myMonth = sumSince(firebaseUser.uid, monthStart);
 
+  // في المعاينة: يُسمح فقط بالتنقل بين التبويبات، وكل زر أو حقل آخر معطّل
+  const blockInPreview = (e: React.SyntheticEvent) => {
+    if (!preview) return;
+    const el = e.target as HTMLElement;
+    if (el.closest('[data-pv-ok]')) return;
+    if (el.closest('button, a, input, textarea, select, label, [role="button"], audio')) {
+      if ((el.closest('audio') as any)) return;
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#FAF8F5] py-8">
+    <div className="min-h-screen bg-[#FAF8F5] py-8" onClickCapture={blockInPreview} onKeyDownCapture={blockInPreview} onChangeCapture={blockInPreview}>
+      {preview && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
+          <div className="p-3 rounded-2xl bg-amber-100 border border-amber-300 text-amber-900 text-xs sm:text-sm font-bold flex items-center gap-2">
+            <Eye className="w-4 h-4" />
+            {isAr ? `معاينة: هذه صفحة ${student.fullName || ''} كما تراها هي، للعرض فقط ولا يمكن تعديل أي شيء.` : `Preview: ${student.fullName || ''}'s page as they see it. View only — nothing can be changed.`}
+          </div>
+        </div>
+      )}
       {/* Top Header Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#D4AF37]/30 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -328,6 +358,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
               </div>
               {/* الرسائل: زر ظاهر دائمًا تحت النقاط */}
               <button
+                data-pv-ok
                 onClick={() => {
                   setActiveTab('messages');
                   setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
@@ -346,6 +377,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
               </button>
               {/* الواجبات والاختبارات: وصول سريع */}
               <button
+                data-pv-ok
                 onClick={() => {
                   setActiveTab('homework');
                   setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
@@ -362,11 +394,13 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
                 [
                   { id: 'library', icon: Library, ar: 'المكتبة', en: 'Library' },
                   { id: 'curriculum', icon: MapIcon, ar: 'المنهج والمراحل', en: 'Curriculum' },
-                  { id: 'group', icon: Users, ar: 'مجموعتي', en: 'My group' }
+                  { id: 'group', icon: Users, ar: 'مجموعتي', en: 'My group' },
+                  { id: 'groupchat', icon: MessagesSquare, ar: 'شات المجموعة', en: 'Group chat' }
                 ] as const
               ).map((b) => (
                 <button
                   key={b.id}
+                  data-pv-ok
                   onClick={() => {
                     setActiveTab(b.id);
                     setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
@@ -382,13 +416,14 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
               {/* الغرف الصوتية */}
               <button
                 onClick={() => navigate('rooms')}
-                className="px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm bg-white text-[#0A192F] border-[#D4AF37]/60 hover:bg-[#FAF8F5]"
+                className="col-span-2 px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm bg-white text-[#0A192F] border-[#D4AF37]/60 hover:bg-[#FAF8F5]"
               >
                 <Mic className="w-4 h-4 text-[#AA820A]" />
                 <span>{isAr ? 'الغرف الصوتية' : 'Voice rooms'}</span>
               </button>
               {/* العروض: لامعة وعائمة */}
               <button
+                data-pv-ok
                 onClick={() => {
                   setActiveTab('offers');
                   setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
@@ -431,6 +466,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
           ].map((tab) => (
             <button
               key={tab.id}
+              data-pv-ok
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 activeTab === tab.id
@@ -447,7 +483,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         </div>
       </div>
 
-      <CompleteProfile isAr={isAr} />
+      {!preview && <CompleteProfile isAr={isAr} />}
       <div id="ez-tab-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-4">
 
         {activeTab === 'overview' && firebaseUser && <DailyChallenge uid={firebaseUser.uid} isAr={isAr} />}
@@ -651,6 +687,23 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
           </div>
         )}
 
+        {/* TAB: GROUP CHAT */}
+        {activeTab === 'groupchat' && (
+          myGroupId ? (
+            <ChatThread
+              threadId={groupThread(myGroupId)}
+              me={{ uid: firebaseUser.uid, name: student.fullName || '', role: 'student' }}
+              isAr={isAr}
+              title={`${isAr ? 'شات المجموعة' : 'Group chat'}${myGroup?.name ? ` — ${myGroup.name}` : ''}`}
+              readOnly={preview}
+            />
+          ) : (
+            <div className="bg-white rounded-3xl p-10 border border-gray-200 text-center text-sm text-gray-500">
+              {isAr ? 'لم تُضف إلى مجموعة بعد.' : 'You have not been added to a group yet.'}
+            </div>
+          )
+        )}
+
         {/* TAB: COMMUNITY */}
         {activeTab === 'community' && (
           <CommunityFeed uid={firebaseUser.uid} name={student.fullName || ''} role="student" isAr={isAr} avatar={student.avatarConfig} />
@@ -660,7 +713,12 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate }) 
         {activeTab === 'library' && <StudentLibrary isAr={isAr} />}
 
         {/* TAB: MESSAGES */}
-        {activeTab === 'messages' && (
+        {activeTab === 'messages' && preview && (
+          <div className="bg-white rounded-3xl p-10 border border-gray-200 text-center text-sm text-gray-500">
+            {isAr ? 'الرسائل الخاصة لا تُعرض في المعاينة.' : 'Private messages are not shown in preview.'}
+          </div>
+        )}
+        {activeTab === 'messages' && !preview && (
           <StudentMessages uid={firebaseUser.uid} name={student.fullName || ''} email={student.email || firebaseUser.email || ''} isAr={isAr} teacherId={student.teacherId} teacherName={student.assignedTeacherName || undefined} teacherEmail={(student as any).assignedTeacherEmail || undefined} />
         )}
 

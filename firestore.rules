@@ -115,7 +115,7 @@ service cloud.firestore {
       // المعلم يغيّر نقاط طلابه فقط
       allow update: if isAdmin() || (
         isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points', 'updatedAt'])
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points', 'lessonsAttended', 'updatedAt'])
       ) || (
         isOwner(userId) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -446,6 +446,40 @@ service cloud.firestore {
     }
 
     // --- Attendance (الحضور): الطالب يقرأ حضوره فقط ---
+    // --- المحادثات: شات المجموعة (يُحذف بعد أسبوع) والمحادثة الخاصة بين الإدارة والمعلم ---
+    // group_<groupId>: طلاب المجموعة ومعلمها والإدارة. staff_<teacherId>: المعلم والإدارة فقط
+    match /chats/{threadId}/messages/{msgId} {
+      function threadKey() {
+        return threadId.split('_')[1];
+      }
+      function canChat() {
+        return isAdmin() ||
+          (threadId.matches('group_.+') && (
+            (isTeacherDoc() && get(/databases/$(database)/documents/groups/$(threadKey())).data.get('teacherId', '') == request.auth.uid) ||
+            (isMember() && myGroupId() == threadKey())
+          )) ||
+          (threadId.matches('staff_.+') && isTeacherDoc() && threadKey() == request.auth.uid);
+      }
+      allow get, list: if isSignedIn() && canChat();
+      allow create: if isSignedIn() && canChat() &&
+        request.resource.data.senderId == request.auth.uid &&
+        request.resource.data.keys().hasOnly(['senderId', 'senderName', 'senderRole', 'kind', 'text', 'data', 'durSec', 'createdAtMs']) &&
+        request.resource.data.kind in ['text', 'image', 'voice'] &&
+        request.resource.data.createdAtMs is int &&
+        math.abs(request.resource.data.createdAtMs - request.time.toMillis()) < 600000 &&
+        ((isAdmin() && request.resource.data.senderRole == 'admin') ||
+          (!isAdmin() && isTeacherDoc() && request.resource.data.senderRole == 'teacher') ||
+          (!isAdmin() && !isTeacherDoc() && request.resource.data.senderRole == 'student')) &&
+        request.resource.data.get('text', '').size() <= 2000 &&
+        request.resource.data.get('data', '').size() <= 950000;
+      // لا يحذف أحد الرسائل إلا الإدارة؛ والحذف التلقائي لرسائل المجموعة بعد أسبوع
+      allow delete: if isAdmin() || (
+        isSignedIn() && canChat() && threadId.matches('group_.+') &&
+        resource.data.createdAtMs < request.time.toMillis() - 604800000
+      );
+      allow update: if false;
+    }
+
     match /attendance/{recordId} {
       allow get, list: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher());
       allow create, update, delete: if isTeacher();
