@@ -286,8 +286,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <button class="back" id="backHW">⬅ Back</button>
     <h2>Homework &amp; Reviews <span class="arh">الواجبات والمراجعات</span></h2>
     <button class="lesson" id="cL1">A1 level 1<span>Units 1–4 lessons, practical English and reviews</span></button>
-    <button class="lesson" id="cL2">A1 level 2<span>Units 5–8</span></button>
-    <button class="lesson" id="cL3">A1 level 3<span>Units 9–12 – Coming soon...</span></button>
+    <button class="lesson" id="cL2">A1 level 2<span>Units 5–6</span></button>
+    <button class="lesson" id="cL3">A1 level 3<span>Units 7–12</span></button>
   </section>
   <section id="tsLevels" class="hidden">
     <button class="back" id="backTS">⬅ Back</button>
@@ -325,6 +325,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <button class="lesson u6" id="c6A">6A: Old friends?<span>Present simple he/she/it, jobs and places of work, third person -es</span></button>
     <button class="lesson u6" id="c6B">6B: Good morning, goodnight<span>Adverbs of frequency, a typical day, /j/ and /juː/</span></button>
     <button class="lesson rev" id="cREV56" data-ar="مراجعة الوحدتين الخامسة والسادسة">Review: Units 5 &amp; 6<b class="ar">مراجعة الوحدتين الخامسة والسادسة</b><span>Grammar, vocabulary, pronunciation, reading and video</span></button>
+  </section>
+  <section id="lvl3" class="hidden">
+    <button class="back" id="backL3">⬅ Back to Levels</button>
+    <h2>A1 level 3</h2>
     <button class="lesson u7" id="c7A">7A: Free time<span>Free-time verb phrases, word order in questions, /w/ /h/ /eə/ /aʊ/</span></button>
   </section>
   <section id="exam" class="hidden">
@@ -1685,7 +1689,7 @@ function check(row,it,review,ex){
 }
 
 function show(view){
-  ["dash","levels","hwLevels","tsLevels","tests1","tests2","tests3","lvl1","lvl2","exam","lesson"].forEach(id=>$(id).classList.toggle("hidden",view!==id));
+  ["dash","levels","hwLevels","tsLevels","tests1","tests2","tests3","lvl1","lvl2","lvl3","exam","lesson"].forEach(id=>$(id).classList.toggle("hidden",view!==id));
   if(view!=="lesson") markCards();
   
   window.scrollTo(0,0);
@@ -1733,7 +1737,7 @@ $("cPE3").onclick = ()=>openLesson("Practical English 3: What time is it?",LESSO
 $("c6A").onclick = ()=>openLesson("6A: Old friends?",LESSON_6A,"lvl2");
 $("c6B").onclick = ()=>openLesson("6B: Good morning, goodnight",LESSON_6B,"lvl2");
 $("cREV56").onclick = ()=>openLesson("Review: Units 5 & 6",LESSON_REV56,"lvl2");
-$("c7A").onclick = ()=>openLesson("7A: Free time",LESSON_7A,"lvl2");
+$("c7A").onclick = ()=>openLesson("7A: Free time",LESSON_7A,"lvl3");
 TQ.c=(s,o,a,ea)=>{ const parts=s.split(`___`), p=[]; parts.forEach((x,i)=>{ if(x) p.push(x); if(i<parts.length-1) p.push({sel:o[Array.isArray(a)?a[i]:a],o:o}); }); return {p,ea}; };
 const SPEAK=(tasks)=>({name:`Speaking`, speak:1, ex:[{t:`Speaking (record your answers)`, ins:`<div dir="rtl">🎙️ سجّلي إجابتك عن كل سؤال بصوتك (حتى دقيقة ونصف لكل سؤال). تستمع المعلمة إلى تسجيلك وتضع درجته.<br>🔒 تسجيلك لا يسمعه إلا معلمتك وإدارة الأكاديمية لتقييمك فقط، ولا يُنشر في أي مكان، ويُحذف بعد التقييم.</div><ol class="spk" style="direction:ltr;text-align:left">${tasks.map(x=>`<li>${x}</li>`).join(``)}</ol>`, items:[]}]});
 const AUD=(n)=>`audio/${n}.mp3`;
@@ -2781,7 +2785,8 @@ const END={id:`END`,lv:0,cls:`exam`,title:`End of course test`,ar:`الاختب�
 
 const TESTS=[FT1,FT2,FT3,FT4,FT5,FT6,PT1,FT7,FT8,FT9,FT10,FT11,FT12,PT2,END];
 
-$("cL3").onclick = ()=>show("hwLevels");
+$("cL3").onclick = ()=>show("lvl3");
+$("backL3").onclick = ()=>show("hwLevels");
 $("backLv").onclick = ()=>show("dash");
 $("backL1").onclick = ()=>show("hwLevels");
 $("cHW").onclick = ()=>show("hwLevels"); $("backHW").onclick = ()=>show("levels");
