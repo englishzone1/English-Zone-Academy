@@ -102,7 +102,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
             {language === 'ar' ? course.titleAr : course.titleEn}
           </h1>
 
-          <OxfordBadge language={language} dark className="mb-5" />
+          {!course.notOxford && <OxfordBadge language={language} dark className="mb-5" />}
           <ProgramPrice prog={course} language={language} dark className="mb-6 max-w-sm" />
 
           <p className="text-base sm:text-lg text-gray-200 max-w-3xl leading-relaxed mb-8">

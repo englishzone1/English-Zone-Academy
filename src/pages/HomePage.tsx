@@ -157,7 +157,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                         {language === 'ar' ? prog.titleAr : prog.titleEn}
                       </h3>
 
-                      <OxfordBadge language={language} dark className="mb-5" />
+                      {!prog.notOxford && <OxfordBadge language={language} dark className="mb-5" />}
 
                       <p className="text-sm sm:text-base text-gray-200 leading-relaxed max-w-4xl mb-7">
                         {language === 'ar' ? prog.shortDescAr : prog.shortDescEn}
@@ -187,7 +187,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                     <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F] mb-3">
                       {language === 'ar' ? prog.titleAr : prog.titleEn}
                     </h3>
-                    <OxfordBadge language={language} className="mb-4" />
+                    {!prog.notOxford && <OxfordBadge language={language} className="mb-4" />}
                     <ProgramPrice prog={prog} language={language} className="mb-4" />
                     <p className="text-sm text-gray-600 leading-relaxed mb-6">
                       {language === 'ar' ? prog.shortDescAr : prog.shortDescEn}

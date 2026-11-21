@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TawkChat } from './components/common/TawkChat';
 import { ChatAssistant } from './components/common/ChatAssistant';
 import { AccountFab } from './components/common/AccountFab';
+import { OfferBubble } from './components/programs/OfferBubble';
 import { StandaloneBoard } from './components/rooms/StandaloneBoard';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -324,6 +325,7 @@ function MainApp() {
       </main>
       {!bare && <Footer navigate={navigate} />}
       <TawkChat hidden={bare || currentRoute.startsWith('room/') || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
+      {!bare && !currentRoute.startsWith('room/') && !['portal', 'student-dashboard', 'teacher-dashboard', 'admin-dashboard', 'admin-login', 'login', 'student-login', 'homework', 'register'].includes(currentRoute) && !currentRoute.startsWith('hw-answers/') && <OfferBubble language={language} navigate={navigate} />}
       {showAccountFab && <AccountFab isAr={language === 'ar'} onClick={() => navigate('portal')} />}
       <ChatAssistant
         hidden={

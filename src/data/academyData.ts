@@ -337,6 +337,7 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     formatAr: 'مجموعات تفاعلية صغيرة (ساعة واحدة)',
     durationEn: '2 months',
     durationAr: 'شهران',
+    notOxford: true,
     monthlyStartingPrice: 66,
     originalPrice: 100,
     offerNoteAr: 'عرض خاص لفترة محدودة',

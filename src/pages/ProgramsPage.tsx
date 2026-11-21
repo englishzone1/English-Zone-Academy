@@ -141,7 +141,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                       {language === 'ar' ? prog.titleAr : prog.titleEn}
                     </h2>
 
-                    <OxfordBadge language={language} />
+                    {!prog.notOxford && <OxfordBadge language={language} />}
 
                     <p className="text-base text-gray-700 leading-relaxed">
                       {language === 'ar' ? prog.fullDescAr : prog.fullDescEn}

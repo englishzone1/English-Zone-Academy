@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { contentManagementService, DynamicPromotionOffer } from '../services/contentManagementService';
 import { useLanguage } from '../context/LanguageContext';
+import { PROGRAM_CATEGORIES } from '../data/academyData';
+import { ProgramPrice } from '../components/programs/ProgramPrice';
 import { Tag, Sparkles, Check, ArrowRight, Gift, Calendar, Copy, CheckCheck } from 'lucide-react';
 
 interface OffersPageProps {
@@ -87,6 +89,32 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+        {PROGRAM_CATEGORIES.filter((p) => p.monthlyStartingPrice && p.offerNoteAr).map((p) => (
+          <div key={p.id} dir={isAr ? 'rtl' : 'ltr'} className="bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-9 border-2 border-[#D4AF37] shadow-xl">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-xs font-extrabold mb-3">
+              <Gift className="w-3.5 h-3.5" />
+              {isAr ? 'العرض الحالي' : 'Current offer'}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
+              <div className="md:col-span-3">
+                <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#F3E5AB] mb-3">{isAr ? p.titleAr : p.titleEn}</h2>
+                <p className="text-sm sm:text-base text-gray-200 leading-relaxed mb-3">{isAr ? p.shortDescAr : p.shortDescEn}</p>
+                <p className="text-sm text-gray-300">{isAr ? p.durationAr : p.durationEn} • {isAr ? p.formatAr : p.formatEn}</p>
+              </div>
+              <div className="md:col-span-2 space-y-3">
+                <ProgramPrice prog={p} language={language} dark />
+                <button
+                  onClick={() => navigate(`course/${p.id}`)}
+                  className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] flex items-center justify-center gap-2"
+                >
+                  {isAr ? 'تفاصيل العرض' : 'Offer details'}
+                  <ArrowRight className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {offers.map((offer) => (
