@@ -330,6 +330,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <button class="back" id="backL3">⬅ Back to Levels</button>
     <h2>A1 level 3</h2>
     <button class="lesson u7" id="c7A">7A: Free time<span>Free-time verb phrases, word order in questions, /w/ /h/ /eə/ /aʊ/</span></button>
+    <button class="lesson u7" id="c7B">7B: Lights, camera, action!<span>Imperatives, object pronouns, kinds of film, sentence rhythm</span></button>
   </section>
   <section id="exam" class="hidden">
     <button class="back" id="backEx">⬅ Back</button>
@@ -857,7 +858,7 @@ let CUR = null, WARNED = false;
 const AUDCDN=`https://cdn.jsdelivr.net/gh/englishzone1/EFHOMEWORK-@main/`, AUDRAW=`https://raw.githubusercontent.com/englishzone1/EFHOMEWORK-/main/`;
 
 const WBTRACKS=`1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.1 2.2 2.3 2.4 3.1 3.2 3.3 3.4 3.5 4.1 4.2 4.3 5.1 5.2 5.3 5.4 5.5 5.6 5.7 6.1 6.2 6.3 6.4 6.5`.split(` `);
-const DRIVEAUD={"1gM2-YoMSfNGokcCwTumwOcCBSu72B1JS":[`audio/wb/sb2-26.mp3`,`Track 2.26`],"1n3QBQ3AxWWmMLBa2KIGMzZZNH7fYH1JP":[`audio/wb/sb4-22.mp3`,`Track 4.22`],"15o38UHCenuhMHAo8F2kK6tc0TdGcDIY5":[`audio/wb/wb7-1.mp3`,`Track 7.1`],"1bC2nVKOu0t-ZMkZCaBj0PiasZR8Hs6Wu":[`audio/wb/sb6-18.mp3`,`Track 6.18`]};
+const DRIVEAUD={"1gM2-YoMSfNGokcCwTumwOcCBSu72B1JS":[`audio/wb/sb2-26.mp3`,`Track 2.26`],"1n3QBQ3AxWWmMLBa2KIGMzZZNH7fYH1JP":[`audio/wb/sb4-22.mp3`,`Track 4.22`],"15o38UHCenuhMHAo8F2kK6tc0TdGcDIY5":[`audio/wb/wb7-1.mp3`,`Track 7.1`],"1bC2nVKOu0t-ZMkZCaBj0PiasZR8Hs6Wu":[`audio/wb/sb6-18.mp3`,`Track 6.18`],"1VS9fR3eNLoIqrHeMLLff7LgwTf3BLtm4":[`audio/wb/wb7-2.mp3`,`Track 7.2`]};
 function audList(ex){
   if(typeof ex.audio===`string`){ const m=ex.audio.match(/\/d\/([^/]+)/); if(m&&DRIVEAUD[m[1]]) return [DRIVEAUD[m[1]]]; }
   if(!ex.track) return [];
@@ -1329,6 +1330,49 @@ const LESSON_7A = [
   ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The missing word is ${r[1]}.`})))}
  ]}
 ];
+const LOVE7 = `<div style='background:#f3f4f6;border-radius:12px;padding:10px 12px;line-height:1.7;margin-top:8px'><b style='font-size:1.1rem'>Three famous love stories in films</b><br><b>Ghost</b><br>Molly loves Sam and Sam loves Molly, but he never says 'I love <b>you</b>'. Sam dies, and now <b>(2)</b>… is a ghost. He watches Molly every day, but she can't see <b>(3)</b>…. Sam meets a woman who is a psychic, and he uses <b>(4)</b>… to speak to Molly…<br><b>My Fair Lady</b><br>Eliza Doolittle is a poor girl who sells flowers and Henry Higgins is a university professor. He teaches <b>(5)</b>… to speak English 'like a princess'. She falls in love with <b>(6)</b>…, but he just thinks <b>(7)</b>… is an interesting student. She is angry and leaves <b>(8)</b>…<br><b>Titanic</b><br>17-year-old Rose is on a ship travelling from the UK to the USA with her mother and a man called Cal Hockley. Her family want Rose to marry Cal because <b>(9)</b>… is rich, but on the ship she meets a poor artist, Jack Dawson, and falls in love with <b>(10)</b>…. But one night, the ship hits an iceberg…</div>`;
+const LESSON_7B = [
+ {name:`Grammar`, review:`Grammar: imperatives, object pronouns: me, him, etc.`, ex:[
+  {t:`1a. Complete the conversations with a + or − imperative from the list.`, ea:`الأمر المثبت: الفعل كما هو (Go، Open). والأمر المنفي: Don't + الفعل (Don't buy، Don't worry).`, ins:`Use the verbs in the list. + = positive, − = negative. Examples: + Relax. We have time. / − Don't watch it.`, bank:[`buy`,`eat`,`go`,`listen`,`open`,`relax`,`sit`,`use`,`watch`,`worry`], wide:1, items:[{x:1,p:[`A: We need to hurry. B: (+) Relax. We have time. (example)`]},{x:1,p:[`A: Is that film good? B: No, it isn't. (−) Don't watch it. (example)`]}].concat([
+   [`A: I'm tired. B: (+) `,`Go`,` to bed. It's late.`],
+   [`A: Is that a good phone? B: No, it isn't. (−) `,`Don't buy|Do not buy`,` it.`],
+   [`A: Is that pasta for me? B: No, it isn't. (−) `,`Don't eat|Do not eat`,` it.`],
+   [`A: Can I come in? B: Yes, of course. (+) Please `,`sit`,` down.`],
+   [`A: Is this milk OK? B: No, it isn't. (−) `,`Don't use|Do not use`,` it.`],
+   [`A: (+) `,`Open`,` your books on page 32. B: Sorry, which page?`],
+   [`A: Am I late? B: (−) No, `,`don't worry|do not worry`,`. The lesson starts in five minutes.`],
+   [`A: (+) `,`Listen`,` to me. This is very important. B: OK. What is it?`]
+  ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The answer is ${r[1].split(`|`)[0]}.`})))},
+  {t:`1b. Complete the sentences with an object pronoun.`, ea:`ضمائر المفعول: me، you، him، her، it، us، them. وتأتي بعد الفعل أو حرف الجر.`, ins:`Write me, you, him, her, it, us, or them. Example: I always say hello to Ryan, but he never talks to me.`, wide:1, items:[
+   [`Emily loves her boyfriend, but I don't think he loves `,`her`,`.`],[`We go to my parents' house every weekend, but they never visit `,`us`,`.`],[`You often make dinner for me, but I never cook for `,`you`,`.`],[`I like the people I work with, but I never go out with `,`them`,`.`],[`My grandmother has a piano, but she never plays `,`it`,`.`],[`I know Jessica's husband, but I don't like `,`him`,`.`],[`Where are my glasses? I need `,`them`,` to read the newspaper.`]
+  ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The object pronoun is ${r[1]}.`}))},
+  {t:`1c. Complete the stories with a subject or object pronoun.`, ea:`ضمير الفاعل قبل الفعل (he، she)، وضمير المفعول بعد الفعل أو حرف الجر (him، her).`, ins:`Read the stories and write the missing pronouns. Example: but he never says 'I love you'.`+LOVE7, wide:1, items:[
+   [`Ghost: Sam dies, and now `,`he`,` is a ghost.`],[`Ghost: He watches Molly every day, but she can't see `,`him`,`.`],[`Ghost: Sam meets a woman who is a psychic, and he uses `,`her`,` to speak to Molly.`],[`My Fair Lady: He teaches `,`her`,` to speak English 'like a princess'.`],[`My Fair Lady: She falls in love with `,`him`,`.`],[`My Fair Lady: …but he just thinks `,`she`,` is an interesting student.`],[`My Fair Lady: She is angry and leaves `,`him`,`.`],[`Titanic: Her family want Rose to marry Cal because `,`he`,` is rich.`],[`Titanic: She meets a poor artist, Jack Dawson, and falls in love with `,`him`,`.`]
+  ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The pronoun is ${r[1]}.`}))}
+ ]},
+ {name:`Vocabulary`, review:`Vocabulary: kinds of film`, ex:[
+  {t:`2a. Write the kinds of film.`, ea:`أنواع الأفلام: action، comedy، drama، science fiction، western، horror، animation.`, ins:`Look at the picture and write the kind of film. The first letters are given. Example: an action film.`, wide:1, items:[{x:1,p:[{emo:`💥🏃`},`\nan action film (example)`]}].concat([
+   [`😂🤪`,`a (c…) `,`comedy|comedy film`,``],[`😢🫂`,`a (dr…) `,`drama|drama film`,``],[`🚀👽`,`a (sc…) (f…) `,`science fiction|science fiction film|science-fiction|sci-fi`,` film`],[`🤠🐎`,`a (w…) `,`western|western film`,``],[`👻🏚️`,`a (h…) `,`horror|horror film`,` film`],[`🐼🥋`,`an (an…) `,`animation|animated film|animation film`,``]
+  ].map(r=>({p:[{emo:r[0]},`\n`+r[1],[r[2]],r[3]],e:`The kind of film is ${r[2].split(`|`)[0]}.`})))},
+  {t:`2b. Answer the questions about you.`, ins:`Write about you.`, wide:1, items:[`What kinds of film do you like?`,`What's your favourite film?`,`Do you have a favourite TV series? What is it?`,`Who's your favourite actor?`].map(q=>({v:`sentence`,free:1,sample:`Write your own answer.`,p:[q+` → `,[``]],e:`Write your own answer in a full sentence, e.g. I like comedies.`}))}
+ ]},
+ {name:`Pronunciation`, review:`Pronunciation: sentence rhythm`, ex:[
+  {t:`3a. Listen and complete the sentences.`, ea:`الكلمات المهمة تُنطق بقوة (like، Daniel، great)، والصغيرة بسرعة (do، you، him).`, ins:`Listen to the audio and write the missing words. Then listen again and repeat. Copy the rhythm. Example: Do you like Daniel Craig?`, audio:`https://drive.google.com/file/d/1VS9fR3eNLoIqrHeMLLff7LgwTf3BLtm4/view?usp=drivesdk`, track:`7.2`, wide:1, items:[{x:1,p:[`Do you like Daniel Craig? (example)`]}].concat([
+   {p:[[`Yes`],`, I `,[`do`],`.`],e:`Yes, I do.`},
+   {p:[`I `,[`like`],` him a `,[`lot`],`.`],e:`I like him a lot.`},
+   {p:[`I `,[`think`],` he's `,[`great`],`.`],e:`I think he's great.`},
+   {p:[`Do you `,[`like`],` `,[`action`],` `,[`films`],`?`],e:`Do you like action films?`},
+   {p:[[`No`],`, I `,[`don't|do not`],`.`],e:`No, I don't.`},
+   {p:[`I `,[`don't|do not`],` `,[`like`],` them.`],e:`I don't like them.`},
+   {p:[`I `,[`prefer`],` `,[`comedies`],`.`],e:`I prefer comedies.`}
+  ])}
+ ]},
+ {name:`Words & Phrases`, review:`Words and phrases to learn`, ex:[
+  {t:`4. Complete the conversations with a phrase from the list.`, ea:`be quiet = اهدئي، What about? = عن ماذا؟، I don't remember = لا أتذكر، don't cry = لا تبكي، Don't move = لا تتحركي، don't say anything = لا تقولي شيئًا.`, ins:`Use each phrase once. Example: Shh – be quiet. I can't hear the teacher.`, bank:[`be quiet`,`don't cry`,`Don't move`,`don't say anything`,`I don't remember`,`What about`], wide:1, items:[{x:1,p:[`A: Shh – be quiet. I can't hear the teacher. B: Sorry… (example)`]}].concat([
+   [`A: I need to talk to you. B: `,`What about`,`? I'm very busy!`],[`A: Sam, do you know what Jin's sister's name is? B: Sorry, `,`I don't remember|I do not remember`,`.`],[`A: It's OK – `,`don't cry|do not cry`,`. I can help you find your mum. B: Thank you.`],[`A: `,`Don't move|Do not move`,`! There's a snake over there. B: A snake? I can't see a snake.`],[`A: Do you know that Otto has a new girlfriend? B: Yes, but `,`don't say anything|do not say anything`,` to his friends. It's a secret.`]
+  ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The phrase is ${r[1].split(`|`)[0]}.`})))}
+ ]}
+];
 const LESSON_REV56 = [
  {name:`Grammar`, review:`Grammar: review of Units 5 & 6`, ex:[
   {t:`Circle a or b.`, ea:`راجعي المضارع البسيط: do/does في السؤال، don't/doesn't في النفي، s مع he/she/it، ومكان ظرف التكرار قبل الفعل.`, ins:`Choose the correct answer. Example: What's your name?`, items:GR56.map(r=>({p:[r[0],{sel:r[1],o:r[2]},r[3]],e:`Present simple: I/you/we/they + verb (don't + verb); he/she/it + verb+s (doesn't + verb). Questions: Do/Does + subject + verb. Adverbs of frequency go before the main verb: always has, never go, do you usually have.`}))}
@@ -1739,6 +1783,7 @@ $("c6A").onclick = ()=>openLesson("6A: Old friends?",LESSON_6A,"lvl2");
 $("c6B").onclick = ()=>openLesson("6B: Good morning, goodnight",LESSON_6B,"lvl2");
 $("cREV56").onclick = ()=>openLesson("Review: Units 5 & 6",LESSON_REV56,"lvl2");
 $("c7A").onclick = ()=>openLesson("7A: Free time",LESSON_7A,"lvl3");
+$("c7B").onclick = ()=>openLesson("7B: Lights, camera, action!",LESSON_7B,"lvl3");
 TQ.c=(s,o,a,ea)=>{ const parts=s.split(`___`), p=[]; parts.forEach((x,i)=>{ if(x) p.push(x); if(i<parts.length-1) p.push({sel:o[Array.isArray(a)?a[i]:a],o:o}); }); return {p,ea}; };
 const SPEAK=(tasks)=>({name:`Speaking`, speak:1, ex:[{t:`Speaking (record your answers)`, ins:`<div dir="rtl">🎙️ سجّلي إجابتك عن كل سؤال بصوتك (حتى دقيقة ونصف لكل سؤال). تستمع المعلمة إلى تسجيلك وتضع درجته.<br>🔒 تسجيلك لا يسمعه إلا معلمتك وإدارة الأكاديمية لتقييمك فقط، ولا يُنشر في أي مكان، ويُحذف بعد التقييم.</div><ol class="spk" style="direction:ltr;text-align:left">${tasks.map(x=>`<li>${x}</li>`).join(``)}</ol>`, items:[]}]});
 const AUD=(n)=>`audio/${n}.mp3`;
