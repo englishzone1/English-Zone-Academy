@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag } from 'lucide-react';
+import { Tag, Award } from 'lucide-react';
 import type { ProgramCategory } from '../../types';
 
 interface Props {
@@ -29,6 +29,12 @@ export const ProgramPrice: React.FC<Props> = ({ prog, language, dark, className 
         <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white text-xs font-extrabold">
           <Tag className="w-3.5 h-3.5" />
           {note}
+        </div>
+      )}
+      {(ar ? prog.certNoteAr : prog.certNoteEn) && (
+        <div className={`mt-2 flex items-center gap-1.5 text-sm font-extrabold ${dark ? 'text-[#F3E5AB]' : 'text-[#0A192F]'}`}>
+          <Award className="w-4 h-4 text-[#D4AF37]" />
+          {ar ? prog.certNoteAr : prog.certNoteEn}
         </div>
       )}
       {ar && prog.priceNoteAr && <p className={`text-[11px] mt-2 ${dark ? 'text-gray-300' : 'text-gray-500'}`}>{prog.priceNoteAr}</p>}

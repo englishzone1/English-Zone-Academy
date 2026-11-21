@@ -318,24 +318,28 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     titleAr: 'الإنجليزية في الجامعة',
     shortDescEn: 'Practical English for university life: introducing yourself, campus vocabulary, asking questions in class, and group work and discussions.',
     shortDescAr: 'إنجليزية عملية للحياة الجامعية: التعريف بنفسك، ومفردات الجامعة، وطرح الأسئلة في المحاضرة، والعمل الجماعي والنقاشات.',
-    fullDescEn: 'An interactive program that prepares students to use English with confidence at university. Through realistic situations with characters like Lina and Omar, learners practise introducing themselves, understanding professors, asking polite questions in class, and taking part in group projects and discussions.',
-    fullDescAr: 'برنامج تفاعلي يجهّز الطلاب لاستخدام الإنجليزية بثقة في الجامعة. من خلال مواقف واقعية مع شخصيات مثل لينا وعمر، يتدرّب الطالب على التعريف بنفسه، وفهم الأستاذ، وطرح الأسئلة بأدب في المحاضرة، والمشاركة في المشاريع الجماعية والنقاشات.',
+    fullDescEn: 'An interactive program that prepares students to use English with confidence at university. Through realistic situations with characters like Lina and Omar, learners practise introducing themselves, understanding professors, asking polite questions in class, and taking part in group projects and discussions. Two one-hour lessons a week, with an accredited certificate verified in Britain.',
+    fullDescAr: 'برنامج تفاعلي يجهّز الطلاب لاستخدام الإنجليزية بثقة في الجامعة. من خلال مواقف واقعية مع شخصيات مثل لينا وعمر، يتدرّب الطالب على التعريف بنفسه، وفهم الأستاذ، وطرح الأسئلة بأدب في المحاضرة، والمشاركة في المشاريع الجماعية والنقاشات. محاضرتان أسبوعيًا مدة كل منهما ساعة، مع شهادة معتمدة وموثّقة من بريطانيا.',
     objectivesEn: [
       'Introduce yourself confidently and meet new classmates',
       'Learn essential university vocabulary (major, course, assignment, project…)',
       'Ask for clarification and use polite requests in class (Could you… / Would you mind…)',
-      'Agree and disagree politely, suggest compromises, and divide tasks in group work'
+      'Agree and disagree politely, suggest compromises, and divide tasks in group work',
+      'Receive an accredited certificate, verified in Britain'
     ],
     objectivesAr: [
       'التعريف بالنفس بثقة والتعارف مع زملاء جدد',
       'تعلّم مفردات الجامعة الأساسية (التخصص، المقرر، الواجب، المشروع…)',
       'طلب التوضيح واستخدام الطلب المهذب في المحاضرة (Could you… / Would you mind…)',
-      'الموافقة والاعتراض بأدب، واقتراح الحلول الوسط، وتقسيم المهام في العمل الجماعي'
+      'الموافقة والاعتراض بأدب، واقتراح الحلول الوسط، وتقسيم المهام في العمل الجماعي',
+      'الحصول على شهادة معتمدة وموثّقة من بريطانيا'
     ],
     suitableForEn: 'University students and those preparing to start university.',
     suitableForAr: 'طلاب الجامعات والمقبلون على الدراسة الجامعية.',
-    formatEn: 'Interactive small groups (1 hour)',
-    formatAr: 'مجموعات تفاعلية صغيرة (ساعة واحدة)',
+    formatEn: '2 lessons a week, 1 hour each (8 hours a month)',
+    formatAr: 'محاضرتان أسبوعيًا، مدة المحاضرة ساعة (8 ساعات شهريًا)',
+    certNoteAr: 'شهادة معتمدة وموثّقة من بريطانيا',
+    certNoteEn: 'Accredited certificate, verified in Britain',
     durationEn: '2 months',
     durationAr: 'شهران',
     notOxford: true,

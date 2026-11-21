@@ -69,6 +69,8 @@ export interface ProgramCategory {
   badgeEn?: string;
   badgeAr?: string;
   notOxford?: boolean;
+  certNoteAr?: string;
+  certNoteEn?: string;
   offerNoteAr?: string;
   offerNoteEn?: string;
   galleryImages?: string[];

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Gift, X, ArrowLeft } from 'lucide-react';
+import { Gift, X, ArrowLeft, Award } from 'lucide-react';
 import { PROGRAM_CATEGORIES } from '../../data/academyData';
 
 interface Props {
@@ -62,7 +62,13 @@ export const OfferBubble: React.FC<Props> = ({ language, navigate }) => {
         <span className="text-xs text-gray-300">{ar ? '/ شهريًا' : '/ month'}</span>
         {offer.originalPrice && <span className="text-sm line-through text-gray-400">${offer.originalPrice}</span>}
       </div>
-      <p className="text-[11px] text-gray-300 mt-1">{ar ? offer.durationAr : offer.durationEn} • {ar ? offer.formatAr : offer.formatEn}</p>
+      <p className="text-xs text-gray-200 mt-1 leading-relaxed">{ar ? 'المدة: ' : 'Duration: '}{ar ? offer.durationAr : offer.durationEn}<br />{ar ? offer.formatAr : offer.formatEn}</p>
+      {(ar ? offer.certNoteAr : offer.certNoteEn) && (
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs font-extrabold text-[#F3E5AB]">
+          <Award className="w-4 h-4 text-[#D4AF37]" />
+          {ar ? offer.certNoteAr : offer.certNoteEn}
+        </p>
+      )}
       <div className="mt-2 inline-block px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[11px] font-extrabold">
         {ar ? offer.offerNoteAr : offer.offerNoteEn}
       </div>
