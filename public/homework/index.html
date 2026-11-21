@@ -62,6 +62,8 @@ main{max-width:820px;margin:0 auto;padding:78px 14px 40px}
 .ovw{margin:6px 0}.ovl{position:relative;width:100%;max-width:760px;container-type:inline-size}.ovl img{display:block;width:100%;height:auto;border-radius:8px;margin:0}.q .ovl input.ovi{position:absolute;display:block;box-sizing:border-box;margin:0;padding:0 2px;font-size:11px;font-size:clamp(8px,2.7cqw,15px);line-height:1;border:2px solid #1b5faa;border-radius:4px;background:#fff;text-align:center;font-weight:500}.q .ovl input.ovi.good{background:#d8f1e2;border-color:#2e9e5b}.q .ovl input.ovi.bad{background:#fbdede;border-color:#d64545}
 .lesson.u5{background:#ef6c00;border-color:#b34e00;color:#fff;border-left-width:8px}.lesson.u5 span{color:inherit;opacity:.9}.lesson.u5:hover{filter:brightness(1.1)}
 .lesson.u6{background:#00897b;border-color:#00574d;color:#fff;border-left-width:8px}.lesson.u6 span{color:inherit;opacity:.9}.lesson.u6:hover{filter:brightness(1.1)}
+.lesson.u7{background:#c2185b;border-color:#880e4f;color:#fff;border-left-width:8px}.lesson.u7 span{color:inherit;opacity:.9}.lesson.u7:hover{filter:brightness(1.1)}
+.lesson.u8{background:#3949ab;border-color:#1a237e;color:#fff;border-left-width:8px}.lesson.u8 span{color:inherit;opacity:.9}.lesson.u8:hover{filter:brightness(1.1)}
 .back{background:#fff;color:var(--blue);border:1px solid var(--blue);border-radius:8px;padding:8px 14px;font-weight:600;margin-bottom:12px}
 h2{margin:6px 0 12px;color:var(--blue-d)}
 details{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:12px}
@@ -323,6 +325,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <button class="lesson u6" id="c6A">6A: Old friends?<span>Present simple he/she/it, jobs and places of work, third person -es</span></button>
     <button class="lesson u6" id="c6B">6B: Good morning, goodnight<span>Adverbs of frequency, a typical day, /j/ and /juː/</span></button>
     <button class="lesson rev" id="cREV56" data-ar="مراجعة الوحدتين الخامسة والسادسة">Review: Units 5 &amp; 6<b class="ar">مراجعة الوحدتين الخامسة والسادسة</b><span>Grammar, vocabulary, pronunciation, reading and video</span></button>
+    <button class="lesson u7" id="c7A">7A: Free time<span>Free-time verb phrases, word order in questions, /w/ /h/ /eə/ /aʊ/</span></button>
   </section>
   <section id="exam" class="hidden">
     <button class="back" id="backEx">⬅ Back</button>
@@ -849,7 +852,7 @@ const EXAM1 = {title:`Unit 1 Test`, sections:[
 let CUR = null, WARNED = false;
 const AUDCDN=`https://cdn.jsdelivr.net/gh/englishzone1/EFHOMEWORK-@main/`, AUDRAW=`https://raw.githubusercontent.com/englishzone1/EFHOMEWORK-/main/`;
 
-const WBTRACKS=`1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.1 2.2 2.3 2.4 3.1 3.2 3.3 3.4 3.5 4.1 4.2 4.3 5.1 5.2 5.3 5.4 5.5 5.6 5.7 6.1 6.2 6.3 6.4 6.5`.split(` `);
+const WBTRACKS=`1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.1 2.2 2.3 2.4 3.1 3.2 3.3 3.4 3.5 4.1 4.2 4.3 5.1 5.2 5.3 5.4 5.5 5.6 5.7 6.1 6.2 6.3 6.4 6.5 7.1`.split(` `);
 const DRIVEAUD={"1gM2-YoMSfNGokcCwTumwOcCBSu72B1JS":[`audio/wb/sb2-26.mp3`,`Track 2.26`],"1n3QBQ3AxWWmMLBa2KIGMzZZNH7fYH1JP":[`audio/wb/sb4-22.mp3`,`Track 4.22`]};
 function audList(ex){
   if(typeof ex.audio===`string`){ const m=ex.audio.match(/\/d\/([^/]+)/); if(m&&DRIVEAUD[m[1]]) return [DRIVEAUD[m[1]]]; }
@@ -1266,6 +1269,61 @@ const LESSON_6B = [
 Object.assign(IMG,{"r56bread":"img/r56bread.jpg","r56water":"img/r56water.jpg","r56sugar":"img/r56sugar.jpg","r56milk":"img/r56milk.jpg","r56cheese":"img/r56cheese.jpg","r56juice":"img/r56juice.jpg","r56sushi":"img/r56sushi.jpg","r56clocks":"img/r56clocks.jpg","r56people":"img/r56people.jpg"});
 const GR56 = [[`In Japan, we `,`have`,[`have`,`has`],` rice for breakfast.`],[`They `,`don't eat`,[`don't eat`,`not eat`],` meat.`],[`You `,`eat`,[`eats`,`eat`],` a lot of fast food. It isn't good for you.`],[`I `,`don't drink`,[`don't drink`,`'m not drink`],` tea, I prefer coffee.`],[``,`Do`,[`Are`,`Do`],` you want a Coke?`],[`A: Do they live near here? B: Yes, they `,`do`,[`do`,`live`],`.`],[``,`Do you like`,[`Like you`,`Do you like`],` Mexican food?`],[`A: What time `,`do we arrive`,[`do we arrive`,`we arrive`],`? B: At 5.30.`],[``,`Does`,[`Do`,`Does`],` she speak Spanish?`],[`He `,`works`,[`works`,`work`],` for a fashion magazine.`],[`My brother `,`doesn't have`,[`don't have`,`doesn't have`],` children.`],[`She `,`goes`,[`go`,`goes`],` to the gym after work.`],[`He `,`always has`,[`always has`,`has always`],` a shower before breakfast.`],[`I `,`never go`,[`don't never go`,`never go`],` to bed before 12.00.`],[`What time `,`do you usually have`,[`you have usually`,`do you usually have`],` lunch?`]];
 const JAPAN = `<div style='display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-top:8px'><img src='img/r56sushi.jpg' alt='' style='width:150px;border-radius:12px'><div style='flex:1;min-width:220px;background:#fdf6ec;border-radius:12px;padding:10px 12px;line-height:1.7'><b style='color:#c2185b;font-size:1.15rem'>Eat the Japanese way</b><br>Doctors say that the traditional <u>diet</u> in Japan and other Asian countries is very healthy.<br><b style='color:#c2185b'>Why is it good for you?</b><br>In Japan, people don't eat a lot of red <b>(1)</b>…, butter, or cheese. They eat a lot of rice and fish and fresh fruit and <b>(2)</b>…. This diet is very <b>(3)</b>… for your heart and people in Japan live longer than in other countries.<br><b style='color:#c2185b'>How to eat like the Japanese</b><br>• Eat rice with your meals and don't eat a lot of <b>(4)</b>…, especially chips.<br>• Eat a lot of fish. <b>(5)</b>… eat a lot of meat, for example, steak and <b>(6)</b>….<br>• Eat fresh fruit and vegetables <b>(7)</b>… day.<br>• Drink green tea, not <b>(8)</b>….<br>• Eat on <b>(9)</b>… plates. Eat slowly.<br>• <b>(10)</b>… eating when you are full.</div></div>`;
+const LESSON_7A = [
+ {name:`Vocabulary`, review:`Vocabulary: common verb phrases 2: free time`, ex:[
+  {t:`1a. Look at the pictures. Complete the questions.`, ea:`عبارات وقت الفراغ: do sport، go out، go for a walk، play computer games، travel، play the piano، relax، play tennis، meet friends، swim، stay at home، go to the beach.`, ins:`Look at each picture and write the missing words. The first letters are given. Example: Do you do sport?`, wide:1, items:[{x:1,p:[{emo:`⚽🥊🏸`},`\nDo you do sport? (example)`]}].concat([
+   [`🎉🎶`,[`Do you (g…) `,`go`,` (o…) `,`out`,` on a Friday night?`]],
+   [`🥾⛰️`,[`Do you go for a (w…) `,`walk`,` in the mountains?`]],
+   [`🎮`,[`Do you (pl…) `,`play`,` (c…) `,`computer`,` (g…) `,`games`,` after school?`]],
+   [`🧳✈️`,[`Do you (tr…) `,`travel`,` a lot?`]],
+   [`🎹`,[`Do you (pl…) `,`play`,` the (p…) `,`piano`,`?`]],
+   [`🛋️`,[`Do you (r…) `,`relax`,` after dinner?`]],
+   [`🎾`,[`Do you (pl…) `,`play`,` (t…) `,`tennis`,`?`]],
+   [`☕👫`,[`Do you (m…) `,`meet`,` (fr…) `,`friends`,` in a café at the weekend?`]],
+   [`🏊`,[`Do you (sw…) `,`swim`,`?`]],
+   [`🏠📖`,[`Do you usually (st…) `,`stay`,` at (h…) `,`home`,` in the evening?`]],
+   [`🏖️`,[`Do you (g…) `,`go`,` to the (b…) `,`beach`,` in the summer?`]]
+  ].map(r=>{ const parts=r[1]; const p=[{emo:r[0]},`\n`]; parts.forEach((x,i)=>p.push(i%2?[x]:x)); return {p,e:parts.join(``)}; }))},
+  {t:`1b. Answer the questions in a about you.`, ins:`Write a short answer about you, e.g. Yes, I do. / No, I don't. / Yes, I go to the gym.`, wide:1, items:[`Do you do sport?`,`Do you go out on a Friday night?`,`Do you go for a walk in the mountains?`,`Do you play computer games after school?`,`Do you travel a lot?`,`Do you play the piano?`,`Do you relax after dinner?`,`Do you play tennis?`,`Do you meet friends in a café at the weekend?`,`Do you swim?`,`Do you usually stay at home in the evening?`,`Do you go to the beach in the summer?`].map(q=>({v:`sentence`,free:1,sample:`Yes, I do. / No, I don't.`,p:[q+` → `,[``]],e:`Answer with Yes, I do. or No, I don't. and add more information if you can.`}))}
+ ]},
+ {name:`Grammar`, review:`Grammar: word order in questions: be and present simple`, ex:[
+  {t:`2a. Re-order the words to make questions.`, ea:`مع be: الفعل قبل الفاعل (Is your girlfriend…؟). ومع المضارع البسيط: Do/Does + الفاعل + الفعل (Does Emma speak…؟). وكلمة السؤال في البداية.`, ins:`Write the question in the correct order. Example: where from is Alberto → Where is Alberto from?`, wide:1, items:[{x:1,p:[`where / from / is / Alberto → Where is Alberto from? (example)`]}].concat([
+   [`how / old / our / teacher / is`,`How old is our teacher?`],
+   [`where / does / work / your / brother`,`Where does your brother work?`],
+   [`does / speak / French / Emma`,`Does Emma speak French?`],
+   [`have / a / big / family / do / you`,`Do you have a big family?`],
+   [`is / from / Italy / your / girlfriend`,`Is your girlfriend from Italy?`],
+   [`what / time / does / go / to / work / she`,`What time does she go to work?`],
+   [`are / on / holiday / Oscar / and / Julia`,`Are Oscar and Julia on holiday?|Are Julia and Oscar on holiday?`]
+  ].map(r=>({p:[r[0]+`\n→ `,[r[1]]],e:`The question is: ${r[1].split(`|`)[0]}`})))},
+  {t:`2b. Circle the correct question word.`, ea:`Where = أين، What = ماذا، When = متى، How = كيف، How old = كم العمر.`, ins:`Choose the correct question word. Example: Where does your brother live? – In São Paulo.`, items:[
+   [`A: `,`What`,[`Where`,`When`,`What`],` do you usually have for breakfast? B: Cereal, fruit, and coffee.`],
+   [`A: `,`How`,[`How`,`Who`,`What`],` do you spell your last name? B: G-A-R-C-I-A.`],
+   [`A: `,`When`,[`What`,`When`,`Who`],` do you do housework? B: On Sunday morning.`],
+   [`A: `,`How`,[`How`,`When`,`Where`],` do you go to school? B: By bus.`],
+   [`A: `,`How old`,[`How`,`How old`,`What`],` are your children? B: Jamal's four and Leyla's seven.`]
+  ].map(r=>({p:[r[0],{sel:r[1],o:r[2]},r[3]],e:`The answer tells you the question word: ${r[1]}.`}))},
+  {t:`2c. Complete the questions with is, are, do, or does.`, ea:`is/are مع الصفات والأسماء والمكان (married، from، How old)، وdo/does مع الأفعال (meet، play، travel، have).`, ins:`Write is, are, do, or does. Example: Are you good at sport?`, wide:1, items:[
+   [`When `,`do`,` you usually meet friends?`],[``,`Is`,` your sister married?`],[``,`Does`,` your husband play computer games?`],[`How old `,`are`,` you?`],[`How `,`does`,` your girlfriend travel to work?`],[`Where `,`is`,` your teacher from?`],[``,`Do`,` you have lunch at work?`]
+  ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The answer is ${r[1]}.`}))}
+ ]},
+ {name:`Pronunciation`, review:`Pronunciation: /w/, /h/, /eə/, and /aʊ/`, ex:[
+  {t:`3a. Listen and circle the word with a different sound.`, ea:`الكلمة المختلفة: when لا تُنطق فيها h، وnow فيها /aʊ/ لا /w/، وhere فيها /ɪə/، وwindow فيها /əʊ/.`, ins:`Listen and choose the word with a different sound. Then listen again and repeat the words. Example: house /h/ → home, what, housework → what.`, audio:1, track:`7.1`, items:[
+   [`house /h/ → `,`when`,[`who`,`holiday`,`when`],`who and holiday have /h/. In when, wh = /w/.`],
+   [`witch /w/ → `,`now`,[`weekend`,`swim`,`now`],`weekend and swim have /w/. now has /aʊ/.`],
+   [`chair /eə/ → `,`here`,[`here`,`there`,`where`],`there and where have /eə/. here has /ɪə/.`],
+   [`owl /aʊ/ → `,`window`,[`mountains`,`how`,`window`],`mountains and how have /aʊ/. window has /əʊ/.`]
+  ].map(r=>({p:[r[0],{sel:r[1],o:r[2]}],e:r[3]}))}
+ ]},
+ {name:`Words & Phrases`, review:`Words and phrases to learn`, ex:[
+  {t:`4. Complete the conversations with a word from the list.`, ea:`definitely = بالتأكيد، fan = مشجّع، It depends = حسب الظروف، more or less = تقريبًا، exciting = ممتع ومثير.`, ins:`Use each word once. Example: Yes, definitely – it's my birthday!`, bank:[`definitely`,`depends`,`exciting`,`fan`,`less`], wide:1, items:[{x:1,p:[`A: What's the date today? Is it the 4th? B: Yes, definitely – it's my birthday! (example)`]}].concat([
+   [`A: Where's Sean? B: He's at the football. He's a real Manchester City `,`fan`,`.`],
+   [`A: When do you usually go shopping? B: It `,`depends`,`. Friday afternoon or Saturday morning.`],
+   [`A: Do you do the same thing every evening? B: More or `,`less`,` – I have dinner and then I watch TV.`],
+   [`A: Can you help me with the housework on Saturday morning? B: OK, but after lunch I want to do something fun and `,`exciting`,`.`]
+  ].map(r=>({p:[r[0],[r[1]],r[2]],e:`The missing word is ${r[1]}.`})))}
+ ]}
+];
 const LESSON_REV56 = [
  {name:`Grammar`, review:`Grammar: review of Units 5 & 6`, ex:[
   {t:`Circle a or b.`, ea:`راجعي المضارع البسيط: do/does في السؤال، don't/doesn't في النفي، s مع he/she/it، ومكان ظرف التكرار قبل الفعل.`, ins:`Choose the correct answer. Example: What's your name?`, items:GR56.map(r=>({p:[r[0],{sel:r[1],o:r[2]},r[3]],e:`Present simple: I/you/we/they + verb (don't + verb); he/she/it + verb+s (doesn't + verb). Questions: Do/Does + subject + verb. Adverbs of frequency go before the main verb: always has, never go, do you usually have.`}))}
@@ -1293,7 +1351,7 @@ const LESSON_REV56 = [
 
 let SECTIONS = LESSON_1A;
 function openLesson(t,s,b){REPSHOWN=false;PARTSENT=0;PARTFIN=0;BACKTO=b||`lvl1`;SECTIONS=s;$(`ltitle`).textContent=t;renderCover(t);build();show(`lesson`);const rn=restoreWork();updLesson();if(rn) toast(`📌 رجعنا إلى حيث توقفتِ في هذا الدرس، أكملي الحل.`);}
-const UCOL={u1:`#1b5faa`,u2:`#e0a800`,u3:`#2e9e5b`,u4:`#7b4bb7`,u5:`#ef6c00`,u6:`#00897b`,rev:`#d64545`};
+const UCOL={u1:`#1b5faa`,u2:`#e0a800`,u3:`#2e9e5b`,u4:`#7b4bb7`,u5:`#ef6c00`,u6:`#00897b`,u7:`#c2185b`,u8:`#3949ab`,rev:`#d64545`};
 let CURCARD=null;
 function renderCover(t){
   const card=[...document.querySelectorAll(`button.lesson`)].find(c=>c.firstChild&&c.firstChild.textContent.trim()===t.trim());
@@ -1675,6 +1733,7 @@ $("cPE3").onclick = ()=>openLesson("Practical English 3: What time is it?",LESSO
 $("c6A").onclick = ()=>openLesson("6A: Old friends?",LESSON_6A,"lvl2");
 $("c6B").onclick = ()=>openLesson("6B: Good morning, goodnight",LESSON_6B,"lvl2");
 $("cREV56").onclick = ()=>openLesson("Review: Units 5 & 6",LESSON_REV56,"lvl2");
+$("c7A").onclick = ()=>openLesson("7A: Free time",LESSON_7A,"lvl2");
 TQ.c=(s,o,a,ea)=>{ const parts=s.split(`___`), p=[]; parts.forEach((x,i)=>{ if(x) p.push(x); if(i<parts.length-1) p.push({sel:o[Array.isArray(a)?a[i]:a],o:o}); }); return {p,ea}; };
 const SPEAK=(tasks)=>({name:`Speaking`, speak:1, ex:[{t:`Speaking (record your answers)`, ins:`<div dir="rtl">🎙️ سجّلي إجابتك عن كل سؤال بصوتك (حتى دقيقة ونصف لكل سؤال). تستمع المعلمة إلى تسجيلك وتضع درجته.<br>🔒 تسجيلك لا يسمعه إلا معلمتك وإدارة الأكاديمية لتقييمك فقط، ولا يُنشر في أي مكان، ويُحذف بعد التقييم.</div><ol class="spk" style="direction:ltr;text-align:left">${tasks.map(x=>`<li>${x}</li>`).join(``)}</ol>`, items:[]}]});
 const AUD=(n)=>`audio/${n}.mp3`;
