@@ -11,7 +11,7 @@ jobs:
           set -e
           pip install -q openai-whisper >/dev/null 2>&1 || true
           sudo apt-get -qq install -y ffmpeg >/dev/null 2>&1 || true
-          for pair in "wb8-1:1_gR-l_H0L2VWCnLTQktazO0YYZVaEk9L"; do
+          for pair in "wb8-2:1uKxj8RXt4sfxqTNqwF9AsDYe3-G_0KyL" "wb8-3:1BUZom_MAMoZvvBi_latXzG-41izK3OIP" "wb8-4:1lNJmiWL1tpE87XICQOD_9eqnVgXFeK8a"; do
             n=${pair%%:*}; id=${pair##*:}
             curl -sSL -o "$n.mp3" "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
             echo "INFO $n $(stat -c%s $n.mp3) $(file -b $n.mp3 | cut -c1-60)"
