@@ -583,8 +583,25 @@ export const studentHubService = {
     sections?: { name: string; ok: number; n: number }[];
     strengths?: string[];
     weaknesses?: string[];
+    answers?: HomeworkAnswer[];
   }): Promise<void> {
     const id = this.partialId(p.studentId, p.itemId);
+    // إجابات الحل غير المكتمل: تظهر للإدارة والمعلم مثل الحل الكامل
+    let answers = Array.isArray(p.answers) ? p.answers.slice(0, 400) : [];
+    let json = JSON.stringify(answers);
+    while (json.length > 600000 && answers.length) {
+      answers = answers.slice(0, Math.floor(answers.length * 0.8));
+      json = JSON.stringify(answers);
+    }
+    let hasAnswers = false;
+    if (answers.length) {
+      try {
+        await setDoc(doc(db, 'homework_answers', id), clean({ studentId: p.studentId, teacherId: p.teacherId || undefined, createdAt: new Date().toISOString(), json }));
+        hasAnswers = true;
+      } catch (err) {
+        console.error('Could not save partial answers:', err);
+      }
+    }
     const total = Math.max(1, Math.round(p.total));
     const score = Math.max(0, Math.min(total, Math.round(p.score * 100) / 100));
     const strList = (a: any, max: number) => (Array.isArray(a) ? a.slice(0, max).map((x) => String(x).slice(0, 80)) : undefined);
@@ -608,7 +625,7 @@ export const studentHubService = {
           : undefined,
         strengths: strList(p.strengths, 12),
         weaknesses: strList(p.weaknesses, 12),
-        hasAnswers: false,
+        hasAnswers,
         partial: true,
         done: Math.max(0, Math.min(total, Math.round(p.done)))
       })
@@ -621,6 +638,7 @@ export const studentHubService = {
     } catch {
       /* لا يوجد حل غير مكتمل */
     }
+    await deleteDoc(doc(db, 'homework_answers', this.partialId(studentId, itemId))).catch(() => undefined);
   },
 
   async getHomeworkResult(id: string): Promise<HomeworkResult | null> {

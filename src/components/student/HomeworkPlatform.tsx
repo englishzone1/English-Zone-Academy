@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Maximize2, Minimize2, BookOpenCheck, CheckCircle2, ExternalLink } from 'lucide-react';
 import { studentHubService, HomeworkResult } from '../../services/studentHubService';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 
 interface Props {
   isAr: boolean;
@@ -38,17 +40,101 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
     else window.location.hash = '#/homework';
   };
   const progressTimer = useRef<number | null>(null);
+  // دروس أُنهيت في هذه الجلسة: لا يُحفظ لها «غير مكتمل» متأخر
+  const finished = useRef<Set<string>>(new Set());
   const valid = true;
 
 
   const loadResults = () =>
     studentHubService
       .getMyHomeworkResults(uid)
-      .then(setResults)
+      .then((r) => {
+        // إن أُنهي الدرس لاحقًا يُحذف «غير المكتمل» القديم
+        const full = new Set(r.filter((x) => !x.partial).map((x) => x.itemId));
+        r.filter((x) => x.partial && full.has(x.itemId)).forEach((x) => studentHubService.deletePartialResult(uid, x.itemId).catch(() => undefined));
+        setResults(r.filter((x) => !(x.partial && full.has(x.itemId))));
+      })
       .catch((err) => console.error('Error loading homework results:', err));
 
+  // المعلم والمجموعة الحاليان من الملف مباشرة (قد تغيّرهما الإدارة بعد دخول الطالب)
+  const freshIds = async (): Promise<{ groupId?: string; teacherId?: string }> => {
+    try {
+      const d: any = (await getDoc(doc(db, 'users', uid))).data() || {};
+      return { groupId: d.groupId || undefined, teacherId: d.teacherId || undefined };
+    } catch {
+      return { groupId, teacherId };
+    }
+  };
+
+  // النتائج التي لم تُحفظ تُخزَّن على الجهاز وتُعاد محاولة حفظها تلقائيًا
+  const pendKey = `ez_hw_pending_${uid}`;
+  const readPending = (): any[] => {
+    try {
+      return JSON.parse(localStorage.getItem(pendKey) || '[]');
+    } catch {
+      return [];
+    }
+  };
+  const writePending = (a: any[]) => {
+    try {
+      if (a.length) localStorage.setItem(pendKey, JSON.stringify(a.slice(-10)));
+      else localStorage.removeItem(pendKey);
+    } catch {
+      /* التخزين ممتلئ */
+    }
+  };
+
+  const saveFinal = async (m: any) => {
+    finished.current.add(String(m.id || m.title || '').slice(0, 80));
+    const score = Number(m.score);
+    const total = Number(m.total);
+    const ex = m.extra && typeof m.extra === 'object' ? m.extra : {};
+    const ids = await freshIds();
+    const payload = {
+      studentId: uid,
+      studentName: name,
+      groupId: ids.groupId,
+      teacherId: ids.teacherId,
+      kind: m.kind,
+      itemId: String(m.id || m.title || ''),
+      title: String(m.title || ''),
+      score,
+      total,
+      sections: Array.isArray(ex.sections) ? ex.sections : undefined,
+      strengths: Array.isArray(ex.strengths) ? ex.strengths : undefined,
+      weaknesses: Array.isArray(ex.weaknesses) ? ex.weaknesses : undefined
+    };
+    const extra = { answers: Array.isArray(ex.answers) ? ex.answers : [], audio: Array.isArray(ex.audio) ? ex.audio : [] };
+    try {
+      await studentHubService.saveHomeworkResult(payload as any, extra);
+    } catch (err: any) {
+      // رفض الصلاحية غالبًا بسبب تغيّر المعلم: نحفظ بلا معلم، والإدارة تربطه تلقائيًا
+      if (String(err?.code || '').includes('permission')) await studentHubService.saveHomeworkResult({ ...payload, teacherId: undefined } as any, extra);
+      else throw err;
+    }
+    if (m.kind === 'lesson') await studentHubService.deletePartialResult(uid, String(m.id || m.title || '').slice(0, 80));
+  };
+
+  const flushPending = async () => {
+    const list = readPending();
+    if (!list.length) return;
+    const left: any[] = [];
+    for (const m of list) {
+      try {
+        await saveFinal(m);
+      } catch {
+        left.push(m);
+      }
+    }
+    writePending(left);
+    if (left.length < list.length) loadResults();
+  };
+
   useEffect(() => {
-    if (!preview) loadResults();
+    if (!preview) {
+      loadResults();
+      flushPending();
+    }
   }, [uid, preview]);
 
   // إرسال اسم الطالب وتقدّمه المحفوظ إلى الموقع المضمّن
@@ -85,31 +171,16 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         const total = Number(m.total);
         if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0) return;
         try {
-          const ex = m.extra && typeof m.extra === 'object' ? m.extra : {};
-          await studentHubService.saveHomeworkResult({
-            studentId: uid,
-            studentName: name,
-            groupId,
-            teacherId,
-            kind: m.kind,
-            itemId: String(m.id || m.title || ''),
-            title: String(m.title || ''),
-            score,
-            total,
-            sections: Array.isArray(ex.sections) ? ex.sections : undefined,
-            strengths: Array.isArray(ex.strengths) ? ex.strengths : undefined,
-            weaknesses: Array.isArray(ex.weaknesses) ? ex.weaknesses : undefined
-          }, { answers: Array.isArray(ex.answers) ? ex.answers : [], audio: Array.isArray(ex.audio) ? ex.audio : [] });
-          // أكملت الدرس: نحذف «غير المكتمل»
-          if (m.kind === 'lesson') studentHubService.deletePartialResult(uid, String(m.id || m.title || '').slice(0, 80));
+          await saveFinal(m);
           setSaveError('');
           setSavedNote(isAr ? `تم حفظ نتيجتك: ${m.title} (${score}/${total})` : `Result saved: ${m.title} (${score}/${total})`);
           window.setTimeout(() => setSavedNote(''), 5000);
           loadResults();
         } catch (err: any) {
           console.error('Error saving homework result:', err);
+          writePending([...readPending(), m]);
           setSaveError(
-            (isAr ? 'لم تُحفظ النتيجة، {أخبر|أخبري} المعلمة بهذا الخطأ: ' : 'Result was not saved, tell your teacher: ') + (err?.code || err?.message || '')
+            (isAr ? 'لم تُحفظ النتيجة الآن، وستُعاد المحاولة تلقائيًا عند فتح الواجبات مرة أخرى. الخطأ: ' : 'Result not saved yet; it will retry automatically next time. Error: ') + (err?.code || err?.message || '')
           );
         }
       } else if (m.type === 'partial') {
@@ -119,12 +190,13 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         const done = Number(m.done);
         if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0 || !Number.isFinite(done)) return;
         const ex = m.extra && typeof m.extra === 'object' ? m.extra : {};
-        studentHubService
-          .savePartialResult({
+        freshIds()
+          .then((ids) => finished.current.has(String(m.id || m.title || '').slice(0, 80)) ? undefined : studentHubService.savePartialResult({
             studentId: uid,
             studentName: name,
-            groupId,
-            teacherId,
+            groupId: ids.groupId,
+            teacherId: ids.teacherId,
+            answers: Array.isArray(ex.answers) ? ex.answers : undefined,
             itemId: String(m.id || m.title || '').slice(0, 80),
             title: String(m.title || ''),
             score,
@@ -133,7 +205,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
             sections: Array.isArray(ex.sections) ? ex.sections : undefined,
             strengths: Array.isArray(ex.strengths) ? ex.strengths : undefined,
             weaknesses: Array.isArray(ex.weaknesses) ? ex.weaknesses : undefined
-          })
+          }))
           .then(() => loadResults())
           .catch((err) => console.error('Error saving partial result:', err));
       } else if (m.type === 'progress' && m.data && typeof m.data === 'object') {

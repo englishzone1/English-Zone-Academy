@@ -84,7 +84,11 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
         studentHubService.getAllHomeworkResults(teacherMode ? uid : undefined),
         teacherMode ? groupService.getTeacherGroups(uid) : groupService.getGroups()
       ]);
-      setItems(r);
+      // «غير مكتمل» قديم لدرس أنهته الطالبة لاحقًا: لا يُعرض (والإدارة تحذفه)
+      const full = new Set(r.filter((x) => !x.partial).map((x) => `${x.studentId}|${x.itemId}`));
+      const stale = r.filter((x) => x.partial && full.has(`${x.studentId}|${x.itemId}`));
+      if (!teacherMode) stale.forEach((x) => studentHubService.deleteHomeworkResult(x).catch(() => undefined));
+      setItems(r.filter((x) => !stale.includes(x)));
       setGroups(g);
     } catch (err: any) {
       const code = err?.code || err?.message || '';

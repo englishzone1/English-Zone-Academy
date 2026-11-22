@@ -1656,7 +1656,7 @@ function sendPartial(force){
   if(!CURCARD||REPSHOWN||RESTORING) return; const st=lessonState(); if(!st.n||!st.fin||st.fin>=st.n||st.fin===PARTFIN) return;
   // نرسل بعد كل 5 أسئلة جديدة أو كل دقيقة، وعند الخروج من الدرس
   if(!force&&st.fin-PARTFIN<5&&Date.now()-PARTSENT<60000) return; PARTSENT=Date.now(); PARTFIN=st.fin;
-  ezPost({type:`partial`,kind:`lesson`,id:String(CURCARD).slice(0,80),title:String($(`ltitle`).textContent||``).slice(0,150),score:st.ok,total:st.n,done:st.fin,extra:summarize(st.rows)});
+  ezPost({type:`partial`,kind:`lesson`,id:String(CURCARD).slice(0,80),title:String($(`ltitle`).textContent||``).slice(0,150),score:st.ok,total:st.n,done:st.fin,extra:Object.assign(summarize(st.rows),{answers:collectAnswers(st.rows)})});
 }
 function toast(msg){ let t=$(`eztoast`); if(!t){ t=document.createElement(`div`); t.id=`eztoast`; t.dir=`rtl`; t.style.cssText=`position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99;max-width:92vw;background:#0A192F;color:#F3E5AB;padding:10px 14px;border-radius:14px;font:600 .9rem/1.5 inherit;box-shadow:0 8px 24px rgba(0,0,0,.25);text-align:center`; document.body.appendChild(t); } t.textContent=msg; t.style.display=`block`; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display=`none`,6000); }
 let SWT=0; document.addEventListener(`input`,()=>{ clearTimeout(SWT); SWT=setTimeout(saveWork,800); });
