@@ -108,7 +108,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
               u.id,
               {
                 id: u.id,
-                name: u.fullName || u.email || '—',
+                name: u.fullName || (teacherMode ? '—' : u.email) || '—',
                 email: u.email || '',
                 teacherId: u.teacherId,
                 avatarConfig: u.avatarConfig,
@@ -175,7 +175,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
       from: role,
       studentId: activeId,
       teacherId: studentTeacher || undefined,
-      name: teacherMode ? (user as any)?.fullName || firebaseUser?.email || '' : 'English Zone Academy',
+      name: teacherMode ? (user as any)?.fullName || tr('Teacher', 'المعلم') : 'English Zone Academy',
       email: firebaseUser?.email || '',
       text,
       audio
@@ -335,7 +335,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
                   me={role}
                   items={activeMsgs}
                   title={activeName}
-                  subtitle={people[activeId]?.email}
+                  subtitle={teacherMode ? undefined : people[activeId]?.email}
                   emptyText={tr('No messages yet. Write the first message.', 'لا توجد رسائل بعد. اكتبي أول رسالة.')}
                   onSend={send}
                   moderator={!teacherMode}

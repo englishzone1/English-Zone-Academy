@@ -119,7 +119,7 @@ service cloud.firestore {
       ) || (
         isOwner(userId) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'fullName', 'phone', 'country', 'age', 'avatarUrl', 'avatarConfig', 'updatedAt', 'placementLevel', 'placementAt', 'gender', 'bio'
+          'fullName', 'phone', 'country', 'age', 'avatarUrl', 'avatarConfig', 'updatedAt', 'placementLevel', 'placementAt', 'gender', 'bio', 'nameConfirmed', 'showCountry', 'showAge'
         ]) &&
         (!('gender' in request.resource.data) || request.resource.data.gender in ['male', 'female']) &&
         (!('placementLevel' in request.resource.data) || request.resource.data.placementLevel in ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])

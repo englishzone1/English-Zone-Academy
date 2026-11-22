@@ -355,7 +355,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
     if (!q) return true;
     return (
       String(s.fullName || '').toLowerCase().includes(q) ||
-      String(s.email || '').toLowerCase().includes(q)
+      (!teacherMode && String(s.email || '').toLowerCase().includes(q))
     );
   });
 
@@ -472,7 +472,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] text-gray-500 break-all">{s.email}</div>
+                  {!teacherMode && <div className="text-[11px] text-gray-500 break-all">{s.email}</div>}
                   <div className="text-[11px] text-gray-500 mt-0.5">
                     {s.mainLevel ? `${isAr ? 'المستوى' : 'Level'} ${s.mainLevel}` : isAr ? 'بلا مستوى' : 'No level'}
                     {' • '}
@@ -513,8 +513,8 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                 <AvatarRenderer config={(selected as any).avatarConfig} size={56} />
                 <div className="min-w-0">
                 <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F]">{selected.fullName || '—'}</h3>
-                <p className="text-[11px] text-gray-500 break-all">{selected.email}</p>
-                <p className="text-[10px] text-gray-400 font-mono break-all">{selected.id}</p>
+                {!teacherMode && <p className="text-[11px] text-gray-500 break-all">{selected.email}</p>}
+                {!teacherMode && <p className="text-[10px] text-gray-400 font-mono break-all">{selected.id}</p>}
                 {!teacherMode && (
                   <button onClick={() => setProfileOf(selected)} className="mt-1 px-3 py-1 rounded-lg text-[11px] font-bold bg-[#D4AF37]/20 text-[#7A5C00]">
                     {isAr ? 'صفحتها: الاسم والأفاتار والصور والمنشورات' : 'Profile: name, avatar, photos & posts'}
