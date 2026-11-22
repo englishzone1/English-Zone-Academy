@@ -97,7 +97,23 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
 
   useEffect(() => {
     load();
+    // الإدارة: ربط النتائج القديمة بمعلم الطالب الحالي حتى تظهر للمعلم
+    if (!teacherMode) studentHubService.syncResultTeachers().catch(() => undefined);
   }, []);
+
+  const removeResult = async (r: HomeworkResult) => {
+    if (!window.confirm(tr(`Delete "${r.title}" for ${r.studentName}? This cannot be undone.`, `حذف «${r.title}» للطالب ${r.studentName}؟ لا يمكن التراجع.`))) return;
+    setBusy(r.id);
+    try {
+      await studentHubService.deleteHomeworkResult(r);
+      setItems((prev) => prev.filter((x) => x.id !== r.id));
+      onNotice(tr('Deleted.', 'تم الحذف.'));
+    } catch (err: any) {
+      onNotice(`${tr('Could not delete:', 'تعذر الحذف:')} ${err?.code || err?.message || ''}`);
+    } finally {
+      setBusy('');
+    }
+  };
 
   const filtered = useMemo(
     () =>
@@ -352,6 +368,17 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                       <Star className="w-3 h-3" />
                     </button>
                   ))
+                )}
+                {!teacherMode && (
+                  <button
+                    onClick={() => removeResult(r)}
+                    disabled={busy === r.id}
+                    className="px-2.5 py-1 rounded-lg border border-red-200 bg-white text-red-600 font-bold whitespace-nowrap flex items-center gap-1 disabled:opacity-50"
+                    title={tr('Delete', 'حذف')}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    {tr('Delete', 'حذف')}
+                  </button>
                 )}
               </div>
             </div>

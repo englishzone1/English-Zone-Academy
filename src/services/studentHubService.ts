@@ -1,19 +1,4 @@
-import {
-  arrayRemove,
-  arrayUnion,
-  collection,
-  deleteDoc,
-  deleteField,
-  doc,
-  getDoc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  setDoc,
-  updateDoc,
-  where
-} from 'firebase/firestore';
+import { arrayRemove, arrayUnion, collection, deleteDoc, deleteField, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from './firebase';
 
 /* ------------------------------------------------------------------ */
@@ -720,6 +705,34 @@ export const studentHubService = {
   },
 
   // كل النتائج: للإدارة، أو لطلاب المعلم فقط
+  // حذف نتيجة واجب/اختبار نهائيًا مع إجاباتها وتسجيلاتها (الإدارة فقط)
+  async deleteHomeworkResult(r: { id: string; audioCount?: number }): Promise<void> {
+    for (let i = 0; i < Math.max(Number(r.audioCount) || 0, 0); i++) {
+      await deleteDoc(doc(db, 'homework_audio', `${r.id}_${i}`)).catch(() => undefined);
+    }
+    await deleteDoc(doc(db, 'homework_answers', r.id)).catch(() => undefined);
+    await deleteDoc(doc(db, 'homework_results', r.id));
+  },
+
+  // ربط كل نتيجة بمعلم الطالب الحالي (حتى يرى المعلم النتائج القديمة لطلابه)
+  async syncResultTeachers(): Promise<number> {
+    const [us, rs] = await Promise.all([
+      getDocs(query(collection(db, 'users'), where('role', '==', 'student'))),
+      getDocs(collection(db, 'homework_results'))
+    ]);
+    const tmap: Record<string, string> = {};
+    us.docs.forEach((d) => (tmap[d.id] = String((d.data() as any).teacherId || '')));
+    let n = 0;
+    for (const d of rs.docs) {
+      const r: any = d.data();
+      if (!(r.studentId in tmap)) continue;
+      const want = tmap[r.studentId];
+      if (String(r.teacherId || '') === want) continue;
+      await updateDoc(d.ref, { teacherId: want ? want : deleteField() }).then(() => n++).catch(() => undefined);
+    }
+    return n;
+  },
+
   async getAllHomeworkResults(teacherId?: string): Promise<HomeworkResult[]> {
     const q = teacherId
       ? query(collection(db, 'homework_results'), where('teacherId', '==', teacherId))

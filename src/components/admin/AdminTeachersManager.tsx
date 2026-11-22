@@ -4,6 +4,7 @@ import { collection, getDocs, query, where, updateDoc, doc, deleteField } from '
 import { db } from '../../services/firebase';
 import { staffThread } from '../../services/chatService';
 import { TeacherProfileEditor } from '../teacher/TeacherProfileEditor';
+import { studentHubService } from '../../services/studentHubService';
 import { useLanguage } from '../../context/LanguageContext';
 import { groupService, TeacherAccount, StudyGroup } from '../../services/groupService';
 
@@ -76,6 +77,7 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
     setBusy(true);
     try {
       await fn();
+      await studentHubService.syncResultTeachers().catch(() => undefined);
       onNotice(tr(okEn, okAr));
       await load();
     } catch (err: any) {

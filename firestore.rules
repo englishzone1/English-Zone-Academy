@@ -553,7 +553,7 @@ service cloud.firestore {
       // الإدارة أو معلم الطالب: النجوم الممنوحة ودرجة المحادثة فقط
       // والإدارة وحدها تسجّل حذف التسجيلات الصوتية (audioCount = 0)
       allow update: if (
-          (isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax', 'audioCount', 'audioDeleted', 'score', 'percent', 'origScore', 'manual'])) ||
+          (isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax', 'audioCount', 'audioDeleted', 'score', 'percent', 'origScore', 'manual', 'teacherId'])) ||
           (isTeacherDoc() && resource.data.get('teacherId', '') == request.auth.uid &&
             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsGiven', 'speakingScore', 'speakingMax', 'score', 'percent', 'origScore', 'manual']))
         ) &&
