@@ -195,10 +195,12 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate, ed
             <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('Your name (shown with your avatar)', '{اسمك|اسمكِ} (يظهر مع الأفاتار)')}</label>
             <input value={displayName} onChange={(e) => { setDisplayName(e.target.value); setStatus('idle'); }} className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm" />
           </div>
+          {(user as any)?.role !== 'teacher' && (
           <div>
             <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('WhatsApp number (optional)', 'رقم واتساب (اختياري)')}</label>
             <input value={phone} onChange={(e) => { setPhone(e.target.value); setStatus('idle'); }} dir="ltr" inputMode="tel" placeholder="+966..." className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm" />
           </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

@@ -231,7 +231,9 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
   const level: string | undefined = student.mainLevel || undefined;
   const courseName: string | undefined = student.enrolledCourseName || undefined;
   const stage: string | undefined = student.currentStage || undefined;
-  const teacherName: string | undefined = student.assignedTeacherName || undefined;
+  const rawTeacher = String(student.assignedTeacherName || '').trim();
+  // لا يظهر بريد المعلم للطالب أبدًا
+  const teacherName: string | undefined = rawTeacher && !rawTeacher.includes('@') ? rawTeacher : undefined;
   const tuition: number | undefined = typeof student.monthlyTuitionUSD === 'number' ? student.monthlyTuitionUSD : undefined;
   const progress: number | undefined = typeof student.stageProgress === 'number' ? student.stageProgress : undefined;
   const lessonsAttended = typeof student.lessonsAttended === 'number' ? student.lessonsAttended : undefined;
@@ -719,7 +721,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
           </div>
         )}
         {activeTab === 'messages' && !preview && (
-          <StudentMessages uid={firebaseUser.uid} name={student.fullName || ''} email={student.email || firebaseUser.email || ''} isAr={isAr} teacherId={student.teacherId} teacherName={student.assignedTeacherName || undefined} teacherEmail={(student as any).assignedTeacherEmail || undefined} />
+          <StudentMessages uid={firebaseUser.uid} name={student.fullName || ''} email={student.email || firebaseUser.email || ''} isAr={isAr} teacherId={student.teacherId} teacherName={teacherName} teacherEmail={(student as any).assignedTeacherEmail || undefined} />
         )}
 
         {/* TAB: FEEDBACK */}

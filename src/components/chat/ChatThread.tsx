@@ -52,7 +52,8 @@ export const ChatThread: React.FC<Props> = ({ threadId, me, isAr, title, readOnl
   const send = async (m: Omit<ChatMessage, 'id' | 'createdAtMs' | 'senderId' | 'senderName' | 'senderRole'>) => {
     setBusy(true);
     try {
-      await chatService.send(threadId, { ...m, senderId: me.uid, senderName: me.name || tr('Member', 'عضو'), senderRole: me.role });
+      const nm = me.name && !me.name.includes('@') ? me.name : me.role === 'teacher' ? tr('Teacher', 'المعلم') : me.role === 'admin' ? tr('Admin', 'الإدارة') : tr('Member', 'عضو');
+      await chatService.send(threadId, { ...m, senderId: me.uid, senderName: nm, senderRole: me.role });
     } catch (e: any) {
       alert(tr('Could not send: ', 'تعذر الإرسال: ') + (e?.code || e?.message || ''));
     } finally {
@@ -156,7 +157,7 @@ export const ChatThread: React.FC<Props> = ({ threadId, me, isAr, title, readOnl
               <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] rounded-2xl px-3.5 py-2 shadow-sm ${mine ? 'bg-[#0A192F] text-white' : 'bg-white text-[#0A192F] border border-gray-200'}`}>
                   <div className={`text-[10px] font-bold mb-0.5 flex items-center gap-1.5 ${mine ? 'text-[#F3E5AB]' : 'text-[#AA820A]'}`}>
-                    {m.senderName}
+                    {m.senderName && !m.senderName.includes('@') ? m.senderName : roleTag(m.senderRole) || tr('Member', 'عضو')}
                     {roleTag(m.senderRole) && <span className="px-1.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[9px]">{roleTag(m.senderRole)}</span>}
                   </div>
                   {m.kind === 'text' && <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{m.text}</p>}

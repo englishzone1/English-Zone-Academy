@@ -48,7 +48,6 @@ export const TeacherProfileEditor: React.FC<Props> = ({ teacherId, isAr, mode, o
       const now = new Date().toISOString();
       const base: any = {
         fullName: form.fullName.trim(),
-        phone: form.phone.trim(),
         country: form.country.trim(),
         bio: form.bio.trim().slice(0, 600),
         updatedAt: now,
@@ -59,7 +58,7 @@ export const TeacherProfileEditor: React.FC<Props> = ({ teacherId, isAr, mode, o
       const photo = (extra?.avatarConfig || avatar)?.photo || '';
       await setDoc(
         doc(db, 'teachers', teacherId),
-        { fullName: base.fullName, phone: base.phone, bio: base.bio, photo, updatedAt: now },
+        { fullName: base.fullName, bio: base.bio, photo, updatedAt: now },
         { merge: true }
       );
       onNotice(tr('Saved.', 'تم الحفظ.'));
@@ -129,10 +128,6 @@ export const TeacherProfileEditor: React.FC<Props> = ({ teacherId, isAr, mode, o
         <div>
           <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('Full name', 'الاسم الكامل')}</label>
           <input className={inputCls} value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
-        </div>
-        <div>
-          <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('Phone', 'رقم الهاتف')}</label>
-          <input className={inputCls} dir="ltr" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
         </div>
         <div>
           <label className="block text-[11px] font-bold text-gray-600 mb-1">{tr('Country', 'الدولة')}</label>
