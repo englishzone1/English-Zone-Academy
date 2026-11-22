@@ -3,6 +3,7 @@ import { UserMinus, Info, MessageSquare, Users, UserPlus, X } from 'lucide-react
 import { collection, getDocs, query, where, updateDoc, doc, deleteField } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { staffThread } from '../../services/chatService';
+import { TeacherProfileEditor } from '../teacher/TeacherProfileEditor';
 import { useLanguage } from '../../context/LanguageContext';
 import { groupService, TeacherAccount, StudyGroup } from '../../services/groupService';
 
@@ -31,6 +32,7 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
   const [students, setStudents] = useState<StudentLite[]>([]);
   const [pick, setPick] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -179,6 +181,12 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2 self-start">
+                    <button
+                      onClick={() => setEditing(editing === t.id ? null : t.id)}
+                      className="px-3 py-2 rounded-lg text-xs font-bold bg-[#D4AF37] text-[#0A192F]"
+                    >
+                      {editing === t.id ? tr('Close editing', 'إغلاق التعديل') : tr('Edit data & photo', 'تعديل البيانات والصورة')}
+                    </button>
                     {onOpenChat && (
                       <button onClick={() => onOpenChat(staffThread(t.id))} className="px-3 py-2 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] flex items-center gap-1.5">
                         <MessageSquare className="w-4 h-4" />
@@ -191,6 +199,12 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
                     </button>
                   </div>
                 </div>
+
+                {editing === t.id && (
+                  <div className="p-4 rounded-2xl bg-white border border-[#D4AF37]/40">
+                    <TeacherProfileEditor teacherId={t.id} isAr={isAr} mode="admin" onNotice={onNotice} onSaved={load} />
+                  </div>
+                )}
 
                 <div>
                   <div className="text-xs font-bold text-[#0A192F] mb-2 flex items-center gap-1.5">

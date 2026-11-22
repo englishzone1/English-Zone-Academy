@@ -14,17 +14,18 @@ import { AvatarRenderer } from '../../components/avatar/AvatarRenderer';
 import { toEZAvatar } from '../../components/avatar/ezAvatar';
 import { squarePhoto } from '../../services/studentHubService';
 import { ChatHub } from '../../components/chat/ChatHub';
+import { TeacherProfileEditor } from '../../components/teacher/TeacherProfileEditor';
 
 interface TeacherDashboardProps {
   navigate: (route: string) => void;
 }
 
-type Tab = 'students' | 'results' | 'ledger' | 'messages' | 'chats' | 'community';
+type Tab = 'students' | 'results' | 'ledger' | 'messages' | 'chats' | 'community' | 'profile';
 
 // لوحة المعلم: طلاب مجموعاته فقط، بدون صلاحيات الإدارة
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) => {
   const { language } = useLanguage();
-  const { user, firebaseUser, logout, saveAvatarConfig } = useAuth();
+  const { user, firebaseUser, logout, saveAvatarConfig, refreshProfile } = useAuth();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [tab, setTab] = useState<Tab>('students');
@@ -50,7 +51,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
     { id: 'ledger', ar: 'سجل النجوم', en: 'Stars ledger', icon: Star },
     { id: 'messages', ar: 'رسائل الطلاب', en: 'Messages', icon: MessageSquare },
     { id: 'chats', ar: 'المحادثات', en: 'Chats', icon: MessagesSquare },
-    { id: 'community', ar: 'مجتمع الطلاب', en: 'Community', icon: Globe2 }
+    { id: 'community', ar: 'مجتمع الطلاب', en: 'Community', icon: Globe2 },
+    { id: 'profile', ar: 'بياناتي الشخصية', en: 'My profile', icon: UserRound }
   ];
 
   return (
@@ -120,7 +122,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
           {tabs.map((t) => {
             const Icon = t.icon;
             return (
@@ -149,6 +151,18 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
         {tab === 'results' && <AdminHomeworkResults onNotice={notify} teacherMode />}
         {tab === 'ledger' && <AdminStarsLedger onNotice={notify} teacherMode />}
         {tab === 'messages' && <AdminMessagesManager onNotice={notify} teacherMode />}
+        {tab === 'profile' && firebaseUser && (
+          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+            <TeacherProfileEditor
+              teacherId={firebaseUser.uid}
+              isAr={isAr}
+              mode="self"
+              onNotice={notify}
+              onSaved={() => refreshProfile()}
+              openAvatarStudio={() => navigate('avatar-studio')}
+            />
+          </div>
+        )}
         {tab === 'chats' && firebaseUser && (
           <ChatHub me={{ uid: firebaseUser.uid, name: user?.fullName || tr('Teacher', 'المعلم'), role: 'teacher' }} isAr={isAr} />
         )}

@@ -156,7 +156,7 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate, ed
             {tr('Admin editing:', 'تعديل الإدارة لحساب:')} {editUser.fullName || editUser.email}
           </div>
         )}
-        <button onClick={() => (onClose ? onClose() : navigate('student-dashboard'))} className="text-xs font-bold text-gray-500 hover:text-[#0A192F] flex items-center gap-1.5">
+        <button onClick={() => (onClose ? onClose() : navigate((me as any)?.role === 'teacher' ? 'teacher-dashboard' : 'student-dashboard'))} className="text-xs font-bold text-gray-500 hover:text-[#0A192F] flex items-center gap-1.5">
           <ArrowLeft className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
           <span>{tr('Back to my dashboard', 'العودة إلى لوحتي')}</span>
         </button>

@@ -119,7 +119,7 @@ service cloud.firestore {
       ) || (
         isOwner(userId) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'fullName', 'phone', 'country', 'age', 'avatarUrl', 'avatarConfig', 'updatedAt', 'placementLevel', 'placementAt', 'gender'
+          'fullName', 'phone', 'country', 'age', 'avatarUrl', 'avatarConfig', 'updatedAt', 'placementLevel', 'placementAt', 'gender', 'bio'
         ]) &&
         (!('gender' in request.resource.data) || request.resource.data.gender in ['male', 'female']) &&
         (!('placementLevel' in request.resource.data) || request.resource.data.placementLevel in ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
@@ -139,6 +139,9 @@ service cloud.firestore {
     match /teachers/{teacherId} {
       allow get, list: if isTeacher() || isAdmin();
       allow write: if isAdmin();
+      // المعلم يعدّل بياناته الشخصية وصورته فقط
+      allow update: if isOwner(teacherId) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fullName', 'phone', 'bio', 'photo', 'updatedAt']);
     }
 
     // --- Admission Registration Requests ---
