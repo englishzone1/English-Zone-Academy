@@ -285,9 +285,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   <section id="hwLevels" class="hidden">
     <button class="back" id="backHW">⬅ Back</button>
     <h2>Homework &amp; Reviews <span class="arh">الواجبات والمراجعات</span></h2>
-    <button class="lesson" id="cL1">A1 level 1<span>Units 1–4 lessons, practical English and reviews</span></button>
-    <button class="lesson" id="cL2">A1 level 2<span>Units 5–6</span></button>
-    <button class="lesson" id="cL3">A1 level 3<span>Units 7–12</span></button>
+    <button class="lesson" id="cL1">A1 level 1<b class="ar">المرحلة الأولى: الوحدات 1–4 مع المراجعات</b><span>Units 1–4 lessons, practical English and reviews</span></button>
+    <button class="lesson" id="cL2">A1 level 2<b class="ar">المرحلة الثانية: الوحدات 5–8 مع المراجعات</b><span>Units 5–8 lessons, practical English and reviews</span></button>
+    <button class="lesson" id="cL3">A1 level 3<b class="ar">المرحلة الثالثة: الوحدات 9–12 مع المراجعات</b><span>Units 9–12 lessons, practical English and reviews</span></button>
   </section>
   <section id="tsLevels" class="hidden">
     <button class="back" id="backTS">⬅ Back</button>
@@ -325,16 +325,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <button class="lesson u6" id="c6A">6A: Old friends?<span>Present simple he/she/it, jobs and places of work, third person -es</span></button>
     <button class="lesson u6" id="c6B">6B: Good morning, goodnight<span>Adverbs of frequency, a typical day, /j/ and /juː/</span></button>
     <button class="lesson rev" id="cREV56" data-ar="مراجعة الوحدتين الخامسة والسادسة">Review: Units 5 &amp; 6<b class="ar">مراجعة الوحدتين الخامسة والسادسة</b><span>Grammar, vocabulary, pronunciation, reading and video</span></button>
-  </section>
-  <section id="lvl3" class="hidden">
-    <button class="back" id="backL3">⬅ Back to Levels</button>
-    <h2>A1 level 3</h2>
     <button class="lesson u7" id="c7A">7A: Free time<span>Free-time verb phrases, word order in questions, /w/ /h/ /eə/ /aʊ/</span></button>
     <button class="lesson u7" id="c7B">7B: Lights, camera, action!<span>Imperatives, object pronouns, kinds of film, sentence rhythm</span></button>
     <button class="lesson u7" id="cPE4">Practical English 4: What's the date?<span>Months, ordinal numbers, saying the date, talking on the phone</span></button>
     <button class="lesson u8" id="c8A">8A: Can I park here?<span>can / can't, more verb phrases, /ə/ /æ/ /ɑː/</span></button>
     <button class="lesson u8" id="c8B">8B: I ❤ shopping<span>like / love / hate + verb + -ing, activities, /ʊ/ /uː/ /ŋ/</span></button>
     <button class="lesson rev" id="cREV78" data-ar="مراجعة الوحدتين السابعة والثامنة">Review: Units 7 &amp; 8<b class="ar">مراجعة الوحدتين السابعة والثامنة</b><span>Grammar, vocabulary, pronunciation, reading and video</span></button>
+  </section>
+  <section id="lvl3" class="hidden">
+    <button class="back" id="backL3">⬅ Back to Levels</button>
+    <h2>A1 level 3</h2>
+    <p class="soon" style="text-align:center;color:#6b7280;padding:24px 8px;line-height:1.8">Units 9–12 are coming soon.<br>دروس الوحدات من التاسعة إلى الثانية عشرة قريبًا.</p>
   </section>
   <section id="exam" class="hidden">
     <button class="back" id="backEx">⬅ Back</button>
@@ -1877,12 +1878,12 @@ $("cPE3").onclick = ()=>openLesson("Practical English 3: What time is it?",LESSO
 $("c6A").onclick = ()=>openLesson("6A: Old friends?",LESSON_6A,"lvl2");
 $("c6B").onclick = ()=>openLesson("6B: Good morning, goodnight",LESSON_6B,"lvl2");
 $("cREV56").onclick = ()=>openLesson("Review: Units 5 & 6",LESSON_REV56,"lvl2");
-$("c7A").onclick = ()=>openLesson("7A: Free time",LESSON_7A,"lvl3");
-$("c7B").onclick = ()=>openLesson("7B: Lights, camera, action!",LESSON_7B,"lvl3");
-$("cPE4").onclick = ()=>openLesson("Practical English 4: What's the date?",LESSON_PE4,"lvl3");
-$("c8A").onclick = ()=>openLesson("8A: Can I park here?",LESSON_8A,"lvl3");
-$("c8B").onclick = ()=>openLesson("8B: I ❤ shopping",LESSON_8B,"lvl3");
-$("cREV78").onclick = ()=>openLesson("Review: Units 7 & 8",LESSON_REV78,"lvl3");
+$("c7A").onclick = ()=>openLesson("7A: Free time",LESSON_7A,"lvl2");
+$("c7B").onclick = ()=>openLesson("7B: Lights, camera, action!",LESSON_7B,"lvl2");
+$("cPE4").onclick = ()=>openLesson("Practical English 4: What's the date?",LESSON_PE4,"lvl2");
+$("c8A").onclick = ()=>openLesson("8A: Can I park here?",LESSON_8A,"lvl2");
+$("c8B").onclick = ()=>openLesson("8B: I ❤ shopping",LESSON_8B,"lvl2");
+$("cREV78").onclick = ()=>openLesson("Review: Units 7 & 8",LESSON_REV78,"lvl2");
 TQ.c=(s,o,a,ea)=>{ const parts=s.split(`___`), p=[]; parts.forEach((x,i)=>{ if(x) p.push(x); if(i<parts.length-1) p.push({sel:o[Array.isArray(a)?a[i]:a],o:o}); }); return {p,ea}; };
 const SPEAK=(tasks)=>({name:`Speaking`, speak:1, ex:[{t:`Speaking (record your answers)`, ins:`<div dir="rtl">🎙️ سجّلي إجابتك عن كل سؤال بصوتك (حتى دقيقة ونصف لكل سؤال). تستمع المعلمة إلى تسجيلك وتضع درجته.<br>🔒 تسجيلك لا يسمعه إلا معلمتك وإدارة الأكاديمية لتقييمك فقط، ولا يُنشر في أي مكان، ويُحذف بعد التقييم.</div><ol class="spk" style="direction:ltr;text-align:left">${tasks.map(x=>`<li>${x}</li>`).join(``)}</ol>`, items:[]}]});
 const AUD=(n)=>`audio/${n}.mp3`;
