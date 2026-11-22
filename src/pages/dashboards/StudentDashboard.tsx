@@ -24,6 +24,7 @@ import {
 } from '../../services/groupService';
 import { db } from '../../services/firebase';
 import { StudentMonthlyReport } from '../../components/student/StudentMonthlyReport';
+import { StudentProgressChart } from '../../components/student/StudentProgressChart';
 import { StudentCourseMaterials, StudentLibrary, StudentMessages, StudentFeedback } from '../../components/student/StudentHubPanels';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
@@ -549,6 +550,8 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
             </div>
 
             <div className="lg:col-span-4 space-y-6">
+
+              <StudentProgressChart uid={firebaseUser.uid} isAr={isAr} lessonsAttended={lessonsAttended} lessonsTotal={lessonsTotal} />
 
               <StudentMonthlyReport
                 uid={firebaseUser.uid}
