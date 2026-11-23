@@ -483,6 +483,13 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // المناهج: تظهر فقط للطالبة التي اختارت لها الإدارة هذا المنهج
+    match /curricula/{curriculumId} {
+      allow get: if isAdmin() || isTeacherDoc() || (isSignedIn() && myProfile().get('curriculumId', '') == curriculumId);
+      allow list: if isAdmin();
+      allow write: if isAdmin();
+    }
+
     match /attendance/{recordId} {
       allow get, list: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher());
       allow create, update, delete: if isTeacher();

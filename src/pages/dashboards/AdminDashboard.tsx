@@ -65,6 +65,7 @@ import { AdminDeletedAccounts } from '../../components/admin/AdminDeletedAccount
 import { sendTestEmail, resetTodayLimit } from '../../services/emailNotify';
 import { AdminLibraryManager } from '../../components/admin/AdminLibraryManager';
 import { ChatHub } from '../../components/chat/ChatHub';
+import { AdminCurricula } from '../../components/admin/AdminCurricula';
 
 interface AdminDashboardProps {
   navigate: (route: string) => void;
@@ -73,6 +74,7 @@ interface AdminDashboardProps {
 type TabId =
   | 'overview'
   | 'chats'
+  | 'curricula'
   | 'hwresults'
   | 'homework'
   | 'assistant'
@@ -714,6 +716,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
     { id: 'teachers', labelEn: 'Teachers', labelAr: 'المعلمون' },
     { id: 'messages', labelEn: 'Messages', labelAr: 'الرسائل' },
     { id: 'chats', labelEn: 'Group & teacher chats', labelAr: 'المحادثات (المجموعات والمعلمون)' },
+    { id: 'curricula', labelEn: 'Curricula', labelAr: 'المناهج' },
     { id: 'assistant', labelEn: 'Auto assistant', labelAr: 'المساعد الآلي' },
     { id: 'community', labelEn: 'Community', labelAr: 'مجتمع الطلاب' },
     { id: 'feedback_reviews', labelEn: 'Student Reviews Gallery', labelAr: 'آراء وتقييمات الطلاب' },
@@ -1117,6 +1120,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
         {/* CONTACT MESSAGES */}
         {activeTab === 'messages' && <AdminMessagesManager onNotice={(msg) => notify(msg, 4000)} />}
+        {activeTab === 'curricula' && <AdminCurricula isAr={isAr} onNotice={(msg) => notify(msg, 4000)} />}
         {activeTab === 'chats' && firebaseUser && (
           <ChatHub key={chatInitial || 'hub'} me={{ uid: firebaseUser.uid, name: adminName, role: 'admin' }} isAr={isAr} initial={chatInitial} />
         )}

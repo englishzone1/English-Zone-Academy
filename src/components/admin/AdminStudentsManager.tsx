@@ -11,6 +11,7 @@ import { db } from '../../services/firebase';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { groupService, StudyGroup, RatingCriterion, PASS_MARK } from '../../services/groupService';
+import { CURRICULA } from '../../services/curriculumService';
 import { AdminStudentRecords } from './AdminStudentRecords';
 import { studentDataService } from '../../services/studentDataService';
 import { CURRENCIES } from '../../hooks/useAcademySettings';
@@ -32,6 +33,7 @@ interface StudentRow {
   subscriptionStatus?: string;
   mainLevel?: string;
   enrolledCourseName?: string;
+  curriculumId?: string;
   currentStage?: string;
   learningFormat?: string;
   assignedTeacherName?: string;
@@ -46,6 +48,7 @@ type FormState = {
   subscriptionStatus: string;
   mainLevel: string;
   enrolledCourseName: string;
+  curriculumId: string;
   currentStage: string;
   learningFormat: string;
   assignedTeacherName: string;
@@ -66,6 +69,7 @@ const EMPTY_FORM: FormState = {
   subscriptionStatus: 'pending',
   mainLevel: '',
   enrolledCourseName: '',
+  curriculumId: '',
   currentStage: '',
   learningFormat: '',
   assignedTeacherName: '',
@@ -96,6 +100,7 @@ const toForm = (s: StudentRow): FormState => ({
   subscriptionStatus: statusOf(s),
   mainLevel: s.mainLevel || '',
   enrolledCourseName: s.enrolledCourseName || '',
+  curriculumId: s.curriculumId || '',
   currentStage: s.currentStage || '',
   learningFormat: s.learningFormat || '',
   assignedTeacherName: s.assignedTeacherName || '',
@@ -235,6 +240,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         subscriptionStatus: form.subscriptionStatus,
         mainLevel: textOrDelete(form.mainLevel),
         enrolledCourseName: textOrDelete(form.enrolledCourseName),
+        curriculumId: textOrDelete(form.curriculumId),
         currentStage: textOrDelete(form.currentStage),
         learningFormat: textOrDelete(form.learningFormat),
         monthlyTuitionUSD: numberOrDelete(form.monthlyTuitionUSD, 0),
@@ -616,6 +622,20 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                     <option key={n} value={n} />
                   ))}
                 </datalist>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-[11px] font-bold text-gray-600 mb-1">
+                  {isAr ? 'المنهج (يظهر للطالبة في «المنهج والمراحل»)' : 'Curriculum (shown in “Curriculum”)'}
+                </label>
+                <select value={form.curriculumId} onChange={(e) => setField('curriculumId', e.target.value)} className={inputCls}>
+                  <option value="">{isAr ? '— بدون منهج —' : '— No curriculum —'}</option>
+                  {CURRICULA.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {isAr ? c.titleAr : c.titleEn}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

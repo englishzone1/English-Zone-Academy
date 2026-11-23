@@ -25,6 +25,7 @@ import {
 import { db } from '../../services/firebase';
 import { StudentMonthlyReport } from '../../components/student/StudentMonthlyReport';
 import { StudentProgressChart } from '../../components/student/StudentProgressChart';
+import { CurriculumViewer } from '../../components/student/CurriculumViewer';
 import { StudentCourseMaterials, StudentLibrary, StudentMessages, StudentFeedback } from '../../components/student/StudentHubPanels';
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
@@ -732,6 +733,11 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
         {activeTab === 'feedback' && <StudentFeedback uid={firebaseUser.uid} name={student.fullName || ''} level={level} isAr={isAr} />}
 
         {/* TAB 3: CURRICULUM */}
+        {activeTab === 'curriculum' && (student as any).curriculumId && (
+          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm mb-6">
+            <CurriculumViewer curriculumId={(student as any).curriculumId} isAr={isAr} />
+          </div>
+        )}
         {activeTab === 'curriculum' && (
           <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
             <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
