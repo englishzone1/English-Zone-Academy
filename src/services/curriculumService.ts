@@ -16,15 +16,35 @@ export interface CurriculumBook {
 const efBook = (name: string, count: number): CurriculumBook => ({
   folder: `/curriculum/ef5-a1/books/888b3c80cf9c/${name}`,
   count,
-  pdf: `/curriculum/ef5-a1/books/888b3c80cf9c-${name}.pdf`
+  pdf: `/curriculum/ef5-a1/books/888b3c80cf9c-${name}.pdf?v=2`
 });
-// الكتب مخفية عن الطالبات مؤقتًا حتى تعتمد الإدارة النسخة النهائية
-const BOOKS_LIVE = false;
-export const CURRICULUM_BOOKS: Record<string, { stages: CurriculumBook[]; appendix: CurriculumBook }> = !BOOKS_LIVE ? {} : {
+export const CURRICULUM_BOOKS: Record<string, { stages: CurriculumBook[]; appendix: CurriculumBook }> = {
   'ef5-a1': {
-    stages: [efBook('stage1', 47), efBook('stage2', 46), efBook('stage3', 43)],
+    stages: [efBook('stage1', 93), efBook('stage2', 88), efBook('stage3', 80)],
     appendix: efBook('appendix', 61)
   }
+};
+
+// ملحقات وتمارين إضافية: مفتوحة لكل من يدرس المنهج، بلا مراحل ولا أقفال
+export interface CurriculumExtra extends CurriculumBook {
+  key: string;
+  titleAr: string;
+  titleEn: string;
+  descAr: string;
+  descEn: string;
+}
+const efExtra = (key: string, count: number, titleAr: string, titleEn: string, descAr: string, descEn: string): CurriculumExtra => ({
+  ...efBook(key, count), key, titleAr, titleEn, descAr, descEn
+});
+export const CURRICULUM_EXTRAS: Record<string, CurriculumExtra[]> = {
+  'ef5-a1': [
+    efExtra('appendix', 61, 'ملحق الكتاب', 'Book appendix', 'القواعد والمفردات والتواصل والاستماع ونطق الأصوات', 'Grammar, vocabulary, communication, listening and sounds'),
+    efExtra('workbook', 65, 'كتاب التمارين', 'Workbook', 'تمارين لكل درس من دروس الكتاب', 'Practice for every lesson of the book'),
+    efExtra('wbkey', 8, 'إجابات كتاب التمارين', 'Workbook answer key', 'لتصحيح تمارينك بنفسك', 'Check your workbook answers'),
+    efExtra('tbgram', 26, 'تمارين قواعد إضافية', 'Extra grammar practice', 'ورقة قواعد لكل درس', 'A grammar worksheet for each lesson'),
+    efExtra('tbvoc', 24, 'تمارين مفردات إضافية', 'Extra vocabulary practice', 'ورقة مفردات لكل درس', 'A vocabulary worksheet for each lesson'),
+    efExtra('tbcomm', 42, 'أنشطة المحادثة', 'Communicative activities', 'أنشطة كلام مع زميل أو في المجموعة', 'Speaking activities with a partner or group')
+  ]
 };
 
 // مراحل كل منهج لاختيار مرحلة الطالبة في إدارة الطلاب

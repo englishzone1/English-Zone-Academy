@@ -10,7 +10,7 @@ interface Props {
   onClose: () => void;
 }
 
-const src = (folder: string, n: number) => `${folder}/${String(n).padStart(3, '0')}.jpg`;
+const src = (folder: string, n: number) => `${folder}/${String(n).padStart(3, '0')}.jpg?v=2`;
 
 // قارئ الكتاب داخل الموقع: صفحة بصفحة (صور)، يعمل على كل الهواتف دون عارض PDF
 export const BookReader: React.FC<Props> = ({ folder, count, title, pdf, isAr, onClose }) => {

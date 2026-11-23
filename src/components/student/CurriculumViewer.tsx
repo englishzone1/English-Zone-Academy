@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, Headphones, Lock, PlayCircle, X } from 'lucide-react';
 import { BookReader } from './BookReader';
-import { curriculumService, CurriculumDoc, drivePreview, CURRICULUM_BOOKS } from '../../services/curriculumService';
+import { curriculumService, CurriculumDoc, drivePreview, CURRICULUM_BOOKS, CURRICULUM_EXTRAS, CurriculumExtra } from '../../services/curriculumService';
 
 interface Props {
   curriculumId: string;
@@ -21,6 +21,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
   // الصوت يُشغَّل مباشرة في الموقع؛ إن تعذّر نعود لمشغّل Drive
   const [audioFail, setAudioFail] = useState(false);
   const [reading, setReading] = useState<'stage' | 'appendix' | null>(null);
+  const [extra, setExtra] = useState<CurriculumExtra | null>(null);
   const setPlayer = (p: typeof player) => {
     setAudioFail(false);
     setPlayerRaw(p);
@@ -45,6 +46,35 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
   return (
     <div className="space-y-5">
       <h3 className="font-bold text-lg text-[#0A192F]">{isAr ? cur.titleAr : cur.titleEn}</h3>
+
+      {(CURRICULUM_EXTRAS[cur.id] || []).length > 0 && (
+        <div className="p-4 rounded-2xl bg-[#F4F8F9] border border-[#0e4d5c]/20 space-y-3">
+          <p className="font-bold text-sm text-[#0A192F]">📚 {tr('Supplements and extra practice', 'ملحقات وتمارين إضافية')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {CURRICULUM_EXTRAS[cur.id].map((x) => (
+              <button
+                key={x.key}
+                onClick={() => { setPlayer(null); setReading(null); setExtra(extra?.key === x.key ? null : x); }}
+                className={`text-start px-3 py-2.5 rounded-xl border transition-all ${extra?.key === x.key ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-[#0A192F] border-gray-200 hover:border-[#D4AF37]'}`}
+              >
+                <span className="block text-xs font-bold">{isAr ? x.titleAr : x.titleEn}</span>
+                <span className="block text-[10px] opacity-75">{isAr ? x.descAr : x.descEn}</span>
+              </button>
+            ))}
+          </div>
+          {extra && (
+            <BookReader
+              key={extra.key}
+              folder={extra.folder}
+              count={extra.count}
+              pdf={extra.pdf}
+              title={isAr ? extra.titleAr : extra.titleEn}
+              isAr={isAr}
+              onClose={() => setExtra(null)}
+            />
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-2">
         {cur.stages.map((s, i) => (
@@ -158,7 +188,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
             {tr('Student book', 'كتاب الطالب')} – {isAr ? st.titleAr : st.titleEn}
           </p>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => { setPlayer(null); setReading('stage'); }} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+            <button onClick={() => { setPlayer(null); setExtra(null); setReading('stage'); }} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
               📖 {tr('Open the stage book', 'فتح كتاب المرحلة')}
             </button>
             {books?.appendix && (
