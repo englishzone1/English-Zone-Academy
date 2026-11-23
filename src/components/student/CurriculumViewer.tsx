@@ -14,7 +14,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
   const [err, setErr] = useState('');
   const [stage, setStage] = useState(0);
   const [unit, setUnit] = useState<number | null>(null);
-  const [player, setPlayerRaw] = useState<{ kind: 'audio' | 'video' | 'book'; id: string; label: string } | null>(null);
+  const [player, setPlayerRaw] = useState<{ kind: 'audio' | 'video' | 'book'; id: string; label: string; num?: string } | null>(null);
   // الصوت يُشغَّل مباشرة في الموقع؛ إن تعذّر نعود لمشغّل Drive
   const [audioFail, setAudioFail] = useState(false);
   const setPlayer = (p: typeof player) => {
@@ -65,7 +65,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
               controls
               autoPlay
               preload="auto"
-              src={`https://drive.usercontent.google.com/download?id=${player.id}&export=download`}
+              src={`/curriculum/${cur.id}/${player.num}.mp3`}
               onError={() => setAudioFail(true)}
               className="w-full"
             />
@@ -73,7 +73,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
           <iframe
             key={player.id}
             src={drivePreview(player.id)}
-            className={`w-full rounded-xl bg-black ${player.kind === 'audio' ? 'h-24' : player.kind === 'video' ? 'aspect-video h-auto' : 'h-[75vh]'}`}
+            className={`w-full rounded-xl bg-black ${player.kind === 'audio' ? 'h-40' : player.kind === 'video' ? 'aspect-video h-auto' : 'h-[75vh]'}`}
             allow="autoplay; fullscreen"
             allowFullScreen
             title={player.label}
@@ -117,7 +117,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
                 {u.tracks.map(([num, id]) => (
                   <button
                     key={id}
-                    onClick={() => setPlayer({ kind: 'audio', id, label: `🎧 ${num}` })}
+                    onClick={() => setPlayer({ kind: 'audio', id, num, label: `🎧 ${num}` })}
                     className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white border-gray-300 text-[#0A192F] hover:border-[#D4AF37]'}`}
                   >
                     {num}
