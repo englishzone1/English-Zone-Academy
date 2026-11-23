@@ -7,11 +7,19 @@ export const CURRICULA: { id: string; titleAr: string; titleEn: string }[] = [
 ];
 
 export interface CurriculumVideo {
-  lesson: string;
-  lessonAr: string;
   en: string;
   ar: string;
   id: string;
+}
+
+// درس داخل الوحدة: 1A / 1B / Practical English / Revise and Check
+export interface CurriculumLesson {
+  key: string;
+  code: string;
+  codeAr: string;
+  title: string;
+  tracks: [string, string][];
+  videos: CurriculumVideo[];
 }
 
 export interface CurriculumDoc {
@@ -19,7 +27,7 @@ export interface CurriculumDoc {
   titleAr: string;
   titleEn: string;
   stages: { key: string; titleAr: string; titleEn: string; units: number[]; bookId?: string }[];
-  units: Record<string, { tracks: [string, string][]; videos: CurriculumVideo[] }>;
+  units: Record<string, { lessons: CurriculumLesson[] }>;
   updatedAt?: string;
 }
 
@@ -39,14 +47,17 @@ export const curriculumService = {
     const d: any = s.data();
     // Firestore لا يقبل المصفوفات المتداخلة، فالتسجيلات محفوظة كنص JSON
     Object.values(d.units || {}).forEach((u: any) => {
-      if (typeof u.tracks === 'string') u.tracks = JSON.parse(u.tracks);
+      (u.lessons || []).forEach((l: any) => {
+        if (typeof l.tracks === 'string') l.tracks = JSON.parse(l.tracks);
+      });
+      if (!u.lessons) u.lessons = [];
     });
     return { ...d, id: s.id } as CurriculumDoc;
   },
 
   async save(c: CurriculumDoc): Promise<void> {
     const units: any = {};
-    Object.entries(c.units).forEach(([k, u]) => (units[k] = { tracks: JSON.stringify(u.tracks), videos: u.videos }));
+    Object.entries(c.units).forEach(([k, u]) => (units[k] = { lessons: u.lessons.map((l) => ({ ...l, tracks: JSON.stringify(l.tracks) })) }));
     const stages = c.stages.map((s) => ({ key: s.key, titleAr: s.titleAr, titleEn: s.titleEn, units: s.units, ...(s.bookId ? { bookId: s.bookId } : {}) }));
     await setDoc(doc(db, 'curricula', c.id), { id: c.id, titleAr: c.titleAr, titleEn: c.titleEn, stages, units, updatedAt: new Date().toISOString() });
   }

@@ -34,7 +34,6 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
 
   const st = cur.stages[stage];
   const u = unit !== null ? cur.units[String(unit)] : null;
-  const lessons = u ? Array.from(new Set(u.videos.map((v) => v.lesson))) : [];
 
   return (
     <div className="space-y-5">
@@ -147,58 +146,56 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
       </div>
 
       {u && (
-        <div className="space-y-5 p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200">
-          <div>
-            <h4 className="font-bold text-sm text-[#0A192F] mb-2 flex items-center gap-1.5">
-              <Headphones className="w-4 h-4 text-[#AA820A]" />
-              {tr('Recordings (numbers as in the book)', 'التسجيلات الصوتية (بأرقامها كما في الكتاب)')}
-            </h4>
-            {u.tracks.length === 0 ? (
-              <p className="text-xs text-gray-400">{tr('None.', 'لا يوجد.')}</p>
-            ) : (
-              <div className="flex flex-wrap gap-1.5" dir="ltr">
-                {u.tracks.map(([num, id]) => (
-                  <button
-                    key={id}
-                    onClick={() => setPlayer({ kind: 'audio', id, num, label: `🎧 ${num}` })}
-                    className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white border-gray-300 text-[#0A192F] hover:border-[#D4AF37]'}`}
-                  >
-                    {num}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div>
-            <h4 className="font-bold text-sm text-[#0A192F] mb-2 flex items-center gap-1.5">
-              <PlayCircle className="w-4 h-4 text-[#AA820A]" />
-              {tr('Videos', 'الفيديوهات')}
-            </h4>
-            {lessons.length === 0 ? (
-              <p className="text-xs text-gray-400">{tr('No videos for this unit.', 'لا توجد فيديوهات لهذه الوحدة.')}</p>
-            ) : (
-              <div className="space-y-2">
-                {lessons.map((l) => {
-                  const vs = u.videos.filter((v) => v.lesson === l);
-                  return (
-                    <div key={l} className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-xs font-bold text-[#0A192F] min-w-[90px]">{isAr ? vs[0].lessonAr : l}</span>
-                      {vs.map((v) => (
-                        <button
-                          key={v.id}
-                          onClick={() => setPlayer({ kind: 'video', id: v.id, label: `🎬 ${isAr ? v.lessonAr : v.lesson} – ${isAr ? v.ar : v.en}` })}
-                          className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === v.id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white border-gray-300 text-[#0A192F] hover:border-[#D4AF37]'}`}
-                        >
-                          ▶ {isAr ? v.ar : v.en}
-                        </button>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+        <div className="space-y-4">
+          {(u.lessons || []).map((l) => (
+            <div key={l.key} className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-3">
+              <h4 className="font-bold text-[#0A192F] flex flex-wrap items-baseline gap-2">
+                <span className="px-2.5 py-0.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-xs">{isAr ? l.codeAr : l.code}</span>
+                <span className="text-sm" dir="ltr">{l.title}</span>
+              </h4>
+              {l.tracks.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-bold text-gray-500 mb-1.5 flex items-center gap-1">
+                    <Headphones className="w-3.5 h-3.5 text-[#AA820A]" />
+                    {tr('Recordings', 'التسجيلات الصوتية')}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5" dir="ltr">
+                    {l.tracks.map(([num, id]) => (
+                      <button
+                        key={id}
+                        onClick={() => setPlayer({ kind: 'audio', id, num, label: `🎧 ${num}` })}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white border-gray-300 text-[#0A192F] hover:border-[#D4AF37]'}`}
+                      >
+                        {num}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {l.videos.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-bold text-gray-500 mb-1.5 flex items-center gap-1">
+                    <PlayCircle className="w-3.5 h-3.5 text-[#AA820A]" />
+                    {tr('Videos', 'الفيديوهات')}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {l.videos.map((v) => (
+                      <button
+                        key={v.id}
+                        onClick={() => setPlayer({ kind: 'video', id: v.id, label: `🎬 ${isAr ? l.codeAr : l.code} – ${isAr ? v.ar : v.en}` })}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === v.id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white border-gray-300 text-[#0A192F] hover:border-[#D4AF37]'}`}
+                      >
+                        ▶ {isAr ? v.ar : v.en}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {l.tracks.length === 0 && l.videos.length === 0 && (
+                <p className="text-xs text-gray-400">{tr('No recordings or videos for this lesson.', 'لا توجد تسجيلات أو فيديوهات لهذا الدرس.')}</p>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>

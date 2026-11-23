@@ -66,8 +66,9 @@ export const AdminCurricula: React.FC<Props> = ({ isAr, onNotice }) => {
     }
   };
 
-  const tracks = doc ? Object.values(doc.units).reduce((a, u) => a + u.tracks.length, 0) : 0;
-  const videos = doc ? Object.values(doc.units).reduce((a, u) => a + u.videos.length, 0) : 0;
+  const lessons = doc ? Object.values(doc.units).flatMap((u) => u.lessons || []) : [];
+  const tracks = lessons.reduce((a, l) => a + l.tracks.length, 0);
+  const videos = lessons.reduce((a, l) => a + l.videos.length, 0);
 
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
