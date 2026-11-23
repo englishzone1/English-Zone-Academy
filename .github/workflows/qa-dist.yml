@@ -2,20 +2,40 @@ name: QA dist
 on:
   push:
     branches: [qa-dist]
+permissions:
+  contents: write
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - name: Download audio, transcribe, print
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: site
+      - uses: actions/checkout@v4
+        with:
+          ref: qa-dist
+          path: qa
+      - name: Download curriculum audio, compress, commit to main
         run: |
           set -e
-          pip install -q openai-whisper >/dev/null 2>&1 || true
           sudo apt-get -qq install -y ffmpeg >/dev/null 2>&1 || true
-          for pair in "r78a:1fDOCLhaMx2RzZ-YHzknPKo4wJearmzyA" "r78b:1khozT11YO20Tn54wCgM7ASGro2Kb-kz8"; do
-            n=${pair%%:*}; id=${pair##*:}
-            curl -sSL -o "$n.mp3" "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
-            echo "INFO $n $(stat -c%s $n.mp3) $(file -b $n.mp3 | cut -c1-60)"
-            whisper "$n.mp3" --model small --language en --output_format txt --output_dir . >/dev/null 2>&1 || true
-            sed 's/^/TXT /' "$n.txt" || true
-            if file -b $n.mp3 | grep -qi audio; then base64 -w 3000 "$n.mp3"; fi | awk -v n="$n" '{printf "AUD_%s_%05d %s\n", n, NR, $0}'
-          done
+          out=site/public/curriculum/ef5-a1
+          mkdir -p $out
+          ok=0; bad=0
+          while read num id; do
+            [ -z "$num" ] && continue
+            curl -sSL --retry 3 -o in.mp3 "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t" || true
+            if file -b in.mp3 | grep -qi audio; then
+              ffmpeg -loglevel error -y -i in.mp3 -ac 1 -ar 22050 -b:a 48k "$out/$num.mp3" && ok=$((ok+1))
+            else
+              echo "BAD $num $(file -b in.mp3 | cut -c1-50)"; bad=$((bad+1))
+            fi
+          done < qa/tracks.txt
+          echo "DONE ok=$ok bad=$bad size=$(du -sh $out | cut -f1)"
+          cd site
+          git config user.name "English Zone bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add public/curriculum
+          git commit -q -m "Curriculum audio: Oxford English File A1 recordings" || true
+          git push -q origin HEAD:main
