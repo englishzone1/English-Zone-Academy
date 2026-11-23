@@ -885,11 +885,38 @@ function renderTest(){
   REC=[]; RECNOW=null;
   document.querySelectorAll(`#tsecs ol.spk`).forEach(ol=>[...ol.children].forEach(li=>{ const i=REC.length; REC.push(null); li.appendChild(recUI(i,li.textContent)); }));
   $(`exsub`).onclick=submitTest;
+  TDONE=false; const rn=restoreTestWork();
+  recDB(`all`,tKey()).then(list=>{ let k=0; (list||[]).forEach(([i,v])=>{ if(REC[i]===null&&v&&v.blob){ REC[i]=v; recShow(i,v); k++; } }); if(rn||k) toast(`📌 رجعنا إلى حيث توقفتِ في هذا الاختبار، إجاباتك${k?` وتسجيلاتك`:``} محفوظة. أكملي الحل.`); });
 }
+/* ---------- حفظ الاختبار أثناء الحل: لا تضيع الإجابات ولا التسجيلات إذا خرجت الطالبة من الصفحة ---------- */
+let TDONE=false, TSWT=0;
+function tKey(){ return `ezt_`+(student&&student.name?student.name.toLowerCase():`guest`)+`_`+(TCUR&&TCUR.id||``); }
+function tFields(){ return [...document.querySelectorAll(`#tsecs input,#tsecs select,#tsecs textarea`)]; }
+function saveTestWork(){
+  if(!TCUR||TDONE||!$(`tsecs`)) return; const v=tFields().map(x=>x.value); if(!v.some(Boolean)) return;
+  try{ localStorage.setItem(tKey(),JSON.stringify({t:Date.now(),v})); }catch(e){}
+}
+function restoreTestWork(){
+  let w=null; try{ w=JSON.parse(localStorage.getItem(tKey())||`null`); }catch(e){}
+  if(!w||!Array.isArray(w.v)) return 0; const f=tFields(); let n=0;
+  w.v.forEach((v,i)=>{ if(f[i]&&v){ f[i].value=v; n++; } }); return n;
+}
+function clearTestWork(k){ try{ localStorage.removeItem(k); }catch(e){} recDB(`clear`,k); }
+/* التسجيلات الصوتية تُحفظ في ذاكرة المتصفح (IndexedDB) حتى التسليم */
+function recDB(op,key,i,val){ return new Promise(res=>{ try{
+  const rq=indexedDB.open(`ez_rec`,1); rq.onupgradeneeded=()=>rq.result.createObjectStore(`r`); rq.onerror=()=>res(null);
+  rq.onsuccess=()=>{ const db=rq.result, tx=db.transaction(`r`,op===`all`?`readonly`:`readwrite`), st=tx.objectStore(`r`), pre=key+`#`;
+    if(op===`put`){ st.put(val,pre+i); tx.oncomplete=()=>res(true); tx.onerror=()=>res(null); return; }
+    const out=[]; const c=st.openCursor();
+    c.onsuccess=()=>{ const cur=c.result; if(!cur) return; if(String(cur.key).indexOf(pre)===0){ if(op===`all`) out.push([Number(String(cur.key).slice(pre.length)),cur.value]); else cur.delete(); } cur.continue(); };
+    tx.oncomplete=()=>res(out); tx.onerror=()=>res(null); };
+} catch(e){ res(null); } }); }
+function recShow(i,v){ const d=document.querySelector(`#tsecs .rec[data-i="${i}"]`); if(!d) return; const b=d.querySelector(`.recb`), st=d.querySelector(`.recs`), au=d.querySelector(`audio`);
+  au.src=URL.createObjectURL(v.blob); au.classList.remove(`hidden`); b.textContent=`🔁 إعادة التسجيل`; st.textContent=`✅ تم التسجيل (${v.sec||0} ث) – محفوظ`; }
 /* ---------- التسجيل الصوتي في جزء المحادثة ---------- */
 let REC=[], RECNOW=null; const RECMAX=90;
 function recUI(i,task){
-  const d=document.createElement(`div`); d.className=`rec`; d.dir=`rtl`;
+  const d=document.createElement(`div`); d.className=`rec`; d.dir=`rtl`; d.dataset.i=i;
   const b=document.createElement(`button`); b.type=`button`; b.className=`recb`; b.textContent=`🎙️ سجّلي إجابتك`;
   const st=document.createElement(`span`); st.className=`recs`;
   const au=document.createElement(`audio`); au.controls=true; au.className=`hidden`;
@@ -905,6 +932,7 @@ function recUI(i,task){
     let sec=0; const tm=setInterval(()=>{ sec++; st.textContent=`⏺️ جارٍ التسجيل ${sec} ث – اضغطي «إيقاف» عند الانتهاء`; if(sec>=RECMAX&&mr.state!==`inactive`) mr.stop(); },1000);
     mr.onstop=()=>{ clearInterval(tm); stream.getTracks().forEach(t=>t.stop()); RECNOW=null; b.classList.remove(`on`);
       const blob=new Blob(ch,{type:mr.mimeType||mt||`audio/webm`}); REC[i]={blob,task:String(task).trim().slice(0,300),sec};
+      if(!TDONE) recDB(`put`,tKey(),i,REC[i]);
       au.src=URL.createObjectURL(blob); au.classList.remove(`hidden`); b.textContent=`🔁 إعادة التسجيل`; st.textContent=`✅ تم التسجيل (${sec} ث)`; };
     RECNOW={i,mr}; mr.start(1000); b.classList.add(`on`); b.textContent=`⏹️ إيقاف`; st.textContent=`⏺️ جارٍ التسجيل…`;
   };
@@ -1005,6 +1033,7 @@ function gradeTest(){
   document.querySelectorAll(`#tsecs input,#tsecs select,#tsecs textarea`).forEach(x=>x.disabled=true);
   const graded=all; const ok=Math.round(graded.reduce((a,r)=>a+rowGot(r),0)*100)/100, n=graded.reduce((a,r)=>a+rowMax(r),0), pct=n?Math.round(ok/n*100):0;
   const nrec=REC.filter(Boolean).length;
+  TDONE=true; const doneKey=tKey(); setTimeout(()=>clearTestWork(doneKey),5000);
   setTimeout(()=>ezSendTest(graded,ok,n),400);
   const msg=pct>=90?`عمل ممتاز! 🏆`:pct>=70?`عمل جيد! ⭐`:pct>=50?`مقبول – واصلي التدريب. 👍`:`تحتاجين مزيدًا من التدريب – راجعي الدروس. 💪`;
   const secs=[]; graded.forEach(r=>{ let g=secs.find(x=>x.s===r.secRef); if(!g){ g={s:r.secRef,n:0,ok:0}; secs.push(g); } g.n+=rowMax(r); g.ok+=rowGot(r); });
@@ -1660,9 +1689,10 @@ function sendPartial(force){
   ezPost({type:`partial`,kind:`lesson`,id:String(CURCARD).slice(0,80),title:String($(`ltitle`).textContent||``).slice(0,150),score:st.ok,total:st.n,done:st.fin,extra:Object.assign(summarize(st.rows),{answers:collectAnswers(st.rows)})});
 }
 function toast(msg){ let t=$(`eztoast`); if(!t){ t=document.createElement(`div`); t.id=`eztoast`; t.dir=`rtl`; t.style.cssText=`position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99;max-width:92vw;background:#0A192F;color:#F3E5AB;padding:10px 14px;border-radius:14px;font:600 .9rem/1.5 inherit;box-shadow:0 8px 24px rgba(0,0,0,.25);text-align:center`; document.body.appendChild(t); } t.textContent=msg; t.style.display=`block`; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display=`none`,6000); }
-let SWT=0; document.addEventListener(`input`,()=>{ clearTimeout(SWT); SWT=setTimeout(saveWork,800); });
-document.addEventListener(`visibilitychange`,()=>{ if(document.visibilityState===`hidden`){ saveWork(); sendPartial(true); ezProgress(); } });
-window.addEventListener(`pagehide`,()=>{ saveWork(); sendPartial(true); });
+let SWT=0; document.addEventListener(`input`,()=>{ clearTimeout(SWT); SWT=setTimeout(()=>{ saveWork(); saveTestWork(); },800); });
+document.addEventListener(`change`,()=>{ try{ saveTestWork(); }catch(e){} });
+document.addEventListener(`visibilitychange`,()=>{ if(document.visibilityState===`hidden`){ saveWork(); saveTestWork(); sendPartial(true); ezProgress(); } });
+window.addEventListener(`pagehide`,()=>{ saveWork(); saveTestWork(); sendPartial(true); });
 
 function lockRow(row){ row.locked=1; setTimeout(updLesson,0); row.querySelectorAll("input,select").forEach(f=>f.disabled=true); const b=row.querySelector(".chk"); if(b){ b.disabled=true; b.textContent=`🔒`; } }
 
