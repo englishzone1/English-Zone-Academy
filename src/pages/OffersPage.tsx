@@ -68,7 +68,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
                 {isAr ? (
                   <>
                     <span className="font-bold text-base sm:text-lg leading-snug">
-                      🎁 سجّلي معنا حسابًا مجانيًا واستمتعي بعرض خصم <span className="text-[#8a5a00] text-xl sm:text-2xl">50%</span>
+                      🎁 سجّلي معنا حسابًا مجانيًا واستمتعي بعرض خصم <span className="text-[#8a5a00] text-xl sm:text-2xl">30%</span>
                     </span>
                     <span className="w-24 h-px bg-[#0A192F]/25" />
                     <span className="font-bold text-sm sm:text-base">
@@ -77,7 +77,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
                   </>
                 ) : (
                   <>
-                    <span className="font-bold text-base sm:text-lg">🎁 Create a free account and enjoy a 50% discount</span>
+                    <span className="font-bold text-base sm:text-lg">🎁 Create a free account and enjoy a 30% discount</span>
                     <span className="w-24 h-px bg-[#0A192F]/25" />
                     <span className="font-bold text-sm sm:text-base">👑 Become our ambassador and earn 15%</span>
                   </>

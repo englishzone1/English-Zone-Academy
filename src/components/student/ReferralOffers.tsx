@@ -46,7 +46,7 @@ export const ReferralOffers: React.FC<{ uid: string; isAr: boolean; active: bool
           <p className="text-xs text-gray-600">{tr('Invite your friend to your own group:', '{ادعُ صديقك|ادعي صديقتكِ} إلى {مجموعتك|مجموعتكِ} نفسها:')}</p>
           <ul className="space-y-2 text-sm text-[#0A192F]">
             <li>
-              • <b>{tr('You:', '{أنت|أنتِ}:')}</b> {tr(`${REFERRER_GROUP_DISCOUNT}% off one full month for every friend who joins (2 friends = 2 months at ${REFERRER_GROUP_DISCOUNT}%).`, `خصم ${REFERRER_GROUP_DISCOUNT}% على شهر كامل {عن كل صديق ينضم|عن كل صديقة تنضم} ({صديقان|صديقتان} = خصم ${REFERRER_GROUP_DISCOUNT}% على شهرين، وهكذا).`)}
+              • <b>{tr('You:', '{أنت|أنتِ}:')}</b> {tr(`${REFERRER_GROUP_DISCOUNT}% off one full month for every friend who joins (2 friends = 2 months at ${REFERRER_GROUP_DISCOUNT}%), once your friend pays her first month.`, `خصم ${REFERRER_GROUP_DISCOUNT}% على شهر كامل {عن كل صديق ينضم|عن كل صديقة تنضم} ({صديقان|صديقتان} = خصم ${REFERRER_GROUP_DISCOUNT}% على شهرين، وهكذا)، بعد أن {يدفع صديقك|تدفع صديقتكِ} {شهره|شهرها} الأول.`)}
             </li>
             <li>
               • <b>{tr('Your friend:', '{صديقك|صديقتكِ}:')}</b> {tr(`${FRIEND_DISCOUNT}% off her first month.`, `خصم ${FRIEND_DISCOUNT}% على {شهره|شهرها} الأول.`)}
