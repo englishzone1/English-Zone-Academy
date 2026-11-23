@@ -7,10 +7,21 @@ export const CURRICULA: { id: string; titleAr: string; titleEn: string }[] = [
 ];
 
 // كتب المراحل وملحق الكتاب (ملفات PDF داخل الموقع)
-export const CURRICULUM_BOOKS: Record<string, { stages: string[]; appendix: string }> = {
+// كل كتاب: مجلد صور الصفحات (يُقرأ داخل الموقع) + ملف PDF للتحميل
+export interface CurriculumBook {
+  folder: string;
+  count: number;
+  pdf: string;
+}
+const efBook = (name: string, count: number): CurriculumBook => ({
+  folder: `/curriculum/ef5-a1/books/888b3c80cf9c/${name}`,
+  count,
+  pdf: `/curriculum/ef5-a1/books/888b3c80cf9c-${name}.pdf`
+});
+export const CURRICULUM_BOOKS: Record<string, { stages: CurriculumBook[]; appendix: CurriculumBook }> = {
   'ef5-a1': {
-    stages: [1, 2, 3].map((n) => `/curriculum/ef5-a1/books/888b3c80cf9c-stage${n}.pdf`),
-    appendix: '/curriculum/ef5-a1/books/888b3c80cf9c-appendix.pdf'
+    stages: [efBook('stage1', 47), efBook('stage2', 46), efBook('stage3', 43)],
+    appendix: efBook('appendix', 61)
   }
 };
 

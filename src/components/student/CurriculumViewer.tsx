@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, Headphones, Lock, PlayCircle, X } from 'lucide-react';
+import { BookReader } from './BookReader';
 import { curriculumService, CurriculumDoc, drivePreview, CURRICULUM_BOOKS } from '../../services/curriculumService';
 
 interface Props {
@@ -19,6 +20,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
   const [player, setPlayerRaw] = useState<{ kind: 'audio' | 'video' | 'book'; id: string; label: string; num?: string } | null>(null);
   // الصوت يُشغَّل مباشرة في الموقع؛ إن تعذّر نعود لمشغّل Drive
   const [audioFail, setAudioFail] = useState(false);
+  const [reading, setReading] = useState<'stage' | 'appendix' | null>(null);
   const setPlayer = (p: typeof player) => {
     setAudioFail(false);
     setPlayerRaw(p);
@@ -37,7 +39,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
   const st = cur.stages[Math.min(stage, cur.stages.length - 1)];
   const locked = stage + 1 > myStage;
   const books = CURRICULUM_BOOKS[cur.id];
-  const bookUrl = books?.stages[stage];
+  const book = books?.stages[stage];
   const u = unit !== null ? cur.units[String(unit)] : null;
 
   return (
@@ -48,7 +50,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
         {cur.stages.map((s, i) => (
           <button
             key={s.key}
-            onClick={() => { setStage(i); setUnit(null); setPlayer(null); }}
+            onClick={() => { setStage(i); setUnit(null); setPlayer(null); setReading(null); }}
             className={`px-2 py-2.5 rounded-xl text-xs font-bold border transition-all ${i === stage ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-[#0A192F] border-gray-200'}`}
           >
             {i + 1 > myStage && <Lock className="w-3.5 h-3.5 inline-block mb-0.5 me-1 opacity-80" />}
@@ -138,26 +140,35 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
         </div>
       ) : (
       <>
-      {bookUrl ? (
+      {book ? (
+        reading ? (
+          <BookReader
+            key={reading + stage}
+            folder={reading === 'stage' ? book.folder : books!.appendix.folder}
+            count={reading === 'stage' ? book.count : books!.appendix.count}
+            pdf={reading === 'stage' ? book.pdf : books!.appendix.pdf}
+            title={reading === 'stage' ? `${tr('Student book', 'كتاب الطالب')} – ${isAr ? st.titleAr : st.titleEn}` : tr('Book appendix', 'ملحق الكتاب')}
+            isAr={isAr}
+            onClose={() => setReading(null)}
+          />
+        ) : (
         <div className="p-4 rounded-2xl bg-[#FFF8E1] border-2 border-[#D4AF37] space-y-3">
           <p className="font-bold text-sm text-[#0A192F] flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-[#AA820A]" />
             {tr('Student book', 'كتاب الطالب')} – {isAr ? st.titleAr : st.titleEn}
           </p>
           <div className="flex flex-wrap gap-2">
-            <a href={bookUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+            <button onClick={() => { setPlayer(null); setReading('stage'); }} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
               📖 {tr('Open the stage book', 'فتح كتاب المرحلة')}
-            </a>
-            <a href={bookUrl} download className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold">
-              ⬇ {tr('Download', 'تحميل')}
-            </a>
+            </button>
             {books?.appendix && (
-              <a href={books.appendix} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-white border border-[#D4AF37] text-[#0A192F] text-xs font-bold">
+              <button onClick={() => { setPlayer(null); setReading('appendix'); }} className="px-4 py-2 rounded-xl bg-white border border-[#D4AF37] text-[#0A192F] text-xs font-bold">
                 📎 {tr('Book appendix', 'ملحق الكتاب')}
-              </a>
+              </button>
             )}
           </div>
         </div>
+        )
       ) : (
       <button
         disabled={!st.bookId}
