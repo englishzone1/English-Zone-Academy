@@ -69,6 +69,17 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
               onError={() => setAudioFail(true)}
               className="w-full"
             />
+          ) : player.kind === 'video' && !audioFail ? (
+            <video
+              key={player.id}
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              src={`https://drive.usercontent.google.com/download?id=${player.id}&export=download&confirm=t`}
+              onError={() => setAudioFail(true)}
+              className="w-full rounded-xl bg-black aspect-video"
+            />
           ) : (
           <iframe
             key={player.id}
@@ -79,6 +90,25 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
             title={player.label}
           />
           )}
+          {/* روابط Drive: للفتح أو التحميل */}
+          <div className="flex flex-wrap gap-2 pt-1">
+            <a
+              href={`https://drive.google.com/file/d/${player.id}/view`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 rounded-lg bg-white/10 border border-[#D4AF37]/60 text-[#F3E5AB] text-[11px] font-bold"
+            >
+              {tr('Open in Google Drive', 'فتح في Google Drive')} ↗
+            </a>
+            <a
+              href={`https://drive.usercontent.google.com/download?id=${player.id}&export=download&confirm=t`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 rounded-lg bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold"
+            >
+              ⬇ {tr('Download', 'تحميل الملف')}
+            </a>
+          </div>
         </div>
       )}
 
