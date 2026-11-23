@@ -54,7 +54,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
       </div>
 
       {player && (
-        <div className="rounded-2xl border-2 border-[#D4AF37] bg-[#0A192F] p-3 space-y-2">
+        <div id="cur-player" className="rounded-2xl border-2 border-[#D4AF37] bg-[#0A192F] p-3 space-y-2">
           <div className="flex items-center justify-between text-[#F3E5AB] text-xs font-bold">
             <span>{player.label}</span>
             <button onClick={() => setPlayer(null)} title={tr('Close', 'إغلاق')}><X className="w-4 h-4" /></button>
@@ -82,9 +82,10 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
             />
           ) : (
           <iframe
+            id="cur-frame"
             key={player.id}
             src={drivePreview(player.id)}
-            className={`w-full rounded-xl bg-black ${player.kind === 'audio' ? 'h-40' : player.kind === 'video' ? 'aspect-video h-auto' : 'h-[75vh]'}`}
+            className={`w-full rounded-xl bg-black ${player.kind === 'audio' ? 'h-40' : player.kind === 'video' ? 'aspect-[4/5] sm:aspect-[4/3] max-h-[80vh]' : 'h-[75vh]'}`}
             allow="autoplay; fullscreen"
             allowFullScreen
             title={player.label}
@@ -92,6 +93,18 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
           )}
           {/* روابط Drive: للفتح أو التحميل */}
           <div className="flex flex-wrap gap-2 pt-1">
+            {player.kind !== 'audio' && (
+              <button
+                onClick={() => {
+                  const el: any = document.getElementById('cur-frame') || document.querySelector('#cur-player video');
+                  if (el?.requestFullscreen) el.requestFullscreen().catch(() => undefined);
+                  else if (el?.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                }}
+                className="px-3 py-1.5 rounded-lg bg-white text-[#0A192F] text-[11px] font-bold"
+              >
+                ⛶ {tr('Full screen', 'ملء الشاشة')}
+              </button>
+            )}
             <a
               href={`https://drive.google.com/file/d/${player.id}/view`}
               target="_blank"
