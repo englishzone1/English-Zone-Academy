@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Headphones, PlayCircle, X } from 'lucide-react';
-import { curriculumService, CurriculumDoc, drivePreview } from '../../services/curriculumService';
+import { BookOpen, Headphones, Lock, PlayCircle, X } from 'lucide-react';
+import { curriculumService, CurriculumDoc, drivePreview, CURRICULUM_BOOKS } from '../../services/curriculumService';
 
 interface Props {
   curriculumId: string;
+  // مرحلة الطالبة الحالية (1..3): ما بعدها يظهر مقفلًا
+  stage?: number;
   isAr: boolean;
 }
 
 // منهج الطالبة: مراحل ← وحدات ← كتاب وصوتيات وفيديوهات، تُفتح داخل الموقع
-export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
+export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage = 1, isAr }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const [cur, setCur] = useState<CurriculumDoc | null>(null);
   const [err, setErr] = useState('');
-  const [stage, setStage] = useState(0);
+  const [stage, setStage] = useState(Math.max(0, myStage - 1));
   const [unit, setUnit] = useState<number | null>(null);
   const [player, setPlayerRaw] = useState<{ kind: 'audio' | 'video' | 'book'; id: string; label: string; num?: string } | null>(null);
   // الصوت يُشغَّل مباشرة في الموقع؛ إن تعذّر نعود لمشغّل Drive
@@ -32,7 +34,10 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
   if (err) return <p className="text-sm text-gray-500 text-center py-6">{tr('The curriculum is not available yet.', 'المنهج غير متاح بعد.')}</p>;
   if (!cur) return <p className="text-sm text-gray-400 text-center py-6">{tr('Loading…', 'جارٍ التحميل…')}</p>;
 
-  const st = cur.stages[stage];
+  const st = cur.stages[Math.min(stage, cur.stages.length - 1)];
+  const locked = stage + 1 > myStage;
+  const books = CURRICULUM_BOOKS[cur.id];
+  const bookUrl = books?.stages[stage];
   const u = unit !== null ? cur.units[String(unit)] : null;
 
   return (
@@ -46,6 +51,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
             onClick={() => { setStage(i); setUnit(null); setPlayer(null); }}
             className={`px-2 py-2.5 rounded-xl text-xs font-bold border transition-all ${i === stage ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-[#0A192F] border-gray-200'}`}
           >
+            {i + 1 > myStage && <Lock className="w-3.5 h-3.5 inline-block mb-0.5 me-1 opacity-80" />}
             {isAr ? s.titleAr : s.titleEn}
             <span className="block text-[10px] opacity-75 font-semibold">{tr('Units', 'الوحدات')} {s.units[0]}–{s.units[s.units.length - 1]}</span>
           </button>
@@ -124,6 +130,35 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
         </div>
       )}
 
+      {locked ? (
+        <div className="p-6 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-300 text-center space-y-2">
+          <Lock className="w-8 h-8 mx-auto text-gray-400" />
+          <p className="font-bold text-[#0A192F]">{tr('This stage is locked', 'هذه المرحلة مقفلة')}</p>
+          <p className="text-xs text-gray-500">{tr('It opens when you move up to it with your teacher.', 'تُفتح {لك|لكِ} عندما {تنتقل|تنتقلين} إليها مع {معلمك|معلمتك}.')}</p>
+        </div>
+      ) : (
+      <>
+      {bookUrl ? (
+        <div className="p-4 rounded-2xl bg-[#FFF8E1] border-2 border-[#D4AF37] space-y-3">
+          <p className="font-bold text-sm text-[#0A192F] flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-[#AA820A]" />
+            {tr('Student book', 'كتاب الطالب')} – {isAr ? st.titleAr : st.titleEn}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <a href={bookUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+              📖 {tr('Open the stage book', 'فتح كتاب المرحلة')}
+            </a>
+            <a href={bookUrl} download className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold">
+              ⬇ {tr('Download', 'تحميل')}
+            </a>
+            {books?.appendix && (
+              <a href={books.appendix} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-white border border-[#D4AF37] text-[#0A192F] text-xs font-bold">
+                📎 {tr('Book appendix', 'ملحق الكتاب')}
+              </a>
+            )}
+          </div>
+        </div>
+      ) : (
       <button
         disabled={!st.bookId}
         onClick={() => st.bookId && setPlayer({ kind: 'book', id: st.bookId, label: `📖 ${tr('Student book', 'كتاب الطالب')} – ${isAr ? st.titleAr : st.titleEn}` })}
@@ -132,6 +167,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
         <BookOpen className="w-5 h-5 text-[#AA820A]" />
         {st.bookId ? tr('Open the stage book', 'فتح كتاب المرحلة') : tr('The stage book will be added soon', 'كتاب المرحلة يُضاف قريبًا')}
       </button>
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {st.units.map((n) => (
@@ -197,6 +233,8 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
             </div>
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   );

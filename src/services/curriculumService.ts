@@ -6,6 +6,23 @@ export const CURRICULA: { id: string; titleAr: string; titleEn: string }[] = [
   { id: 'ef5-a1', titleAr: 'منهج أكسفورد English File – المستوى الأول (المبتدئين)', titleEn: 'Oxford English File – Level 1 (Beginner)' }
 ];
 
+// كتب المراحل وملحق الكتاب (ملفات PDF داخل الموقع)
+export const CURRICULUM_BOOKS: Record<string, { stages: string[]; appendix: string }> = {
+  'ef5-a1': {
+    stages: [1, 2, 3].map((n) => `/curriculum/ef5-a1/books/888b3c80cf9c-stage${n}.pdf`),
+    appendix: '/curriculum/ef5-a1/books/888b3c80cf9c-appendix.pdf'
+  }
+};
+
+// مراحل كل منهج لاختيار مرحلة الطالبة في إدارة الطلاب
+export const CURRICULUM_STAGES: Record<string, { ar: string; en: string }[]> = {
+  'ef5-a1': [
+    { ar: 'المرحلة الأولى (الوحدات 1–4)', en: 'Stage 1 (Units 1–4)' },
+    { ar: 'المرحلة الثانية (الوحدات 5–8)', en: 'Stage 2 (Units 5–8)' },
+    { ar: 'المرحلة الثالثة (الوحدات 9–12)', en: 'Stage 3 (Units 9–12)' }
+  ]
+};
+
 export interface CurriculumVideo {
   en: string;
   ar: string;

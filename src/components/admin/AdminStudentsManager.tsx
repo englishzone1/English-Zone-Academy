@@ -11,7 +11,7 @@ import { db } from '../../services/firebase';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { groupService, StudyGroup, RatingCriterion, PASS_MARK } from '../../services/groupService';
-import { CURRICULA } from '../../services/curriculumService';
+import { CURRICULA, CURRICULUM_STAGES } from '../../services/curriculumService';
 import { AdminStudentRecords } from './AdminStudentRecords';
 import { studentDataService } from '../../services/studentDataService';
 import { CURRENCIES } from '../../hooks/useAcademySettings';
@@ -34,6 +34,7 @@ interface StudentRow {
   mainLevel?: string;
   enrolledCourseName?: string;
   curriculumId?: string;
+  curriculumStage?: number;
   currentStage?: string;
   learningFormat?: string;
   assignedTeacherName?: string;
@@ -49,6 +50,7 @@ type FormState = {
   mainLevel: string;
   enrolledCourseName: string;
   curriculumId: string;
+  curriculumStage: string;
   currentStage: string;
   learningFormat: string;
   assignedTeacherName: string;
@@ -70,6 +72,7 @@ const EMPTY_FORM: FormState = {
   mainLevel: '',
   enrolledCourseName: '',
   curriculumId: '',
+  curriculumStage: '',
   currentStage: '',
   learningFormat: '',
   assignedTeacherName: '',
@@ -101,6 +104,7 @@ const toForm = (s: StudentRow): FormState => ({
   mainLevel: s.mainLevel || '',
   enrolledCourseName: s.enrolledCourseName || '',
   curriculumId: s.curriculumId || '',
+  curriculumStage: s.curriculumStage ? String(s.curriculumStage) : '',
   currentStage: s.currentStage || '',
   learningFormat: s.learningFormat || '',
   assignedTeacherName: s.assignedTeacherName || '',
@@ -241,6 +245,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
         mainLevel: textOrDelete(form.mainLevel),
         enrolledCourseName: textOrDelete(form.enrolledCourseName),
         curriculumId: textOrDelete(form.curriculumId),
+        curriculumStage: form.curriculumId ? numberOrDelete(form.curriculumStage || '1', 1, 3) : deleteField(),
         currentStage: textOrDelete(form.currentStage),
         learningFormat: textOrDelete(form.learningFormat),
         monthlyTuitionUSD: numberOrDelete(form.monthlyTuitionUSD, 0),
@@ -637,6 +642,21 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                   ))}
                 </select>
               </div>
+
+              {form.curriculumId && CURRICULUM_STAGES[form.curriculumId] && (
+                <div className="sm:col-span-2">
+                  <label className="block text-[11px] font-bold text-gray-600 mb-1">
+                    {isAr ? 'مرحلة الطالبة في المنهج (المراحل التالية تبقى مقفلة عليها)' : 'Curriculum stage (later stages stay locked)'}
+                  </label>
+                  <select value={form.curriculumStage || '1'} onChange={(e) => setField('curriculumStage', e.target.value)} className={inputCls}>
+                    {CURRICULUM_STAGES[form.curriculumId].map((s, i) => (
+                      <option key={i} value={String(i + 1)}>
+                        {isAr ? s.ar : s.en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-[11px] font-bold text-gray-600 mb-1">

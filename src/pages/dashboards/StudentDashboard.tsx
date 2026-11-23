@@ -735,7 +735,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
         {/* TAB 3: CURRICULUM */}
         {activeTab === 'curriculum' && (student as any).curriculumId && (
           <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm mb-6">
-            <CurriculumViewer curriculumId={(student as any).curriculumId} isAr={isAr} />
+            <CurriculumViewer curriculumId={(student as any).curriculumId} stage={Number((student as any).curriculumStage) || 1} isAr={isAr} />
           </div>
         )}
         {activeTab === 'curriculum' && (
