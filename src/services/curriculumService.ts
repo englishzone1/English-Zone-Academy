@@ -18,7 +18,9 @@ const efBook = (name: string, count: number): CurriculumBook => ({
   count,
   pdf: `/curriculum/ef5-a1/books/888b3c80cf9c-${name}.pdf`
 });
-export const CURRICULUM_BOOKS: Record<string, { stages: CurriculumBook[]; appendix: CurriculumBook }> = {
+// الكتب مخفية عن الطالبات مؤقتًا حتى تعتمد الإدارة النسخة النهائية
+const BOOKS_LIVE = false;
+export const CURRICULUM_BOOKS: Record<string, { stages: CurriculumBook[]; appendix: CurriculumBook }> = !BOOKS_LIVE ? {} : {
   'ef5-a1': {
     stages: [efBook('stage1', 47), efBook('stage2', 46), efBook('stage3', 43)],
     appendix: efBook('appendix', 61)
