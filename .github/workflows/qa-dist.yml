@@ -10,6 +10,7 @@ jobs:
         run: |
           sudo apt-get -qq install -y poppler-utils >/dev/null 2>&1 || true
           curl -sSL -o sb.pdf "https://drive.usercontent.google.com/download?id=15g3BEu_D8Z11imhX8ZJPqcgSyGDnuZKB&export=download&confirm=t"
+          if file -b sb.pdf | grep -qi html; then u=$(grep -oE 'name="uuid" value="[^"]+"' sb.pdf | sed 's/.*value="//;s/"//'); curl -sSL -o sb.pdf "https://drive.usercontent.google.com/download?id=15g3BEu_D8Z11imhX8ZJPqcgSyGDnuZKB&export=download&confirm=t&uuid=$u"; fi
           echo "INFO $(stat -c%s sb.pdf) $(file -b sb.pdf | cut -c1-60)"
           n=$(pdfinfo sb.pdf | awk '/^Pages/{print $2}'); echo "PAGES $n"
           for p in $(seq 1 $n); do
