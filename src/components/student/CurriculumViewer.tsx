@@ -14,7 +14,13 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
   const [err, setErr] = useState('');
   const [stage, setStage] = useState(0);
   const [unit, setUnit] = useState<number | null>(null);
-  const [player, setPlayer] = useState<{ kind: 'audio' | 'video' | 'book'; id: string; label: string } | null>(null);
+  const [player, setPlayerRaw] = useState<{ kind: 'audio' | 'video' | 'book'; id: string; label: string } | null>(null);
+  // الصوت يُشغَّل مباشرة في الموقع؛ إن تعذّر نعود لمشغّل Drive
+  const [audioFail, setAudioFail] = useState(false);
+  const setPlayer = (p: typeof player) => {
+    setAudioFail(false);
+    setPlayerRaw(p);
+  };
 
   useEffect(() => {
     curriculumService
@@ -53,6 +59,17 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
             <span>{player.label}</span>
             <button onClick={() => setPlayer(null)} title={tr('Close', 'إغلاق')}><X className="w-4 h-4" /></button>
           </div>
+          {player.kind === 'audio' && !audioFail ? (
+            <audio
+              key={player.id}
+              controls
+              autoPlay
+              preload="auto"
+              src={`https://drive.usercontent.google.com/download?id=${player.id}&export=download`}
+              onError={() => setAudioFail(true)}
+              className="w-full"
+            />
+          ) : (
           <iframe
             key={player.id}
             src={drivePreview(player.id)}
@@ -61,6 +78,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, isAr }) => {
             allowFullScreen
             title={player.label}
           />
+          )}
         </div>
       )}
 
