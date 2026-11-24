@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, Auth } from 'firebase/auth';
+import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserPopupRedirectResolver, Auth } from 'firebase/auth';
 import { getFirestore, initializeFirestore, doc, getDocFromServer, Firestore } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -26,7 +26,14 @@ let authInstance: Auth;
 try {
   // localStorage أولًا: IndexedDB يتجمّد في متصفحات التطبيقات فلا يكتمل الدخول بعد إنشاء الحساب.
   // من كان دخوله محفوظًا في IndexedDB يُنقل تلقائيًا ولا يخرج من حسابه.
-  authInstance = initializeAuth(app, { persistence: [browserLocalPersistence, indexedDBLocalPersistence] });
+  // نافذة Google تُجهَّز مسبقًا حتى تُفتح فورًا عند الضغط (وإلا يحجبها المتصفح)،
+  // إلا داخل متصفحات التطبيقات حيث لا يعمل الدخول بجوجل أصلًا وقد تُجمّد التسجيل بالبريد
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+  const inAppBrowser = /Telegram|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Messenger|Snapchat|TikTok|musical_ly|BytedanceWebview|Line\/|Twitter|WhatsApp|; wv\)/i.test(ua);
+  authInstance = initializeAuth(app, {
+    persistence: [browserLocalPersistence, indexedDBLocalPersistence],
+    ...(inAppBrowser ? {} : { popupRedirectResolver: browserPopupRedirectResolver })
+  });
 } catch {
   authInstance = getAuth(app);
 }
