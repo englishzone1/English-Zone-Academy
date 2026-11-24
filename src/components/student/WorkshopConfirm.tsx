@@ -57,8 +57,8 @@ export const WorkshopConfirm: React.FC<{ isAr: boolean; name: string; onLogout: 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" dir="rtl" style={{ background: tint(page.color) }}>
       <CompleteProfile isAr={isAr} />
-      <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-[#e3d2cb] space-y-5 text-center">
-        {page.poster && <img src={page.poster} alt={page.title} className="w-40 h-40 mx-auto rounded-2xl object-cover border border-[#e3d2cb]" />}
+      <div className="w-full max-w-lg bg-white rounded-3xl p-4 sm:p-8 shadow-xl border border-[#e3d2cb] space-y-5 text-center">
+        {page.poster && <img src={page.poster} alt={page.title} className="w-full h-auto rounded-2xl shadow-md border border-[#e3d2cb]" />}
         <div className="space-y-1">
           <p className="text-xs font-bold" style={{ color: page.color }}>ورشة مجانية تفاعلية</p>
           <h1 className="text-2xl font-extrabold text-[#2b1d1d]">{page.title}</h1>
