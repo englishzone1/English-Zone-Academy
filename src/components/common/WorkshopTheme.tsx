@@ -12,14 +12,21 @@ export const WS_THEMES: { id: WsTheme; label: string; swatch: string }[] = [
 export const wsVars = (theme: WsTheme | undefined, accent: string, soft: string): React.CSSProperties =>
   (theme === 'blue'
     ? {
-        '--wc': '#3b8cff',
-        '--wl': 'rgba(60,140,255,.16)',
-        '--card': 'rgba(6,22,60,.62)',
+        '--wc': '#5fb2ff',
+        '--wl': 'rgba(10,40,110,.35)',
+        '--card': 'rgba(4,14,40,.28)',
         '--ink': '#ffffff',
-        '--muted': '#a9cdf5',
-        '--line': 'rgba(150,205,255,.32)',
-        '--btn': '#2f7bff',
-        '--btnInk': '#ffffff'
+        '--muted': '#a9d3ff',
+        '--line': 'rgba(150,205,255,.35)',
+        '--btn': 'linear-gradient(180deg,#3d8bff,#1a5fd6)',
+        '--btnInk': '#ffffff',
+        '--chipBg': 'rgba(20,60,140,.25)',
+        '--chipLine': 'rgba(150,205,255,.7)',
+        '--chipInk': '#d9ecff',
+        '--box': 'rgba(10,40,110,.35)',
+        '--boxLine': 'rgba(150,205,255,.55)',
+        '--accent2': '#8fc4ff',
+        '--glow': '0 0 24px rgba(90,170,255,.85), 0 0 60px rgba(40,120,255,.55)'
       }
     : {
         '--wc': accent,
@@ -29,7 +36,14 @@ export const wsVars = (theme: WsTheme | undefined, accent: string, soft: string)
         '--muted': '#6b6f7b',
         '--line': '#e5e7ee',
         '--btn': accent,
-        '--btnInk': '#ffffff'
+        '--btnInk': '#ffffff',
+        '--chipBg': accent,
+        '--chipLine': accent,
+        '--chipInk': '#ffffff',
+        '--box': soft,
+        '--boxLine': 'transparent',
+        '--accent2': accent,
+        '--glow': 'none'
       }) as React.CSSProperties;
 
 // نقاط الضوء (ثابتة حتى لا تتغير بين التحميلات)
@@ -47,7 +61,7 @@ export const WsBackdrop: React.FC<{ theme?: WsTheme }> = ({ theme }) => {
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse at 50% 30%, rgba(64,150,255,.50) 0%, rgba(20,70,170,.32) 30%, rgba(3,10,26,0) 65%),' +
+            'radial-gradient(ellipse at 50% 32%, rgba(64,150,255,.58) 0%, rgba(20,70,170,.36) 28%, rgba(3,10,26,0) 62%),' +
             'radial-gradient(ellipse at 15% 110%, rgba(0,190,255,.22) 0%, rgba(3,10,26,0) 45%),' +
             'radial-gradient(ellipse at 90% -10%, rgba(80,110,255,.28) 0%, rgba(3,10,26,0) 45%),' +
             'linear-gradient(180deg,#020714 0%,#061638 50%,#020714 100%)'

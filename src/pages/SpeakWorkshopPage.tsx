@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { copyText } from '../utils/copyText';
-import { CalendarDays, Clock, Hourglass, CheckCircle2, Award } from 'lucide-react';
+import { CalendarDays, Clock, Hourglass, Award } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { sendPasswordResetEmail } from 'firebase/auth';
@@ -192,8 +192,8 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
 
         <div className="bg-[var(--card)] backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl border border-[var(--line)] space-y-5">
           <div className="space-y-2 text-center">
-            <span className="inline-block px-4 py-1 rounded-full bg-[var(--wc)] text-white text-xs font-bold">ورشة مجانية تفاعلية</span>
-            <h1 className="text-3xl font-extrabold text-[var(--ink)]">{W.titleAr}</h1>
+            <span className="inline-block px-5 py-1.5 rounded-full bg-[var(--chipBg)] text-[var(--chipInk)] border-[1.5px] border-[var(--chipLine)] text-xs font-bold">ورشة مجانية تفاعلية</span>
+            <h1 className="text-4xl font-extrabold text-[var(--ink)]" style={{ textShadow: 'var(--glow)' }}>{W.titleAr}</h1>
             <p className="text-sm text-[var(--muted)]">{W.subtitleAr}</p>
           </div>
 
@@ -203,7 +203,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
               { icon: Clock, t: W.timeAr },
               { icon: Hourglass, t: `المدة: ${W.durationAr}` }
             ].map((x) => (
-              <div key={x.t} className="p-3 rounded-2xl bg-[var(--wl)]">
+              <div key={x.t} className="p-3 rounded-2xl bg-[var(--box)] border border-[var(--boxLine)]">
                 <x.icon className="w-5 h-5 mx-auto mb-1 text-[var(--wc)]" />
                 <p className="text-[11px] font-bold text-[var(--ink)] leading-snug">{x.t}</p>
               </div>
@@ -211,11 +211,11 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
           </div>
 
           <div>
-            <p className="font-bold text-[var(--wc)] mb-2">ماذا {'{ستتعلم|ستتعلمين}'} في الورشة؟</p>
+            <p className="font-bold text-[var(--accent2)] mb-2">ماذا {'{ستتعلم|ستتعلمين}'} في الورشة؟</p>
             <ul className="space-y-1.5">
               {W.learnAr.map((l) => (
                 <li key={l} className="flex items-center gap-2 text-sm text-[var(--ink)]">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--wc)] shrink-0" />
+                  <span className="text-[var(--wc)] shrink-0">◆</span>
                   {l}
                 </li>
               ))}
@@ -233,7 +233,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
                 mark();
                 navigate('portal');
               }}
-              className="w-full py-3.5 rounded-xl bg-[var(--wc)] hover:opacity-90 text-white text-sm font-bold"
+              className="w-full py-3.5 rounded-xl [background:var(--btn)] hover:opacity-90 text-white text-sm font-bold"
             >
               المتابعة للتسجيل في هذه الورشة
             </button>
@@ -292,7 +292,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
             <form onSubmit={viaEmail} className="space-y-2">
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} placeholder="البريد الإلكتروني" autoCapitalize="off" autoCorrect="off" className={inp} dir="ltr" />
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="كلمة مرور (6 أحرف على الأقل)" className={inp} dir="ltr" />
-              <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-[var(--wc)] hover:opacity-90 text-white text-sm font-bold disabled:opacity-50">
+              <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl [background:var(--btn)] hover:opacity-90 text-white text-sm font-bold disabled:opacity-50 shadow-[0_0_24px_rgba(60,140,255,.35)]">
                 {busy ? '...' : 'التسجيل في الورشة'}
               </button>
             </form>

@@ -159,7 +159,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
               <p className="text-sm text-[var(--muted)]">{tr('The certificate design will be available soon.', 'تصميم الشهادة سيتوفر قريبًا.')}</p>
             )}
             <div className="flex flex-wrap gap-2">
-              <button onClick={download} disabled={!ws.template} className="px-5 py-2.5 rounded-xl bg-[var(--btn)] text-[var(--btnInk)] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+              <button onClick={download} disabled={!ws.template} className="px-5 py-2.5 rounded-xl [background:var(--btn)] text-[var(--btnInk)] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
                 <Download className="w-4 h-4 text-[#D4AF37]" />
                 {tr('Download image', 'تحميل الشهادة (صورة)')}
               </button>
@@ -218,7 +218,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
               <textarea rows={4} value={form.feedback} onChange={(e) => setForm({ ...form, feedback: e.target.value })} maxLength={2000} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm text-[#1f2433] bg-white" />
             </div>
             {error && <p className="text-xs text-red-600">{error}</p>}
-            <button type="submit" disabled={sending} className="w-full py-3.5 rounded-xl bg-[var(--btn)] text-[var(--btnInk)] font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60">
+            <button type="submit" disabled={sending} className="w-full py-3.5 rounded-xl [background:var(--btn)] text-[var(--btnInk)] font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Award className="w-4 h-4 text-[#D4AF37]" />}
               {tr('Get my certificate', '{احصل|احصلي} على {شهادتك|شهادتكِ}')}
             </button>
