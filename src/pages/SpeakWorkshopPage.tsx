@@ -183,7 +183,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
     );
 
   return (
-    <div className="relative min-h-screen py-6 px-4" dir="rtl" style={wsVars(P.theme, P.color, tint(P.color))}>
+    <div className={`relative min-h-screen py-6 px-4 ${P.theme === 'blue' ? '' : 'ez-light'}`} dir="rtl" style={wsVars(P.theme, P.color, tint(P.color))}>
       <WsBackdrop theme={P.theme} />
       <div className="relative z-10 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <div className="space-y-4">

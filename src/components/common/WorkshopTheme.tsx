@@ -54,7 +54,7 @@ const BOKEH = [
 ];
 
 export const WsBackdrop: React.FC<{ theme?: WsTheme }> = ({ theme }) => {
-  if (theme !== 'blue') return <div className="fixed inset-0 z-0 bg-white" aria-hidden />;
+  if (theme !== 'blue') return <div className="fixed inset-0 z-0 ez-light" style={{ background: '#ffffff' }} aria-hidden />;
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden style={{ background: '#030a1a' }}>
       <div

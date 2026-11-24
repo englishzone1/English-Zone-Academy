@@ -128,7 +128,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
   }
 
   return (
-    <div className="relative min-h-screen py-10" dir={isAr ? 'rtl' : 'ltr'} style={wsVars(ws.theme, '#061638', '#eef2f9')}>
+    <div className={`relative min-h-screen py-10 ${ws.theme === 'blue' ? '' : 'ez-light'}`} dir={isAr ? 'rtl' : 'ltr'} style={wsVars(ws.theme, '#061638', '#eef2f9')}>
       <WsBackdrop theme={ws.theme} />
       <div className="relative z-10 max-w-3xl mx-auto px-4 space-y-6">
         <div className="text-center space-y-2">

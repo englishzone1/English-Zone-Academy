@@ -66,7 +66,7 @@ export const WorkshopConfirm: React.FC<{ isAr: boolean; name: string; onLogout: 
     );
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" dir="rtl" style={{ background: tint(page.color) }}>
+    <div className="ez-light min-h-screen flex items-center justify-center p-4" dir="rtl" style={{ background: tint(page.color) }}>
       <CompleteProfile isAr={isAr} />
       <div className="w-full max-w-lg bg-white rounded-3xl p-4 sm:p-8 shadow-xl border border-[#e3d2cb] space-y-5 text-center">
         {page.poster && <img src={page.poster} alt={page.title} className="w-full h-auto rounded-2xl shadow-md border border-[#e3d2cb]" />}
