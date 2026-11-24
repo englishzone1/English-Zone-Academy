@@ -14,10 +14,12 @@ export const OfferBubble: React.FC<Props> = ({ language, navigate }) => {
   const offer = PROGRAM_CATEGORIES.find((p) => p.monthlyStartingPrice && p.offerNoteAr);
   const ar = language === 'ar';
   const [open, setOpen] = useState(false);
+  // زر ✕ يخفي الأيقونة حتى تحديث الصفحة
+  const [hidden, setHidden] = useState(false);
 
   // لا تُفتح تلقائيًا: تبقى الأيقونة ظاهرة ومن يريد يضغط عليها
 
-  if (!offer) return null;
+  if (!offer || hidden) return null;
 
   const close = () => {
     setOpen(false);
@@ -27,14 +29,24 @@ export const OfferBubble: React.FC<Props> = ({ language, navigate }) => {
 
   if (!open) {
     return (
+      <div className={`fixed ${side} top-1/3 z-[55]`}>
+      <button
+        onClick={() => setHidden(true)}
+        className={`absolute -top-2.5 ${ar ? '-left-2.5' : '-right-2.5'} z-10 w-6 h-6 rounded-full bg-white text-[#0A192F] border border-[#D4AF37] shadow flex items-center justify-center`}
+        aria-label="hide"
+        title={ar ? 'إخفاء' : 'Hide'}
+      >
+        <X className="w-3.5 h-3.5" />
+      </button>
       <button
         onClick={() => setOpen(true)}
-        className={`fixed ${side} top-1/3 z-[55] bg-gradient-to-b from-[#D4AF37] to-[#AA820A] text-[#0A192F] font-extrabold text-xs px-2 py-3 shadow-xl border border-[#0A192F]/20 flex flex-col items-center gap-1 ${ar ? 'rounded-l-xl' : 'rounded-r-xl'}`}
+        className={` bg-gradient-to-b from-[#D4AF37] to-[#AA820A] text-[#0A192F] font-extrabold text-xs px-2 py-3 shadow-xl border border-[#0A192F]/20 flex flex-col items-center gap-1 ${ar ? 'rounded-l-xl' : 'rounded-r-xl'}`}
         style={{ writingMode: 'vertical-rl' }}
       >
         <Gift className="w-4 h-4" style={{ writingMode: 'horizontal-tb' }} />
         {ar ? 'العرض الحالي' : 'Current offer'}
       </button>
+      </div>
     );
   }
 
