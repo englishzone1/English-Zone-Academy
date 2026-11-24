@@ -3,6 +3,7 @@ import { CalendarDays, Clock, Hourglass, CheckCircle2, Award } from 'lucide-reac
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { GoogleSignInButton, OrDivider, googleErrorMessage } from '../components/common/GoogleSignInButton';
+import { validRealName } from '../components/student/CompleteProfile';
 
 // صفحة الورشة المجانية «تحدّث بالإنجليزية وابنِ ثقتك» برابط مستقل (/workshop):
 // تسجيل حساب في الأكاديمية ← إكمال البيانات (الاسم، الجنس، الدولة، العمر، الهاتف) ← «تم» ← نافذة الانضمام لقناة تيليغرام
@@ -21,13 +22,30 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const { registerVisitor, isAuthenticated } = useAuth();
+  const [fullName, setFullName] = useState('');
+  const [age, setAge] = useState('');
+  const [copied, setCopied] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const W = SPEAK_WORKSHOP;
 
-  const inApp = typeof navigator !== 'undefined' && /Instagram|FBAN|FBAV|FB_IAB|FBIOS|Snapchat|TikTok|musical_ly|BytedanceWebview|Line\/|Twitter|WhatsApp|; wv\)/i.test(navigator.userAgent || '');
+  // متصفحات داخل التطبيقات (تيليغرام، واتساب، إنستغرام، فيسبوك…): Google يمنع الدخول منها
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+  const inApp = /Telegram|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Messenger|Snapchat|TikTok|musical_ly|BytedanceWebview|Line\/|Twitter|WhatsApp|; wv\)/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+  const pageUrl = typeof window !== 'undefined' ? `${window.location.origin}/workshop` : '';
+  const chromeIntent = pageUrl ? `intent://${pageUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end` : '';
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(pageUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 3000);
+    } catch {
+      /* ignore */
+    }
+  };
 
   useEffect(() => {
     document.title = `${W.titleAr} | English Zone Academy`;
@@ -54,16 +72,33 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
         return tr('Password must be at least 6 characters.', 'كلمة المرور 6 أحرف على الأقل.');
       case 'auth/invalid-email':
         return tr('The email address is not valid.', 'البريد الإلكتروني غير صحيح.');
-      default:
-        return googleErrorMessage(code, isAr) || '';
+      default: {
+        const m = googleErrorMessage(code, isAr) || '';
+        return m && code && code !== 'unknown' ? `${m} (${code})` : m;
+      }
     }
   };
 
+  // الاسم والعمر قبل التسجيل (يُملآن تلقائيًا في نموذج البيانات بعده)
+  const checkBasics = () => {
+    if (!validRealName(fullName)) {
+      setError('{اكتب|اكتبي} {اسمك|اسمكِ} الكامل (الاسم والعائلة) أولًا.');
+      return false;
+    }
+    if (!(Number(age) > 0)) {
+      setError('{اكتب|اكتبي} {عمرك|عمركِ} أولًا.');
+      return false;
+    }
+    return true;
+  };
+
   const viaGoogle = async () => {
+    setError('');
+    if (!checkBasics()) return;
     mark();
     setError('');
     setBusy(true);
-    const r = await registerVisitor({ name: '', google: true });
+    const r = await registerVisitor({ name: fullName.trim(), age: age.trim(), google: true });
     setBusy(false);
     if (r.success) navigate('portal');
     else setError(errText(r.code));
@@ -72,13 +107,14 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
   const viaEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!checkBasics()) return;
     if (!email.trim() || password.length < 6) {
       setError(tr('Write your email and a password (6+ characters).', '{اكتب|اكتبي} {بريدك|بريدكِ} وكلمة مرور من 6 أحرف على الأقل.'));
       return;
     }
     mark();
     setBusy(true);
-    const r = await registerVisitor({ name: '', email, password });
+    const r = await registerVisitor({ name: fullName.trim(), age: age.trim(), email, password });
     setBusy(false);
     if (r.success) navigate('portal');
     else setError(errText(r.code));
@@ -134,10 +170,29 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
               {'{تنشئ|تنشئين}'} حسابًا مجانيًا في English Zone Academy، ثم {'{تكتب|تكتبين}'} {'{اسمك|اسمكِ}'} وبياناتك، وبعدها يظهر لك رابط قناة تيليغرام التي نرسل فيها رابط الورشة وموعدها.
             </p>
             {inApp && (
-              <p className="text-[11px] font-bold text-[#a0522d] bg-[#fff4e5] rounded-xl p-2 text-center">
-                إذا لم يعمل التسجيل بحساب Google من هنا، {'{افتح|افتحي}'} الرابط في متصفح Chrome أو Safari، أو {'{سجّل|سجّلي}'} بالبريد وكلمة المرور.
-              </p>
+              <div className="rounded-2xl border-2 border-[#a0522d] bg-[#fff4e5] p-3 space-y-2 text-center">
+                <p className="text-xs font-bold text-[#7a3a14]">
+                  {'{أنت|أنتِ}'} داخل متصفح التطبيق، وGoogle لا يسمح بالتسجيل بجيميل من هنا. {'{افتح|افتحي}'} الرابط في المتصفح أولًا:
+                </p>
+                {isAndroid ? (
+                  <a href={chromeIntent} className="block w-full py-3 rounded-xl bg-[#1a73e8] text-white text-sm font-bold">
+                    🌐 فتح في Chrome
+                  </a>
+                ) : (
+                  <p className="text-[11px] text-[#7a3a14]">
+                    {'{اضغط|اضغطي}'} على النقاط الثلاث ⋯ أو زر المشاركة أعلى الشاشة، ثم «فتح في Safari» أو «Open in browser».
+                  </p>
+                )}
+                <button type="button" onClick={copyLink} className="w-full py-2 rounded-xl bg-white border border-[#a0522d] text-[#7a3a14] text-xs font-bold">
+                  {copied ? '✓ تم نسخ الرابط، {الصقه|الصقيه} في المتصفح' : '📋 نسخ رابط الورشة'}
+                </button>
+                <p className="text-[10px] text-[#7a3a14]">أو {'{سجّل|سجّلي}'} بالبريد وكلمة المرور في الأسفل، فهذا يعمل من أي مكان.</p>
+              </div>
             )}
+            <div className="grid grid-cols-3 gap-2">
+              <input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="الاسم الكامل" className={`${inp} col-span-2`} />
+              <input value={age} onChange={(e) => setAge(e.target.value.replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder="العمر" className={inp} />
+            </div>
             <GoogleSignInButton onClick={viaGoogle} disabled={busy} isAr={isAr} />
             <OrDivider isAr={isAr} />
             <form onSubmit={viaEmail} className="space-y-2">
