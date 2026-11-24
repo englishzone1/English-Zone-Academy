@@ -164,7 +164,7 @@ export const AdminChatFaq: React.FC<Props> = ({ onNotice }) => {
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-5" dir="rtl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">المساعد الآلي</h2>
+          <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">المساعد الآلي</h2>
           <p className="text-xs text-gray-500">
             زر المساعد يظهر في الموقع: تضغط الزائرة على سؤال فيظهر جوابه فورًا، ومجاني بالكامل. اكتبي <b dir="ltr">{PRICES_TOKEN}</b> في أي جواب
             لتظهر مكانها أسعار المستويات المحفوظة في «الأسعار والمراحل».
@@ -175,7 +175,7 @@ export const AdminChatFaq: React.FC<Props> = ({ onNotice }) => {
             <Sparkles className="w-4 h-4 text-[#D4AF37]" />
             إضافة الأسئلة المقترحة
           </button>
-          <button onClick={add} className="px-3 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
+          <button onClick={add} className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
             <Plus className="w-4 h-4" />
             سؤال جديد
           </button>
@@ -219,7 +219,7 @@ export const AdminChatFaq: React.FC<Props> = ({ onNotice }) => {
                 <button onClick={() => remove(f)} disabled={busy} className="p-1.5 rounded-lg border border-red-200 text-red-600" title="حذف">
                   <Trash2 className="w-4 h-4" />
                 </button>
-                <button onClick={() => save(f)} disabled={busy} className="px-3 py-1.5 rounded-lg bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1 disabled:opacity-50">
+                <button onClick={() => save(f)} disabled={busy} className="px-3 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1 disabled:opacity-50">
                   <Save className="w-4 h-4" />
                   حفظ
                 </button>

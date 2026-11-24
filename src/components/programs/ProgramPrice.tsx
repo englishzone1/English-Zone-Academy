@@ -17,7 +17,7 @@ export const ProgramPrice: React.FC<Props> = ({ prog, language, dark, className 
   return (
     <div className={`rounded-2xl border-2 border-[#D4AF37] p-4 ${dark ? 'bg-white/10' : 'bg-white'} ${className}`}>
       <div className="flex items-baseline flex-wrap gap-x-3 gap-y-1">
-        <span className={`text-3xl font-extrabold ${dark ? 'text-[#F3E5AB]' : 'text-[#061638]'}`}>
+        <span className={`text-3xl font-extrabold ${dark ? 'text-[#F3E5AB]' : 'text-[#0A192F]'}`}>
           ${prog.monthlyStartingPrice}
         </span>
         <span className={`text-sm font-bold ${dark ? 'text-gray-200' : 'text-gray-600'}`}>{ar ? '/ شهريًا' : '/ month'}</span>
@@ -32,7 +32,7 @@ export const ProgramPrice: React.FC<Props> = ({ prog, language, dark, className 
         </div>
       )}
       {(ar ? prog.certNoteAr : prog.certNoteEn) && (
-        <div className={`mt-2 flex items-center gap-1.5 text-sm font-extrabold ${dark ? 'text-[#F3E5AB]' : 'text-[#061638]'}`}>
+        <div className={`mt-2 flex items-center gap-1.5 text-sm font-extrabold ${dark ? 'text-[#F3E5AB]' : 'text-[#0A192F]'}`}>
           <Award className="w-4 h-4 text-[#D4AF37]" />
           {ar ? prog.certNoteAr : prog.certNoteEn}
         </div>

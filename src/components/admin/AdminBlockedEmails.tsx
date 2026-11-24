@@ -38,7 +38,7 @@ export const AdminBlockedEmails: React.FC<{ isAr: boolean; onNotice: (m: string)
   return (
     <div className="bg-white rounded-3xl p-5 border border-red-200 shadow-sm space-y-3">
       <div>
-        <h3 className="font-bold text-[#061638] flex items-center gap-2">
+        <h3 className="font-bold text-[#0A192F] flex items-center gap-2">
           <Ban className="w-4 h-4 text-red-600" />
           {tr('Blocked emails', 'البريد المحظور')}
         </h3>

@@ -73,7 +73,7 @@ export const AdminCurricula: React.FC<Props> = ({ isAr, onNotice }) => {
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
       <div>
-        <h2 className="font-serif-luxury font-bold text-xl text-[#061638] flex items-center gap-2">
+        <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F] flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-[#D4AF37]" />
           {tr('Curricula', 'المناهج')}
         </h2>
@@ -86,13 +86,13 @@ export const AdminCurricula: React.FC<Props> = ({ isAr, onNotice }) => {
       </div>
 
       <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/40 space-y-3">
-        <h3 className="font-bold text-sm text-[#061638]">{isAr ? CURRICULA[0].titleAr : CURRICULA[0].titleEn}</h3>
+        <h3 className="font-bold text-sm text-[#0A192F]">{isAr ? CURRICULA[0].titleAr : CURRICULA[0].titleEn}</h3>
         <p className="text-xs text-gray-600">
           {doc
             ? tr(`Installed: ${tracks} recordings, ${videos} videos.`, `مثبّت: ${tracks} تسجيلًا صوتيًا و${videos} فيديو.`)
             : tr('Not installed yet.', 'غير مثبّت بعد.')}
         </p>
-        <button onClick={install} disabled={busy} className="px-4 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+        <button onClick={install} disabled={busy} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
           <Download className="w-4 h-4" />
           {doc ? tr('Update recordings & videos', 'تحديث الصوتيات والفيديوهات') : tr('Install the curriculum', 'تثبيت المنهج')}
         </button>
@@ -100,7 +100,7 @@ export const AdminCurricula: React.FC<Props> = ({ isAr, onNotice }) => {
 
       {doc && (
         <div className="space-y-3">
-          <h3 className="font-bold text-sm text-[#061638]">{tr('Stage books (Drive links)', 'كتب المراحل (روابط Drive)')}</h3>
+          <h3 className="font-bold text-sm text-[#0A192F]">{tr('Stage books (Drive links)', 'كتب المراحل (روابط Drive)')}</h3>
           {doc.stages.map((s) => (
             <div key={s.key}>
               <label className="block text-[11px] font-bold text-gray-600 mb-1">
@@ -115,7 +115,7 @@ export const AdminCurricula: React.FC<Props> = ({ isAr, onNotice }) => {
               />
             </div>
           ))}
-          <button onClick={saveBooks} disabled={busy} className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#061638] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+          <button onClick={saveBooks} disabled={busy} className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
             <Save className="w-4 h-4" />
             {tr('Save books', 'حفظ الكتب')}
           </button>

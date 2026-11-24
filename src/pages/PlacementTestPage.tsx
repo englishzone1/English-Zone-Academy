@@ -108,7 +108,7 @@ export const PlacementTestPage: React.FC<PlacementTestPageProps> = ({ navigate }
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             {t.placement.badge}
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#061638] mt-1">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-1">
             {t.placement.title}
           </h1>
           <p className="text-sm text-gray-600 mt-2">
@@ -122,10 +122,10 @@ export const PlacementTestPage: React.FC<PlacementTestPageProps> = ({ navigate }
           <div className="bg-white rounded-3xl p-6 sm:p-10 border border-[#D4AF37]/30 shadow-xl">
             {/* Top progress & level indicator */}
             <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-              <span className="font-bold text-[#061638]">
+              <span className="font-bold text-[#0A192F]">
                 {t.placement.questionCount} {currentIndex + 1} {t.placement.of} {totalQuestions}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-[#061638] text-[#F3E5AB] font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#0A192F] text-[#F3E5AB] font-bold">
                 Assessing {currentQ.level} Level
               </span>
             </div>
@@ -140,7 +140,7 @@ export const PlacementTestPage: React.FC<PlacementTestPageProps> = ({ navigate }
 
             {/* Question Text */}
             <div className="mb-8">
-              <h2 className="font-serif-luxury font-bold text-lg sm:text-xl text-[#061638] leading-snug">
+              <h2 className="font-serif-luxury font-bold text-lg sm:text-xl text-[#0A192F] leading-snug">
                 {language === 'ar' ? currentQ.questionAr : currentQ.questionEn}
               </h2>
             </div>
@@ -156,13 +156,13 @@ export const PlacementTestPage: React.FC<PlacementTestPageProps> = ({ navigate }
                     onClick={() => handleSelectOption(idx)}
                     className={`w-full p-4 rounded-2xl text-left rtl:text-right border-2 transition-all flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#061638] font-bold shadow-sm'
+                        ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#0A192F] font-bold shadow-sm'
                         : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-[#FAF8F5]'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
-                        isSelected ? 'bg-[#061638] text-[#F3E5AB]' : 'bg-gray-100 text-gray-500'
+                        isSelected ? 'bg-[#0A192F] text-[#F3E5AB]' : 'bg-gray-100 text-gray-500'
                       }`}>
                         {String.fromCharCode(65 + idx)}
                       </span>
@@ -196,7 +196,7 @@ export const PlacementTestPage: React.FC<PlacementTestPageProps> = ({ navigate }
                 type="button"
                 onClick={handleNext}
                 disabled={selectedAnswers[currentQ.id] === undefined}
-                className="px-7 py-3 rounded-xl font-bold text-sm bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] disabled:opacity-40 transition-all flex items-center gap-2"
+                className="px-7 py-3 rounded-xl font-bold text-sm bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] disabled:opacity-40 transition-all flex items-center gap-2"
               >
                 <span>{currentIndex === totalQuestions - 1 ? t.placement.completeTest : t.placement.submitAnswer}</span>
                 <ArrowRight className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
@@ -217,12 +217,12 @@ export const PlacementTestPage: React.FC<PlacementTestPageProps> = ({ navigate }
             {/* Score & Recommended Level Badge */}
             <div className="p-6 rounded-2xl bg-[#FAF8F5] border border-gray-200 inline-block max-w-md mx-auto w-full">
               <div className="text-xs text-gray-500 mb-1">{t.placement.yourScore}</div>
-              <div className="text-3xl font-extrabold text-[#061638] font-serif-luxury">
+              <div className="text-3xl font-extrabold text-[#0A192F] font-serif-luxury">
                 {result?.score} <span className="text-lg text-gray-400 font-normal">/ {totalQuestions}</span>
               </div>
               <div className="mt-3 pt-3 border-t border-gray-200">
                 <span className="text-xs font-semibold text-[#AA820A] block">{t.placement.recommendedLevel}</span>
-                <span className="font-serif-luxury font-bold text-2xl text-[#061638] block mt-1">
+                <span className="font-serif-luxury font-bold text-2xl text-[#0A192F] block mt-1">
                   {language === 'ar' ? result?.labelAr : result?.labelEn}
                 </span>
               </div>
@@ -242,7 +242,7 @@ export const PlacementTestPage: React.FC<PlacementTestPageProps> = ({ navigate }
                     navigate('register');
                   }
                 }}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] hover:brightness-110 shadow-lg transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] hover:brightness-110 shadow-lg transition-all flex items-center justify-center gap-2"
               >
                 <GraduationCap className="w-5 h-5" />
                 <span>{t.placement.proceedToRegister} ({result?.recommended})</span>

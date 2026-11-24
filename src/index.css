@@ -2,9 +2,9 @@
 
 @layer base {
   :root {
-    --brand-navy: #061638;
-    --brand-navy-deep: #020714;
-    --brand-navy-light: #123A8C;
+    --brand-navy: #0A192F;
+    --brand-navy-deep: #060D1A;
+    --brand-navy-light: #162B4D;
     --brand-gold: #D4AF37;
     --brand-gold-light: #F3E5AB;
     --brand-gold-dark: #AA820A;
@@ -37,7 +37,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #030b1f;
+  background: #f1ede6;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -53,13 +53,13 @@
 .luxury-card {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(212, 175, 55, 0.18);
-  box-shadow: 0 10px 30px -10px rgba(6, 22, 56, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(10, 25, 47, 0.08);
 }
 
 .luxury-card-dark {
-  background: linear-gradient(135deg, #061638 0%, #0B2A6B 100%);
+  background: linear-gradient(135deg, #0A192F 0%, #0F2042 100%);
   border: 1px solid rgba(212, 175, 55, 0.25);
-  box-shadow: 0 15px 35px -10px rgba(2, 7, 20, 0.5);
+  box-shadow: 0 15px 35px -10px rgba(6, 13, 26, 0.5);
 }
 
 .gold-gradient-text {
@@ -82,108 +82,4 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .ez-float-glow { animation: none; }
-}
-
-/* الأزرق السينمائي (مثل إعلان Love to Learn English): كل خلفية داكنة في المنصة */
-.bg-\[\#061638\] {
-  background-color: #061638;
-  background-image:
-    radial-gradient(ellipse at 50% 35%, rgba(64, 150, 255, 0.58) 0%, rgba(20, 70, 170, 0.36) 35%, rgba(3, 10, 26, 0) 72%),
-    radial-gradient(ellipse at 12% 115%, rgba(0, 190, 255, 0.18) 0%, rgba(3, 10, 26, 0) 50%),
-    radial-gradient(ellipse at 92% -15%, rgba(80, 110, 255, 0.26) 0%, rgba(3, 10, 26, 0) 50%),
-    linear-gradient(180deg, #020714 0%, #061638 50%, #020714 100%);
-}
-/* نقاط الضوء (للشريط العلوي والأقسام الكبيرة) */
-.cine-bokeh {
-  background-image:
-    radial-gradient(circle at 8% 30%, rgba(140, 200, 255, 0.45) 0, rgba(140, 200, 255, 0) 7px),
-    radial-gradient(circle at 23% 75%, rgba(140, 200, 255, 0.35) 0, rgba(140, 200, 255, 0) 10px),
-    radial-gradient(circle at 41% 20%, rgba(140, 200, 255, 0.30) 0, rgba(140, 200, 255, 0) 5px),
-    radial-gradient(circle at 58% 80%, rgba(140, 200, 255, 0.40) 0, rgba(140, 200, 255, 0) 8px),
-    radial-gradient(circle at 74% 25%, rgba(140, 200, 255, 0.30) 0, rgba(140, 200, 255, 0) 12px),
-    radial-gradient(circle at 90% 65%, rgba(140, 200, 255, 0.40) 0, rgba(140, 200, 255, 0) 6px),
-    radial-gradient(ellipse at 50% 35%, rgba(64, 150, 255, 0.58) 0%, rgba(20, 70, 170, 0.36) 35%, rgba(3, 10, 26, 0) 72%),
-    radial-gradient(ellipse at 92% -15%, rgba(80, 110, 255, 0.26) 0%, rgba(3, 10, 26, 0) 50%),
-    linear-gradient(180deg, #020714 0%, #061638 50%, #020714 100%) !important;
-}
-
-/* ================= المنصة كلها بالأزرق السينمائي (html.ez-cine) =================
-   تُطفأ بحذف الصنف ez-cine من <html> في index.html.
-   ما داخل .ez-light يبقى بألوانه الفاتحة (صفحات الورش بالمظهر الأبيض…). */
-html.ez-cine body {
-  background: #030a1a !important;
-  color: #e6f0ff;
-}
-html.ez-cine body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 7% 22%, rgba(140, 200, 255, 0.45) 0, rgba(140, 200, 255, 0) 9px),
-    radial-gradient(circle at 18% 64%, rgba(140, 200, 255, 0.35) 0, rgba(140, 200, 255, 0) 14px),
-    radial-gradient(circle at 33% 12%, rgba(140, 200, 255, 0.30) 0, rgba(140, 200, 255, 0) 7px),
-    radial-gradient(circle at 46% 88%, rgba(140, 200, 255, 0.40) 0, rgba(140, 200, 255, 0) 11px),
-    radial-gradient(circle at 61% 38%, rgba(140, 200, 255, 0.25) 0, rgba(140, 200, 255, 0) 16px),
-    radial-gradient(circle at 77% 72%, rgba(140, 200, 255, 0.40) 0, rgba(140, 200, 255, 0) 8px),
-    radial-gradient(circle at 88% 18%, rgba(140, 200, 255, 0.35) 0, rgba(140, 200, 255, 0) 13px),
-    radial-gradient(circle at 95% 52%, rgba(140, 200, 255, 0.30) 0, rgba(140, 200, 255, 0) 6px),
-    radial-gradient(ellipse at 50% 30%, rgba(64, 150, 255, 0.55) 0%, rgba(20, 70, 170, 0.34) 30%, rgba(3, 10, 26, 0) 65%),
-    radial-gradient(ellipse at 15% 110%, rgba(0, 190, 255, 0.22) 0%, rgba(3, 10, 26, 0) 45%),
-    radial-gradient(ellipse at 90% -10%, rgba(80, 110, 255, 0.28) 0%, rgba(3, 10, 26, 0) 45%),
-    conic-gradient(from 200deg at 50% -10%, rgba(120, 190, 255, 0) 0deg, rgba(120, 190, 255, 0.08) 8deg, rgba(120, 190, 255, 0) 16deg, rgba(120, 190, 255, 0.06) 26deg, rgba(120, 190, 255, 0) 34deg, rgba(120, 190, 255, 0.07) 46deg, rgba(120, 190, 255, 0) 56deg),
-    linear-gradient(180deg, #020714 0%, #061638 50%, #020714 100%);
-}
-
-/* الأسطح الفاتحة ← الأزرق السينمائي نفسه (غير شفاف) */
-html.ez-cine :is(.bg-white, .bg-white\/70, .bg-white\/90, .bg-white\/95, .bg-\[\#FAF8F5\], .bg-\[\#FAF8F5\]\/80, .bg-\[\#FAF8F5\]\/50, .bg-gray-50, .bg-\[\#FFFDF9\], .bg-\[\#F8F6F1\], .bg-\[\#F4F8F9\], .bg-\[\#F4F5F7\], .bg-\[\#EFEAE2\], .bg-\[\#F3EDE2\]\/50, .bg-\[\#F3EDE2\]\/60, .bg-slate-100, .bg-amber-50, .bg-amber-50\/50, .bg-sky-50, .bg-\[\#FFF9E6\], .bg-\[\#fff4e5\], .luxury-card):not(.ez-light, .ez-light *) {
-  background-color: #061638 !important;
-  background-image:
-    radial-gradient(ellipse at 50% 30%, rgba(64, 150, 255, 0.45) 0%, rgba(20, 70, 170, 0.28) 35%, rgba(3, 10, 26, 0) 75%),
-    radial-gradient(ellipse at 10% 115%, rgba(0, 190, 255, 0.16) 0%, rgba(3, 10, 26, 0) 50%),
-    radial-gradient(ellipse at 92% -15%, rgba(80, 110, 255, 0.24) 0%, rgba(3, 10, 26, 0) 50%),
-    linear-gradient(180deg, #030b1f 0%, #0a1f4d 50%, #030b1f 100%) !important;
-}
-html.ez-cine :is(.bg-gray-100, .bg-gray-200):not(.ez-light, .ez-light *) {
-  background-color: rgba(60, 120, 220, 0.22);
-}
-/* التدرّجات الفاتحة في خلفيات الأقسام */
-html.ez-cine :is(.from-white, .from-\[\#FAF8F5\], .from-\[\#FFF7E0\]):not(.ez-light, .ez-light *) { --tw-gradient-from: #061638 !important; }
-html.ez-cine :is(.via-\[\#FAF8F5\], .via-\[\#F4EFE6\]):not(.ez-light, .ez-light *) { --tw-gradient-via: #0a1f4d !important; }
-html.ez-cine :is(.to-white, .to-\[\#FAF8F5\], .to-\[\#F3EDE2\]\/60):not(.ez-light, .ez-light *) { --tw-gradient-to: #061638 !important; }
-html.ez-cine :is(.border-gray-100, .border-gray-200, .border-gray-300, .border-gray-200\/80):not(.ez-light, .ez-light *) {
-  border-color: rgba(150, 205, 255, 0.35);
-}
-
-/* النصوص الداكنة ← فاتحة */
-html.ez-cine :is(.text-\[\#061638\], .text-gray-900, .text-gray-800):not(.ez-light, .ez-light *) {
-  color: #ffffff;
-}
-html.ez-cine .text-gray-700:not(.ez-light, .ez-light *) {
-  color: #d6e6ff;
-}
-html.ez-cine :is(.text-gray-600, .text-gray-500):not(.ez-light, .ez-light *) {
-  color: #a9c7ef;
-}
-html.ez-cine .text-gray-400:not(.ez-light, .ez-light *) {
-  color: #7f9cc8;
-}
-html.ez-cine .text-\[\#AA820A\]:not(.ez-light, .ez-light *) {
-  color: #e6c766;
-}
-
-/* الأزرار الذهبية تبقى بنصها الداكن */
-html.ez-cine :is(.bg-\[\#D4AF37\], .bg-\[\#F3E5AB\], .bg-\[\#FFF8E1\], .from-\[\#D4AF37\]) :is(.text-\[\#061638\]),
-html.ez-cine :is(.bg-\[\#D4AF37\], .bg-\[\#F3E5AB\], .bg-\[\#FFF8E1\], .from-\[\#D4AF37\]).text-\[\#061638\] {
-  color: #061638 !important;
-}
-
-/* حقول الكتابة: بيضاء بنص داكن لتبقى واضحة */
-html.ez-cine :is(input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']), textarea, select):not(.ez-light *) {
-  background-color: #ffffff !important;
-  color: #1f2433 !important;
-}
-html.ez-cine select option {
-  color: #1f2433;
 }

@@ -57,7 +57,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             Official Accreditation & Credentials
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#061638] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
             {t.certificates.sectionTitle}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -68,7 +68,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
         {/* Verification Input Box */}
         <div className="max-w-2xl mx-auto mt-10 bg-white p-6 rounded-3xl border border-[#D4AF37]/40 shadow-lg">
           <form onSubmit={handleVerify} className="space-y-4">
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#061638]">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F]">
               {t.certificates.verifyPrompt}
             </label>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -84,7 +84,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
               </div>
               <button
                 type="submit"
-                className="px-6 py-3 rounded-xl font-bold text-sm bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] transition-colors flex items-center justify-center gap-2"
+                className="px-6 py-3 rounded-xl font-bold text-sm bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] transition-colors flex items-center justify-center gap-2"
               >
                 <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
                 <span>{t.certificates.verifyButton}</span>
@@ -106,11 +106,11 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2">
                     <div>
                       <span className="text-gray-400 block">{language === 'ar' ? 'الطالب:' : 'Student:'}</span>
-                      <span className="font-bold text-[#061638]">{verifiedRecord.studentName}</span>
+                      <span className="font-bold text-[#0A192F]">{verifiedRecord.studentName}</span>
                     </div>
                     <div>
                       <span className="text-gray-400 block">{language === 'ar' ? 'المستوى:' : 'Level:'}</span>
-                      <span className="font-bold text-[#061638]">{verifiedRecord.level}</span>
+                      <span className="font-bold text-[#0A192F]">{verifiedRecord.level}</span>
                     </div>
                     <div>
                       <span className="text-gray-400 block">{language === 'ar' ? 'التقدير:' : 'Distinction:'}</span>
@@ -140,7 +140,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
           <span className="text-xs uppercase tracking-widest text-[#D4AF37] font-bold">
             Specimen Preview
           </span>
-          <h2 className="font-serif-luxury font-bold text-2xl text-[#061638] mt-1">
+          <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mt-1">
             {t.certificates.sampleTitle}
           </h2>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -149,10 +149,10 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
         </div>
 
         {/* Certificate Card */}
-        <div className="relative bg-[#FFFDF9] rounded-3xl p-8 sm:p-14 border-8 border-double border-[#D4AF37]/50 shadow-2xl overflow-hidden text-center text-[#061638]">
+        <div className="relative bg-[#FFFDF9] rounded-3xl p-8 sm:p-14 border-8 border-double border-[#D4AF37]/50 shadow-2xl overflow-hidden text-center text-[#0A192F]">
           {/* Subtle ornate background watermark */}
           <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none select-none">
-            <Award className="w-96 h-96 text-[#061638]" />
+            <Award className="w-96 h-96 text-[#0A192F]" />
           </div>
 
           {/* Academy Header */}
@@ -161,7 +161,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
               <EnglishZoneEmblem sizeClass="w-16 h-16 sm:w-20 sm:h-20" glow={true} />
             </div>
             
-            <h3 className="font-serif-luxury font-extrabold text-2xl sm:text-4xl tracking-wider text-[#061638]">
+            <h3 className="font-serif-luxury font-extrabold text-2xl sm:text-4xl tracking-wider text-[#0A192F]">
               ENGLISH ZONE
             </h3>
             <p className="text-xs uppercase tracking-[0.3em] font-bold text-[#AA820A]">
@@ -176,7 +176,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
               This is to officially certify that
             </p>
 
-            <div className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#061638] py-1 border-b-2 border-[#D4AF37]/30 inline-block px-8">
+            <div className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F] py-1 border-b-2 border-[#D4AF37]/30 inline-block px-8">
               {t.certificates.sampleStudentName}
             </div>
 
@@ -192,7 +192,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
           {/* Certificate Footer & Signatures (Strictly role titles, no founder personal name as required) */}
           <div className="relative z-10 pt-8 border-t border-[#D4AF37]/30 grid grid-cols-2 sm:grid-cols-3 gap-6 items-end text-xs text-gray-600">
             <div>
-              <span className="font-mono font-bold text-[#061638] block">EZ-2026-VERIFIED</span>
+              <span className="font-mono font-bold text-[#0A192F] block">EZ-2026-VERIFIED</span>
               <span className="text-[10px] text-gray-400">{language === 'ar' ? 'رقم التحقق الفريد' : 'Certificate ID'}</span>
             </div>
 
@@ -203,7 +203,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({ navigate }) 
 
             <div>
               {/* Authorized role signature placeholder */}
-              <div className="font-serif-luxury italic font-bold text-sm text-[#061638] border-b border-gray-400 pb-1 mb-1">
+              <div className="font-serif-luxury italic font-bold text-sm text-[#0A192F] border-b border-gray-400 pb-1 mb-1">
                 Academic Board
               </div>
               <span className="text-[10px] text-gray-500 font-semibold block">

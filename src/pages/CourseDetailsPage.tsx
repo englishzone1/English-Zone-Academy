@@ -33,7 +33,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
     return (
       <div className="min-h-screen bg-[#FAF8F5] py-16 px-4">
         <div className="max-w-xl mx-auto bg-white rounded-3xl p-8 border border-[#D4AF37]/30 shadow-lg text-center space-y-5">
-          <h1 className="font-serif-luxury font-bold text-2xl text-[#061638]">
+          <h1 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
             {language === 'ar' ? 'الدورة غير موجودة' : 'Course Not Found'}
           </h1>
           <p className="text-sm text-gray-600">
@@ -44,13 +44,13 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => navigate('programs')}
-              className="px-6 py-3 rounded-xl font-bold text-sm bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] transition-colors"
+              className="px-6 py-3 rounded-xl font-bold text-sm bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] transition-colors"
             >
               {t.programs.viewAll}
             </button>
             <button
               onClick={() => navigate('home')}
-              className="px-6 py-3 rounded-xl font-semibold text-sm border border-gray-300 text-[#061638] hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 rounded-xl font-semibold text-sm border border-gray-300 text-[#0A192F] hover:bg-gray-50 transition-colors"
             >
               {t.nav.home}
             </button>
@@ -70,7 +70,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <button
             onClick={() => navigate('home')}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#061638] hover:text-[#AA820A] transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#0A192F] hover:text-[#AA820A] transition-colors"
           >
             <ArrowLeft className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
             <span>{language === 'ar' ? 'العودة إلى الرئيسية' : 'Back to Home'}</span>
@@ -85,9 +85,9 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
         </div>
 
         {/* Hero Summary Banner */}
-        <div className="bg-gradient-to-br from-[#061638] to-[#102445] text-white rounded-3xl p-7 sm:p-10 lg:p-12 border-2 border-[#D4AF37]/40 shadow-2xl">
+        <div className="bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-10 lg:p-12 border-2 border-[#D4AF37]/40 shadow-2xl">
           <div className="flex flex-wrap items-center gap-2.5 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37] text-[#061638] text-xs font-bold">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-xs font-bold">
               <BookOpen className="w-3.5 h-3.5" />
               <span>{t.brand.name}</span>
             </span>
@@ -138,7 +138,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
           <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
             <button
               onClick={() => navigate('register')}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] shadow-lg hover:brightness-105 transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-lg hover:brightness-105 transition-all flex items-center justify-center gap-2"
             >
               <GraduationCap className="w-4 h-4" />
               <span>{t.programs.enrollNow}</span>
@@ -161,7 +161,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
 
         {/* Learning Objectives */}
         <div className="bg-white rounded-3xl p-7 sm:p-10 border border-[#D4AF37]/30 shadow-md">
-          <h2 className="font-serif-luxury font-bold text-2xl text-[#061638] mb-5">
+          <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mb-5">
             {language === 'ar' ? 'الأهداف والمخرجات التعليمية' : 'Core Learning Objectives'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -184,7 +184,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
               <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
                 {t.brand.cefrStandard}
               </span>
-              <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#061638] mt-1">
+              <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F] mt-1">
                 {t.pricing.sectionTitle}
               </h2>
               <p className="text-sm text-gray-600 mt-2">{t.pricing.sectionSubtitle}</p>
@@ -193,7 +193,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
             {/* PROMINENT STUDY & PAYMENT PLAN NOTICE DIRECTLY ABOVE A1-C2 CARDS */}
             <div
               dir={dir}
-              className="relative bg-gradient-to-br from-[#061638] via-[#0B2A6B] to-[#061638] text-white rounded-3xl p-6 sm:p-8 border-2 border-[#D4AF37] shadow-xl overflow-hidden"
+              className="relative bg-gradient-to-br from-[#0A192F] via-[#0F2042] to-[#0A192F] text-white rounded-3xl p-6 sm:p-8 border-2 border-[#D4AF37] shadow-xl overflow-hidden"
             >
               <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]" />
               <div className="flex items-start gap-4">
@@ -205,7 +205,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
                     <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#F3E5AB]">
                       {t.pricing.studyPaymentTitle}
                     </h3>
-                    <span className="inline-flex items-center px-3.5 py-1 rounded-lg bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] text-xs sm:text-sm font-extrabold shadow-sm">
+                    <span className="inline-flex items-center px-3.5 py-1 rounded-lg bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] text-xs sm:text-sm font-extrabold shadow-sm">
                       {t.pricing.studyPaymentHighlight}
                     </span>
                   </div>
@@ -217,11 +217,11 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
             </div>
 
             {pricesLocked && (
-          <div className="mb-6 p-8 rounded-3xl bg-gradient-to-br from-[#061638] to-[#102445] text-center space-y-3 border-2 border-[#D4AF37]/50 shadow-lg">
+          <div className="mb-6 p-8 rounded-3xl bg-gradient-to-br from-[#0A192F] to-[#102445] text-center space-y-3 border-2 border-[#D4AF37]/50 shadow-lg">
             <div className="text-3xl">🔒</div>
             <h3 className="font-serif-luxury font-bold text-xl text-[#F3E5AB]">{language === 'ar' ? 'الأسعار متاحة للمسجّلين' : 'Prices are for registered members'}</h3>
             <p className="text-sm text-gray-300">{language === 'ar' ? '{سجّل|سجّلي} مجانًا بضغطة واحدة {لترى|لتري} الرسوم وعروض الخصم.' : 'Sign up free in one click to see tuition and discount offers.'}</p>
-            <button onClick={() => navigate('join-us')} className="ez-float-glow px-8 py-3 rounded-xl bg-[#D4AF37] text-[#061638] font-bold text-sm">
+            <button onClick={() => navigate('join-us')} className="ez-float-glow px-8 py-3 rounded-xl bg-[#D4AF37] text-[#0A192F] font-bold text-sm">
               {language === 'ar' ? '{سجّل|سجّلي} مجانًا لرؤية الأسعار' : 'Sign up free to see prices'}
             </button>
           </div>
@@ -235,11 +235,11 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
                   <div>
                     <div className="flex items-center justify-between mb-5">
                       <div className="flex items-center gap-3">
-                        <span className="w-12 h-12 rounded-2xl bg-[#061638] text-[#F3E5AB] font-serif-luxury font-bold text-xl flex items-center justify-center shadow">
+                        <span className="w-12 h-12 rounded-2xl bg-[#0A192F] text-[#F3E5AB] font-serif-luxury font-bold text-xl flex items-center justify-center shadow">
                           {item.level}
                         </span>
                         <div>
-                          <h3 className="font-serif-luxury font-bold text-xl text-[#061638]">
+                          <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
                             {language === 'ar' ? `المستوى ${item.level}` : `Level ${item.level}`}
                           </h3>
                           <span className="text-xs text-gray-500 font-medium block">
@@ -273,7 +273,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
                           <span className="text-[11px] uppercase tracking-wider text-[#AA820A] font-bold block">
                             {language === 'ar' ? 'جماعي' : 'Group'} • {t.pricing.monthlyPrice}
                           </span>
-                          <div className="inline-flex items-baseline gap-1 px-3 py-1 rounded-xl bg-[#061638] text-[#F3E5AB] mt-1 shadow-sm">
+                          <div className="inline-flex items-baseline gap-1 px-3 py-1 rounded-xl bg-[#0A192F] text-[#F3E5AB] mt-1 shadow-sm">
                             {item.groupVaries && (
                               <span className="text-xs text-gray-300 font-normal">{language === 'ar' ? 'من' : 'from'}</span>
                             )}
@@ -292,7 +292,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
 
                   <button
                     onClick={() => navigate('register', { preselectedLevel: item.level })}
-                    className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] hover:brightness-110 transition-all shadow flex items-center justify-center gap-2 active:scale-95"
+                    className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] hover:brightness-110 transition-all shadow flex items-center justify-center gap-2 active:scale-95"
                   >
                     <GraduationCap className="w-4 h-4" />
                     <span>
@@ -307,7 +307,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
 
         {/* Explore Other Courses */}
         <div className="pt-4">
-          <h3 className="font-serif-luxury font-bold text-xl text-[#061638] mb-4">
+          <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F] mb-4">
             {language === 'ar' ? 'دورات أخرى في الأكاديمية' : 'Explore Other Courses'}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -318,7 +318,7 @@ export const CourseDetailsPage: React.FC<CourseDetailsPageProps> = ({ courseId, 
                 className="text-start bg-white rounded-2xl p-5 border border-[#D4AF37]/25 hover:border-[#D4AF37] shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-3"
               >
                 <div>
-                  <div className="font-serif-luxury font-bold text-base text-[#061638]">
+                  <div className="font-serif-luxury font-bold text-base text-[#0A192F]">
                     {language === 'ar' ? other.titleAr : other.titleEn}
                   </div>
                   <p className="text-xs text-gray-500 mt-1 line-clamp-2">

@@ -15,8 +15,8 @@ const labelCls = 'block text-[11px] font-bold text-gray-600 mb-1';
 
 const AUD: { id: LibraryAudience; ar: string; en: string; icon: any; on: string }[] = [
   { id: 'public', ar: 'للعامة', en: 'Public', icon: Globe, on: 'bg-emerald-600 text-white' },
-  { id: 'members', ar: 'للمسجّلين مجانًا', en: 'Free members', icon: UserPlus, on: 'bg-[#D4AF37] text-[#061638]' },
-  { id: 'students', ar: 'للطلاب فقط', en: 'Students only', icon: GraduationCap, on: 'bg-[#061638] text-[#F3E5AB]' },
+  { id: 'members', ar: 'للمسجّلين مجانًا', en: 'Free members', icon: UserPlus, on: 'bg-[#D4AF37] text-[#0A192F]' },
+  { id: 'students', ar: 'للطلاب فقط', en: 'Students only', icon: GraduationCap, on: 'bg-[#0A192F] text-[#F3E5AB]' },
   { id: 'hidden', ar: 'مخفية', en: 'Hidden', icon: EyeOff, on: 'bg-gray-500 text-white' }
 ];
 
@@ -179,7 +179,7 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
     <div className="space-y-6">
       <div ref={formRef} className={`p-5 rounded-2xl border space-y-3 scroll-mt-4 ${editing ? 'border-[#D4AF37] bg-[#FFF9E6]' : 'border-gray-200 bg-[#FAF8F5]'}`}>
         <div className="flex items-center justify-between gap-2">
-          <h4 className="font-bold text-xs text-[#061638] flex items-center gap-2">
+          <h4 className="font-bold text-xs text-[#0A192F] flex items-center gap-2">
             {editing ? <Pencil className="w-4 h-4 text-[#AA820A]" /> : <Icon className="w-4 h-4 text-[#AA820A]" />}
             {editing
               ? tr('Edit', 'تعديل') + ': ' + (isAr ? editing.titleAr : editing.titleEn)
@@ -238,7 +238,7 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
             <label className={labelCls}>{tr('Cover image (optional)', 'صورة الغلاف (اختيارية)')}</label>
             <div className="flex flex-wrap items-center gap-3">
               {f.coverUrl && <img src={imgSrc(f.coverUrl)} alt="" className="w-14 h-20 object-cover rounded-lg border border-gray-200" />}
-              <label className="px-3 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold cursor-pointer flex items-center gap-1.5">
+              <label className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold cursor-pointer flex items-center gap-1.5">
                 <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
                 {f.coverUrl ? tr('Change image', 'تغيير الصورة') : tr('Upload image', 'رفع صورة')}
                 <input
@@ -284,7 +284,7 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
             <span className={labelCls}>{tr('Who can see it?', 'من يراها؟')}</span>
             {audButtons(f.audience, (a) => setF({ ...f, audience: a }))}
           </div>
-          <button onClick={add} disabled={busy} className="px-4 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+          <button onClick={add} disabled={busy} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
             {editing ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
             {editing ? tr('Save changes', 'حفظ التعديل') : mag ? tr('Add issue', 'إضافة العدد') : tr('Add material', 'إضافة المادة')}
           </button>
@@ -315,7 +315,7 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
                   <Icon className="w-5 h-5 text-[#AA820A] shrink-0 mt-0.5" />
                 )}
                 <div className="min-w-0">
-                  <span className="font-bold text-xs text-[#061638] block">{isAr ? b.titleAr : b.titleEn}</span>
+                  <span className="font-bold text-xs text-[#0A192F] block">{isAr ? b.titleAr : b.titleEn}</span>
                   <span className="text-[11px] text-gray-500">
                     {mag ? b.issue || '' : `${catLabel(b.category)} • ${b.level === 'All Levels' ? tr('All levels', 'كل المستويات') : b.level}`}
                   </span>
@@ -325,11 +325,11 @@ export const AdminLibraryManager: React.FC<Props> = ({ kind, isAr, onNotice }) =
               <div className="flex flex-wrap items-center gap-2">
                 {audButtons(audienceOf(b), (a) => setAudience(b, a))}
                 {b.downloadUrl && (
-                  <a href={b.downloadUrl} target="_blank" rel="noreferrer" className="p-2 text-gray-400 hover:text-[#061638] rounded-lg" title={tr('Open', 'فتح')}>
+                  <a href={b.downloadUrl} target="_blank" rel="noreferrer" className="p-2 text-gray-400 hover:text-[#0A192F] rounded-lg" title={tr('Open', 'فتح')}>
                     <Download className="w-4 h-4" />
                   </a>
                 )}
-                <button onClick={() => startEdit(b)} className="p-2 text-gray-500 hover:text-[#061638] rounded-lg" title={tr('Edit', 'تعديل')}>
+                <button onClick={() => startEdit(b)} className="p-2 text-gray-500 hover:text-[#0A192F] rounded-lg" title={tr('Edit', 'تعديل')}>
                   <Pencil className="w-4 h-4" />
                 </button>
                 <button onClick={() => remove(b)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg" title={tr('Delete', 'حذف')}>

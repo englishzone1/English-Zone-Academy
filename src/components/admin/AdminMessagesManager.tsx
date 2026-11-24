@@ -243,7 +243,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
     <div className="bg-white rounded-3xl p-4 sm:p-6 border border-gray-200 shadow-sm space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">{teacherMode ? tr('Student chats', 'محادثات طلابي') : tr('Messages', 'الرسائل')}</h2>
+          <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{teacherMode ? tr('Student chats', 'محادثات طلابي') : tr('Messages', 'الرسائل')}</h2>
           <p className="text-xs text-gray-500">
             {teacherMode
               ? tr('The academy can see all chats; only the academy deletes. You can report a message.', 'الأكاديمية تطّلع على كل المحادثات وهي وحدها تحذف، ويمكنكِ الإبلاغ عن أي رسالة.')
@@ -252,14 +252,14 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
         </div>
         {!teacherMode && (
           <div className="flex gap-2">
-            <button onClick={() => setView('chats')} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${view === 'chats' ? 'bg-[#061638] text-[#F3E5AB]' : 'border border-gray-200 text-gray-600'}`}>
+            <button onClick={() => setView('chats')} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${view === 'chats' ? 'bg-[#0A192F] text-[#F3E5AB]' : 'border border-gray-200 text-gray-600'}`}>
               <MessageCircle className="w-3.5 h-3.5" />
               {tr('Chats', 'المحادثات')}
             </button>
-            <button onClick={() => setView('contact')} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${view === 'contact' ? 'bg-[#061638] text-[#F3E5AB]' : 'border border-gray-200 text-gray-600'}`}>
+            <button onClick={() => setView('contact')} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${view === 'contact' ? 'bg-[#0A192F] text-[#F3E5AB]' : 'border border-gray-200 text-gray-600'}`}>
               <Inbox className="w-3.5 h-3.5" />
               {tr('Contact page', 'رسائل صفحة التواصل')}
-              {contactNew > 0 && <span className="px-1.5 rounded-full bg-[#D4AF37] text-[#061638] text-[10px]">{contactNew}</span>}
+              {contactNew > 0 && <span className="px-1.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[10px]">{contactNew}</span>}
             </button>
           </div>
         )}
@@ -301,7 +301,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
                   <AvatarRenderer config={people[t.id]?.avatarConfig} gender={(people[t.id] as any)?.gender} size={36} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-bold text-xs text-[#061638] truncate">
+                      <span className="font-bold text-xs text-[#0A192F] truncate">
                         {t.name}
                         {people[t.id]?.potential && <span className="ms-1 text-[9px] font-semibold text-gray-400">{tr('(potential)', '(محتمل)')}</span>}
                       </span>
@@ -326,7 +326,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
           <div className={`${activeId ? '' : 'hidden md:block'} md:col-span-2`}>
             {activeId ? (
               <div className="space-y-2">
-                <button onClick={() => setActiveId('')} className="md:hidden text-xs font-bold text-[#061638] flex items-center gap-1">
+                <button onClick={() => setActiveId('')} className="md:hidden text-xs font-bold text-[#0A192F] flex items-center gap-1">
                   <ArrowRight className="w-4 h-4 ltr:rotate-180" />
                   {tr('All chats', 'كل المحادثات')}
                 </button>
@@ -382,8 +382,8 @@ const ContactList: React.FC<{ items: StudentMessage[]; isAr: boolean; onNotice: 
         <div key={m.id} className={`p-4 rounded-xl border bg-white space-y-2 ${m.status === 'new' ? 'border-[#D4AF37]' : 'border-gray-200'}`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              {m.status === 'new' && <span className="px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#061638] text-[10px] font-bold">{tr('New', 'جديدة')}</span>}
-              <span className="font-bold text-xs text-[#061638]">{m.name}</span>
+              {m.status === 'new' && <span className="px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[10px] font-bold">{tr('New', 'جديدة')}</span>}
+              <span className="font-bold text-xs text-[#0A192F]">{m.name}</span>
               <a href={`mailto:${m.email}`} className="text-[11px] text-[#AA820A] underline" dir="ltr">
                 {m.email}
               </a>
@@ -393,7 +393,7 @@ const ContactList: React.FC<{ items: StudentMessage[]; isAr: boolean; onNotice: 
           {m.subject && <div className="text-xs font-semibold text-gray-700">{m.subject}</div>}
           <p className="text-xs text-gray-600 whitespace-pre-line">{m.message}</p>
           <div className="flex justify-end gap-2">
-            <a href={`mailto:${m.email}?subject=${encodeURIComponent(m.subject || 'English Zone Academy')}`} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#061638] text-[#F3E5AB] flex items-center gap-1">
+            <a href={`mailto:${m.email}?subject=${encodeURIComponent(m.subject || 'English Zone Academy')}`} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] flex items-center gap-1">
               <Mail className="w-3.5 h-3.5" />
               <span>{tr('Reply', 'رد')}</span>
             </a>

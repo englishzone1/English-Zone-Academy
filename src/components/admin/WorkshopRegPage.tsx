@@ -5,7 +5,7 @@ import { Upload, Save, X, Link as LinkIcon, Download, Loader2, Megaphone } from 
 import { workshopPageService, WorkshopPage, Workshop, compressPoster, joinUrl, DEFAULT_GROUP_LINK } from '../../services/workshopService';
 import { drawQR } from '../../services/qr';
 
-const COLORS = ['#6b2f3a', '#061638', '#1d6b3a', '#1f4e9c', '#7b2482', '#b5541c', '#0e4d5c', '#AA820A'];
+const COLORS = ['#6b2f3a', '#0A192F', '#1d6b3a', '#1f4e9c', '#7b2482', '#b5541c', '#0e4d5c', '#AA820A'];
 
 // صفحة التسجيل في الورشة (قبل موعدها): صورة الإعلان والاسم والموعد واللون ومجموعة تيليغرام، ثم رابط للنشر
 export const RegPageStrip: React.FC<{ w: Workshop; onNotice: (m: string) => void }> = ({ w, onNotice }) => {
@@ -25,7 +25,7 @@ export const RegPageStrip: React.FC<{ w: Workshop; onNotice: (m: string) => void
     <div className="mt-2 p-3 rounded-xl bg-[#FAF8F5] border border-dashed border-gray-300 space-y-2">
       <div className="flex flex-wrap items-center gap-2">
         <Megaphone className="w-4 h-4 text-[#AA820A]" />
-        <b className="text-xs text-[#061638]">صفحة التسجيل في الورشة</b>
+        <b className="text-xs text-[#0A192F]">صفحة التسجيل في الورشة</b>
         {page === undefined ? null : page && page.published ? (
           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">منشورة</span>
         ) : (
@@ -38,12 +38,12 @@ export const RegPageStrip: React.FC<{ w: Workshop; onNotice: (m: string) => void
         </div>
       )}
       <div className="flex flex-wrap gap-1.5">
-        <button onClick={() => setEditing(true)} className="px-2.5 py-1.5 rounded-lg bg-[#061638] text-[#F3E5AB] text-[11px] font-bold">
+        <button onClick={() => setEditing(true)} className="px-2.5 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-[11px] font-bold">
           {page ? 'تعديل صفحة التسجيل' : 'إعداد صفحة التسجيل'}
         </button>
         {page && page.published && (
           <>
-            <button onClick={copy} className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37] text-[#061638] text-[11px] font-bold flex items-center gap-1">
+            <button onClick={copy} className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold flex items-center gap-1">
               <LinkIcon className="w-3.5 h-3.5" /> نسخ رابط التسجيل
             </button>
             <a href={url} target="_blank" rel="noopener noreferrer" className="px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white text-[11px] font-bold">
@@ -144,7 +144,7 @@ const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClo
     <div className="fixed inset-0 z-[90] bg-black/50 flex items-center justify-center p-3" dir="rtl">
       <div className="w-full max-w-lg max-h-[92vh] overflow-y-auto bg-white rounded-3xl p-5 space-y-4 shadow-2xl">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-[#061638]">صفحة التسجيل في الورشة</h3>
+          <h3 className="font-bold text-[#0A192F]">صفحة التسجيل في الورشة</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700">
             <X className="w-5 h-5" />
           </button>
@@ -163,7 +163,7 @@ const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClo
                   window.setTimeout(() => setCopied(false), 2500);
                 }
               }}
-              className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#061638] text-sm font-bold"
+              className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-sm font-bold"
             >
               {copied ? '✓ تم نسخ الرابط' : 'نسخ الرابط'}
             </button>
@@ -172,7 +172,7 @@ const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClo
               <Download className="w-4 h-4" /> تنزيل الباركود (لوضعه على الإعلان)
             </button>
             <p className="text-[11px] text-gray-500">والرابط القصير {window.location.origin}/workshop يفتح دائمًا آخر ورشة نشرتِها.</p>
-            <button onClick={onClose} className="w-full py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-sm font-bold">
+            <button onClick={onClose} className="w-full py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-sm font-bold">
               تم
             </button>
           </div>
@@ -236,7 +236,7 @@ const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClo
               <button disabled={busy || upl} onClick={() => save(false)} className="py-3 rounded-xl border border-gray-300 text-sm font-bold flex items-center justify-center gap-1 disabled:opacity-50">
                 <Save className="w-4 h-4" /> حفظ دون نشر
               </button>
-              <button disabled={busy || upl} onClick={() => save(true)} className="py-3 rounded-xl bg-[#061638] text-[#F3E5AB] text-sm font-bold disabled:opacity-50">
+              <button disabled={busy || upl} onClick={() => save(true)} className="py-3 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-sm font-bold disabled:opacity-50">
                 {busy ? '...' : 'نشر وإظهار الرابط'}
               </button>
             </div>

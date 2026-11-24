@@ -34,7 +34,7 @@ const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const inputCls = 'w-full px-3 py-2 rounded-xl border border-gray-300 text-xs bg-white';
 const labelCls = 'block text-[11px] font-bold text-gray-600 mb-1';
 const primaryBtn =
-  'px-4 py-2 rounded-xl text-xs font-bold bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] flex items-center gap-1.5 disabled:opacity-50';
+  'px-4 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] flex items-center gap-1.5 disabled:opacity-50';
 
 export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = false }) => {
   const { firebaseUser } = useAuth();
@@ -293,7 +293,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
         <Crown className="w-3.5 h-3.5 text-[#D4AF37]" />
         {title}
       </div>
-      <div className="font-bold text-sm text-[#061638] mt-1">{row ? row.s.fullName || '—' : tr('No one yet', 'لا أحد بعد')}</div>
+      <div className="font-bold text-sm text-[#0A192F] mt-1">{row ? row.s.fullName || '—' : tr('No one yet', 'لا أحد بعد')}</div>
       {row && value !== undefined && <div className="text-xs text-[#AA820A] font-bold">{value} ⭐</div>}
     </div>
   );
@@ -301,7 +301,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
       <div>
-        <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">{tr('Stars Audit Ledger', 'سجل تدقيق النجوم')}</h2>
+        <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{tr('Stars Audit Ledger', 'سجل تدقيق النجوم')}</h2>
         <p className="text-xs text-gray-500">
           {tr(
             'Each group with its students, points, history and grades. Stars are given from Students Management.',
@@ -316,7 +316,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
             key={t.id}
             onClick={() => setSubTab(t.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap ${
-              subTab === t.id ? 'bg-white text-[#061638] shadow-sm' : 'text-gray-500 hover:text-gray-900'
+              subTab === t.id ? 'bg-white text-[#0A192F] shadow-sm' : 'text-gray-500 hover:text-gray-900'
             }`}
           >
             {isAr ? t.ar : t.en}
@@ -343,7 +343,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                     key={g.id}
                     onClick={() => setSelectedGroup(g.id)}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border ${
-                      selectedGroup === g.id ? 'bg-[#061638] text-[#F3E5AB] border-[#061638]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                      selectedGroup === g.id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                     }`}
                   >
                     {g.name} ({students.filter((s) => s.groupId === g.id).length})
@@ -352,7 +352,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                 <button
                   onClick={() => setSelectedGroup(NONE)}
                   className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border ${
-                    selectedGroup === NONE ? 'bg-[#061638] text-[#F3E5AB] border-[#061638]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                    selectedGroup === NONE ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                   }`}
                 >
                   {tr('No group', 'بدون مجموعة')} ({students.filter((s) => !s.groupId).length})
@@ -385,9 +385,9 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                       <div key={r.s.id} className="rounded-xl border border-gray-200 bg-[#FAF8F5]">
                         <button onClick={() => setExpanded(open ? null : r.s.id)} className="w-full p-4 flex items-center justify-between gap-3 text-start">
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="w-7 h-7 rounded-full bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                            <span className="w-7 h-7 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
                             <div className="min-w-0">
-                              <div className="font-bold text-sm text-[#061638] truncate flex items-center gap-2">
+                              <div className="font-bold text-sm text-[#0A192F] truncate flex items-center gap-2">
                                 <AvatarRenderer config={(r.s as any).avatarConfig} gender={(r.s as any).gender} size={30} />
                                 {r.s.fullName || '—'}
                               </div>
@@ -406,7 +406,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                           <div className="px-4 pb-4 grid grid-cols-1 lg:grid-cols-2 gap-4 text-xs">
                             <div className="space-y-2">
                               <div className="flex items-center justify-between gap-2">
-                                <div className="font-bold text-[#061638]">{tr('Stars history', 'سجل النجوم')}</div>
+                                <div className="font-bold text-[#0A192F]">{tr('Stars history', 'سجل النجوم')}</div>
                                 <button
                                   onClick={() => resetAll(r.s.id)}
                                   disabled={resetting === r.s.id}
@@ -444,7 +444,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                               )}
                             </div>
                             <div className="space-y-2">
-                              <div className="font-bold text-[#061638]">{tr('Grades', 'الدرجات')}</div>
+                              <div className="font-bold text-[#0A192F]">{tr('Grades', 'الدرجات')}</div>
                               {sGrades.length === 0 ? (
                                 <div className="text-gray-500">{tr('No grades yet.', 'لا توجد درجات بعد.')}</div>
                               ) : (
@@ -486,7 +486,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
               </div>
 
               <div className="p-5 rounded-2xl border border-[#D4AF37]/40 bg-[#FAF8F5] space-y-4">
-                <h4 className="font-bold text-xs text-[#061638]">{editingGroupId ? tr('Edit group', 'تعديل المجموعة') : tr('New group', 'مجموعة جديدة')}</h4>
+                <h4 className="font-bold text-xs text-[#0A192F]">{editingGroupId ? tr('Edit group', 'تعديل المجموعة') : tr('New group', 'مجموعة جديدة')}</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className={labelCls}>{tr('Group name', 'اسم المجموعة')}</label>
@@ -536,7 +536,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                   groups.map((g) => (
                     <div key={g.id} className="p-4 rounded-xl border border-gray-200 bg-white flex items-center justify-between gap-3">
                       <div>
-                        <div className="font-bold text-sm text-[#061638]">{g.name}</div>
+                        <div className="font-bold text-sm text-[#0A192F]">{g.name}</div>
                         <div className="text-[11px] text-gray-500">
                           {g.level ? `${g.level} • ` : ''}
                           {g.teacherName ? `${g.teacherName} • ` : ''}
@@ -622,7 +622,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
               </div>
 
               <div className="p-5 rounded-2xl border border-[#D4AF37]/40 bg-[#FAF8F5] space-y-3">
-                <h4 className="font-bold text-xs text-[#061638]">{tr('Add criterion', 'إضافة معيار')}</h4>
+                <h4 className="font-bold text-xs text-[#0A192F]">{tr('Add criterion', 'إضافة معيار')}</h4>
                 <div className="grid grid-cols-12 gap-2 items-end">
                   <div className="col-span-2 sm:col-span-1">
                     <label className={labelCls}>{tr('Icon', 'رمز')}</label>

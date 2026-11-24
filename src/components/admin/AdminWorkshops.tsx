@@ -90,17 +90,17 @@ export const AdminWorkshops: React.FC<{ isAr: boolean; onNotice: (m: string) => 
       <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">{tr('Free workshops & certificates', 'الورش المجانية والشهادات')}</h2>
+            <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{tr('Free workshops & certificates', 'الورش المجانية والشهادات')}</h2>
             <p className="text-xs text-gray-500">
               {tr('Share the workshop link; attendees register, rate it and get a certificate with a serial number and QR code instantly.', 'شاركي رابط الورشة: تسجّل المتدربة وتقيّم الورشة وتحصل فورًا على شهادة برقم تسلسلي ورمز QR للتحقق.')}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => setEditing({ title: '', active: true, layout: DEFAULT_LAYOUT, type: 'workshop' })} className="px-4 py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
+            <button onClick={() => setEditing({ title: '', active: true, layout: DEFAULT_LAYOUT, type: 'workshop' })} className="px-4 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
               <Plus className="w-4 h-4 text-[#D4AF37]" />
               {tr('New workshop', 'ورشة جديدة')}
             </button>
-            <button onClick={() => setEditing({ title: '', active: true, layout: DEFAULT_LAYOUT, type: 'certificate' })} className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#061638] text-xs font-bold flex items-center gap-1.5">
+            <button onClick={() => setEditing({ title: '', active: true, layout: DEFAULT_LAYOUT, type: 'certificate' })} className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold flex items-center gap-1.5">
               <Plus className="w-4 h-4" />
               {tr('New certificate', 'شهادة جديدة')}
             </button>
@@ -118,7 +118,7 @@ export const AdminWorkshops: React.FC<{ isAr: boolean; onNotice: (m: string) => 
               { key: 'c', label: tr('Certificates', 'الشهادات'), items: list.filter((w) => w.type !== 'workshop') }
             ].map((sec) => (
             <div key={sec.key} className="space-y-3">
-              <h3 className="text-sm font-bold text-[#061638] border-b border-gray-100 pb-1">{sec.label} ({sec.items.length})</h3>
+              <h3 className="text-sm font-bold text-[#0A192F] border-b border-gray-100 pb-1">{sec.label} ({sec.items.length})</h3>
               {sec.items.length === 0 && <div className="p-4 text-center text-[11px] text-gray-400 bg-[#FAF8F5] rounded-2xl">{tr('Nothing here yet.', 'لا يوجد شيء بعد.')}</div>}
             {sec.items.map((w) => {
               const s = stats(w.id);
@@ -130,7 +130,7 @@ export const AdminWorkshops: React.FC<{ isAr: boolean; onNotice: (m: string) => 
                   {isCert && (w.template ? <img src={w.template} alt="" className="w-24 h-16 object-cover rounded-lg border" /> : <div className="w-24 h-16 rounded-lg bg-gray-100 text-[10px] text-gray-400 flex items-center justify-center">{tr('No template', 'بلا قالب')}</div>)}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <b className="text-sm text-[#061638]">{w.title}</b>
+                      <b className="text-sm text-[#0A192F]">{w.title}</b>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${w.active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                         {w.active ? tr('Open', 'مفتوحة') : tr('Closed', 'مغلقة')}
                       </span>
@@ -145,7 +145,7 @@ export const AdminWorkshops: React.FC<{ isAr: boolean; onNotice: (m: string) => 
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {isCert && <>
-                    <button onClick={() => copyLink(w.id)} className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37] text-[#061638] text-[11px] font-bold flex items-center gap-1">
+                    <button onClick={() => copyLink(w.id)} className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold flex items-center gap-1">
                       <LinkIcon className="w-3.5 h-3.5" />
                       {tr('Copy certificate link', 'نسخ رابط الشهادة')}
                     </button>
@@ -198,7 +198,7 @@ export const AdminWorkshops: React.FC<{ isAr: boolean; onNotice: (m: string) => 
 
       <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="font-bold text-[#061638]">{tr('Registrations & feedback', 'المسجّلات والتقييمات')} ({shown.length})</h3>
+          <h3 className="font-bold text-[#0A192F]">{tr('Registrations & feedback', 'المسجّلات والتقييمات')} ({shown.length})</h3>
           <div className="flex gap-2">
             <select value={filter} onChange={(e) => setFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-gray-300 text-xs">
               <option value="">{tr('All workshops', 'كل الورش')}</option>
@@ -221,7 +221,7 @@ export const AdminWorkshops: React.FC<{ isAr: boolean; onNotice: (m: string) => 
             {shown.map((r) => (
               <div key={r.serial} className="p-3 rounded-xl border border-gray-200 text-xs space-y-1">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <b className="text-[#061638]">{r.name}</b>
+                  <b className="text-[#0A192F]">{r.name}</b>
                   <span className="text-[10px] text-gray-400">{r.createdAt ? new Date(r.createdAt).toLocaleString() : ''}</span>
                 </div>
                 <div className="text-gray-500" dir="auto">
@@ -344,7 +344,7 @@ const WorkshopEditor: React.FC<{
     const s = layout[k];
     return (
       <div className="p-3 rounded-2xl border border-gray-200 space-y-2">
-        <label className="flex items-center gap-2 text-xs font-bold text-[#061638]">
+        <label className="flex items-center gap-2 text-xs font-bold text-[#0A192F]">
           <input type="checkbox" checked={s.show} onChange={(e) => setSpot(k, { show: e.target.checked })} />
           {label}
         </label>
@@ -372,7 +372,7 @@ const WorkshopEditor: React.FC<{
   return (
     <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">{w.type === 'certificate' ? (w.id ? tr('Edit certificate', 'تعديل الشهادة') : tr('New certificate', 'شهادة جديدة')) : w.id ? tr('Edit workshop', 'تعديل الورشة') : tr('New workshop', 'ورشة جديدة')}</h2>
+        <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{w.type === 'certificate' ? (w.id ? tr('Edit certificate', 'تعديل الشهادة') : tr('New certificate', 'شهادة جديدة')) : w.id ? tr('Edit workshop', 'تعديل الورشة') : tr('New workshop', 'ورشة جديدة')}</h2>
         <button onClick={onCancel} className="p-2 rounded-lg text-gray-400 hover:bg-gray-100">
           <X className="w-4 h-4" />
         </button>
@@ -380,14 +380,14 @@ const WorkshopEditor: React.FC<{
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="sm:col-span-2">
-          <label className="block text-xs font-bold text-[#061638] mb-1">{w.type === 'certificate' ? tr('Workshop name on the certificate page *', 'اسم الورشة في صفحة الشهادة *') : tr('Workshop title *', 'عنوان الورشة *')}</label>
+          <label className="block text-xs font-bold text-[#0A192F] mb-1">{w.type === 'certificate' ? tr('Workshop name on the certificate page *', 'اسم الورشة في صفحة الشهادة *') : tr('Workshop title *', 'عنوان الورشة *')}</label>
           <input value={w.title || ''} onChange={(e) => setW({ ...w, title: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm" />
         </div>
         <div className="sm:col-span-2">
-          <label className="block text-xs font-bold text-[#061638] mb-1">{tr('Short description (shown on the page)', 'وصف قصير يظهر في الصفحة')}</label>
+          <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Short description (shown on the page)', 'وصف قصير يظهر في الصفحة')}</label>
           <textarea rows={2} value={w.description || ''} onChange={(e) => setW({ ...w, description: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm" />
         </div>
-        <label className="flex items-center gap-2 text-xs font-bold text-[#061638]">
+        <label className="flex items-center gap-2 text-xs font-bold text-[#0A192F]">
           <input type="checkbox" checked={w.active !== false} onChange={(e) => setW({ ...w, active: e.target.checked })} />
           {tr('Registration open', 'التسجيل مفتوح')}
         </label>
@@ -395,10 +395,10 @@ const WorkshopEditor: React.FC<{
 
       {isWsType && (
         <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2">
-          <div className="text-xs font-bold text-[#061638]">{tr('Workshop image (poster)', 'صورة الورشة (الإعلان)')}</div>
+          <div className="text-xs font-bold text-[#0A192F]">{tr('Workshop image (poster)', 'صورة الورشة (الإعلان)')}</div>
           <div className="flex items-center gap-3">
             {poster ? <img src={poster} alt="" className="w-24 h-24 object-cover rounded-xl border" /> : <div className="w-24 h-24 rounded-xl bg-gray-100" />}
-            <label className="inline-flex px-4 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold items-center gap-1.5 cursor-pointer">
+            <label className="inline-flex px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold items-center gap-1.5 cursor-pointer">
               {posterBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4 text-[#D4AF37]" />}
               {poster ? tr('Change image', 'تغيير الصورة') : tr('Upload image', 'رفع صورة')}
               <input
@@ -430,16 +430,16 @@ const WorkshopEditor: React.FC<{
       )}
 
       <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2">
-        <div className="text-xs font-bold text-[#061638]">{isWsType ? tr('Registration page look', 'لون صفحة التسجيل') : tr('Certificate page look', 'لون صفحة الشهادة')}</div>
+        <div className="text-xs font-bold text-[#0A192F]">{isWsType ? tr('Registration page look', 'لون صفحة التسجيل') : tr('Certificate page look', 'لون صفحة الشهادة')}</div>
         <WsThemePicker value={theme} onChange={setTheme} />
       </div>
 
       {w.type !== 'workshop' && <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2">
-        <div className="text-xs font-bold text-[#061638]">{tr('Certificate template (image)', 'قالب الشهادة (صورة)')}</div>
+        <div className="text-xs font-bold text-[#0A192F]">{tr('Certificate template (image)', 'قالب الشهادة (صورة)')}</div>
         <p className="text-[11px] text-gray-500">
           {tr('Upload your designed certificate as PNG or JPG without the name, date or serial. They are added automatically.', 'ارفعي تصميم الشهادة صورةً (PNG أو JPG) بدون الاسم والتاريخ والرقم، فهذه تُضاف تلقائيًا.')}
         </p>
-        <label className="inline-flex px-4 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold items-center gap-1.5 cursor-pointer">
+        <label className="inline-flex px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold items-center gap-1.5 cursor-pointer">
           {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4 text-[#D4AF37]" />}
           {w.template ? tr('Replace template', 'تغيير القالب') : tr('Upload template', 'رفع القالب')}
           <input
@@ -480,7 +480,7 @@ const WorkshopEditor: React.FC<{
             {SpotControls({ k: 'date', label: tr('Date', 'التاريخ') })}
             {SpotControls({ k: 'serial', label: tr('Serial number', 'الرقم التسلسلي') })}
             <div className="p-3 rounded-2xl border border-gray-200 space-y-2">
-              <label className="flex items-center gap-2 text-xs font-bold text-[#061638]">
+              <label className="flex items-center gap-2 text-xs font-bold text-[#0A192F]">
                 <input type="checkbox" checked={layout.qr.show} onChange={(e) => setQr({ show: e.target.checked })} />
                 {tr('QR code (verification)', 'رمز QR (للتحقق)')}
               </label>
@@ -497,7 +497,7 @@ const WorkshopEditor: React.FC<{
       )}
 
       <div className="flex gap-2 pt-2 border-t border-gray-100">
-        <button onClick={save} disabled={saving || uploading || posterBusy} className="px-5 py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+        <button onClick={save} disabled={saving || uploading || posterBusy} className="px-5 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 text-[#D4AF37]" />}
           {w.type === 'certificate' ? tr('Save certificate', 'حفظ الشهادة') : tr('Save workshop', 'حفظ الورشة')}
         </button>

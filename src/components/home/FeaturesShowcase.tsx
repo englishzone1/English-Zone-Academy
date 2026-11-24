@@ -219,7 +219,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
 
       <div className="text-center max-w-3xl mx-auto mb-8 px-4">
         <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">LEARN • PRACTICE • ACHIEVE</span>
-        <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#061638] mt-2">{ar ? 'مميزات وفوائد الأكاديمية' : 'Academy features & benefits'}</h2>
+        <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-2">{ar ? 'مميزات وفوائد الأكاديمية' : 'Academy features & benefits'}</h2>
       </div>
 
       <div
@@ -247,7 +247,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
             <div
               key={f.kind}
               onClick={() => !active && visible && go(i)}
-              className={`absolute top-0 rounded-3xl overflow-hidden border-2 shadow-2xl text-white bg-gradient-to-br from-[#061638] via-[#102445] to-[#061638] ${
+              className={`absolute top-0 rounded-3xl overflow-hidden border-2 shadow-2xl text-white bg-gradient-to-br from-[#0A192F] via-[#102445] to-[#0A192F] ${
                 active ? 'border-[#D4AF37] cursor-default' : 'border-[#D4AF37]/40 cursor-pointer'
               }`}
               style={{
@@ -271,7 +271,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
                       e.stopPropagation();
                       navigate(home);
                     }}
-                    className="ez-ribbon absolute top-3 start-3 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] text-xs font-bold shadow-xl border border-white/60"
+                    className="ez-ribbon absolute top-3 start-3 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] text-xs font-bold shadow-xl border border-white/60"
                   >
                     ✨ {ar ? 'انضموا لنا' : 'Join us'}
                   </button>
@@ -284,7 +284,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
               {/* الشرح */}
               <div className="p-5 flex flex-col" style={{ height: H - imgH }}>
                 <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37] text-[#061638] text-[11px] font-bold">{f.name}</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold">{f.name}</span>
                   <span className="text-[11px] font-bold text-[#F3E5AB]/85">{f.badge}</span>
                 </div>
                 <h3 className="font-serif-luxury font-bold text-lg text-[#F3E5AB] leading-snug">{f.title}</h3>
@@ -306,7 +306,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
                       if (active) navigate(f.route);
                       else go(i);
                     }}
-                    className="px-4 py-2.5 rounded-xl font-bold text-[13px] bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] shadow-md active:scale-95 transition-transform"
+                    className="px-4 py-2.5 rounded-xl font-bold text-[13px] bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-md active:scale-95 transition-transform"
                   >
                     {f.cta}
                   </button>
@@ -326,7 +326,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
         <button
           onClick={prev}
           aria-label={ar ? 'السابق' : 'Previous'}
-          className="absolute z-10 w-11 h-11 rounded-full bg-white text-[#061638] shadow-xl border border-[#D4AF37]/50 flex items-center justify-center hover:bg-[#D4AF37] transition-colors"
+          className="absolute z-10 w-11 h-11 rounded-full bg-white text-[#0A192F] shadow-xl border border-[#D4AF37]/50 flex items-center justify-center hover:bg-[#D4AF37] transition-colors"
           style={{ top: Math.round(imgH / 2) - 22, [ar ? 'right' : 'left']: `calc(50% - ${w / 2 + 22}px)` }}
         >
           <PrevIcon className="w-6 h-6" />
@@ -334,7 +334,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
         <button
           onClick={next}
           aria-label={ar ? 'التالي' : 'Next'}
-          className="absolute z-10 w-11 h-11 rounded-full bg-white text-[#061638] shadow-xl border border-[#D4AF37]/50 flex items-center justify-center hover:bg-[#D4AF37] transition-colors"
+          className="absolute z-10 w-11 h-11 rounded-full bg-white text-[#0A192F] shadow-xl border border-[#D4AF37]/50 flex items-center justify-center hover:bg-[#D4AF37] transition-colors"
           style={{ top: Math.round(imgH / 2) - 22, [ar ? 'left' : 'right']: `calc(50% - ${w / 2 + 22}px)` }}
         >
           <NextIcon className="w-6 h-6" />
@@ -348,7 +348,7 @@ export const FeaturesShowcase: React.FC<Props> = ({ ar, isAuthenticated, navigat
             key={f.kind}
             onClick={() => go(i)}
             aria-label={f.name}
-            className={`h-2.5 rounded-full transition-all ${i === idx ? 'w-8 bg-[#D4AF37]' : 'w-2.5 bg-[#061638]/25 hover:bg-[#061638]/50'}`}
+            className={`h-2.5 rounded-full transition-all ${i === idx ? 'w-8 bg-[#D4AF37]' : 'w-2.5 bg-[#0A192F]/25 hover:bg-[#0A192F]/50'}`}
           />
         ))}
       </div>

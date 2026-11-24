@@ -44,7 +44,7 @@ const EMPTY: Draft = {
 const inputCls = 'w-full px-3 py-2 rounded-xl border border-gray-300 text-xs bg-white';
 const labelCls = 'block text-[11px] font-bold text-gray-600 mb-1';
 const primaryBtn =
-  'px-4 py-2 rounded-xl text-xs font-bold bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] flex items-center gap-1.5 disabled:opacity-50';
+  'px-4 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] flex items-center gap-1.5 disabled:opacity-50';
 
 export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
   const { language } = useLanguage();
@@ -158,7 +158,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">{tr('Blog', 'المدونة')}</h2>
+          <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{tr('Blog', 'المدونة')}</h2>
           <p className="text-xs text-gray-500">
             {tr(
               'Only published posts appear on the website.',
@@ -177,7 +177,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
       {draft && (
         <div id="ez-blog-form" className="p-5 rounded-2xl border border-[#D4AF37]/40 bg-[#FAF8F5] space-y-4 scroll-mt-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-bold text-xs text-[#061638]">
+            <h4 className="font-bold text-xs text-[#0A192F]">
               {draft.id ? tr('Edit post', 'تعديل المقال') : tr('New post', 'مقال جديد')}
             </h4>
             <button onClick={() => setDraft(null)} className="p-1.5 text-gray-400 hover:text-gray-700" title={tr('Close', 'إغلاق')}>
@@ -199,7 +199,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
               <label className={labelCls}>{tr('Post image (optional)', 'صورة المقال (اختياري)')}</label>
               <div className="flex flex-wrap items-center gap-3">
                 {draft.imageUrl && <img src={imgSrc(draft.imageUrl)} alt="" className="h-20 rounded-xl border border-gray-200 object-cover" />}
-                <label className="px-3 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold cursor-pointer flex items-center gap-1.5">
+                <label className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold cursor-pointer flex items-center gap-1.5">
                   <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
                   {draft.imageUrl ? tr('Change image', 'تغيير الصورة') : tr('Upload image', 'رفع صورة')}
                   <input
@@ -235,7 +235,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
               )}
             </div>
           </div>
-          <label className="flex items-center gap-2 text-xs font-bold text-[#061638]">
+          <label className="flex items-center gap-2 text-xs font-bold text-[#0A192F]">
             <input type="checkbox" checked={draft.isPublished} onChange={(e) => set({ isPublished: e.target.checked })} />
             <span>{tr('Publish on the website', 'منشور في الموقع')}</span>
           </label>
@@ -253,7 +253,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
       ) : posts.length === 0 ? (
         <div className="p-8 text-center text-xs text-gray-500 bg-[#FAF8F5] rounded-2xl space-y-3">
           <p>{tr('No posts yet.', 'لا توجد مقالات بعد.')}</p>
-          <button onClick={importOld} className="px-4 py-2 rounded-xl text-xs font-bold border border-[#D4AF37] text-[#061638] inline-flex items-center gap-1.5">
+          <button onClick={importOld} className="px-4 py-2 rounded-xl text-xs font-bold border border-[#D4AF37] text-[#0A192F] inline-flex items-center gap-1.5">
             <Download className="w-4 h-4 text-[#AA820A]" />
             <span>{tr('Import the 3 older posts from the site', 'استيراد المقالات الثلاث القديمة من الموقع')}</span>
           </button>
@@ -263,7 +263,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
           {posts.map((p) => (
             <div key={p.id} className="p-4 rounded-xl border border-gray-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="font-bold text-xs text-[#061638] block">{(isAr ? p.titleAr : p.titleEn) || p.titleAr || p.titleEn}</span>
+                <span className="font-bold text-xs text-[#0A192F] block">{(isAr ? p.titleAr : p.titleEn) || p.titleAr || p.titleEn}</span>
                 <span className="text-[11px] text-gray-500">
                   {[isAr ? p.categoryAr : p.categoryEn, p.publishDate].filter(Boolean).join(' • ')}
                 </span>
@@ -283,7 +283,7 @@ export const AdminBlogManager: React.FC<Props> = ({ onNotice }) => {
                     setDraft({ ...EMPTY, ...(p as any) });
                     setTimeout(() => document.getElementById('ez-blog-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
                   }}
-                  className="p-2 text-gray-500 hover:text-[#061638] rounded-lg"
+                  className="p-2 text-gray-500 hover:text-[#0A192F] rounded-lg"
                   title={tr('Edit', 'تعديل')}
                 >
                   <Pencil className="w-4 h-4" />

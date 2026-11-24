@@ -118,9 +118,9 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
     return (
       <div className="max-w-xl mx-auto px-4 py-20 text-center space-y-4">
         <Award className="w-12 h-12 mx-auto text-[#D4AF37]" />
-        <h1 className="font-serif-luxury font-bold text-2xl text-[#061638]">{tr('Registration is closed', 'التسجيل في هذه الورشة مغلق')}</h1>
+        <h1 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">{tr('Registration is closed', 'التسجيل في هذه الورشة مغلق')}</h1>
         <p className="text-sm text-gray-600">{tr('Follow us to join the next free workshop.', '{تابعنا|تابعينا} {لتنضم|لتنضمي} إلى الورشة المجانية القادمة.')}</p>
-        <button onClick={() => navigate('join-us')} className="px-6 py-3 rounded-xl bg-[#061638] text-[#F3E5AB] font-bold text-sm">
+        <button onClick={() => navigate('join-us')} className="px-6 py-3 rounded-xl bg-[#0A192F] text-[#F3E5AB] font-bold text-sm">
           {tr('Join the platform for free', '{انضم|انضمي} إلى المنصة مجانًا')}
         </button>
       </div>
@@ -128,7 +128,7 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
   }
 
   return (
-    <div className={`relative min-h-screen py-10 ${ws.theme === 'white' ? 'ez-light' : ''}`} dir={isAr ? 'rtl' : 'ltr'} style={wsVars(ws.theme, '#061638', '#eef2f9')}>
+    <div className={`relative min-h-screen py-10 ${ws.theme === 'white' ? 'ez-light' : ''}`} dir={isAr ? 'rtl' : 'ltr'} style={wsVars(ws.theme, '#0A192F', '#eef2f9')}>
       <WsBackdrop theme={ws.theme} />
       <div className="relative z-10 max-w-3xl mx-auto px-4 space-y-6">
         <div className="text-center space-y-2">

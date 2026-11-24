@@ -110,13 +110,13 @@ export const TeacherProfileEditor: React.FC<Props> = ({ teacherId, isAr, mode, o
           {avatar ? <AvatarRenderer config={avatar} size={80} /> : <UserRound className="w-9 h-9 text-gray-400" />}
         </div>
         <div className="flex flex-wrap gap-2">
-          <label className="px-3 py-2 rounded-xl bg-[#D4AF37] text-[#061638] text-xs font-bold cursor-pointer flex items-center gap-1.5">
+          <label className="px-3 py-2 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold cursor-pointer flex items-center gap-1.5">
             <Camera className="w-4 h-4" />
             {tr('Upload a photo', 'رفع صورة')}
             <input type="file" accept="image/*" className="hidden" onChange={(e) => { onPhoto(e.target.files?.[0]); e.target.value = ''; }} />
           </label>
           {(mode === 'admin' || openAvatarStudio) && (
-            <button onClick={() => (mode === 'admin' ? setStudio(true) : openAvatarStudio && openAvatarStudio())} className="px-3 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
+            <button onClick={() => (mode === 'admin' ? setStudio(true) : openAvatarStudio && openAvatarStudio())} className="px-3 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
               <Wand2 className="w-4 h-4" />
               {tr('Design an avatar', 'تصميم أفاتار')}
             </button>
@@ -147,7 +147,7 @@ export const TeacherProfileEditor: React.FC<Props> = ({ teacherId, isAr, mode, o
         </div>
       </div>
 
-      <button onClick={() => save()} disabled={busy} className="px-5 py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+      <button onClick={() => save()} disabled={busy} className="px-5 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
         <Save className="w-4 h-4" />
         {busy ? tr('Saving…', 'جارٍ الحفظ…') : tr('Save', 'حفظ')}
       </button>

@@ -140,7 +140,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             Official Admissions Desk
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#061638] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
             {t.contact.title}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -180,7 +180,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
                     )}
                   </div>
 
-                  <h3 className="font-serif-luxury font-bold text-lg text-[#061638] mb-1">
+                  <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F] mb-1">
                     {item.title}
                   </h3>
                   <div className="text-xs sm:text-sm font-semibold text-gray-700 break-all mb-2">
@@ -197,7 +197,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#061638] hover:text-[#AA820A] transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0A192F] hover:text-[#AA820A] transition-colors"
                     >
                       <span>{language === 'ar' ? 'فتح الرابط المباشر' : 'Open Link'}</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -217,7 +217,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Quick WhatsApp Admissions Banner */}
-          <div className="lg:col-span-5 bg-gradient-to-br from-[#061638] to-[#123A8C] text-white rounded-3xl p-8 border border-[#D4AF37]/30 shadow-xl space-y-6">
+          <div className="lg:col-span-5 bg-gradient-to-br from-[#0A192F] to-[#162B4D] text-white rounded-3xl p-8 border border-[#D4AF37]/30 shadow-xl space-y-6">
             <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37] block">
               Immediate Admissions Support
             </span>
@@ -256,7 +256,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
 
           {/* Academic Inquiry Form */}
           <div className="lg:col-span-7 bg-white rounded-3xl p-8 border border-gray-200/80 shadow-md">
-            <h2 className="font-serif-luxury font-bold text-2xl text-[#061638] mb-2">
+            <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mb-2">
               {t.contact.formTitle}
             </h2>
             <p className="text-xs sm:text-sm text-gray-500 mb-6">
@@ -269,7 +269,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
             {formSubmitted ? (
               <div className="p-8 rounded-2xl bg-[#FAF8F5] border border-[#25D366]/40 text-center space-y-3">
                 <CheckCircle className="w-12 h-12 text-[#25D366] mx-auto" />
-                <h3 className="font-serif-luxury font-bold text-xl text-[#061638]">
+                <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
                   {t.contact.formSuccess}
                 </h3>
                 <p className="text-xs text-gray-600">
@@ -282,7 +282,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
                     setFormSubmitted(false);
                     setFormData({ name: '', email: '', subject: '', message: '' });
                   }}
-                  className="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-[#061638] text-white"
+                  className="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-white"
                 >
                   {language === 'ar' ? 'إرسال رسالة أخرى' : 'Send Another Message'}
                 </button>
@@ -291,7 +291,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#061638] mb-1">
+                    <label className="block text-xs font-bold text-[#0A192F] mb-1">
                       {t.contact.formName} *
                     </label>
                     <input
@@ -305,7 +305,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#061638] mb-1">
+                    <label className="block text-xs font-bold text-[#0A192F] mb-1">
                       {t.contact.formEmail} *
                     </label>
                     <input
@@ -320,7 +320,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#061638] mb-1">
+                  <label className="block text-xs font-bold text-[#0A192F] mb-1">
                     {t.contact.formSubject}
                   </label>
                   <input
@@ -333,7 +333,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#061638] mb-1">
+                  <label className="block text-xs font-bold text-[#0A192F] mb-1">
                     {t.contact.formMessage} *
                   </label>
                   <textarea
@@ -355,7 +355,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ navigate }) => {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="w-full py-3 rounded-xl font-bold text-sm bg-[#061638] text-white hover:bg-[#123A8C] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="w-full py-3 rounded-xl font-bold text-sm bg-[#0A192F] text-white hover:bg-[#162B4D] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   <Send className="w-4 h-4 text-[#D4AF37]" />
                   <span>{sending ? (language === 'ar' ? 'جارٍ الإرسال...' : 'Sending...') : t.contact.formSend}</span>

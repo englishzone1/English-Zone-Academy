@@ -49,7 +49,7 @@ export const ChatHub: React.FC<Props> = ({ me, isAr, initial }) => {
             key={i.id}
             onClick={() => setActive(i.id)}
             className={`w-full text-start px-3 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              active === i.id ? 'bg-[#061638] text-[#F3E5AB]' : 'bg-[#FAF8F5] text-[#061638] hover:bg-[#F3E5AB]/40'
+              active === i.id ? 'bg-[#0A192F] text-[#F3E5AB]' : 'bg-[#FAF8F5] text-[#0A192F] hover:bg-[#F3E5AB]/40'
             }`}
           >
             <i.icon className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />

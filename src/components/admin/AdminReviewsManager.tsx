@@ -309,7 +309,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-gray-200">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#061638] text-[#F3E5AB] text-[11px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#0A192F] text-[#F3E5AB] text-[11px] font-bold">
               {isArabic ? 'معرض آراء الطلاب' : 'Reviews Gallery CMS'}
             </span>
             <span className="text-xs text-[#AA820A] font-semibold flex items-center gap-1">
@@ -317,7 +317,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
               {isArabic ? 'حماية الخصوصية مفعّلة افتراضياً' : 'Draft-by-Default Privacy'}
             </span>
           </div>
-          <h2 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#061638] mt-1">
+          <h2 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#0A192F] mt-1">
             {isArabic
               ? 'إدارة لقطات آراء وتقييمات الطلاب'
               : 'Student Reviews & Feedback Screenshots'}
@@ -331,7 +331,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
 
         {/* Summary Counters */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-gray-200 font-bold text-[#061638]">
+          <span className="px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-gray-200 font-bold text-[#0A192F]">
             {isArabic ? 'الإجمالي:' : 'Total:'} {items.length}
           </span>
           <span className="px-3 py-1.5 rounded-xl bg-[#25D366]/15 border border-[#25D366]/40 font-bold text-[#128C7E]">
@@ -340,7 +340,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
           <span className="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 font-bold text-amber-800">
             {isArabic ? 'مسودة خاصة:' : 'Private Drafts:'} {draftCount}
           </span>
-          <span className="px-3 py-1.5 rounded-xl bg-[#061638]/5 border border-[#D4AF37]/40 font-bold text-[#061638]">
+          <span className="px-3 py-1.5 rounded-xl bg-[#0A192F]/5 border border-[#D4AF37]/40 font-bold text-[#0A192F]">
             {isArabic ? 'محمي الخصوصية:' : 'Masked:'} {maskedCount}
           </span>
         </div>
@@ -364,10 +364,10 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
             : 'border-[#D4AF37]/45 bg-[#FAF8F5] hover:border-[#D4AF37]'
         }`}
       >
-        <div className="w-12 h-12 mx-auto rounded-2xl bg-[#061638] text-[#D4AF37] flex items-center justify-center mb-3 shadow-md">
+        <div className="w-12 h-12 mx-auto rounded-2xl bg-[#0A192F] text-[#D4AF37] flex items-center justify-center mb-3 shadow-md">
           <Upload className="w-6 h-6" />
         </div>
-        <h3 className="font-bold text-sm sm:text-base text-[#061638]">
+        <h3 className="font-bold text-sm sm:text-base text-[#0A192F]">
           {isArabic
             ? 'رفع عدة لقطات شاشة لتقييمات الطلاب دفعة واحدة'
             : 'Upload Multiple Feedback Screenshots at Once'}
@@ -379,7 +379,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
         </p>
 
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-          <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] shadow-md hover:brightness-105 transition-all">
+          <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-md hover:brightness-105 transition-all">
             <Images className="w-4 h-4" />
             <span>{isArabic ? 'اختيار صور من جهازك' : 'Select Screenshots'}</span>
             <input
@@ -397,7 +397,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
         </div>
 
         {uploadProgress && (
-          <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold">
+          <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
             <Sparkles className="w-4 h-4 text-[#D4AF37] animate-spin" />
             <span>{uploadProgress}</span>
           </div>
@@ -406,7 +406,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
 
       {/* Importer for the 20 Attached Screenshots (Private Drafts Only) */}
       {unimportedAttached.length > 0 && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#061638] to-[#102445] text-white border border-[#D4AF37]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#0A192F] to-[#102445] text-white border border-[#D4AF37]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/50 flex items-center justify-center shrink-0">
               <FolderInput className="w-5 h-5 text-[#D4AF37]" />
@@ -428,7 +428,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
             type="button"
             onClick={handleImportAttachedDrafts}
             disabled={isUploading}
-            className="px-4 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#061638] hover:brightness-105 disabled:opacity-50 whitespace-nowrap shadow-md"
+            className="px-4 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#0A192F] hover:brightness-105 disabled:opacity-50 whitespace-nowrap shadow-md"
           >
             {isArabic
               ? `استيراد (${unimportedAttached.length})`
@@ -475,7 +475,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
                       loading="lazy"
                       className="max-w-full max-h-full object-contain rounded-lg"
                     />
-                    <span className="absolute top-2 start-2 px-2 py-0.5 rounded-md bg-[#061638] text-[#F3E5AB] text-[10px] font-bold font-mono">
+                    <span className="absolute top-2 start-2 px-2 py-0.5 rounded-md bg-[#0A192F] text-[#F3E5AB] text-[10px] font-bold font-mono">
                       #{idx + 1}
                     </span>
                   </div>
@@ -522,7 +522,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
                       )}
 
                       {item.hasPrivacyMask ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#061638] text-[#F3E5AB] text-[11px] font-bold">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-[11px] font-bold">
                           <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
                           <span>{isArabic ? 'تم إخفاء البيانات الخاصة' : 'Privacy Masked'}</span>
                         </span>
@@ -538,7 +538,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
                       <button
                         type="button"
                         onClick={() => setEditingMaskItem(item)}
-                        className="px-3 py-1.5 rounded-xl bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+                        className="px-3 py-1.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] text-xs font-bold flex items-center gap-1.5 shadow-sm"
                       >
                         <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
                         <span>{isArabic ? 'إخفاء بيانات خاصة' : 'Mask Private Info'}</span>
@@ -653,7 +653,7 @@ export const AdminReviewsManager: React.FC<AdminReviewsManagerProps> = ({ onNoti
                     <button
                       type="button"
                       onClick={() => handleSaveDetails(item)}
-                      className="px-4 py-1.5 rounded-xl bg-white border border-[#D4AF37]/60 text-[#061638] hover:bg-[#FAF8F5] text-xs font-bold flex items-center gap-1.5"
+                      className="px-4 py-1.5 rounded-xl bg-white border border-[#D4AF37]/60 text-[#0A192F] hover:bg-[#FAF8F5] text-xs font-bold flex items-center gap-1.5"
                     >
                       <Save className="w-3.5 h-3.5 text-[#AA820A]" />
                       <span>{isArabic ? 'حفظ التصنيف والوصف' : 'Save Category & Caption'}</span>

@@ -502,7 +502,7 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
 
   // زر الإغلاق والتصغير، وأدوات الكتابة
   const tb = 'w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-colors';
-  const on = 'bg-[#D4AF37] text-[#061638]';
+  const on = 'bg-[#D4AF37] text-[#0A192F]';
   const off = 'bg-white/10 text-white hover:bg-white/20';
   const pdf = store.snap.pdf;
   const PrevI = isAr ? ChevronRight : ChevronLeft;
@@ -541,7 +541,7 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
             if (e.key === 'Escape') setTextBox(null);
           }}
           placeholder={tr('Type… (Enter to place)', 'اكتب… (Enter للتثبيت)')}
-          className="absolute z-10 min-w-[180px] px-2 py-1 rounded-lg border-2 border-[#D4AF37] bg-white/95 text-[#061638] font-bold outline-none shadow-lg"
+          className="absolute z-10 min-w-[180px] px-2 py-1 rounded-lg border-2 border-[#D4AF37] bg-white/95 text-[#0A192F] font-bold outline-none shadow-lg"
           style={{ left: textBox.sx, top: textBox.sy, color, fontSize: Math.max(14, (26 + size * 12) * view.current.sc) }}
           rows={1}
         />
@@ -549,19 +549,19 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
 
       {/* الشريط العلوي: اسم السبورة، التصغير، الإغلاق */}
       <div className="absolute top-2 inset-x-2 flex items-center justify-between gap-2 pointer-events-none">
-        <span className="pointer-events-auto px-3 py-1.5 rounded-full bg-[#061638]/85 text-[#F3E5AB] text-xs font-bold shadow">
+        <span className="pointer-events-auto px-3 py-1.5 rounded-full bg-[#0A192F]/85 text-[#F3E5AB] text-xs font-bold shadow">
           🖊️ {tr('Whiteboard', 'السبورة')}
           {!canDraw && <span className="text-gray-300 font-normal"> • {tr('view only', 'للمشاهدة')}</span>}
         </span>
         <div className="flex items-center gap-1.5 pointer-events-auto">
           {standalone ? (
-            <button onClick={onClose} className="h-10 px-4 rounded-full bg-[#061638]/85 text-[#F3E5AB] text-xs font-bold shadow flex items-center gap-1.5" title={tr('Back', 'رجوع')}>
+            <button onClick={onClose} className="h-10 px-4 rounded-full bg-[#0A192F]/85 text-[#F3E5AB] text-xs font-bold shadow flex items-center gap-1.5" title={tr('Back', 'رجوع')}>
               <X className="w-4 h-4" />
               {tr('Close the board', 'إغلاق السبورة')}
             </button>
           ) : (
           <>
-          <button onClick={onMinimize} className={`${tb} bg-[#061638]/85 text-white`} title={tr('Minimize', 'تصغير')}>
+          <button onClick={onMinimize} className={`${tb} bg-[#0A192F]/85 text-white`} title={tr('Minimize', 'تصغير')}>
             <Minimize2 className="w-4 h-4" />
           </button>
           {isOwner && (
@@ -576,7 +576,7 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
 
       {/* تنقل صفحات PDF */}
       {pdf && (
-        <div className="absolute top-14 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#061638]/85 text-white text-xs font-bold shadow">
+        <div className="absolute top-14 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#0A192F]/85 text-white text-xs font-bold shadow">
           <FileText className="w-4 h-4 text-[#D4AF37]" />
           {pdfRef.current && canDraw && (
             <button disabled={pdf.page <= 1} onClick={() => showPdfPage(pdf.page - 1)} className="p-1 disabled:opacity-30">
@@ -607,7 +607,7 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
       )}
 
       {(busy || note) && (
-        <div className="absolute top-24 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 px-3 py-1.5 rounded-full bg-[#061638] text-[#F3E5AB] text-xs font-bold shadow flex items-center gap-1.5">
+        <div className="absolute top-24 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 px-3 py-1.5 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-bold shadow flex items-center gap-1.5">
           {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           {busy || note}
         </div>
@@ -617,20 +617,20 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
       {canDraw && (
         <div className="absolute bottom-3 inset-x-2 flex flex-col items-center gap-2">
           {panel === 'color' && (
-            <div className="flex flex-wrap items-center justify-center gap-2 p-2 rounded-2xl bg-[#061638]/90 shadow-xl max-w-[95vw]">
+            <div className="flex flex-wrap items-center justify-center gap-2 p-2 rounded-2xl bg-[#0A192F]/90 shadow-xl max-w-[95vw]">
               {COLORS.map((c) => (
                 <button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-[#D4AF37] scale-110' : 'border-white/40'}`} style={{ background: c }} />
               ))}
               <span className="w-px h-6 bg-white/20 mx-1" />
               {SIZES.map((w, i) => (
                 <button key={w} onClick={() => setSize(i)} className={`w-8 h-8 rounded-full flex items-center justify-center ${size === i ? 'bg-[#D4AF37]' : 'bg-white/10'}`}>
-                  <span className="rounded-full" style={{ width: 4 + i * 5, height: 4 + i * 5, background: size === i ? '#061638' : '#fff' }} />
+                  <span className="rounded-full" style={{ width: 4 + i * 5, height: 4 + i * 5, background: size === i ? '#0A192F' : '#fff' }} />
                 </button>
               ))}
             </div>
           )}
           {panel === 'emoji' && (
-            <div className="grid grid-cols-7 gap-1 p-2 rounded-2xl bg-[#061638]/90 shadow-xl">
+            <div className="grid grid-cols-7 gap-1 p-2 rounded-2xl bg-[#0A192F]/90 shadow-xl">
               {EMOJIS.map((e) => (
                 <button
                   key={e}
@@ -647,7 +647,7 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
             </div>
           )}
           {panel === 'bg' && isOwner && (
-            <div className="flex flex-wrap items-center justify-center gap-2 p-2 rounded-2xl bg-[#061638]/90 shadow-xl text-white text-[11px] font-bold max-w-[95vw]">
+            <div className="flex flex-wrap items-center justify-center gap-2 p-2 rounded-2xl bg-[#0A192F]/90 shadow-xl text-white text-[11px] font-bold max-w-[95vw]">
               {BGS.map((b) => (
                 <button key={b.c} onClick={() => send({ t: 'bg', bg: b.c })} className={`px-2 py-1 rounded-lg border-2 flex items-center gap-1 ${store.snap.bg === b.c ? 'border-[#D4AF37]' : 'border-white/20'}`}>
                   <span className="w-4 h-4 rounded" style={{ background: b.c }} />
@@ -662,14 +662,14 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
                   ['grid', tr('Grid', 'مربعات')]
                 ] as const
               ).map(([v, l]) => (
-                <button key={v} onClick={() => send({ t: 'bg', lines: v })} className={`px-2 py-1 rounded-lg ${store.snap.lines === v ? 'bg-[#D4AF37] text-[#061638]' : 'bg-white/10'}`}>
+                <button key={v} onClick={() => send({ t: 'bg', lines: v })} className={`px-2 py-1 rounded-lg ${store.snap.lines === v ? 'bg-[#D4AF37] text-[#0A192F]' : 'bg-white/10'}`}>
                   {l}
                 </button>
               ))}
             </div>
           )}
           {sel && sel.k !== 's' && tool === 'move' && (
-            <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-[#061638]/90 shadow-xl">
+            <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-[#0A192F]/90 shadow-xl">
               <button onClick={() => resize(0.85)} className={`${tb} ${off}`} title={tr('Smaller', 'أصغر')}>
                 <Minus className="w-4 h-4" />
               </button>
@@ -681,7 +681,7 @@ export const Whiteboard: React.FC<Props> = ({ store, canDraw, isOwner, isAr, sen
               </button>
             </div>
           )}
-          <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-[#061638]/90 shadow-2xl max-w-full overflow-x-auto [scrollbar-width:none]">
+          <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-[#0A192F]/90 shadow-2xl max-w-full overflow-x-auto [scrollbar-width:none]">
             <button onClick={() => setTool('pen')} className={`${tb} ${tool === 'pen' ? on : off}`} title={tr('Pen', 'قلم')}>
               <Pen className="w-4 h-4" />
             </button>

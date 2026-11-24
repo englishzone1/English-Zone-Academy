@@ -83,19 +83,19 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
   const inp = 'w-full px-4 py-3 rounded-xl border border-gray-300 text-sm bg-white focus:outline-none focus:border-[#D4AF37]';
 
   return (
-    <div className="fixed inset-0 z-[80] bg-[#061638]/70 backdrop-blur-sm flex items-center justify-center p-4" dir={isAr ? 'rtl' : 'ltr'}>
+    <div className="fixed inset-0 z-[80] bg-[#0A192F]/70 backdrop-blur-sm flex items-center justify-center p-4" dir={isAr ? 'rtl' : 'ltr'}>
       <form onSubmit={save} className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#D4AF37]/50 space-y-4">
         <div className="flex items-center gap-3">
-          <span className="w-11 h-11 rounded-2xl bg-[#061638] text-[#D4AF37] flex items-center justify-center">
+          <span className="w-11 h-11 rounded-2xl bg-[#0A192F] text-[#D4AF37] flex items-center justify-center">
             <UserRound className="w-6 h-6" />
           </span>
           <div>
-            <h2 className="font-bold text-lg text-[#061638]">{tr('Welcome! One last step', 'أهلًا {بك|بكِ}! خطوة أخيرة')}</h2>
+            <h2 className="font-bold text-lg text-[#0A192F]">{tr('Welcome! One last step', 'أهلًا {بك|بكِ}! خطوة أخيرة')}</h2>
             <p className="text-xs text-gray-500">{tr('This helps us address you correctly and suggest the right group and times.', 'هذه البيانات تساعدنا في مخاطبتك بالشكل الصحيح واقتراح المجموعة والمواعيد المناسبة لك.')}</p>
           </div>
         </div>
         <div>
-          <label className="block text-xs font-bold text-[#061638] mb-1">{tr('Your real full name *', '{اسمك|اسمكِ} الحقيقي الكامل *')}</label>
+          <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Your real full name *', '{اسمك|اسمكِ} الحقيقي الكامل *')}</label>
           <input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder={tr('First and last name', 'الاسم والعائلة')} className={inp} />
           <p className="text-[10px] text-gray-500 mt-1">{tr('This name appears on your certificate and to your teacher.', 'هذا الاسم يظهر في الشهادة وللمعلم.')}</p>
         </div>
@@ -108,7 +108,7 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
               type="button"
               key={g.v}
               onClick={() => setGenderVal(g.v)}
-              className={`py-3 rounded-xl text-sm font-bold border ${gender === g.v ? 'bg-[#061638] text-[#F3E5AB] border-[#061638]' : 'bg-white text-gray-600 border-gray-300'}`}
+              className={`py-3 rounded-xl text-sm font-bold border ${gender === g.v ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-gray-600 border-gray-300'}`}
             >
               {isAr ? g.ar : g.en}
             </button>
@@ -132,7 +132,7 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
             { v: showCountry, set: setShowCountry, en: 'Show my country to others', ar: 'إظهار دولتي للآخرين' },
             { v: showAge, set: setShowAge, en: 'Show my age to others', ar: 'إظهار عمري للآخرين' }
           ].map((o) => (
-            <label key={o.en} className="flex items-center justify-between gap-3 text-xs font-semibold text-[#061638] cursor-pointer">
+            <label key={o.en} className="flex items-center justify-between gap-3 text-xs font-semibold text-[#0A192F] cursor-pointer">
               {tr(o.en, o.ar)}
               <input type="checkbox" checked={o.v} onChange={(e) => o.set(e.target.checked)} className="w-5 h-5 accent-[#D4AF37]" />
             </label>
@@ -140,7 +140,7 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
           <p className="text-[10px] text-gray-500">{tr('The academy administration always sees them.', 'إدارة الأكاديمية تراها دائمًا.')}</p>
         </div>
         {error && <p className="text-xs font-bold text-red-600">{error}</p>}
-        <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] text-sm font-bold disabled:opacity-50">
+        <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-sm font-bold disabled:opacity-50">
           {busy ? '...' : tr('Done ✓', 'تم ✓')}
         </button>
       </form>

@@ -25,7 +25,7 @@ export const VerifyCertificatePage: React.FC<{ serial: string; navigate: (r: str
   return (
     <div className="min-h-[70vh] bg-[#FAF8F5] py-12">
       <div className="max-w-xl mx-auto px-4 space-y-6">
-        <h1 className="font-serif-luxury font-bold text-2xl text-center text-[#061638]">{tr('Certificate verification', 'التحقق من الشهادة')}</h1>
+        <h1 className="font-serif-luxury font-bold text-2xl text-center text-[#0A192F]">{tr('Certificate verification', 'التحقق من الشهادة')}</h1>
 
         <form
           onSubmit={(e) => {
@@ -35,7 +35,7 @@ export const VerifyCertificatePage: React.FC<{ serial: string; navigate: (r: str
           className="flex gap-2"
         >
           <input value={q} onChange={(e) => setQ(e.target.value)} dir="ltr" placeholder="EZ-2026-XXXXXX" className="flex-1 px-4 py-3 rounded-xl border border-gray-300 text-sm font-mono" />
-          <button className="px-4 rounded-xl bg-[#061638] text-[#F3E5AB]" title={tr('Check', 'تحقق')}>
+          <button className="px-4 rounded-xl bg-[#0A192F] text-[#F3E5AB]" title={tr('Check', 'تحقق')}>
             <Search className="w-4 h-4" />
           </button>
         </form>

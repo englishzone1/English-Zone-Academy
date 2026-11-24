@@ -87,7 +87,7 @@ export const AdminMemberProfile: React.FC<{ member: any; isAr: boolean; onClose:
           <div className="flex items-center gap-3 min-w-0">
             <AvatarRenderer config={cfg} gender={(m as any).gender} size={72} />
             <div className="min-w-0">
-              <h3 className="font-serif-luxury font-bold text-lg text-[#061638]">{m.fullName || '—'}</h3>
+              <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F]">{m.fullName || '—'}</h3>
               <p className="text-[11px] text-gray-500 break-all" dir="ltr">
                 {m.email}
                 {m.phone ? ` • ${m.phone}` : ''}
@@ -103,7 +103,7 @@ export const AdminMemberProfile: React.FC<{ member: any; isAr: boolean; onClose:
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button onClick={() => setEditing(true)} className="px-4 py-2 rounded-xl text-xs font-bold bg-[#061638] text-[#F3E5AB] flex items-center gap-1.5">
+          <button onClick={() => setEditing(true)} className="px-4 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] flex items-center gap-1.5">
             <Edit3 className="w-4 h-4 text-[#D4AF37]" />
             {tr('Edit name, WhatsApp & avatar', 'تعديل الاسم والواتساب والأفاتار')}
           </button>
@@ -115,10 +115,10 @@ export const AdminMemberProfile: React.FC<{ member: any; isAr: boolean; onClose:
           )}
         </div>
 
-        {msg && <div className="p-2 rounded-lg bg-[#FAF8F5] text-xs text-[#061638]">{msg}</div>}
+        {msg && <div className="p-2 rounded-lg bg-[#FAF8F5] text-xs text-[#0A192F]">{msg}</div>}
 
         <div className="space-y-3">
-          <h4 className="font-bold text-sm text-[#061638] flex items-center gap-1.5">
+          <h4 className="font-bold text-sm text-[#0A192F] flex items-center gap-1.5">
             <UserCircle2 className="w-4 h-4 text-[#AA820A]" />
             {tr('Community posts', 'منشوراتها في المجتمع')} ({posts.length})
           </h4>

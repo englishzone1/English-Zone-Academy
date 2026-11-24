@@ -68,7 +68,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
                   <UserRound className="w-7 h-7" />
                 </span>
               )}
-              <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#061638] text-[9px] font-bold">
+              <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0A192F] text-[9px] font-bold">
                 {tr('Photo', 'صورة')}
               </span>
               <input
@@ -90,21 +90,21 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
             </label>
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#AA820A]">{tr('Teacher portal', 'بوابة المعلم')}</span>
-              <h1 className="font-serif-luxury font-bold text-xl text-[#061638]">{user?.fullName}</h1>
+              <h1 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{user?.fullName}</h1>
               <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 self-start">
           <button
             onClick={() => navigate('rooms')}
-            className="px-4 py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5"
+            className="px-4 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5"
           >
             <Mic className="w-4 h-4" />
             {tr('Voice rooms with my students', 'الغرف الصوتية مع طلابي')}
           </button>
           <button
             onClick={() => navigate('board')}
-            className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#061638] text-xs font-bold flex items-center gap-1.5"
+            className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold flex items-center gap-1.5"
           >
             <PenLine className="w-4 h-4" />
             {tr('Whiteboard', 'السبورة')}
@@ -130,7 +130,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={`py-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 border ${
-                  tab === t.id ? 'bg-[#061638] text-[#F3E5AB] border-[#061638]' : 'bg-white text-gray-600 border-gray-200'
+                  tab === t.id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-gray-600 border-gray-200'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -144,7 +144,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
         </div>
 
         {notice && (
-          <div className="p-3 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-semibold text-center">{notice}</div>
+          <div className="p-3 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-semibold text-center">{notice}</div>
         )}
 
         {tab === 'students' && <AdminStudentsManager onNotice={notify} teacherMode />}

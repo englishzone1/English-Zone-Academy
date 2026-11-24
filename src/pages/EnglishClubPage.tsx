@@ -68,7 +68,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
     <div className="min-h-screen bg-[#FAF8F5]">
       
       {/* HERO SECTION WITH OFFICIAL ARTWORK */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#061638] via-[#0F2244] to-[#061638] text-white pt-10 pb-16 lg:pt-16 lg:pb-24 border-b border-[#D4AF37]/30">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0A192F] via-[#0F2244] to-[#0A192F] text-white pt-10 pb-16 lg:pt-16 lg:pb-24 border-b border-[#D4AF37]/30">
         {/* Subtle decorative radial grid */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px]"></div>
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -80,7 +80,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#123A8C] border border-[#D4AF37]/40 text-[#F3E5AB] text-xs sm:text-sm font-semibold shadow-sm">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#162B4D] border border-[#D4AF37]/40 text-[#F3E5AB] text-xs sm:text-sm font-semibold shadow-sm">
                 <EnglishZoneEmblem sizeClass="w-4 h-4" glow={false} showBevelBorder={false} />
                 <span>{c.badge}</span>
                 <span className="text-gray-400">|</span>
@@ -127,7 +127,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                 <button
                   onClick={() => openModalWithTrack('undecided')}
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] shadow-xl hover:shadow-[#D4AF37]/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-xl hover:shadow-[#D4AF37]/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
                 >
                   <GraduationCap className="w-5 h-5" />
                   <span>{c.joinCta}</span>
@@ -152,15 +152,15 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
 
             {/* Official Artwork Display */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border-2 border-[#D4AF37]/40 group bg-[#061638]">
+              <div className="relative w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border-2 border-[#D4AF37]/40 group bg-[#0A192F]">
                 <img
                   src={OFFICIAL_ENGLISH_CLUB_IMAGE}
                   alt="English Zone English Club Artwork"
                   className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500"
                   loading="eager"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#061638]/60 via-transparent to-transparent pointer-events-none"></div>
-                <div className="absolute bottom-3 left-3 right-3 p-3 rounded-2xl bg-[#061638]/85 backdrop-blur-md border border-white/10 flex items-center justify-between text-xs text-white">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A192F]/60 via-transparent to-transparent pointer-events-none"></div>
+                <div className="absolute bottom-3 left-3 right-3 p-3 rounded-2xl bg-[#0A192F]/85 backdrop-blur-md border border-white/10 flex items-center justify-between text-xs text-white">
                   <div className="flex items-center gap-2">
                     <EnglishZoneEmblem sizeClass="w-6 h-6" glow={false} showBevelBorder={false} />
                     <span className="font-semibold text-[#F3E5AB]">Interactive Virtual Lounge</span>
@@ -183,7 +183,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
             <Sparkles className="w-3.5 h-3.5" />
             <span>Interactive Sessions</span>
           </div>
-          <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#061638]">
+          <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F]">
             {c.expectSectionTitle}
           </h2>
           <p className="text-sm sm:text-base text-gray-600 mt-2">
@@ -200,10 +200,10 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                 className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/30 text-[#061638] group-hover:bg-[#061638] group-hover:text-[#F3E5AB] transition-colors flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/30 text-[#0A192F] group-hover:bg-[#0A192F] group-hover:text-[#F3E5AB] transition-colors flex items-center justify-center mb-4">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="font-bold text-base text-[#061638] mb-2 group-hover:text-[#AA820A] transition-colors">
+                  <h3 className="font-bold text-base text-[#0A192F] mb-2 group-hover:text-[#AA820A] transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
@@ -227,7 +227,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
             <span className="text-xs font-bold uppercase tracking-widest text-[#AA820A]">
               CEFR Aligned Structure
             </span>
-            <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#061638] mt-1">
+            <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-1">
               {c.structureSectionTitle}
             </h2>
             <p className="text-sm sm:text-base text-gray-600 mt-2">
@@ -241,7 +241,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
               <div key={i} className="p-4 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-xs sm:text-sm text-[#061638]">{hl.title}</h4>
+                  <h4 className="font-bold text-xs sm:text-sm text-[#0A192F]">{hl.title}</h4>
                   <p className="text-[11px] sm:text-xs text-gray-600 mt-1 leading-relaxed">{hl.desc}</p>
                 </div>
               </div>
@@ -261,7 +261,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                   </span>
                   <span className="text-xs font-bold text-gray-400">Track 1</span>
                 </div>
-                <h3 className="font-serif-luxury font-bold text-xl text-[#061638]">
+                <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
                   {language === 'ar' ? 'مسار التأسيس والمبتدئين' : 'Foundations Conversation Club'}
                 </h3>
                 <p className="text-xs text-gray-600 mt-2 leading-relaxed">
@@ -285,7 +285,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                       <Calendar className="w-3.5 h-3.5 text-gray-500" />
                       <span>{language === 'ar' ? 'الموعد المجدول:' : 'Schedule:'}</span>
                     </span>
-                    <span className="text-[#061638]">
+                    <span className="text-[#0A192F]">
                       {settings?.tracks['A1-A2']?.isConfigured && settings.tracks['A1-A2'].dayTimeEn
                         ? (language === 'ar' && settings.tracks['A1-A2'].dayTimeAr ? settings.tracks['A1-A2'].dayTimeAr : settings.tracks['A1-A2'].dayTimeEn)
                         : (language === 'ar' ? 'يُحدد عند اكتمال المجموعة' : 'Scheduled per cohort')}
@@ -318,12 +318,12 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
               <div className="absolute top-0 right-0 left-0 h-2.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]"></div>
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 rounded-full bg-[#061638] text-[#F3E5AB] text-xs font-bold border border-[#D4AF37]/40 shadow-xs">
+                  <span className="px-3 py-1 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-bold border border-[#D4AF37]/40 shadow-xs">
                     CEFR B1–B2 • Most Popular
                   </span>
                   <span className="text-xs font-bold text-[#AA820A]">Track 2</span>
                 </div>
-                <h3 className="font-serif-luxury font-bold text-xl text-[#061638]">
+                <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
                   {language === 'ar' ? 'مسار الطلاقة والتعبير' : 'Intermediate Fluency Club'}
                 </h3>
                 <p className="text-xs text-gray-600 mt-2 leading-relaxed">
@@ -347,7 +347,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                       <Calendar className="w-3.5 h-3.5 text-[#AA820A]" />
                       <span>{language === 'ar' ? 'الموعد المجدول:' : 'Schedule:'}</span>
                     </span>
-                    <span className="text-[#061638] font-bold">
+                    <span className="text-[#0A192F] font-bold">
                       {settings?.tracks['B1-B2']?.isConfigured && settings.tracks['B1-B2'].dayTimeEn
                         ? (language === 'ar' && settings.tracks['B1-B2'].dayTimeAr ? settings.tracks['B1-B2'].dayTimeAr : settings.tracks['B1-B2'].dayTimeEn)
                         : (language === 'ar' ? 'يُحدد عند اكتمال المجموعة' : 'Scheduled per cohort')}
@@ -367,7 +367,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
               <div className="mt-6 pt-4 border-t border-gray-100">
                 <button
                   onClick={() => openModalWithTrack('B1-B2')}
-                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#061638] via-[#123A8C] to-[#061638] text-[#F3E5AB] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#0A192F] via-[#162B4D] to-[#0A192F] text-[#F3E5AB] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-4 h-4 text-[#D4AF37]" />
                   <span>{language === 'ar' ? 'انضم لمسار الطلاقة (B1–B2)' : 'Join Fluency Track'}</span>
@@ -385,7 +385,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                   </span>
                   <span className="text-xs font-bold text-gray-400">Track 3</span>
                 </div>
-                <h3 className="font-serif-luxury font-bold text-xl text-[#061638]">
+                <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
                   {language === 'ar' ? 'مسار الإتقان والاحتراف' : 'Advanced Mastery Club'}
                 </h3>
                 <p className="text-xs text-gray-600 mt-2 leading-relaxed">
@@ -409,7 +409,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                       <Calendar className="w-3.5 h-3.5 text-gray-500" />
                       <span>{language === 'ar' ? 'الموعد المجدول:' : 'Schedule:'}</span>
                     </span>
-                    <span className="text-[#061638]">
+                    <span className="text-[#0A192F]">
                       {settings?.tracks['C1-C2']?.isConfigured && settings.tracks['C1-C2'].dayTimeEn
                         ? (language === 'ar' && settings.tracks['C1-C2'].dayTimeAr ? settings.tracks['C1-C2'].dayTimeAr : settings.tracks['C1-C2'].dayTimeEn)
                         : (language === 'ar' ? 'يُحدد عند اكتمال المجموعة' : 'Scheduled per cohort')}
@@ -452,7 +452,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
                 <span>{c.pricingTitle}</span>
               </div>
 
-              <h3 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#061638]">
+              <h3 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F]">
                 {language === 'ar'
                   ? 'انضم إلى جلسات نادي المحادثة التفاعلية عبر الإنترنت'
                   : 'High-Impact Online Conversation Practice'}
@@ -483,7 +483,7 @@ export const EnglishClubPage: React.FC<EnglishClubPageProps> = ({ navigate }) =>
             <div className="md:col-span-4 flex flex-col gap-3">
               <button
                 onClick={() => openModalWithTrack('undecided')}
-                className="w-full py-4 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
               >
                 <GraduationCap className="w-5 h-5" />
                 <span>{c.joinCta}</span>

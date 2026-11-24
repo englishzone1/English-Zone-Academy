@@ -53,7 +53,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             {t.brand.name} Savings & Bundles
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#061638] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
             {t.offers.sectionTitle}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -63,14 +63,14 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
             {(
               <button
                 onClick={() => navigate(isAuthenticated ? 'portal' : 'join-offer')}
-                className="ez-float-glow w-full rounded-2xl px-5 py-5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] flex flex-col items-center gap-2"
+                className="ez-float-glow w-full rounded-2xl px-5 py-5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] flex flex-col items-center gap-2"
               >
                 {isAr ? (
                   <>
                     <span className="font-bold text-base sm:text-lg leading-snug">
                       🎁 سجّلي معنا حسابًا مجانيًا واستمتعي بعرض خصم <span className="text-[#8a5a00] text-xl sm:text-2xl">30%</span>
                     </span>
-                    <span className="w-24 h-px bg-[#061638]/25" />
+                    <span className="w-24 h-px bg-[#0A192F]/25" />
                     <span className="font-bold text-sm sm:text-base">
                       👑 كوني سفيرة لنا واربحي <span className="text-[#8a5a00] text-lg sm:text-xl">15%</span>
                     </span>
@@ -78,7 +78,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
                 ) : (
                   <>
                     <span className="font-bold text-base sm:text-lg">🎁 Create a free account and enjoy a 30% discount</span>
-                    <span className="w-24 h-px bg-[#061638]/25" />
+                    <span className="w-24 h-px bg-[#0A192F]/25" />
                     <span className="font-bold text-sm sm:text-base">👑 Become our ambassador and earn 15%</span>
                   </>
                 )}
@@ -91,8 +91,8 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
         {PROGRAM_CATEGORIES.filter((p) => p.monthlyStartingPrice && p.offerNoteAr).map((p) => (
-          <div key={p.id} dir={isAr ? 'rtl' : 'ltr'} className="bg-gradient-to-br from-[#061638] to-[#102445] text-white rounded-3xl p-7 sm:p-9 border-2 border-[#D4AF37] shadow-xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37] text-[#061638] text-xs font-extrabold mb-3">
+          <div key={p.id} dir={isAr ? 'rtl' : 'ltr'} className="bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-9 border-2 border-[#D4AF37] shadow-xl">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-xs font-extrabold mb-3">
               <Gift className="w-3.5 h-3.5" />
               {isAr ? 'العرض الحالي' : 'Current offer'}
             </div>
@@ -106,7 +106,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
                 <ProgramPrice prog={p} language={language} dark />
                 <button
                   onClick={() => navigate(`course/${p.id}`)}
-                  className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] flex items-center justify-center gap-2"
                 >
                   {isAr ? 'تفاصيل العرض' : 'Offer details'}
                   <ArrowRight className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
@@ -125,7 +125,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   {offer.badge ? (
-                    <span className="px-3 py-1 rounded-full bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
+                    <span className="px-3 py-1 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5">
                       <Gift className="w-3.5 h-3.5 text-[#D4AF37]" />
                       <span>{offer.badge}</span>
                     </span>
@@ -137,7 +137,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
                   </span>
                 </div>
 
-                <h2 className="font-serif-luxury font-bold text-2xl text-[#061638] mb-3">
+                <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mb-3">
                   {offer.title}
                 </h2>
 
@@ -151,7 +151,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block font-semibold">
                       {language === 'ar' ? 'رمز القسيمة' : 'Promo Code'}
                     </span>
-                    <span className="font-mono font-bold text-base text-[#061638]">
+                    <span className="font-mono font-bold text-base text-[#0A192F]">
                       {offer.code}
                     </span>
                   </div>
@@ -184,7 +184,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
 
               <button
                 onClick={() => navigate('register')}
-                className="w-full py-3 rounded-xl font-bold text-sm bg-[#061638] text-white hover:bg-[#123A8C] transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl font-bold text-sm bg-[#0A192F] text-white hover:bg-[#162B4D] transition-colors flex items-center justify-center gap-2"
               >
                 <span>{t.offers.applyOffer}</span>
                 <ArrowRight className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
@@ -194,7 +194,7 @@ export const OffersPage: React.FC<OffersPageProps> = ({ navigate }) => {
         </div>
 
         {/* Note on combining discounts (Rule 14) */}
-        <div className="p-6 rounded-2xl bg-[#061638]/5 border border-[#D4AF37]/30 text-center text-xs text-gray-600 max-w-2xl mx-auto">
+        <div className="p-6 rounded-2xl bg-[#0A192F]/5 border border-[#D4AF37]/30 text-center text-xs text-gray-600 max-w-2xl mx-auto">
           <p>
             {language === 'ar'
               ? 'تنويه: لا يتم دمج الخصومات تلقائياً ما لم يتم اعتماد ذلك من الإدارة العليا للأكاديمية. تطبق الأسعار الرسمية المعتمدة لكل مرحلة.'

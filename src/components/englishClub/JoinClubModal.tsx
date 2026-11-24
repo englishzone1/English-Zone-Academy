@@ -94,7 +94,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
           <div>
             {/* Modal Header */}
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-[#061638] flex items-center justify-center flex-shrink-0 shadow-md">
+              <div className="w-12 h-12 rounded-2xl bg-[#0A192F] flex items-center justify-center flex-shrink-0 shadow-md">
                 <EnglishZoneEmblem sizeClass="w-9 h-9" glow={false} showBevelBorder={false} />
               </div>
               <div>
@@ -102,7 +102,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
                   <Sparkles className="w-3 h-3" />
                   <span>{c.badge}</span>
                 </div>
-                <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#061638] mt-0.5">
+                <h3 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#0A192F] mt-0.5">
                   {c.modalTitle}
                 </h3>
               </div>
@@ -203,7 +203,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
 
               {/* Club Policy Badge */}
               <div className="p-3 rounded-2xl bg-[#FAF8F5] border border-gray-200 text-[11px] text-gray-600">
-                <div className="flex items-center gap-1.5 text-[#061638] font-bold">
+                <div className="flex items-center gap-1.5 text-[#0A192F] font-bold">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
                   <span>{c.practiceNotReplacementBadge}</span>
                 </div>
@@ -213,7 +213,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#061638] via-[#123A8C] to-[#061638] text-[#F3E5AB] hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#0A192F] via-[#162B4D] to-[#0A192F] text-[#F3E5AB] hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span>{c.submitting}</span>
@@ -238,7 +238,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
               <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#FAF8F5] border border-gray-200 text-gray-600">
                 Ref: {successRefId}
               </span>
-              <h3 className="font-serif-luxury font-bold text-2xl text-[#061638] mt-3">
+              <h3 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mt-3">
                 {c.successTitle}
               </h3>
               <p className="text-xs sm:text-sm text-gray-600 mt-2 max-w-sm mx-auto leading-relaxed">
@@ -249,7 +249,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
             <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/30 text-left text-xs space-y-1.5">
               <div className="flex items-center justify-between font-bold text-gray-700">
                 <span>{language === 'ar' ? 'المسار المختار:' : 'Selected Track:'}</span>
-                <span className="text-[#061638]">{selectedTrack}</span>
+                <span className="text-[#0A192F]">{selectedTrack}</span>
               </div>
               <div className="flex items-center justify-between text-gray-500">
                 <span>{language === 'ar' ? 'مدة اللقاء:' : 'Session Duration:'}</span>
