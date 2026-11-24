@@ -27,11 +27,15 @@ export const isWorkshopUser = (u: any): boolean => {
 };
 
 export const WorkshopConfirm: React.FC<{ isAr: boolean; name: string; onLogout: () => void }> = ({ isAr, name, onLogout }) => {
-  const [page, setPage] = useState<WorkshopPage>(FALLBACK_PAGE);
+  // لا نعرض شيئًا حتى تُحمَّل الورشة التي سجّل فيها (حتى لا تظهر الورشة القديمة لحظة)
+  const [loaded, setLoaded] = useState<WorkshopPage | null>(null);
   useEffect(() => {
     const id = fromWorkshopId();
-    loadWorkshopPage(id || undefined).then((p) => p && setPage(p));
+    loadWorkshopPage(id || undefined)
+      .then((p) => setLoaded(p || FALLBACK_PAGE))
+      .catch(() => setLoaded(FALLBACK_PAGE));
   }, []);
+  const page = loaded || FALLBACK_PAGE;
   const doneKey = `ez_ws_confirmed_${page.workshopId || 'first'}`;
   const [done, setDone] = useState(false);
   useEffect(() => {
@@ -53,6 +57,13 @@ export const WorkshopConfirm: React.FC<{ isAr: boolean; name: string; onLogout: 
       window.location.href = page.groupLink;
     }, 1500);
   };
+
+  if (!loaded)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-gray-500 animate-spin" />
+      </div>
+    );
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" dir="rtl" style={{ background: tint(page.color) }}>
