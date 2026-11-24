@@ -99,7 +99,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
     if (!checkBasics()) return;
     mark();
     setBusy(true);
-    const r = await registerVisitor({ name: fullName.trim(), age: age.trim(), google: true });
+    const r = await registerVisitor({ name: fullName.trim(), age: age.trim(), google: true, source: 'workshop' });
     setBusy(false);
     if (r.success) navigate('portal');
     else {
@@ -120,7 +120,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
     setBusy(true);
     // إن لم يصل رد خلال 40 ثانية: الاتصال بخوادم التسجيل محجوب أو ضعيف
     const r: any = await Promise.race([
-      registerVisitor({ name: fullName.trim(), age: age.trim(), email, password }),
+      registerVisitor({ name: fullName.trim(), age: age.trim(), email, password, source: 'workshop' }),
       new Promise((res) => setTimeout(() => res({ success: false, code: 'timeout' }), 40000))
     ]);
     setBusy(false);

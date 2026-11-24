@@ -30,6 +30,7 @@ import { StudentCourseMaterials, StudentLibrary, StudentMessages, StudentFeedbac
 import { CommunityFeed } from '../../components/community/CommunityFeed';
 import { HomeworkPlatform } from '../../components/student/HomeworkPlatform';
 import { VisitorDashboard } from '../../components/student/VisitorDashboard';
+import { WorkshopConfirm, WORKSHOP_ONLY, isWorkshopUser } from '../../components/student/WorkshopConfirm';
 import { CompleteProfile } from '../../components/student/CompleteProfile';
 import { DailyChallenge } from '../../components/student/DailyChallenge';
 import { useAcademySettings, formatMoney } from '../../hooks/useAcademySettings';
@@ -137,6 +138,20 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
   if (!firebaseUser) {
     navigate('login');
     return null;
+  }
+
+  // مسجّل عبر رابط الورشة: زر تأكيد التسجيل ومجموعة تيليغرام فقط (حتى تعيد الإدارة الصفحة العادية)
+  if (WORKSHOP_ONLY && !isActive && isWorkshopUser(user)) {
+    return (
+      <WorkshopConfirm
+        isAr={isAr}
+        name={(user as any)?.fullName || ''}
+        onLogout={async () => {
+          await logout();
+          navigate('home');
+        }}
+      />
+    );
   }
 
   // حساب زائر مجاني: صفحة الكتب المجانية ودعوة للاشتراك

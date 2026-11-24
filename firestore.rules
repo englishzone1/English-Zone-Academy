@@ -107,8 +107,9 @@ service cloud.firestore {
           'id', 'email', 'fullName', 'role', 'phone', 'country', 'age',
           'avatarUrl', 'avatarConfig', 'createdAt', 'points', 'mainLevel',
           'currentStage', 'subscriptionStatus', 'learningFormat',
-          'starOfTheWeekCount', 'starOfTheMonthCount', 'accountType'
+          'starOfTheWeekCount', 'starOfTheMonthCount', 'accountType', 'signupSource'
         ]) &&
+        (!('signupSource' in request.resource.data) || request.resource.data.signupSource == 'workshop') &&
         (!('accountType' in request.resource.data) || request.resource.data.accountType in ['visitor', 'registrant'])
       );
 

@@ -27,7 +27,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   adminLogin: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   registerStudentAccount: (email: string, password: string, fullName: string) => Promise<{ success: boolean; message?: string }>;
-  registerVisitor: (p: { email?: string; password?: string; name: string; phone?: string; country?: string; age?: string; google?: boolean; kind?: 'visitor' | 'registrant' }) => Promise<{ success: boolean; code?: string; uid?: string; email?: string }>;
+  registerVisitor: (p: { email?: string; password?: string; name: string; phone?: string; country?: string; age?: string; google?: boolean; kind?: 'visitor' | 'registrant'; source?: string }) => Promise<{ success: boolean; code?: string; uid?: string; email?: string }>;
   isVisitor: boolean;
   loginWithGoogle: () => Promise<{ success: boolean; code?: string }>;
   adminLoginWithGoogle: () => Promise<{ success: boolean; code?: string }>;
@@ -45,7 +45,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // بيانات «حساب زائر مجاني» تُحفظ مؤقتًا قبل الدخول، ثم تُستعمل عند إنشاء الملف
 const VISITOR_KEY = 'ez_visitor_signup';
-const readVisitorSignup = (): { name?: string; phone?: string; country?: string; age?: string; kind?: 'visitor' | 'registrant' } | null => {
+const readVisitorSignup = (): { name?: string; phone?: string; country?: string; age?: string; kind?: 'visitor' | 'registrant'; source?: string } | null => {
   try {
     const raw = localStorage.getItem(VISITOR_KEY);
     if (!raw) return null;
@@ -166,10 +166,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               starOfTheWeekCount: 0,
               starOfTheMonthCount: 0,
               subscriptionStatus: 'pending',
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
+              ...(vs?.source === 'workshop' ? ({ signupSource: 'workshop' } as any) : {})
             };
+            // قبل نشر قواعد signupSource: إن رُفض الحقل نحفظ الملف بدونه
+            let saved = false;
+            if ((createdProfile as any).signupSource) {
+              try {
+                await Promise.race([setDoc(doc(db, 'users', fbUser.uid), createdProfile), new Promise((r) => setTimeout(r, 8000))]);
+                saved = true;
+              } catch {
+                delete (createdProfile as any).signupSource;
+              }
+            }
             // الشبكة البطيئة لا تُجمّد التسجيل: الكتابة تبقى في الانتظار وتُرسل وحدها عند الاتصال
-            await Promise.race([setDoc(doc(db, 'users', fbUser.uid), createdProfile), new Promise((r) => setTimeout(r, 8000))]);
+            if (!saved) await Promise.race([setDoc(doc(db, 'users', fbUser.uid), createdProfile), new Promise((r) => setTimeout(r, 8000))]);
             resolvedProfile = createdProfile;
           } catch (createErr) {
             // قد يكون طلب آخر أنشأ الملف في اللحظة نفسها: نقرؤه من جديد بدل اعتباره مفقودًا
@@ -494,10 +505,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * Register a new student account using Firebase Authentication
    */
   // حساب زائر مجاني: بالبريد وكلمة المرور أو بحساب Google
-  const registerVisitor = async (p: { email?: string; password?: string; name: string; phone?: string; country?: string; age?: string; google?: boolean; kind?: 'visitor' | 'registrant' }): Promise<{ success: boolean; code?: string; uid?: string; email?: string }> => {
+  const registerVisitor = async (p: { email?: string; password?: string; name: string; phone?: string; country?: string; age?: string; google?: boolean; kind?: 'visitor' | 'registrant'; source?: string }): Promise<{ success: boolean; code?: string; uid?: string; email?: string }> => {
     setAuthError(null);
     try {
-      localStorage.setItem(VISITOR_KEY, JSON.stringify({ name: p.name, phone: p.phone || '', country: p.country || '', age: p.age || '', kind: p.kind || 'visitor', at: Date.now() }));
+      localStorage.setItem(VISITOR_KEY, JSON.stringify({ name: p.name, phone: p.phone || '', country: p.country || '', age: p.age || '', kind: p.kind || 'visitor', source: p.source || '', at: Date.now() }));
     } catch {
       // ignore
     }

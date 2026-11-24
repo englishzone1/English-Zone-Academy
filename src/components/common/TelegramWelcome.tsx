@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { WORKSHOP_ONLY } from '../student/WorkshopConfirm';
 
 const TG_URL = 'https://t.me/En9lishZ0ne';
 
@@ -27,6 +28,8 @@ export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, profile
 
   useEffect(() => {
     if (!uid || role !== 'student' || !createdAt || !profileDone) return;
+    // مسجّلو الورشة يرون زر تأكيد التسجيل ومجموعة تيليغرام بدل هذه النافذة
+    if (WORKSHOP_ONLY && fromWorkshop) return;
     // حساب جديد: أُنشئ خلال آخر 3 أيام
     const age = Date.now() - new Date(createdAt).getTime();
     if (!(age >= 0 && age < 3 * 24 * 3600 * 1000)) return;
