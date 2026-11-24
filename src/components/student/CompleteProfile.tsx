@@ -3,6 +3,12 @@ import { UserRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 // بعد التسجيل: نطلب الاسم الحقيقي والجنس والدولة والعمر مرة واحدة (الواتساب اختياري في غرفة الأفاتار)
+// أرقام لوحة المفاتيح العربية (٠١٢…) والفارسية تُحوَّل إلى 0-9، وإلا تُحذف من خانة العمر والهاتف
+export const latinDigits = (s: string) =>
+  String(s || '')
+    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[\u06F0-\u06F9]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
+
 export const validRealName = (n: string) => {
   const t = n.trim().replace(/\s+/g, ' ');
   return t.length >= 5 && !t.includes('@') && !/\d/.test(t) && t.split(' ').length >= 2;
@@ -110,11 +116,11 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder={tr('Country *', 'الدولة *')} className={inp} />
-          <input value={age} onChange={(e) => setAge(e.target.value.replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder={tr('Age *', 'العمر *')} className={inp} />
+          <input value={age} onChange={(e) => setAge(latinDigits(e.target.value).replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder={tr('Age *', 'العمر *')} className={inp} />
         </div>
         <input
           value={phone}
-          onChange={(e) => setPhone(e.target.value.replace(/[^\d+\s-]/g, '').slice(0, 25))}
+          onChange={(e) => setPhone(latinDigits(e.target.value).replace(/[^\d+\s-]/g, '').slice(0, 25))}
           inputMode="tel"
           dir="ltr"
           placeholder={fromWorkshop ? tr('Phone (WhatsApp) with country code *', 'رقم الهاتف (واتساب) مع رمز الدولة *') : tr('Phone (WhatsApp) with country code (optional)', 'رقم الهاتف (واتساب) مع رمز الدولة (اختياري)')}

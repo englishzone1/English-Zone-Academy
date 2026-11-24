@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CalendarDays, Clock, Hourglass, CheckCircle2, Award } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { googleErrorMessage } from '../components/common/GoogleSignInButton';
-import { validRealName } from '../components/student/CompleteProfile';
+import { validRealName, latinDigits } from '../components/student/CompleteProfile';
 
 // صفحة الورشة المجانية «تحدّث بالإنجليزية وابنِ ثقتك» برابط مستقل (/workshop):
 // تسجيل حساب في الأكاديمية ← إكمال البيانات (الاسم، الجنس، الدولة، العمر، الهاتف) ← «تم» ← نافذة الانضمام لقناة تيليغرام
@@ -55,10 +54,12 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
         return tr('Password must be at least 6 characters.', 'كلمة المرور 6 أحرف على الأقل.');
       case 'auth/invalid-email':
         return tr('The email address is not valid.', 'البريد الإلكتروني غير صحيح.');
-      default: {
-        const m = googleErrorMessage(code, isAr) || '';
-        return m && code && code !== 'unknown' ? `${m} (${code})` : m;
-      }
+      case 'auth/network-request-failed':
+        return 'تحقّق من اتصال الإنترنت ثم {حاول|حاولي} مرة أخرى.';
+      case 'auth/too-many-requests':
+        return 'محاولات كثيرة، {انتظر|انتظري} دقيقة ثم {حاول|حاولي} مرة أخرى.';
+      default:
+        return `تعذّر التسجيل، {حاول|حاولي} مرة أخرى${code ? ` (${code})` : ''}.`;
     }
   };
 
@@ -142,16 +143,16 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
             </p>
             <div className="grid grid-cols-3 gap-2">
               <input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="الاسم الكامل" className={`${inp} col-span-2`} />
-              <input value={age} onChange={(e) => setAge(e.target.value.replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder="العمر" className={inp} />
+              <input value={age} onChange={(e) => setAge(latinDigits(e.target.value).replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder="العمر" className={inp} />
             </div>
+            {error && <p className="text-sm font-bold text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 text-center">{error}</p>}
             <form onSubmit={viaEmail} className="space-y-2">
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="البريد الإلكتروني" className={inp} dir="ltr" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} placeholder="البريد الإلكتروني" autoCapitalize="off" autoCorrect="off" className={inp} dir="ltr" />
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="كلمة مرور (6 أحرف على الأقل)" className={inp} dir="ltr" />
               <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-[#6b2f3a] hover:bg-[#5a2630] text-white text-sm font-bold disabled:opacity-50">
                 {busy ? '...' : 'التسجيل في الورشة'}
               </button>
             </form>
-            {error && <p className="text-xs font-bold text-red-600 text-center">{error}</p>}
             <p className="text-[11px] text-center text-[#6b5b57]">
               لديك حساب؟{' '}
               <button onClick={() => navigate('login')} className="font-bold text-[#6b2f3a] underline">
