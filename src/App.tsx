@@ -29,6 +29,12 @@ import { StaffLoginPage } from './pages/StaffLoginPage';
 import { WorkshopPage } from './pages/WorkshopPage';
 import { VerifyCertificatePage } from './pages/VerifyCertificatePage';
 import { VisitorJoinPage } from './pages/VisitorJoinPage';
+import { SpeakWorkshopPage } from './pages/SpeakWorkshopPage';
+
+// رابط الورشة المستقل: /workshop يفتح صفحة الورشة مباشرة
+if (typeof window !== 'undefined' && /^\/workshop\/?$/i.test(window.location.pathname) && !window.location.hash) {
+  window.history.replaceState(null, '', '/#/speak-workshop');
+}
 import { HomeworkPlatform } from './components/student/HomeworkPlatform';
 import { HomeworkAnswersPage } from './components/admin/HomeworkAnswersPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
@@ -133,7 +139,7 @@ function MainApp() {
   // المعلم لا يرى صفحات الموقع العامة (الأسعار والعروض والتسجيل…): لوحته فقط، بلا شعار ولا قوائم
   const teacherOnly = isTeacher && !isAdmin && !isSuperAdmin;
   // الغرفة الصوتية تملأ الشاشة (بلا القائمة العلوية والتذييل)
-  const bare = teacherOnly || currentRoute === 'staff' || currentRoute.startsWith('room/');
+  const bare = teacherOnly || currentRoute === 'staff' || currentRoute === 'speak-workshop' || currentRoute.startsWith('room/');
   useEffect(() => {
     if (teacherOnly) document.title = 'لوحة المعلم';
   }, [teacherOnly]);
@@ -172,6 +178,8 @@ function MainApp() {
         return <VisitorJoinPage navigate={navigate} />;
       case 'join-us':
         return <VisitorJoinPage navigate={navigate} />;
+      case 'speak-workshop':
+        return <SpeakWorkshopPage navigate={navigate} />;
       case 'free-workshops':
       case 'workshops':
         return <VisitorJoinPage navigate={navigate} workshop />;
@@ -337,7 +345,13 @@ function MainApp() {
       <TawkChat hidden={bare || currentRoute.startsWith('room/') || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
       {!bare && !currentRoute.startsWith('room/') && !['portal', 'student-dashboard', 'teacher-dashboard', 'admin-dashboard', 'admin-login', 'login', 'student-login', 'homework', 'register'].includes(currentRoute) && !currentRoute.startsWith('hw-answers/') && <OfferBubble language={language} navigate={navigate} />}
       {showAccountFab && <AccountFab isAr={language === 'ar'} onClick={() => navigate('portal')} />}
-      <TelegramWelcome uid={(user as any)?.id} role={(user as any)?.role} createdAt={(user as any)?.createdAt} isAr={language === 'ar'} />
+      <TelegramWelcome
+        uid={(user as any)?.id}
+        role={(user as any)?.role}
+        createdAt={(user as any)?.createdAt}
+        profileDone={!!user && (user as any).nameConfirmed === true && !!String((user as any).country || '').trim() && Number((user as any).age) > 0 && ['male', 'female'].includes((user as any).gender)}
+        isAr={language === 'ar'}
+      />
       <ChatAssistant
         hidden={
           showAccountFab ||

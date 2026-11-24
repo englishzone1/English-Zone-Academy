@@ -18,6 +18,15 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
   const [showAge, setShowAge] = useState<boolean>(u.showAge === true);
   const [age, setAge] = useState(u.age ? String(u.age) : '');
   const [gender, setGenderVal] = useState<string>(u.gender || '');
+  const [phone, setPhone] = useState<string>(u.phone || '');
+  // من سجّل عبر رابط الورشة: رقم الهاتف مطلوب
+  const fromWorkshop = (() => {
+    try {
+      return !!localStorage.getItem('ez_from_workshop');
+    } catch {
+      return false;
+    }
+  })();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -37,6 +46,11 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
       setError(tr('Write your country and age.', '{اكتب|اكتبي} {دولتك|دولتكِ} {وعمرك|وعمركِ}.'));
       return;
     }
+    const ph = phone.replace(/[^\d+]/g, '');
+    if ((fromWorkshop || phone.trim()) && ph.replace(/\D/g, '').length < 7) {
+      setError(tr('Write your phone number (WhatsApp) with the country code.', '{اكتب|اكتبي} رقم {هاتفك|هاتفكِ} (واتساب) مع رمز الدولة.'));
+      return;
+    }
     setBusy(true);
     setError('');
     try {
@@ -48,8 +62,11 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
         country: country.trim().slice(0, 60),
         age: Number(age),
         gender,
+        ...(ph ? { phone: ph.slice(0, 30) } : {}),
         updatedAt: new Date().toISOString()
       } as any);
+      // بعد «تم»: تظهر نافذة الانضمام لقناة تيليغرام
+      window.dispatchEvent(new Event('ez-profile-done'));
     } catch {
       setError(tr('Could not save, please try again.', 'تعذّر الحفظ، {حاول|حاولي} مرة أخرى.'));
     } finally {
@@ -95,6 +112,14 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
           <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder={tr('Country *', 'الدولة *')} className={inp} />
           <input value={age} onChange={(e) => setAge(e.target.value.replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder={tr('Age *', 'العمر *')} className={inp} />
         </div>
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value.replace(/[^\d+\s-]/g, '').slice(0, 25))}
+          inputMode="tel"
+          dir="ltr"
+          placeholder={fromWorkshop ? tr('Phone (WhatsApp) with country code *', 'رقم الهاتف (واتساب) مع رمز الدولة *') : tr('Phone (WhatsApp) with country code (optional)', 'رقم الهاتف (واتساب) مع رمز الدولة (اختياري)')}
+          className={inp}
+        />
         <div className="space-y-2 p-3 rounded-xl bg-[#FAF8F5] border border-gray-200">
           <p className="text-[11px] font-bold text-gray-600">{tr('Who can see these?', 'من يرى هذه البيانات؟')}</p>
           {[
@@ -110,7 +135,7 @@ export const CompleteProfile: React.FC<{ isAr: boolean }> = ({ isAr }) => {
         </div>
         {error && <p className="text-xs font-bold text-red-600">{error}</p>}
         <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-sm font-bold disabled:opacity-50">
-          {busy ? '...' : tr('Save and continue', 'حفظ والمتابعة')}
+          {busy ? '...' : tr('Done ✓', 'تم ✓')}
         </button>
       </form>
     </div>

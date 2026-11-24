@@ -7,11 +7,13 @@ interface Props {
   uid?: string;
   role?: string;
   createdAt?: string;
+  // البيانات مكتملة (الاسم والجنس والدولة والعمر): النافذة تظهر بعد «تم» في نموذج البيانات
+  profileDone?: boolean;
   isAr: boolean;
 }
 
 // نافذة ترحيب تظهر مرة واحدة لكل حساب جديد: رابط الانضمام إلى قناة تيليغرام للمتابعة
-export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, isAr }) => {
+export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, profileDone, isAr }) => {
   const [open, setOpen] = useState(false);
   // جاء من رابط الورش المجانية: الرسالة عن مواعيد الورش وروابطها
   const fromWorkshop = (() => {
@@ -24,7 +26,7 @@ export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, isAr })
   const key = `ez_tg_welcome_${uid}`;
 
   useEffect(() => {
-    if (!uid || role !== 'student' || !createdAt) return;
+    if (!uid || role !== 'student' || !createdAt || !profileDone) return;
     // حساب جديد: أُنشئ خلال آخر 3 أيام
     const age = Date.now() - new Date(createdAt).getTime();
     if (!(age >= 0 && age < 3 * 24 * 3600 * 1000)) return;
@@ -35,7 +37,7 @@ export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, isAr })
     }
     const t = window.setTimeout(() => setOpen(true), fromWorkshop ? 300 : 1200);
     return () => window.clearTimeout(t);
-  }, [uid, role, createdAt]);
+  }, [uid, role, createdAt, profileDone]);
 
   const close = () => {
     try {
