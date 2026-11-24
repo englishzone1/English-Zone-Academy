@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, Auth } from 'firebase/auth';
 import { getFirestore, initializeFirestore, doc, getDocFromServer, Firestore } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -19,9 +19,16 @@ try {
 }
 
 export const db = firestoreInstance;
-export const auth = getAuth(app);
-// يبقى الطالب مسجّلًا في جهازه دائمًا حتى يضغط «تسجيل الخروج» بنفسه
-setPersistence(auth, browserLocalPersistence).catch(() => undefined);
+// يبقى الطالب مسجّلًا في جهازه دائمًا حتى يضغط «تسجيل الخروج» بنفسه.
+// بلا «نافذة Google المخفية» عند التشغيل: متصفحات التطبيقات (تيليغرام، واتساب…) تحجبها
+// فيتوقف التسجيل بالبريد بلا رسالة. أدوات نافذة Google تُمرَّر فقط عند الدخول بجوجل.
+let authInstance: Auth;
+try {
+  authInstance = initializeAuth(app, { persistence: [indexedDBLocalPersistence, browserLocalPersistence] });
+} catch {
+  authInstance = getAuth(app);
+}
+export const auth = authInstance;
 
 export enum OperationType {
   CREATE = 'create',

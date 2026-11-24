@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
+  browserPopupRedirectResolver,
   User as FirebaseUser
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -216,7 +217,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // إكمال الدخول بجوجل إن تم بالتحويل بدل النافذة المنبثقة
-    getRedirectResult(auth).catch((err) => console.error('Google redirect sign-in failed:', err));
+    // فقط إن كان هناك دخول بجوجل بالتحويل قيد الإكمال
+    let pending = false;
+    try {
+      pending = sessionStorage.getItem('ez_google_redirect') === '1';
+      sessionStorage.removeItem('ez_google_redirect');
+    } catch {
+      /* ignore */
+    }
+    if (pending) getRedirectResult(auth, browserPopupRedirectResolver).catch((err) => console.error('Google redirect sign-in failed:', err));
   }, []);
 
   useEffect(() => {
@@ -328,11 +337,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
-      return (await signInWithPopup(auth, provider)).user;
+      return (await signInWithPopup(auth, provider, browserPopupRedirectResolver)).user;
     } catch (err: any) {
       // بعض المتصفحات تمنع النافذة المنبثقة: نكمل بالتحويل للصفحة
       if (err?.code === 'auth/popup-blocked' || err?.code === 'auth/operation-not-supported-in-this-environment') {
-        await signInWithRedirect(auth, provider);
+        try {
+          sessionStorage.setItem('ez_google_redirect', '1');
+        } catch {
+          /* ignore */
+        }
+        await signInWithRedirect(auth, provider, browserPopupRedirectResolver);
         return null;
       }
       throw err;
