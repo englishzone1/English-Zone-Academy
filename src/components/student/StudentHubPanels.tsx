@@ -87,16 +87,42 @@ export const StudentLibrary: React.FC<{ isAr: boolean }> = ({ isAr }) => {
       vocabulary: isAr ? 'مفردات' : 'Vocabulary'
     } as Record<string, string>)[c] || c;
 
+  const [tab, setTab] = useState<'books' | 'mags'>('books');
+  const mags = books.filter((b) => b.category === 'magazine');
+  const onlyBooks = books.filter((b) => b.category !== 'magazine');
+  const shown = tab === 'mags' ? mags : onlyBooks;
+
   return (
     <div className={card}>
       <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">{isAr ? 'المكتبة' : 'Library'}</h2>
+      {/* قسمان منفصلان جنب بعض: الكتب | المجلات */}
+      <div className="grid grid-cols-2 gap-2">
+        {(
+          [
+            { id: 'books', icon: BookOpen, ar: 'الكتب', en: 'Books', n: onlyBooks.length },
+            { id: 'mags', icon: Newspaper, ar: 'المجلات', en: 'Magazines', n: mags.length }
+          ] as const
+        ).map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`py-2.5 rounded-xl border-2 text-sm font-bold flex items-center justify-center gap-2 ${
+              tab === t.id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#D4AF37]' : 'bg-white text-[#0A192F] border-[#D4AF37]/40'
+            }`}
+          >
+            <t.icon className="w-4 h-4 text-[#D4AF37]" />
+            {isAr ? t.ar : t.en}
+            <span className="text-[11px] opacity-70">({t.n})</span>
+          </button>
+        ))}
+      </div>
       {loading ? (
         <p className="text-xs text-gray-500 text-center py-6">{isAr ? 'جارٍ التحميل...' : 'Loading...'}</p>
-      ) : books.length === 0 ? (
-        <p className="text-xs text-gray-500 text-center py-6">{isAr ? 'لا توجد كتب منشورة بعد.' : 'No books published yet.'}</p>
+      ) : shown.length === 0 ? (
+        <p className="text-xs text-gray-500 text-center py-6">{tab === 'mags' ? (isAr ? 'لا توجد مجلات منشورة بعد.' : 'No magazines yet.') : isAr ? 'لا توجد كتب منشورة بعد.' : 'No books published yet.'}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {books.map((b) => {
+          {shown.map((b) => {
             const Icon = b.category === 'magazine' ? Newspaper : BookOpen;
             const title = (isAr ? b.titleAr : b.titleEn) || b.titleAr || b.titleEn;
             return (

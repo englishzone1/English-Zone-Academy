@@ -21,6 +21,8 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
   }, [isAuthenticated]);
 
   const mags = items.filter((b) => b.category === 'magazine');
+  // قسمان منفصلان جنب بعض: الكتب | المجلة
+  const [tab, setTab] = useState<'books' | 'mags'>('books');
   // رابط «مجلة الأكاديمية» يفتح الصفحة على قسم المجلة
   React.useEffect(() => {
     if (!mags.length) return;
@@ -30,6 +32,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
     } catch {
       return;
     }
+    setTab('mags');
     setTimeout(() => document.getElementById('ez-magazine')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
   }, [mags.length]);
   const books = items.filter((b) => b.category !== 'magazine');
@@ -69,7 +72,29 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
         <p className="text-center text-sm text-gray-500 py-10">{isAr ? 'لا توجد مواد منشورة بعد.' : 'Nothing published yet.'}</p>
       ) : (
         <>
-          {mags.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 max-w-xl mx-auto">
+            {(
+              [
+                { id: 'books', icon: BookOpen, ar: 'الكتب', en: 'Books', n: books.length },
+                { id: 'mags', icon: Newspaper, ar: 'المجلات', en: 'Magazines', n: mags.length }
+              ] as const
+            ).map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={`py-3 rounded-2xl border-2 text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                  tab === t.id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#D4AF37]' : 'bg-white text-[#0A192F] border-[#D4AF37]/40 hover:bg-[#FAF8F5]'
+                }`}
+              >
+                <t.icon className="w-4 h-4 text-[#D4AF37]" />
+                {isAr ? t.ar : t.en}
+                <span className="text-[11px] opacity-70">({t.n})</span>
+              </button>
+            ))}
+          </div>
+          {tab === 'mags' && mags.length === 0 && <p className="text-center text-sm text-gray-500 py-6">{isAr ? 'لا توجد مجلات منشورة بعد.' : 'No magazines yet.'}</p>}
+          {tab === 'books' && books.length === 0 && <p className="text-center text-sm text-gray-500 py-6">{isAr ? 'لا توجد كتب منشورة بعد.' : 'No books yet.'}</p>}
+          {tab === 'mags' && mags.length > 0 && (
             <section id="ez-magazine" className="space-y-4 scroll-mt-24">
               <h2 className="font-bold text-xl text-[#0A192F] flex items-center gap-2">
                 <Newspaper className="w-5 h-5 text-[#D4AF37]" />
@@ -97,7 +122,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
             </section>
           )}
 
-          {books.length > 0 && (
+          {tab === 'books' && books.length > 0 && (
             <section className="space-y-4">
               <h2 className="font-bold text-xl text-[#0A192F] flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-[#D4AF37]" />
