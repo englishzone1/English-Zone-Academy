@@ -86,9 +86,15 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
     }
     mark();
     setBusy(true);
-    const r = await registerVisitor({ name: fullName.trim(), age: age.trim(), email, password });
+    // إن لم يصل رد خلال 40 ثانية: الاتصال بخوادم التسجيل محجوب أو ضعيف
+    const r: any = await Promise.race([
+      registerVisitor({ name: fullName.trim(), age: age.trim(), email, password }),
+      new Promise((res) => setTimeout(() => res({ success: false, code: 'timeout' }), 40000))
+    ]);
     setBusy(false);
     if (r.success) navigate('portal');
+    else if (r.code === 'timeout')
+      setError('الاتصال ضعيف أو محجوب ولم يكتمل التسجيل. {جرّب|جرّبي} شبكة أخرى، أو {شغّل|شغّلي} VPN أو {أوقفه|أوقفيه}، ثم {حاول|حاولي} مرة أخرى.');
     else setError(errText(r.code));
   };
 

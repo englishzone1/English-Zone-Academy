@@ -167,7 +167,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               subscriptionStatus: 'pending',
               createdAt: new Date().toISOString()
             };
-            await setDoc(doc(db, 'users', fbUser.uid), createdProfile);
+            // الشبكة البطيئة لا تُجمّد التسجيل: الكتابة تبقى في الانتظار وتُرسل وحدها عند الاتصال
+            await Promise.race([setDoc(doc(db, 'users', fbUser.uid), createdProfile), new Promise((r) => setTimeout(r, 8000))]);
             resolvedProfile = createdProfile;
           } catch (createErr) {
             // قد يكون طلب آخر أنشأ الملف في اللحظة نفسها: نقرؤه من جديد بدل اعتباره مفقودًا
@@ -496,7 +497,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       const cred = await createUserWithEmailAndPassword(auth, String(p.email || '').trim(), String(p.password || ''));
       setFirebaseUser(cred.user);
-      await fetchProfile(cred.user);
+      // الحساب أُنشئ: لا ننتظر تحميل الملف أكثر من 15 ثانية (يكمل في الخلفية)
+      await Promise.race([fetchProfile(cred.user), new Promise((r) => setTimeout(r, 15000))]);
       return { success: true, uid: cred.user.uid, email: cred.user.email || '' };
     } catch (err: any) {
       clearVisitorSignup();
