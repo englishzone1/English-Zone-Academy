@@ -1,4 +1,5 @@
 import { WsThemePicker, WsTheme } from '../common/WorkshopTheme';
+import { copyText } from '../../utils/copyText';
 import React, { useEffect, useRef, useState } from 'react';
 import { Upload, Save, X, Link as LinkIcon, Download, Loader2, Megaphone } from 'lucide-react';
 import { workshopPageService, WorkshopPage, Workshop, compressPoster, joinUrl, DEFAULT_GROUP_LINK } from '../../services/workshopService';
@@ -17,12 +18,7 @@ export const RegPageStrip: React.FC<{ w: Workshop; onNotice: (m: string) => void
 
   const url = joinUrl(w.id);
   const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      onNotice('تم نسخ رابط التسجيل.');
-    } catch {
-      window.prompt('انسخي الرابط:', url);
-    }
+    if (await copyText(url)) onNotice('تم نسخ رابط التسجيل.');
   };
 
   return (
@@ -91,6 +87,7 @@ const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClo
   const [upl, setUpl] = useState(false);
   const [err, setErr] = useState('');
   const [savedUrl, setSavedUrl] = useState('');
+  const [copied, setCopied] = useState(false);
   const qrRef = useRef<HTMLCanvasElement | null>(null);
   const set = (k: keyof WorkshopPage, v: any) => setP((x) => ({ ...x, [k]: v }));
 
@@ -161,15 +158,14 @@ const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClo
             </div>
             <button
               onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(savedUrl);
-                } catch {
-                  window.prompt('انسخي الرابط:', savedUrl);
+                if (await copyText(savedUrl)) {
+                  setCopied(true);
+                  window.setTimeout(() => setCopied(false), 2500);
                 }
               }}
               className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-sm font-bold"
             >
-              نسخ الرابط
+              {copied ? '✓ تم نسخ الرابط' : 'نسخ الرابط'}
             </button>
             <canvas ref={qrRef} width={600} height={600} className="w-44 h-44 mx-auto border rounded-xl" />
             <button onClick={downloadQr} className="w-full py-2.5 rounded-xl border border-gray-300 text-sm font-bold flex items-center justify-center gap-1.5">

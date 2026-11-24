@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { copyText } from '../utils/copyText';
 import { CalendarDays, Clock, Hourglass, CheckCircle2, Award } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -80,12 +81,9 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
   const pageUrl = typeof window !== 'undefined' ? (workshopId ? joinUrl(workshopId) : currentJoinUrl()) : '';
   const chromeIntent = `intent://${pageUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
   const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(pageUrl);
+    if (await copyText(pageUrl)) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 3000);
-    } catch {
-      /* ignore */
     }
   };
 

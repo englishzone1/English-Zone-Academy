@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { copyText } from '../../utils/copyText';
 import { RegPageStrip } from './WorkshopRegPage';
 import { WsThemePicker, WsTheme } from '../common/WorkshopTheme';
 import { Plus, Copy, Trash2, Edit3, Upload, Save, Download, Link as LinkIcon, Eye, EyeOff, Loader2, X, Star, Files } from 'lucide-react';
@@ -46,12 +47,7 @@ export const AdminWorkshops: React.FC<{ isAr: boolean; onNotice: (m: string) => 
   }, []);
 
   const copyLink = async (id: string) => {
-    try {
-      await navigator.clipboard.writeText(workshopUrl(id));
-      onNotice(tr('Link copied.', 'تم نسخ الرابط.'));
-    } catch {
-      window.prompt(tr('Copy the link:', 'انسخي الرابط:'), workshopUrl(id));
-    }
+    if (await copyText(workshopUrl(id))) onNotice(tr('Link copied.', 'تم نسخ الرابط.'));
   };
 
   const shown = useMemo(() => regs.filter((r) => !filter || r.workshopId === filter), [regs, filter]);
