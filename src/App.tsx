@@ -5,6 +5,7 @@ import { AccountFab } from './components/common/AccountFab';
 import { OfferBubble } from './components/programs/OfferBubble';
 import { StandaloneBoard } from './components/rooms/StandaloneBoard';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { TelegramWelcome } from './components/common/TelegramWelcome';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -333,6 +334,7 @@ function MainApp() {
       <TawkChat hidden={bare || currentRoute.startsWith('room/') || ['admin-dashboard', 'admin-login', 'teacher-dashboard'].includes(currentRoute) || (currentRoute === 'portal' && (isAdmin || isTeacher))} />
       {!bare && !currentRoute.startsWith('room/') && !['portal', 'student-dashboard', 'teacher-dashboard', 'admin-dashboard', 'admin-login', 'login', 'student-login', 'homework', 'register'].includes(currentRoute) && !currentRoute.startsWith('hw-answers/') && <OfferBubble language={language} navigate={navigate} />}
       {showAccountFab && <AccountFab isAr={language === 'ar'} onClick={() => navigate('portal')} />}
+      <TelegramWelcome uid={(user as any)?.id} role={(user as any)?.role} createdAt={(user as any)?.createdAt} isAr={language === 'ar'} />
       <ChatAssistant
         hidden={
           showAccountFab ||
