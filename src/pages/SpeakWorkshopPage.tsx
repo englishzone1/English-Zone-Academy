@@ -59,7 +59,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
-  const { registerVisitor, isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
+  const { registerVisitor, isAuthenticated, isAdmin, isSuperAdmin, isLoading, user, logout } = useAuth();
   const [fullName, setFullName] = useState('');
   const [age, setAge] = useState('');
   const [copied, setCopied] = useState(false);
@@ -91,10 +91,9 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
     document.title = `${W.titleAr} | English Zone Academy`;
   }, [W.titleAr]);
 
-  // بعد التسجيل: إلى صفحتها، حيث تُكمل بياناتها ثم يظهر رابط تيليغرام
-  useEffect(() => {
-    if (isAuthenticated && !isAdmin && !isSuperAdmin) navigate('portal');
-  }, [isAuthenticated, isAdmin, isSuperAdmin]);
+  // من فتح الرابط وهو مسجّل الدخول لا يُنقل تلقائيًا (كانت الصفحة تظهر لثانية ثم تختفي)،
+  // بل يرى زرًا للمتابعة بحسابه أو تسجيل الخروج
+  const signedInStudent = isAuthenticated && !isLoading && !isAdmin && !isSuperAdmin;
 
   const mark = () => {
     try {
@@ -226,6 +225,23 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
             </p>
           </div>
 
+          {signedInStudent ? (
+          <div className="border-t border-[var(--line)] pt-5 space-y-3 text-center">
+            <p className="font-bold text-[var(--ink)]">{'{أنت|أنتِ}'} {'{مسجّل|مسجّلة}'} الدخول{(user as any)?.name ? ` باسم ${(user as any).name}` : ''}</p>
+            <button
+              onClick={() => {
+                mark();
+                navigate('portal');
+              }}
+              className="w-full py-3.5 rounded-xl bg-[var(--wc)] hover:opacity-90 text-white text-sm font-bold"
+            >
+              المتابعة للتسجيل في هذه الورشة
+            </button>
+            <button onClick={() => logout()} className="text-[12px] font-bold text-[var(--muted)] underline">
+              ليس حسابي؟ تسجيل الخروج
+            </button>
+          </div>
+          ) : (
           <div className="border-t border-[var(--line)] pt-5 space-y-3">
             <p className="font-bold text-[var(--ink)] text-center">{'{سجّل|سجّلي}'} الآن مجانًا</p>
             <p className="text-[11px] text-[var(--muted)] text-center">
@@ -287,6 +303,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
               </button>
             </p>
           </div>
+          )}
         </div>
       </div>
       <p className="relative z-10 text-center text-[11px] text-[var(--muted)] mt-6">English Zone Academy | Learn • Speak • Grow</p>
