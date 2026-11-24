@@ -13,6 +13,14 @@ interface Props {
 // نافذة ترحيب تظهر مرة واحدة لكل حساب جديد: رابط الانضمام إلى قناة تيليغرام للمتابعة
 export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, isAr }) => {
   const [open, setOpen] = useState(false);
+  // جاء من رابط الورش المجانية: الرسالة عن مواعيد الورش وروابطها
+  const fromWorkshop = (() => {
+    try {
+      return !!localStorage.getItem('ez_from_workshop');
+    } catch {
+      return false;
+    }
+  })();
   const key = `ez_tg_welcome_${uid}`;
 
   useEffect(() => {
@@ -25,7 +33,7 @@ export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, isAr })
     } catch {
       /* ignore */
     }
-    const t = window.setTimeout(() => setOpen(true), 1200);
+    const t = window.setTimeout(() => setOpen(true), fromWorkshop ? 300 : 1200);
     return () => window.clearTimeout(t);
   }, [uid, role, createdAt]);
 
@@ -48,9 +56,13 @@ export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, isAr })
         <div className="mx-auto mb-3 w-16 h-16 rounded-full bg-[#229ED9] flex items-center justify-center text-white text-3xl">✈</div>
         <h3 className="text-lg font-bold text-[#0A192F] mb-2">{isAr ? 'أهلًا {بك|بكِ} في English Zone 🎉' : 'Welcome to English Zone 🎉'}</h3>
         <p className="text-sm text-gray-600 mb-5 leading-relaxed">
-          {isAr
-            ? '{انضم|انضمّي} إلى قناتنا على تيليغرام لتصلك كل الأخبار والمواعيد والعروض أولًا بأول.'
-            : 'Join our Telegram channel to get all news, schedules and offers first.'}
+          {fromWorkshop
+            ? isAr
+              ? 'مواعيد الورش المجانية وروابط الدخول إليها تُنشر في قناتنا على تيليغرام. {انضم|انضمّي} الآن حتى لا {تفوتك|تفوتكِ} أي ورشة.'
+              : 'Free workshop dates and joining links are posted on our Telegram channel. Join now so you never miss a workshop.'
+            : isAr
+              ? '{انضم|انضمّي} إلى قناتنا على تيليغرام لتصلك كل الأخبار والمواعيد والعروض أولًا بأول.'
+              : 'Join our Telegram channel to get all news, schedules and offers first.'}
         </p>
         <a
           href={TG_URL}

@@ -8,7 +8,9 @@ import { EnglishZoneEmblem } from '../components/common/Logo';
 
 // «سجّلي الآن»: تسجيل مجاني كامل، تظهر صاحبته عند الإدارة في «المسجّلون المحتملون»،
 // ومن لوحتها تضغط «للاشتراك في الكورس» متى أرادت
-export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hideWhatsapp?: boolean }> = ({ navigate, hideWhatsapp }) => {
+// workshop: رابط التسجيل في الورش المجانية (#/free-workshops): نفس التسجيل العادي بعنوان الورش،
+// وبعد الدخول تظهر أولًا نافذة الانضمام لقناة تيليغرام
+export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hideWhatsapp?: boolean; workshop?: boolean }> = ({ navigate, hideWhatsapp, workshop }) => {
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
@@ -50,7 +52,17 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
   };
 
   // التسجيل: بحساب Google أو بالبريد وكلمة المرور فقط، والاسم ورقم الواتساب يُطلبان داخل المنصة
+  const markWorkshop = () => {
+    if (!workshop) return;
+    try {
+      localStorage.setItem('ez_from_workshop', String(Date.now()));
+    } catch {
+      /* ignore */
+    }
+  };
+
   const viaGoogle = async () => {
+    markWorkshop();
     setError('');
     setBusy(true);
     const r = await registerVisitor({ name: '', google: true });
@@ -67,6 +79,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
       return;
     }
     setBusy(true);
+    markWorkshop();
     const r = await registerVisitor({ name: '', email, password });
     setBusy(false);
     if (r.success) navigate('portal');
@@ -93,8 +106,14 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
         <div className="bg-gradient-to-br from-[#0A192F] to-[#102445] text-white rounded-3xl p-7 sm:p-9 border border-[#D4AF37]/40 shadow-xl space-y-6">
           <EnglishZoneEmblem sizeClass="w-16 h-16" glow={true} />
           <div className="space-y-2">
-            <h1 className="font-serif-luxury font-bold text-3xl text-[#F3E5AB]">{tr('Join English Zone', '{انضم|انضمي} إلى English Zone')}</h1>
-            <p className="text-sm text-gray-300">{tr('Free registration in one minute, and you get:', '{سجّل|سجّلي} مجانًا في دقيقة، {واحصل|واحصلي} على:')}</p>
+            <h1 className="font-serif-luxury font-bold text-3xl text-[#F3E5AB]">
+              {workshop ? tr('Register for our free workshops', '{سجّل|سجّلي} في الورش المجانية') : tr('Join English Zone', '{انضم|انضمي} إلى English Zone')}
+            </h1>
+            <p className="text-sm text-gray-300">
+              {workshop
+                ? tr('Create your free account in one minute. Workshop dates and links are announced on our Telegram channel, and you also get:', '{أنشئ|أنشئي} {حسابك|حسابكِ} المجاني في دقيقة. مواعيد الورش وروابطها تُعلن في قناتنا على تيليغرام، {وتحصل|وتحصلين} أيضًا على:')
+                : tr('Free registration in one minute, and you get:', '{سجّل|سجّلي} مجانًا في دقيقة، {واحصل|واحصلي} على:')}
+            </p>
           </div>
           <ul className="space-y-3">
             {benefits.map((b) => {

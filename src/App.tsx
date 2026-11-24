@@ -172,6 +172,9 @@ function MainApp() {
         return <VisitorJoinPage navigate={navigate} />;
       case 'join-us':
         return <VisitorJoinPage navigate={navigate} />;
+      case 'free-workshops':
+      case 'workshops':
+        return <VisitorJoinPage navigate={navigate} workshop />;
       case 'blocked':
         return (
           <div className="min-h-[60vh] flex items-center justify-center px-4">
