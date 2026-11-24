@@ -3,6 +3,7 @@ import { CalendarDays, Clock, CheckCircle2, LogOut } from 'lucide-react';
 import { CompleteProfile } from './CompleteProfile';
 import { FALLBACK_PAGE, loadWorkshopPage, tint } from '../../pages/SpeakWorkshopPage';
 import { WorkshopPage } from '../../services/workshopService';
+import { WsBackdrop, wsVars } from '../common/WorkshopTheme';
 
 // وضع الورشة: من سجّل عبر رابط الورشة يرى هذه الصفحة وحدها (بلا الاشتراك في الكورس ولا غيره)
 // حتى تقرر الإدارة إعادة الصفحة العادية (WORKSHOP_ONLY = false)
@@ -66,38 +67,39 @@ export const WorkshopConfirm: React.FC<{ isAr: boolean; name: string; onLogout: 
     );
 
   return (
-    <div className="ez-light min-h-screen flex items-center justify-center p-4" dir="rtl" style={{ background: tint(page.color) }}>
+    <div className={`relative min-h-screen flex items-center justify-center p-4 ${page.theme === 'white' ? 'ez-light' : ''}`} dir="rtl" style={wsVars(page.theme, page.color, tint(page.color))}>
+      <WsBackdrop theme={page.theme} />
       <CompleteProfile isAr={isAr} />
-      <div className="w-full max-w-lg bg-white rounded-3xl p-4 sm:p-8 shadow-xl border border-[#e3d2cb] space-y-5 text-center">
-        {page.poster && <img src={page.poster} alt={page.title} className="w-full h-auto rounded-2xl shadow-md border border-[#e3d2cb]" />}
+      <div className="relative z-10 w-full max-w-lg bg-[var(--card)] backdrop-blur-md rounded-3xl p-4 sm:p-8 shadow-xl border border-[var(--line)] space-y-5 text-center">
+        {page.poster && <img src={page.poster} alt={page.title} className="w-full h-auto rounded-2xl shadow-md border border-[var(--line)]" />}
         <div className="space-y-1">
-          <p className="text-xs font-bold" style={{ color: page.color }}>ورشة مجانية تفاعلية</p>
-          <h1 className="text-2xl font-extrabold text-[#2b1d1d]">{page.title}</h1>
-          {name && <p className="text-sm text-[#6b5b57]">أهلًا {name.split(' ')[0]}</p>}
+          <span className="inline-block px-4 py-1 rounded-full bg-[var(--chipBg)] text-[var(--chipInk)] border border-[var(--chipLine)] text-xs font-bold">ورشة مجانية تفاعلية</span>
+          <h1 className="text-3xl font-extrabold text-[var(--ink)] pt-2" style={{ textShadow: 'var(--glow)' }}>{page.title}</h1>
+          {name && <p className="text-sm text-[var(--muted)]">أهلًا {name.split(' ')[0]}</p>}
         </div>
-        <div className="flex flex-wrap justify-center gap-3 text-xs font-bold text-[#2b1d1d]">
+        <div className="flex flex-wrap justify-center gap-3 text-xs font-bold text-[var(--ink)]">
           {page.date && (
-            <span className="flex items-center gap-1 px-3 py-2 rounded-xl" style={{ background: tint(page.color) }}>
-              <CalendarDays className="w-4 h-4" style={{ color: page.color }} /> {page.date}
+            <span className="flex items-center gap-1 px-3 py-2 rounded-xl bg-[var(--box)] border border-[var(--boxLine)]">
+              <CalendarDays className="w-4 h-4" style={{ color: 'var(--wc)' }} /> {page.date}
             </span>
           )}
           {page.time && (
-            <span className="flex items-center gap-1 px-3 py-2 rounded-xl" style={{ background: tint(page.color) }}>
-              <Clock className="w-4 h-4" style={{ color: page.color }} /> {page.time}
+            <span className="flex items-center gap-1 px-3 py-2 rounded-xl bg-[var(--box)] border border-[var(--boxLine)]">
+              <Clock className="w-4 h-4" style={{ color: 'var(--wc)' }} /> {page.time}
             </span>
           )}
         </div>
 
         {!done ? (
-          <button onClick={confirm} className="w-full py-4 rounded-2xl text-white text-base font-bold hover:opacity-90" style={{ background: page.color }}>
+          <button onClick={confirm} className="w-full py-4 rounded-2xl text-white text-base font-bold hover:opacity-90 shadow-[0_0_24px_rgba(60,140,255,.35)]" style={{ background: 'var(--btn)' }}>
             تأكيد التسجيل في الورشة
           </button>
         ) : (
           <div className="space-y-3">
-            <p className="flex items-center justify-center gap-2 text-lg font-extrabold text-green-700">
+            <p className="flex items-center justify-center gap-2 text-lg font-extrabold text-emerald-400">
               <CheckCircle2 className="w-6 h-6" /> تم التسجيل في الورشة
             </p>
-            <p className="text-xs text-[#6b5b57]">رابط الورشة وموعدها يُرسلان في مجموعة تيليغرام.</p>
+            <p className="text-xs text-[var(--muted)]">رابط الورشة وموعدها يُرسلان في مجموعة تيليغرام.</p>
             <a href={page.groupLink} target="_blank" rel="noopener noreferrer" className="block w-full py-3.5 rounded-2xl bg-[#229ED9] hover:bg-[#1c8cc2] text-white font-bold">
               الدخول إلى مجموعة تيليغرام
             </a>

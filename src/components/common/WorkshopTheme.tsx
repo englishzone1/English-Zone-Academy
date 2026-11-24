@@ -10,11 +10,11 @@ export const WS_THEMES: { id: WsTheme; label: string; swatch: string }[] = [
 
 // متغيرات الألوان لكل مظهر (تُستعمل في الصفحات عبر var(--…))
 export const wsVars = (theme: WsTheme | undefined, accent: string, soft: string): React.CSSProperties =>
-  (theme === 'blue'
+  (theme !== 'white'
     ? {
         '--wc': '#5fb2ff',
         '--wl': 'rgba(10,40,110,.35)',
-        '--card': 'rgba(4,14,40,.28)',
+        '--card': 'rgba(5,18,48,.86)',
         '--ink': '#ffffff',
         '--muted': '#a9d3ff',
         '--line': 'rgba(150,205,255,.35)',
@@ -54,7 +54,7 @@ const BOKEH = [
 ];
 
 export const WsBackdrop: React.FC<{ theme?: WsTheme }> = ({ theme }) => {
-  if (theme !== 'blue') return <div className="fixed inset-0 z-0 ez-light" style={{ background: '#ffffff' }} aria-hidden />;
+  if (theme === 'white') return <div className="fixed inset-0 z-0 ez-light" style={{ background: '#ffffff' }} aria-hidden />;
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden style={{ background: '#030a1a' }}>
       <div

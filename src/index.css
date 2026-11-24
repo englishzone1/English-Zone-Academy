@@ -37,7 +37,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1ede6;
+  background: #030b1f;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -136,15 +136,24 @@ html.ez-cine body::before {
     linear-gradient(180deg, #020714 0%, #061638 50%, #020714 100%);
 }
 
-/* الأسطح الفاتحة ← زجاج أزرق داكن بإطار أزرق فاتح (مثل مربعات الإعلان) */
-html.ez-cine :is(.bg-white, .bg-\[\#FAF8F5\], .bg-gray-50):not(.ez-light, .ez-light *) {
-  background-color: rgba(8, 26, 70, 0.55);
+/* الأسطح الفاتحة ← الأزرق السينمائي نفسه (غير شفاف) */
+html.ez-cine :is(.bg-white, .bg-white\/70, .bg-white\/90, .bg-white\/95, .bg-\[\#FAF8F5\], .bg-\[\#FAF8F5\]\/80, .bg-\[\#FAF8F5\]\/50, .bg-gray-50, .bg-\[\#FFFDF9\], .bg-\[\#F8F6F1\], .bg-\[\#F4F8F9\], .bg-\[\#F4F5F7\], .bg-\[\#EFEAE2\], .bg-\[\#F3EDE2\]\/50, .bg-\[\#F3EDE2\]\/60, .bg-slate-100, .bg-amber-50, .bg-amber-50\/50, .bg-sky-50, .bg-\[\#FFF9E6\], .bg-\[\#fff4e5\], .luxury-card):not(.ez-light, .ez-light *) {
+  background-color: #061638 !important;
+  background-image:
+    radial-gradient(ellipse at 50% 30%, rgba(64, 150, 255, 0.45) 0%, rgba(20, 70, 170, 0.28) 35%, rgba(3, 10, 26, 0) 75%),
+    radial-gradient(ellipse at 10% 115%, rgba(0, 190, 255, 0.16) 0%, rgba(3, 10, 26, 0) 50%),
+    radial-gradient(ellipse at 92% -15%, rgba(80, 110, 255, 0.24) 0%, rgba(3, 10, 26, 0) 50%),
+    linear-gradient(180deg, #030b1f 0%, #0a1f4d 50%, #030b1f 100%) !important;
 }
 html.ez-cine :is(.bg-gray-100, .bg-gray-200):not(.ez-light, .ez-light *) {
-  background-color: rgba(40, 90, 180, 0.22);
+  background-color: rgba(60, 120, 220, 0.22);
 }
+/* التدرّجات الفاتحة في خلفيات الأقسام */
+html.ez-cine :is(.from-white, .from-\[\#FAF8F5\], .from-\[\#FFF7E0\]):not(.ez-light, .ez-light *) { --tw-gradient-from: #061638 !important; }
+html.ez-cine :is(.via-\[\#FAF8F5\], .via-\[\#F4EFE6\]):not(.ez-light, .ez-light *) { --tw-gradient-via: #0a1f4d !important; }
+html.ez-cine :is(.to-white, .to-\[\#FAF8F5\], .to-\[\#F3EDE2\]\/60):not(.ez-light, .ez-light *) { --tw-gradient-to: #061638 !important; }
 html.ez-cine :is(.border-gray-100, .border-gray-200, .border-gray-300, .border-gray-200\/80):not(.ez-light, .ez-light *) {
-  border-color: rgba(150, 205, 255, 0.28);
+  border-color: rgba(150, 205, 255, 0.35);
 }
 
 /* النصوص الداكنة ← فاتحة */
@@ -165,9 +174,9 @@ html.ez-cine .text-\[\#AA820A\]:not(.ez-light, .ez-light *) {
 }
 
 /* الأزرار الذهبية تبقى بنصها الداكن */
-html.ez-cine :is(.bg-\[\#D4AF37\], .bg-\[\#F3E5AB\], .from-\[\#D4AF37\]) :is(.text-\[\#061638\]),
-html.ez-cine :is(.bg-\[\#D4AF37\], .bg-\[\#F3E5AB\], .from-\[\#D4AF37\]).text-\[\#061638\] {
-  color: #061638;
+html.ez-cine :is(.bg-\[\#D4AF37\], .bg-\[\#F3E5AB\], .bg-\[\#FFF8E1\], .from-\[\#D4AF37\]) :is(.text-\[\#061638\]),
+html.ez-cine :is(.bg-\[\#D4AF37\], .bg-\[\#F3E5AB\], .bg-\[\#FFF8E1\], .from-\[\#D4AF37\]).text-\[\#061638\] {
+  color: #061638 !important;
 }
 
 /* حقول الكتابة: بيضاء بنص داكن لتبقى واضحة */

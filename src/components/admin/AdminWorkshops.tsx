@@ -284,7 +284,7 @@ const WorkshopEditor: React.FC<{
   // الورشة: صورة الإعلان والمظهر يُحفظان مع صفحة التسجيل
   const [poster, setPoster] = useState<string | undefined>(undefined);
   const [posterBusy, setPosterBusy] = useState(false);
-  const [theme, setTheme] = useState<WsTheme>(initial.id ? (initial.theme as WsTheme) || 'white' : 'blue');
+  const [theme, setTheme] = useState<WsTheme>((initial.theme as WsTheme) || 'blue');
   useEffect(() => {
     if (!isWsType || !initial.id) return;
     workshopPageService
@@ -292,7 +292,7 @@ const WorkshopEditor: React.FC<{
       .then((pg) => {
         if (!pg) return;
         if (pg.poster) setPoster(pg.poster);
-        setTheme((pg.theme as WsTheme) || 'white');
+        setTheme((pg.theme as WsTheme) || 'blue');
       })
       .catch(() => undefined);
   }, []);

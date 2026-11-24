@@ -80,7 +80,7 @@ const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClo
     color: '#6b2f3a',
     groupLink: DEFAULT_GROUP_LINK,
     ...(initial || {}),
-    theme: initial ? initial.theme || 'white' : 'blue'
+    theme: initial?.theme || 'blue'
   } as WorkshopPage);
   const [learnText, setLearnText] = useState((initial?.learn || []).join('\n'));
   const [busy, setBusy] = useState(false);
