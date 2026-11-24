@@ -381,7 +381,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">
+          <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">
             {teacherMode ? (isAr ? 'طلابي' : 'My Students') : isAr ? 'إدارة الطلاب' : 'Students Management'}
           </h2>
           <p className="text-xs text-gray-500">
@@ -430,7 +430,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
             onClick={() => setFilter(c.id)}
             className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-all ${
               filter === c.id
-                ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#0E3A99]'
+                ? 'bg-[#061638] text-[#F3E5AB] border-[#061638]'
                 : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
             }`}
           >
@@ -469,7 +469,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                   <AvatarRenderer config={(s as any).avatarConfig} gender={(s as any).gender} size={44} />
                   <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-bold text-sm text-[#0E3A99]">{s.fullName || '—'}</span>
+                    <span className="font-bold text-sm text-[#061638]">{s.fullName || '—'}</span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                         label ? label.cls : 'bg-gray-100 text-gray-700 border-gray-200'
@@ -478,7 +478,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                       {label ? (isAr ? label.ar : label.en) : status}
                     </span>
                     {s.groupId && groupName(s.groupId) && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0E3A99] text-[#F3E5AB]">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#061638] text-[#F3E5AB]">
                         {groupName(s.groupId)}
                       </span>
                     )}
@@ -495,7 +495,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                 </div>
                 <button
                   onClick={() => openStudent(s)}
-                  className="px-4 py-2 rounded-lg text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0] self-start sm:self-auto"
+                  className="px-4 py-2 rounded-lg text-xs font-bold bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] self-start sm:self-auto"
                 >
                   {isAr ? 'إدارة' : 'Manage'}
                 </button>
@@ -523,7 +523,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
               <div className="min-w-0 flex items-center gap-3">
                 <AvatarRenderer config={(selected as any).avatarConfig} gender={(selected as any).gender} size={56} />
                 <div className="min-w-0">
-                <h3 className="font-serif-luxury font-bold text-lg text-[#0E3A99]">{selected.fullName || '—'}</h3>
+                <h3 className="font-serif-luxury font-bold text-lg text-[#061638]">{selected.fullName || '—'}</h3>
                 {!teacherMode && <p className="text-[11px] text-gray-500 break-all">{selected.email}</p>}
                 {!teacherMode && <p className="text-[10px] text-gray-400 font-mono break-all">{selected.id}</p>}
                 {!teacherMode && (
@@ -715,7 +715,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                         key={i}
                         type="button"
                         onClick={() => setForm((f) => ({ ...f, lessonDays: on ? f.lessonDays.filter((x) => x !== i) : [...f.lessonDays, i] }))}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border ${on ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#0E3A99]' : 'bg-white text-gray-600 border-gray-200'}`}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border ${on ? 'bg-[#061638] text-[#F3E5AB] border-[#061638]' : 'bg-white text-gray-600 border-gray-200'}`}
                       >
                         {d}
                       </button>
@@ -802,7 +802,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0] flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 rounded-xl font-bold text-xs bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Save className="w-4 h-4 text-[#D4AF37]" />
               <span>{saving ? (isAr ? 'جارٍ الحفظ...' : 'Saving...') : isAr ? 'حفظ بيانات الطالب' : 'Save student'}</span>
@@ -833,7 +833,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
             {!teacherMode && (selected as any).role !== 'teacher' && (
               <button
                 onClick={() => window.open(`/#/student-preview/${selected.id}`, '_blank')}
-                className="w-full py-2.5 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold hover:bg-[#1E55C0]"
+                className="w-full py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold hover:bg-[#123A8C]"
               >
                 {isAr ? '👁️ عرض صفحة الطالب كما يراها (للعرض فقط)' : '👁️ View the student page as they see it (view only)'}
               </button>
@@ -852,7 +852,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                     onNotice((isAr ? 'تعذّر التحويل: ' : 'Failed: ') + errText(err));
                   }
                 }}
-                className="w-full py-2 rounded-xl border border-dashed border-[#D4AF37] text-xs font-bold text-[#0E3A99] hover:bg-[#FAF8F5]"
+                className="w-full py-2 rounded-xl border border-dashed border-[#D4AF37] text-xs font-bold text-[#061638] hover:bg-[#FAF8F5]"
               >
                 {isAr ? 'تعيين هذا الحساب كمعلم' : 'Make this account a teacher'}
               </button>
@@ -860,7 +860,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
 
             {/* Rating */}
             <div className="border-t border-gray-100 pt-4 space-y-3">
-              <h4 className="font-bold text-sm text-[#0E3A99] flex items-center gap-2">
+              <h4 className="font-bold text-sm text-[#061638] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#AA820A]" />
                 <span>
                   {isAr ? 'تقييم الطالب' : 'Rate student'} — {isAr ? 'الرصيد الحالي:' : 'Current:'} {selected.points || 0}
@@ -919,7 +919,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                 <button
                   onClick={handleCustomStars}
                   disabled={saving}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] disabled:opacity-50"
                 >
                   {isAr ? 'تسجيل النجوم' : 'Record stars'}
                 </button>

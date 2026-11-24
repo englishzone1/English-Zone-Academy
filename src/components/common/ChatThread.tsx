@@ -136,7 +136,7 @@ export const ChatThread: React.FC<Props> = ({
 
   return (
     <div className="rounded-3xl border border-gray-200 overflow-hidden bg-white shadow-sm flex flex-col">
-      <div className="px-4 py-3 bg-[#0E3A99] text-[#F3E5AB]">
+      <div className="px-4 py-3 bg-[#061638] text-[#F3E5AB]">
         <div className="font-bold text-sm">{title}</div>
         {subtitle && <div className="text-[11px] text-gray-300">{subtitle}</div>}
       </div>
@@ -216,7 +216,7 @@ export const ChatThread: React.FC<Props> = ({
             <div className="flex-1">
               <VoiceRecorder isAr={isAr} value={audio} onChange={setAudio} disabled={sending} />
             </div>
-            <button onClick={send} disabled={sending} className="w-11 h-11 rounded-full bg-[#0E3A99] text-[#F3E5AB] flex items-center justify-center disabled:opacity-50 shrink-0" title={isAr ? 'إرسال' : 'Send'}>
+            <button onClick={send} disabled={sending} className="w-11 h-11 rounded-full bg-[#061638] text-[#F3E5AB] flex items-center justify-center disabled:opacity-50 shrink-0" title={isAr ? 'إرسال' : 'Send'}>
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 text-[#D4AF37] rtl:rotate-180" />}
             </button>
           </div>
@@ -236,7 +236,7 @@ export const ChatThread: React.FC<Props> = ({
               className="flex-1 resize-none px-4 py-2.5 rounded-3xl border border-gray-300 text-sm max-h-32 focus:outline-none focus:border-[#D4AF37]"
             />
             {text.trim() ? (
-              <button onClick={send} disabled={sending} className="w-11 h-11 rounded-full bg-[#0E3A99] text-[#F3E5AB] flex items-center justify-center disabled:opacity-50 shrink-0" title={isAr ? 'إرسال' : 'Send'}>
+              <button onClick={send} disabled={sending} className="w-11 h-11 rounded-full bg-[#061638] text-[#F3E5AB] flex items-center justify-center disabled:opacity-50 shrink-0" title={isAr ? 'إرسال' : 'Send'}>
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 text-[#D4AF37] rtl:rotate-180" />}
               </button>
             ) : (

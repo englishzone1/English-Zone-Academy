@@ -2,9 +2,9 @@
 
 @layer base {
   :root {
-    --brand-navy: #0E3A99;
-    --brand-navy-deep: #072A73;
-    --brand-navy-light: #1E55C0;
+    --brand-navy: #061638;
+    --brand-navy-deep: #020714;
+    --brand-navy-light: #123A8C;
     --brand-gold: #D4AF37;
     --brand-gold-light: #F3E5AB;
     --brand-gold-dark: #AA820A;
@@ -53,13 +53,13 @@
 .luxury-card {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(212, 175, 55, 0.18);
-  box-shadow: 0 10px 30px -10px rgba(14, 58, 153, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(6, 22, 56, 0.08);
 }
 
 .luxury-card-dark {
-  background: linear-gradient(135deg, #0E3A99 0%, #1E63D6 100%);
+  background: linear-gradient(135deg, #061638 0%, #0B2A6B 100%);
   border: 1px solid rgba(212, 175, 55, 0.25);
-  box-shadow: 0 15px 35px -10px rgba(7, 42, 115, 0.45);
+  box-shadow: 0 15px 35px -10px rgba(2, 7, 20, 0.5);
 }
 
 .gold-gradient-text {
@@ -82,4 +82,27 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .ez-float-glow { animation: none; }
+}
+
+/* الأزرق السينمائي (مثل إعلان Love to Learn English): كل خلفية داكنة في المنصة */
+.bg-\[\#061638\] {
+  background-color: #061638;
+  background-image:
+    radial-gradient(ellipse at 50% 35%, rgba(64, 150, 255, 0.58) 0%, rgba(20, 70, 170, 0.36) 35%, rgba(3, 10, 26, 0) 72%),
+    radial-gradient(ellipse at 12% 115%, rgba(0, 190, 255, 0.18) 0%, rgba(3, 10, 26, 0) 50%),
+    radial-gradient(ellipse at 92% -15%, rgba(80, 110, 255, 0.26) 0%, rgba(3, 10, 26, 0) 50%),
+    linear-gradient(180deg, #020714 0%, #061638 50%, #020714 100%);
+}
+/* نقاط الضوء (للشريط العلوي والأقسام الكبيرة) */
+.cine-bokeh {
+  background-image:
+    radial-gradient(circle at 8% 30%, rgba(140, 200, 255, 0.45) 0, rgba(140, 200, 255, 0) 7px),
+    radial-gradient(circle at 23% 75%, rgba(140, 200, 255, 0.35) 0, rgba(140, 200, 255, 0) 10px),
+    radial-gradient(circle at 41% 20%, rgba(140, 200, 255, 0.30) 0, rgba(140, 200, 255, 0) 5px),
+    radial-gradient(circle at 58% 80%, rgba(140, 200, 255, 0.40) 0, rgba(140, 200, 255, 0) 8px),
+    radial-gradient(circle at 74% 25%, rgba(140, 200, 255, 0.30) 0, rgba(140, 200, 255, 0) 12px),
+    radial-gradient(circle at 90% 65%, rgba(140, 200, 255, 0.40) 0, rgba(140, 200, 255, 0) 6px),
+    radial-gradient(ellipse at 50% 35%, rgba(64, 150, 255, 0.58) 0%, rgba(20, 70, 170, 0.36) 35%, rgba(3, 10, 26, 0) 72%),
+    radial-gradient(ellipse at 92% -15%, rgba(80, 110, 255, 0.26) 0%, rgba(3, 10, 26, 0) 50%),
+    linear-gradient(180deg, #020714 0%, #061638 50%, #020714 100%) !important;
 }

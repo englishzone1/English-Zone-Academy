@@ -272,12 +272,12 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
           {isAr ? 'واتساب' : 'WhatsApp'}
         </button>
       )}
-      <button onClick={startMessage} disabled={sending} className="px-3 py-1.5 rounded-full bg-[#0E3A99] text-[#F3E5AB] text-[11px] font-bold flex items-center gap-1 disabled:opacity-50">
+      <button onClick={startMessage} disabled={sending} className="px-3 py-1.5 rounded-full bg-[#061638] text-[#F3E5AB] text-[11px] font-bold flex items-center gap-1 disabled:opacity-50">
         <Mail className="w-3.5 h-3.5" />
         {isAr ? 'رسالة للأكاديمية' : 'Message the academy'}
       </button>
       {tawkUrl && (
-        <button onClick={openTawk} className="px-3 py-1.5 rounded-full border border-[#0E3A99] text-[#0E3A99] text-[11px] font-bold">
+        <button onClick={openTawk} className="px-3 py-1.5 rounded-full border border-[#061638] text-[#061638] text-[11px] font-bold">
           {isAr ? 'محادثة مباشرة' : 'Live chat'}
         </button>
       )}
@@ -290,7 +290,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
     <div className="fixed bottom-5 left-5 z-[60]" dir={isAr ? 'rtl' : 'ltr'}>
       {open && (
         <div className="mb-3 w-[min(360px,calc(100vw-2.5rem))] h-[min(560px,calc(100vh-7rem))] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
-          <div className="bg-[#0E3A99] text-[#F3E5AB] px-4 py-3 flex items-center justify-between">
+          <div className="bg-[#061638] text-[#F3E5AB] px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2 font-bold text-sm">
               <Bot className="w-5 h-5" />
               {isAr ? 'مساعد English Zone' : 'English Zone Assistant'}
@@ -308,12 +308,12 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
           </div>
 
           <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-[#FAF8F5]">
-            <div className="max-w-[85%] p-2.5 rounded-2xl bg-white border border-gray-100 text-xs whitespace-pre-line text-[#0E3A99]">{greeting}</div>
+            <div className="max-w-[85%] p-2.5 rounded-2xl bg-white border border-gray-100 text-xs whitespace-pre-line text-[#061638]">{greeting}</div>
             {msgs.map((m, i) => (
               <div
                 key={i}
                 className={`max-w-[85%] p-2.5 rounded-2xl text-xs whitespace-pre-line ${
-                  m.from === 'me' ? 'ms-auto bg-[#0E3A99] text-[#F3E5AB]' : 'bg-white border border-gray-100 text-[#0E3A99]'
+                  m.from === 'me' ? 'ms-auto bg-[#061638] text-[#F3E5AB]' : 'bg-white border border-gray-100 text-[#061638]'
                 }`}
               >
                 {m.text}
@@ -323,12 +323,12 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
 
             {form && (
               <div className="p-2.5 rounded-2xl bg-white border border-[#D4AF37] space-y-1.5">
-                <p className="text-[11px] font-bold text-[#0E3A99]">{isAr ? '{اكتب|اكتبي} بياناتك لنرد {عليك|عليكِ}:' : 'Your details so we can reply:'}</p>
+                <p className="text-[11px] font-bold text-[#061638]">{isAr ? '{اكتب|اكتبي} بياناتك لنرد {عليك|عليكِ}:' : 'Your details so we can reply:'}</p>
                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={isAr ? 'اسمك' : 'Your name'} className={inp} />
                 <input value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} placeholder={isAr ? 'بريدك أو رقم واتساب' : 'Email or WhatsApp number'} className={inp} />
                 <textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={2} placeholder={isAr ? 'رسالتك' : 'Your message'} className={inp} />
                 <div className="flex gap-1.5">
-                  <button onClick={sendVisitorMessage} disabled={sending} className="flex-1 py-1.5 rounded-lg bg-[#0E3A99] text-[#F3E5AB] text-[11px] font-bold disabled:opacity-50">
+                  <button onClick={sendVisitorMessage} disabled={sending} className="flex-1 py-1.5 rounded-lg bg-[#061638] text-[#F3E5AB] text-[11px] font-bold disabled:opacity-50">
                     {sending ? '...' : isAr ? 'إرسال' : 'Send'}
                   </button>
                   <button onClick={() => setForm(null)} className="px-3 py-1.5 rounded-lg border border-gray-200 text-[11px]">
@@ -344,7 +344,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
                   <button
                     key={f.id}
                     onClick={() => ask(f)}
-                    className="px-3 py-1.5 rounded-full border border-[#D4AF37] bg-white text-[11px] font-bold text-[#0E3A99] hover:bg-[#F3E5AB]/40"
+                    className="px-3 py-1.5 rounded-full border border-[#D4AF37] bg-white text-[11px] font-bold text-[#061638] hover:bg-[#F3E5AB]/40"
                   >
                     {q(f)}
                   </button>
@@ -368,7 +368,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
                 placeholder={isAr ? '{اكتب|اكتبي} سؤالك هنا…' : 'Type your question…'}
                 className="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-xs"
               />
-              <button type="submit" className="px-3 rounded-xl bg-[#0E3A99] text-[#F3E5AB]" aria-label={isAr ? 'إرسال' : 'Send'}>
+              <button type="submit" className="px-3 rounded-xl bg-[#061638] text-[#F3E5AB]" aria-label={isAr ? 'إرسال' : 'Send'}>
                 <Send className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
               </button>
             </form>
@@ -379,7 +379,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
                   {isAr ? 'واتساب' : 'WhatsApp'}
                 </button>
               )}
-              <button onClick={startMessage} disabled={sending} className="font-bold text-[#0E3A99] flex items-center gap-1 disabled:opacity-50">
+              <button onClick={startMessage} disabled={sending} className="font-bold text-[#061638] flex items-center gap-1 disabled:opacity-50">
                 <Mail className="w-3.5 h-3.5" />
                 {isAr ? 'رسالة للأكاديمية' : 'Message the academy'}
               </button>
@@ -393,7 +393,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
         </div>
       )}
       {!open && hello && (
-        <div className="mb-2 relative w-max max-w-[220px] px-3.5 py-2 rounded-2xl rounded-bl-sm bg-white border border-[#D4AF37] shadow-lg text-xs font-bold text-[#0E3A99] animate-bounce [animation-iteration-count:3]">
+        <div className="mb-2 relative w-max max-w-[220px] px-3.5 py-2 rounded-2xl rounded-bl-sm bg-white border border-[#D4AF37] shadow-lg text-xs font-bold text-[#061638] animate-bounce [animation-iteration-count:3]">
           <button onClick={() => setOpen(true)}>{isAr ? 'أهلًا بكم 👋' : 'Hello 👋'}</button>
           <button
             onClick={() => setHello(false)}
@@ -406,7 +406,7 @@ export const ChatAssistant: React.FC<{ hidden: boolean }> = ({ hidden }) => {
       )}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-14 h-14 rounded-full bg-[#0E3A99] text-[#F3E5AB] shadow-xl flex items-center justify-center border-2 border-[#D4AF37]"
+        className="w-14 h-14 rounded-full bg-[#061638] text-[#F3E5AB] shadow-xl flex items-center justify-center border-2 border-[#D4AF37]"
         aria-label={isAr ? 'المساعد' : 'Assistant'}
       >
         {open ? <X className="w-6 h-6" /> : <Bot className="w-7 h-7" />}

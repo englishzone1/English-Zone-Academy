@@ -102,7 +102,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
             <div className="flex justify-center mb-4">
               <Logo variant="light" onClick={() => navigate('home')} />
             </div>
-            <h1 className="font-serif-luxury font-bold text-2xl text-[#0E3A99]">
+            <h1 className="font-serif-luxury font-bold text-2xl text-[#061638]">
               {authMode === 'signin' 
                 ? (language === 'ar' ? 'بوابة الدخول الموحدة' : 'Academy Portal Sign In')
                 : (language === 'ar' ? 'تفعيل حساب طالب جديد' : 'Activate Student Account')}
@@ -125,8 +125,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
               }}
               className={`py-2 rounded-lg text-xs font-semibold transition-all ${
                 authMode === 'signin'
-                  ? 'bg-[#0E3A99] text-[#F3E5AB] shadow-sm font-bold'
-                  : 'text-gray-600 hover:text-[#0E3A99]'
+                  ? 'bg-[#061638] text-[#F3E5AB] shadow-sm font-bold'
+                  : 'text-gray-600 hover:text-[#061638]'
               }`}
             >
               {language === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
@@ -140,8 +140,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
               }}
               className={`py-2 rounded-lg text-xs font-semibold transition-all ${
                 authMode === 'activate'
-                  ? 'bg-[#0E3A99] text-[#F3E5AB] shadow-sm font-bold'
-                  : 'text-gray-600 hover:text-[#0E3A99]'
+                  ? 'bg-[#061638] text-[#F3E5AB] shadow-sm font-bold'
+                  : 'text-gray-600 hover:text-[#061638]'
               }`}
             >
               {language === 'ar' ? 'طالب جديد (إنشاء كلمة مرور)' : 'First Time (Set Password)'}
@@ -157,7 +157,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
           <form onSubmit={handleLogin} className="space-y-4">
             {authMode === 'activate' && (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#061638] mb-1">
                   {language === 'ar' ? 'الاسم الكامل للطالب' : 'Full Student Name'}
                 </label>
                 <div className="relative">
@@ -175,7 +175,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#061638] mb-1">
                 {t.login.email}
               </label>
               <div className="relative">
@@ -193,7 +193,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99]">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#061638]">
                   {t.login.password}
                 </label>
                 {authMode === 'signin' && (
@@ -240,7 +240,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-xl font-bold text-sm bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0] transition-colors flex items-center justify-center gap-2 shadow disabled:opacity-50"
+              className="w-full py-3 rounded-xl font-bold text-sm bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] transition-colors flex items-center justify-center gap-2 shadow disabled:opacity-50"
             >
               <span>
                 {isLoading 
@@ -258,7 +258,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate, targetRedirect }
             <span>{t.login.needAccount} </span>
             <button
               onClick={() => navigate('register')}
-              className="font-bold text-[#0E3A99] hover:text-[#AA820A] underline"
+              className="font-bold text-[#061638] hover:text-[#AA820A] underline"
             >
               {t.login.registerLink}
             </button>

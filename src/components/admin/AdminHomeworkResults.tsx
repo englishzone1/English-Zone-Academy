@@ -219,7 +219,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">{tr('Homework & Test Results', 'نتائج الواجبات والاختبارات')}</h2>
+          <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">{tr('Homework & Test Results', 'نتائج الواجبات والاختبارات')}</h2>
           <p className="text-xs text-gray-500">
             {tr(
               'Results arrive automatically when students solve lessons and tests in their dashboard.',
@@ -228,7 +228,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
           </p>
         </div>
         <div className="flex flex-wrap gap-2 self-start">
-          <button onClick={exportExcel} disabled={!filtered.length} className="px-3 py-2 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+          <button onClick={exportExcel} disabled={!filtered.length} className="px-3 py-2 rounded-xl bg-[#061638] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
             <Download className="w-4 h-4" />
             {tr('Download Excel', 'تحميل Excel')}
           </button>
@@ -263,10 +263,10 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
           <option value="test">{tr('Tests', 'الاختبارات')}</option>
         </select>
         <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold">
-          <button onClick={() => setView('latest')} className={`px-3 py-2 ${view === 'latest' ? 'bg-[#0E3A99] text-[#F3E5AB]' : 'bg-white text-gray-600'}`}>
+          <button onClick={() => setView('latest')} className={`px-3 py-2 ${view === 'latest' ? 'bg-[#061638] text-[#F3E5AB]' : 'bg-white text-gray-600'}`}>
             {tr('Latest', 'الأحدث')}
           </button>
-          <button onClick={() => setView('students')} className={`px-3 py-2 ${view === 'students' ? 'bg-[#0E3A99] text-[#F3E5AB]' : 'bg-white text-gray-600'}`}>
+          <button onClick={() => setView('students')} className={`px-3 py-2 ${view === 'students' ? 'bg-[#061638] text-[#F3E5AB]' : 'bg-white text-gray-600'}`}>
             {tr('Per student', 'لكل طالب')}
           </button>
         </div>
@@ -290,7 +290,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
           {filtered.slice(0, 200).map((r) => (
             <div key={r.id} className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-[#FAF8F5] border border-gray-100 text-xs">
               <div>
-                <span className="font-bold text-[#0E3A99]">{r.studentName}</span>
+                <span className="font-bold text-[#061638]">{r.studentName}</span>
                 {groupName(r.groupId) && <span className="text-gray-400"> • {groupName(r.groupId)}</span>}
                 <div className="text-gray-600 mt-0.5">
                   {r.title} <span className="text-gray-400">• {kindLabel(r.kind)} • {new Date(r.createdAt).toLocaleString(isAr ? 'ar' : 'en', { dateStyle: 'medium', timeStyle: 'short' })}</span>
@@ -320,7 +320,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                   {r.score}/{r.total} ({r.percent}%)
                 </span>
                 {!!r.audioCount && (
-                  <span className="px-2 py-1 rounded-lg bg-[#F3E5AB]/50 text-[#0E3A99] font-bold whitespace-nowrap flex items-center gap-1">
+                  <span className="px-2 py-1 rounded-lg bg-[#F3E5AB]/50 text-[#061638] font-bold whitespace-nowrap flex items-center gap-1">
                     <Mic className="w-3.5 h-3.5" />
                     {r.speakingScore !== undefined ? `${r.speakingScore}/${r.speakingMax}` : tr('to grade', 'بانتظار درجتك')}
                   </span>
@@ -336,7 +336,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                 {/* الإجابات والتصحيح اليدوي (للنتائج القديمة: تعديل الدرجة فقط) */}
                 <button
                   onClick={() => window.open(`/#/hw-answers/${r.id}`, '_blank')}
-                  className="px-2.5 py-1 rounded-lg border border-[#0E3A99] text-[#0E3A99] font-bold whitespace-nowrap flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-lg border border-[#061638] text-[#061638] font-bold whitespace-nowrap flex items-center gap-1"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   {r.hasAnswers || !!r.audioCount ? tr('Answers & marking', 'الإجابات والتصحيح') : tr('Edit score', 'تعديل الدرجة')}
@@ -365,7 +365,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
                       onClick={() => giveStars(r, n)}
                       title={tr(`Give ${n} stars`, `امنحي ${n} نجوم`)}
                       className={`px-2 py-1 rounded-lg border text-[11px] font-bold flex items-center gap-0.5 disabled:opacity-50 ${
-                        n === suggest(r.percent) ? 'border-[#D4AF37] bg-[#F3E5AB]/40 text-[#0E3A99]' : 'border-gray-200 bg-white text-gray-500'
+                        n === suggest(r.percent) ? 'border-[#D4AF37] bg-[#F3E5AB]/40 text-[#061638]' : 'border-gray-200 bg-white text-gray-500'
                       }`}
                     >
                       +{n}
@@ -404,7 +404,7 @@ export const AdminHomeworkResults: React.FC<Props> = ({ onNotice, teacherMode = 
             <tbody className="divide-y divide-gray-100">
               {perStudent.map((s) => (
                 <tr key={s.id}>
-                  <td className="py-2 px-3 font-bold text-[#0E3A99]">{s.name}</td>
+                  <td className="py-2 px-3 font-bold text-[#061638]">{s.name}</td>
                   <td className="py-2 px-3">{s.lessons}</td>
                   <td className="py-2 px-3">{s.lessonAvg !== undefined ? <span className={`px-2 py-0.5 rounded font-bold ${color(s.lessonAvg)}`}>{s.lessonAvg}%</span> : '—'}</td>
                   <td className="py-2 px-3">{s.tests}</td>

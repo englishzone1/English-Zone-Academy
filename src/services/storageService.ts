@@ -27,7 +27,7 @@ const DEFAULT_AVATAR: AvatarConfiguration = {
   hairColor: '#1A1A1A',
   hasHijab: true,
   hijabStyle: 'modern-wrap',
-  hijabColor: '#0E3A99',
+  hijabColor: '#061638',
   clothingType: 'modest-blouse',
   clothingColor: '#D4AF37',
   backgroundId: 'modern-library',

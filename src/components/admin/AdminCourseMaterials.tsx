@@ -81,7 +81,7 @@ export const AdminCourseMaterials: React.FC<Props> = ({ courses, isAr, onNotice 
         const setD = (patch: Partial<typeof d>) => setDrafts((prev) => ({ ...prev, [c.id]: { ...d, ...patch } }));
         return (
           <div key={c.id} className="p-4 rounded-xl border border-gray-200 bg-white space-y-3">
-            <span className="font-bold text-xs text-[#0E3A99]">
+            <span className="font-bold text-xs text-[#061638]">
               {(isAr ? c.titleAr : c.titleEn) || c.titleAr} • {c.level}
             </span>
             {links.length > 0 && (
@@ -90,7 +90,7 @@ export const AdminCourseMaterials: React.FC<Props> = ({ courses, isAr, onNotice 
                   const Icon = TYPES.find((t) => t.id === l.type)?.icon || LinkIcon;
                   return (
                     <div key={i} className="flex items-center justify-between gap-2 text-[11px] px-3 py-1.5 rounded-lg bg-[#FAF8F5]">
-                      <a href={l.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#0E3A99] underline">
+                      <a href={l.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#061638] underline">
                         <Icon className="w-3.5 h-3.5 text-[#AA820A]" />
                         {l.label}
                       </a>
@@ -119,7 +119,7 @@ export const AdminCourseMaterials: React.FC<Props> = ({ courses, isAr, onNotice 
               <button
                 onClick={() => addLink(c)}
                 disabled={busy === c.id}
-                className="px-3 py-2 rounded-xl text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] flex items-center justify-center gap-1 disabled:opacity-50"
+                className="px-3 py-2 rounded-xl text-xs font-bold bg-[#061638] text-[#F3E5AB] flex items-center justify-center gap-1 disabled:opacity-50"
               >
                 {busy === c.id ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4 text-[#D4AF37]" />}
                 <span>{tr('Add link', 'إضافة رابط')}</span>

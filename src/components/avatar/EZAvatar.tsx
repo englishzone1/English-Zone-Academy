@@ -446,7 +446,7 @@ export const EZAvatar: React.FC<Props> = ({ config, view = 'head', size = 120, s
       {showBackground && (
         <g>
           <rect x="0" y="0" width="200" height="300" fill={a.bg} />
-          <circle cx="100" cy={view === 'full' ? 120 : 88} r={view === 'full' ? 84 : 60} fill="#FFFFFF" opacity={a.bg === '#0E3A99' ? 0.08 : 0.35} />
+          <circle cx="100" cy={view === 'full' ? 120 : 88} r={view === 'full' ? 84 : 60} fill="#FFFFFF" opacity={a.bg === '#061638' ? 0.08 : 0.35} />
         </g>
       )}
       {view === 'full' && <ellipse cx="100" cy="274" rx="48" ry="6" fill="#000000" opacity="0.1" />}

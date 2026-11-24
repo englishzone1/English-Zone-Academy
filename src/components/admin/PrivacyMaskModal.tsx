@@ -93,7 +93,7 @@ export const PrivacyMaskModal: React.FC<PrivacyMaskModalProps> = ({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 bg-[#072A73]/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-[#020714]/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
     >
       <div className="bg-white rounded-3xl border-2 border-[#D4AF37]/50 shadow-2xl max-w-4xl w-full p-5 sm:p-6 space-y-4 my-auto">
         {/* Header */}
@@ -101,7 +101,7 @@ export const PrivacyMaskModal: React.FC<PrivacyMaskModalProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-[#AA820A]" />
-              <h3 className="font-serif-luxury font-bold text-lg sm:text-xl text-[#0E3A99]">
+              <h3 className="font-serif-luxury font-bold text-lg sm:text-xl text-[#061638]">
                 {isArabic
                   ? 'أداة حماية الخصوصية وإخفاء البيانات'
                   : 'Privacy Redaction & Masking Tool'}
@@ -127,41 +127,41 @@ export const PrivacyMaskModal: React.FC<PrivacyMaskModalProps> = ({
         {/* Quick Presets & Mask Style */}
         <div className="flex flex-wrap items-center justify-between gap-3 bg-[#FAF8F5] p-3.5 rounded-2xl border border-[#D4AF37]/25">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-bold text-[#0E3A99]">
+            <span className="text-[11px] font-bold text-[#061638]">
               {isArabic ? 'قوالب سريعة:' : 'Quick Masks:'}
             </span>
             <button
               type="button"
               onClick={() => addPreset({ x: 0, y: 0, width: 1, height: 0.14 })}
-              className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 hover:border-[#D4AF37] text-[11px] font-bold text-[#0E3A99]"
+              className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 hover:border-[#D4AF37] text-[11px] font-bold text-[#061638]"
             >
               {isArabic ? 'تغطية الشريط العلوي (14%)' : 'Mask Top Bar (14%)'}
             </button>
             <button
               type="button"
               onClick={() => addPreset({ x: 0, y: 0, width: 1, height: 0.2 })}
-              className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 hover:border-[#D4AF37] text-[11px] font-bold text-[#0E3A99]"
+              className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 hover:border-[#D4AF37] text-[11px] font-bold text-[#061638]"
             >
               {isArabic ? 'تغطية الشريط العلوي (20%)' : 'Mask Top Bar (20%)'}
             </button>
             <button
               type="button"
               onClick={() => addPreset({ x: 0.84, y: 0.16, width: 0.16, height: 0.16 })}
-              className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 hover:border-[#D4AF37] text-[11px] font-bold text-[#0E3A99]"
+              className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 hover:border-[#D4AF37] text-[11px] font-bold text-[#061638]"
             >
               {isArabic ? 'إخفاء الصورة يميناً' : 'Top-Right Avatar'}
             </button>
             <button
               type="button"
               onClick={() => addPreset({ x: 0, y: 0.16, width: 0.16, height: 0.16 })}
-              className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 hover:border-[#D4AF37] text-[11px] font-bold text-[#0E3A99]"
+              className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-300 hover:border-[#D4AF37] text-[11px] font-bold text-[#061638]"
             >
               {isArabic ? 'إخفاء الصورة يساراً' : 'Top-Left Avatar'}
             </button>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-[#0E3A99]">
+            <span className="text-[11px] font-bold text-[#061638]">
               {isArabic ? 'نمط الإخفاء:' : 'Style:'}
             </span>
             {(
@@ -177,7 +177,7 @@ export const PrivacyMaskModal: React.FC<PrivacyMaskModalProps> = ({
                 onClick={() => setMaskStyle(st.id)}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
                   maskStyle === st.id
-                    ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#D4AF37]'
+                    ? 'bg-[#061638] text-[#F3E5AB] border-[#D4AF37]'
                     : 'bg-white text-gray-600 border-gray-300'
                 }`}
               >
@@ -188,7 +188,7 @@ export const PrivacyMaskModal: React.FC<PrivacyMaskModalProps> = ({
         </div>
 
         {/* Interactive Canvas Overlay Area */}
-        <div className="flex justify-center bg-[#0E3A99]/5 rounded-2xl p-3 border border-gray-200 max-h-[56vh] overflow-auto">
+        <div className="flex justify-center bg-[#061638]/5 rounded-2xl p-3 border border-gray-200 max-h-[56vh] overflow-auto">
           <div
             ref={containerRef}
             onPointerDown={handlePointerDown}
@@ -214,9 +214,9 @@ export const PrivacyMaskModal: React.FC<PrivacyMaskModalProps> = ({
                 }}
                 className={`absolute pointer-events-none border border-[#D4AF37]/70 ${
                   maskStyle === 'blur'
-                    ? 'backdrop-blur-md bg-[#0E3A99]/35'
+                    ? 'backdrop-blur-md bg-[#061638]/35'
                     : maskStyle === 'navy'
-                    ? 'bg-[#0E3A99]'
+                    ? 'bg-[#061638]'
                     : 'bg-[#111827]'
                 }`}
               />
@@ -262,7 +262,7 @@ export const PrivacyMaskModal: React.FC<PrivacyMaskModalProps> = ({
               type="button"
               onClick={handleApplyAndSave}
               disabled={isSaving || masks.length === 0}
-              className="px-5 py-2 rounded-xl text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0] disabled:opacity-50 flex items-center gap-1.5 shadow-md"
+              className="px-5 py-2 rounded-xl text-xs font-bold bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] disabled:opacity-50 flex items-center gap-1.5 shadow-md"
             >
               {isSaving ? (
                 <span>{isArabic ? 'جاري الحفظ...' : 'Applying...'}</span>

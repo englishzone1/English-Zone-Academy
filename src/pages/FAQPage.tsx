@@ -29,7 +29,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ navigate }) => {
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             Knowledge & Admissions Guide
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0E3A99] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#061638] mt-2">
             {language === 'ar' ? 'الأسئلة الشائعة وإجاباتها' : 'Frequently Asked Questions'}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -66,7 +66,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ navigate }) => {
               onClick={() => setActiveCategory(cat.id)}
               className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-[#0E3A99] text-[#F3E5AB] shadow'
+                  ? 'bg-[#061638] text-[#F3E5AB] shadow'
                   : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
               }`}
             >
@@ -93,7 +93,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ navigate }) => {
                   onClick={() => setOpenId(isOpen ? null : faq.id)}
                   className="w-full p-6 text-left rtl:text-right flex items-center justify-between gap-4 hover:bg-[#FAF8F5] transition-colors"
                 >
-                  <span className="font-serif-luxury font-bold text-base sm:text-lg text-[#0E3A99] flex items-center gap-2.5">
+                  <span className="font-serif-luxury font-bold text-base sm:text-lg text-[#061638] flex items-center gap-2.5">
                     <HelpCircle className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                     <span>{language === 'ar' ? faq.questionAr : faq.questionEn}</span>
                   </span>
@@ -117,7 +117,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ navigate }) => {
         )}
 
         {/* Still have questions banner */}
-        <div className="mt-12 p-8 rounded-3xl bg-[#0E3A99] text-white text-center space-y-4">
+        <div className="mt-12 p-8 rounded-3xl bg-[#061638] text-white text-center space-y-4">
           <h3 className="font-serif-luxury font-bold text-xl text-[#F3E5AB]">
             {language === 'ar' ? 'هل لديك سؤال آخر لم تجد إجابته هنا؟' : 'Have a Question Not Listed Here?'}
           </h3>
@@ -129,7 +129,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ navigate }) => {
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => navigate('contact')}
-              className="px-6 py-2.5 rounded-xl font-bold text-xs bg-[#D4AF37] text-[#0E3A99] hover:bg-[#F3E5AB] transition-colors"
+              className="px-6 py-2.5 rounded-xl font-bold text-xs bg-[#D4AF37] text-[#061638] hover:bg-[#F3E5AB] transition-colors"
             >
               {t.nav.contact}
             </button>

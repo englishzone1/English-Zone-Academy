@@ -134,11 +134,11 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {showHeader && (
           <div className="text-center max-w-3xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0E3A99] text-[#F3E5AB] border border-[#D4AF37]/40 text-xs font-bold tracking-wide mb-3 shadow-sm">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#061638] text-[#F3E5AB] border border-[#D4AF37]/40 text-xs font-bold tracking-wide mb-3 shadow-sm">
               <MessageSquareQuote className="w-3.5 h-3.5 text-[#D4AF37]" aria-hidden="true" />
               <span>{t.reviewsSection.eyebrow}</span>
             </div>
-            <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0E3A99]">
+            <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#061638]">
               {t.reviewsSection.title}
             </h2>
             <p className="text-sm sm:text-base text-gray-600 mt-3 leading-relaxed">
@@ -158,7 +158,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
               }}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 selectedCategory === 'all'
-                  ? 'bg-[#0E3A99] text-[#F3E5AB] shadow-md border border-[#D4AF37]/50'
+                  ? 'bg-[#061638] text-[#F3E5AB] shadow-md border border-[#D4AF37]/50'
                   : 'bg-white text-gray-700 border border-[#D4AF37]/30 hover:border-[#D4AF37]'
               }`}
             >
@@ -176,7 +176,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
                   }}
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     selectedCategory === cat
-                      ? 'bg-[#0E3A99] text-[#F3E5AB] shadow-md border border-[#D4AF37]/50'
+                      ? 'bg-[#061638] text-[#F3E5AB] shadow-md border border-[#D4AF37]/50'
                       : 'bg-white text-gray-700 border border-[#D4AF37]/30 hover:border-[#D4AF37]'
                   }`}
                 >
@@ -202,10 +202,10 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
         ) : filteredReviews.length === 0 ? (
           /* Dignified Empty State (until administrator explicitly publishes screenshots) */
           <div className="max-w-2xl mx-auto bg-white rounded-3xl p-8 sm:p-10 border-2 border-[#D4AF37]/30 shadow-md text-center space-y-3">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#0E3A99] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shadow">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#061638] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shadow">
               <Images className="w-7 h-7" aria-hidden="true" />
             </div>
-            <h3 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">
+            <h3 className="font-serif-luxury font-bold text-xl text-[#061638]">
               {t.reviewsSection.title}
             </h3>
             <p className="text-sm text-gray-600 leading-relaxed">
@@ -241,8 +241,8 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
                       />
 
                       {/* Hover Zoom Overlay */}
-                      <div className="absolute inset-0 bg-[#0E3A99]/0 group-hover:bg-[#0E3A99]/25 transition-colors flex items-center justify-center">
-                        <span className="opacity-0 group-hover:opacity-100 transition-opacity px-3.5 py-2 rounded-xl bg-[#0E3A99]/90 text-[#F3E5AB] border border-[#D4AF37]/50 text-xs font-bold flex items-center gap-1.5 shadow-lg">
+                      <div className="absolute inset-0 bg-[#061638]/0 group-hover:bg-[#061638]/25 transition-colors flex items-center justify-center">
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity px-3.5 py-2 rounded-xl bg-[#061638]/90 text-[#F3E5AB] border border-[#D4AF37]/50 text-xs font-bold flex items-center gap-1.5 shadow-lg">
                           <ZoomIn className="w-4 h-4 text-[#D4AF37]" aria-hidden="true" />
                           <span>{t.reviewsSection.clickToZoom}</span>
                         </span>
@@ -252,12 +252,12 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
                     {(hasCategory || caption) && (
                       <div className="pt-3.5 px-1.5 space-y-1.5">
                         {hasCategory && (
-                          <span className="inline-block px-2.5 py-0.5 rounded-lg bg-[#0E3A99]/5 border border-[#D4AF37]/30 text-[#AA820A] text-[11px] font-bold">
+                          <span className="inline-block px-2.5 py-0.5 rounded-lg bg-[#061638]/5 border border-[#D4AF37]/30 text-[#AA820A] text-[11px] font-bold">
                             {getCategoryLabel(item.category)}
                           </span>
                         )}
                         {caption && (
-                          <p className="text-xs sm:text-sm font-medium text-[#0E3A99] leading-snug line-clamp-2">
+                          <p className="text-xs sm:text-sm font-medium text-[#061638] leading-snug line-clamp-2">
                             {caption}
                           </p>
                         )}
@@ -275,7 +275,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
                   <button
                     type="button"
                     onClick={onViewAllNavigate}
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-[#0E3A99] text-[#F3E5AB] border border-[#D4AF37]/50 hover:bg-[#1E55C0] shadow-lg transition-all"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-[#061638] text-[#F3E5AB] border border-[#D4AF37]/50 hover:bg-[#123A8C] shadow-lg transition-all"
                   >
                     <Images className="w-4 h-4 text-[#D4AF37]" aria-hidden="true" />
                     <span>
@@ -286,7 +286,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowAll((prev) => !prev)}
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-[#0E3A99] text-[#F3E5AB] border border-[#D4AF37]/50 hover:bg-[#1E55C0] shadow-lg transition-all"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-[#061638] text-[#F3E5AB] border border-[#D4AF37]/50 hover:bg-[#123A8C] shadow-lg transition-all"
                   >
                     <Images className="w-4 h-4 text-[#D4AF37]" aria-hidden="true" />
                     <span>
@@ -314,7 +314,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
           aria-modal="true"
           aria-label={t.reviewsSection.title}
           onClick={() => setLightboxIndex(null)}
-          className="fixed inset-0 z-50 bg-[#072A73]/92 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
+          className="fixed inset-0 z-50 bg-[#020714]/92 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -323,11 +323,11 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
             {/* Top Bar */}
             <div className="w-full flex items-center justify-between gap-4 mb-3 px-1">
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-lg bg-[#0E3A99] text-[#F3E5AB] border border-[#D4AF37]/40 text-xs font-bold font-mono">
+                <span className="px-3 py-1 rounded-lg bg-[#061638] text-[#F3E5AB] border border-[#D4AF37]/40 text-xs font-bold font-mono">
                   {lightboxIndex + 1} / {filteredReviews.length}
                 </span>
                 {activeLightboxItem.category && activeLightboxItem.category !== 'none' && (
-                  <span className="px-3 py-1 rounded-lg bg-[#D4AF37] text-[#0E3A99] text-xs font-bold">
+                  <span className="px-3 py-1 rounded-lg bg-[#D4AF37] text-[#061638] text-xs font-bold">
                     {getCategoryLabel(activeLightboxItem.category)}
                   </span>
                 )}
@@ -337,7 +337,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
                 type="button"
                 onClick={() => setLightboxIndex(null)}
                 aria-label={t.reviewsSection.lightboxClose}
-                className="w-10 h-10 rounded-xl bg-[#0E3A99] text-[#F3E5AB] border border-[#D4AF37]/50 hover:bg-[#D4AF37] hover:text-[#0E3A99] transition-colors flex items-center justify-center shadow-lg"
+                className="w-10 h-10 rounded-xl bg-[#061638] text-[#F3E5AB] border border-[#D4AF37]/50 hover:bg-[#D4AF37] hover:text-[#061638] transition-colors flex items-center justify-center shadow-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -350,7 +350,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
                   type="button"
                   onClick={dir === 'rtl' ? goToNextLightbox : goToPrevLightbox}
                   aria-label={dir === 'rtl' ? t.reviewsSection.lightboxNext : t.reviewsSection.lightboxPrev}
-                  className="absolute start-1 sm:-start-4 z-10 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#0E3A99]/90 text-[#F3E5AB] border border-[#D4AF37]/60 hover:bg-[#D4AF37] hover:text-[#0E3A99] transition-colors flex items-center justify-center shadow-xl"
+                  className="absolute start-1 sm:-start-4 z-10 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#061638]/90 text-[#F3E5AB] border border-[#D4AF37]/60 hover:bg-[#D4AF37] hover:text-[#061638] transition-colors flex items-center justify-center shadow-xl"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -374,7 +374,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
                   type="button"
                   onClick={dir === 'rtl' ? goToPrevLightbox : goToNextLightbox}
                   aria-label={dir === 'rtl' ? t.reviewsSection.lightboxPrev : t.reviewsSection.lightboxNext}
-                  className="absolute end-1 sm:-end-4 z-10 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#0E3A99]/90 text-[#F3E5AB] border border-[#D4AF37]/60 hover:bg-[#D4AF37] hover:text-[#0E3A99] transition-colors flex items-center justify-center shadow-xl"
+                  className="absolute end-1 sm:-end-4 z-10 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#061638]/90 text-[#F3E5AB] border border-[#D4AF37]/60 hover:bg-[#D4AF37] hover:text-[#061638] transition-colors flex items-center justify-center shadow-xl"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -383,7 +383,7 @@ export const StudentReviewsSection: React.FC<StudentReviewsSectionProps> = ({
 
             {/* Optional Caption */}
             {(activeLightboxItem.captionEn?.trim() || activeLightboxItem.captionAr?.trim()) && (
-              <div className="mt-3 px-5 py-2.5 rounded-xl bg-[#0E3A99]/95 border border-[#D4AF37]/35 text-center max-w-2xl">
+              <div className="mt-3 px-5 py-2.5 rounded-xl bg-[#061638]/95 border border-[#D4AF37]/35 text-center max-w-2xl">
                 <p className="text-sm text-[#F3E5AB] font-medium">
                   {language === 'ar'
                     ? activeLightboxItem.captionAr?.trim() || activeLightboxItem.captionEn?.trim()

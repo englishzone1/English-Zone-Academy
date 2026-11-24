@@ -250,7 +250,7 @@ export const qrMatrix = (text: string): boolean[][] => {
 };
 
 // رسم الرمز على Canvas في موضع ومقاس محددين (مع هامش أبيض)
-export const drawQR = (ctx: CanvasRenderingContext2D, text: string, x: number, y: number, sizePx: number, dark = '#0E3A99') => {
+export const drawQR = (ctx: CanvasRenderingContext2D, text: string, x: number, y: number, sizePx: number, dark = '#061638') => {
   const m = qrMatrix(text);
   const n = m.length + 8;
   const cell = sizePx / n;

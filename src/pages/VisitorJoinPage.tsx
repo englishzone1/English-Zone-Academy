@@ -91,8 +91,8 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
   if (isAuthenticated) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 p-6 text-center" dir={isAr ? 'rtl' : 'ltr'}>
-        <p className="text-sm text-[#0E3A99] font-bold">{tr('You are already signed in.', '{أنت|أنتِ} مسجّلة الدخول بالفعل.')}</p>
-        <button onClick={() => navigate('portal')} className="px-5 py-2.5 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-sm font-bold">
+        <p className="text-sm text-[#061638] font-bold">{tr('You are already signed in.', '{أنت|أنتِ} مسجّلة الدخول بالفعل.')}</p>
+        <button onClick={() => navigate('portal')} className="px-5 py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-sm font-bold">
           {tr('Go to my page', '{اذهب|اذهبي} إلى صفحتي')}
         </button>
       </div>
@@ -103,7 +103,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
     <div className="min-h-screen bg-[#FAF8F5] py-10 px-4" dir={isAr ? 'rtl' : 'ltr'}>
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* المزايا */}
-        <div className="bg-gradient-to-br from-[#0E3A99] to-[#102445] text-white rounded-3xl p-7 sm:p-9 border border-[#D4AF37]/40 shadow-xl space-y-6">
+        <div className="bg-gradient-to-br from-[#061638] to-[#102445] text-white rounded-3xl p-7 sm:p-9 border border-[#D4AF37]/40 shadow-xl space-y-6">
           <EnglishZoneEmblem sizeClass="w-16 h-16" glow={true} />
           <div className="space-y-2">
             <h1 className="font-serif-luxury font-bold text-3xl text-[#F3E5AB]">
@@ -150,7 +150,7 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
 
         {/* النموذج */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-4">
-          <h2 className="font-bold text-xl text-[#0E3A99]">{tr('Sign up now – free', '{سجّل|سجّلي} الآن مجانًا')}</h2>
+          <h2 className="font-bold text-xl text-[#061638]">{tr('Sign up now – free', '{سجّل|سجّلي} الآن مجانًا')}</h2>
           <p className="text-xs text-gray-500">{tr('One step: Google or email. We ask for your name and WhatsApp inside.', 'خطوة واحدة: بحساب Google أو بالبريد. {اسمك|اسمكِ} ورقم الواتساب نطلبهما داخل المنصة.')}</p>
           {error && <p className="text-xs font-bold text-red-600 text-center p-2 rounded-lg bg-red-50 border border-red-100">{error}</p>}
           {inApp ? (
@@ -170,13 +170,13 @@ export const VisitorJoinPage: React.FC<{ navigate: (route: string) => void; hide
           <form onSubmit={viaEmail} className="space-y-3">
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} dir="ltr" placeholder={tr('Email', 'البريد الإلكتروني')} className={inp} />
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" placeholder={tr('Password (6+ characters)', 'كلمة المرور (6 أحرف على الأقل)')} className={inp} />
-            <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] text-sm font-bold disabled:opacity-50 shadow-lg">
+            <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] text-sm font-bold disabled:opacity-50 shadow-lg">
               {busy ? '...' : tr('Create my free account', 'إنشاء حسابي المجاني')}
             </button>
           </form>
           <p className="text-xs text-gray-500 text-center">
             {tr('Already have an account?', '{عندك|عندكِ} حساب؟')}{' '}
-            <button onClick={() => navigate('login')} className="font-bold text-[#0E3A99] underline">
+            <button onClick={() => navigate('login')} className="font-bold text-[#061638] underline">
               {tr('Log in', '{سجّل|سجّلي} الدخول')}
             </button>
           </p>

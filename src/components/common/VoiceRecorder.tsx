@@ -132,7 +132,7 @@ export const VoiceRecorder: React.FC<{ isAr: boolean; value: RecordedAudio | nul
             type="button"
             onClick={start}
             disabled={disabled}
-            className="w-11 h-11 rounded-full bg-[#0E3A99] text-[#D4AF37] flex items-center justify-center disabled:opacity-50"
+            className="w-11 h-11 rounded-full bg-[#061638] text-[#D4AF37] flex items-center justify-center disabled:opacity-50"
             title={isAr ? 'تسجيل صوتي (حتى 10 دقائق)' : 'Voice recording (up to 10 min)'}
           >
             <Mic className="w-5 h-5" />
@@ -156,7 +156,7 @@ export const VoiceRecorder: React.FC<{ isAr: boolean; value: RecordedAudio | nul
           type="button"
           onClick={start}
           disabled={disabled}
-          className="px-4 py-2 rounded-xl text-xs font-bold border border-[#D4AF37] text-[#0E3A99] bg-white hover:bg-[#FAF8F5] flex items-center gap-1.5 disabled:opacity-50"
+          className="px-4 py-2 rounded-xl text-xs font-bold border border-[#D4AF37] text-[#061638] bg-white hover:bg-[#FAF8F5] flex items-center gap-1.5 disabled:opacity-50"
         >
           <Mic className="w-4 h-4 text-[#AA820A]" />
           <span>{isAr ? 'تسجيل صوتي' : 'Voice recording'}</span>
@@ -198,7 +198,7 @@ export const MessageAudioPlayer: React.FC<{ messageId: string; kind: 'msg' | 're
   if (url) return <audio controls autoPlay src={url} className="h-9 max-w-full" />;
   return (
     <div className="flex items-center gap-2">
-      <button type="button" onClick={load} disabled={loading} className="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-[#0E3A99] text-[#F3E5AB] flex items-center gap-1.5">
+      <button type="button" onClick={load} disabled={loading} className="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-[#061638] text-[#F3E5AB] flex items-center gap-1.5">
         {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
         <span>
           {isAr ? 'تسجيل صوتي' : 'Voice recording'}

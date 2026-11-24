@@ -103,7 +103,7 @@ const cardCls = 'bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-s
 const boxCls = 'p-5 rounded-2xl border border-[#D4AF37]/40 bg-[#FAF8F5] space-y-4';
 const emptyCls = 'p-8 text-center text-xs text-gray-500 bg-[#FAF8F5] rounded-2xl';
 const primaryBtn =
-  'px-5 py-2 rounded-xl text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0] flex items-center gap-1.5 disabled:opacity-50';
+  'px-5 py-2 rounded-xl text-xs font-bold bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C] flex items-center gap-1.5 disabled:opacity-50';
 const thCls = 'py-3 px-4';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
@@ -750,7 +750,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
   const trackDefs = [
     { key: 'A1-A2', labelEn: 'Foundations (A1–A2)', labelAr: 'التأسيس (A1–A2)', wrap: 'border-emerald-200 bg-emerald-50/20', badge: 'bg-emerald-100 text-emerald-800' },
-    { key: 'B1-B2', labelEn: 'Fluency (B1–B2)', labelAr: 'الطلاقة (B1–B2)', wrap: 'border-[#D4AF37]/50 bg-[#FAF8F5]', badge: 'bg-[#D4AF37]/20 text-[#0E3A99]' },
+    { key: 'B1-B2', labelEn: 'Fluency (B1–B2)', labelAr: 'الطلاقة (B1–B2)', wrap: 'border-[#D4AF37]/50 bg-[#FAF8F5]', badge: 'bg-[#D4AF37]/20 text-[#061638]' },
     { key: 'C1-C2', labelEn: 'Mastery (C1–C2)', labelAr: 'الإتقان (C1–C2)', wrap: 'border-indigo-200 bg-indigo-50/20', badge: 'bg-indigo-100 text-indigo-800' }
   ];
 
@@ -790,14 +790,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             <EnglishZoneEmblem sizeClass="w-14 h-14" glow={true} />
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold">
+                <span className="px-3 py-1 rounded-full bg-[#061638] text-[#F3E5AB] text-xs font-bold">
                   {tr('Super Admin Console', 'وحدة تحكم المدير العام')}
                 </span>
                 <span className="text-xs text-[#AA820A] font-semibold">
                   {tr('Complete Academy Management', 'الإدارة الكاملة للأكاديمية')}
                 </span>
               </div>
-              <h1 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0E3A99] mt-1">
+              <h1 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#061638] mt-1">
                 {tr('English Zone Central Administration', 'الإدارة المركزية لأكاديمية English Zone')}
               </h1>
               <p className="text-xs text-gray-500">
@@ -812,7 +812,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('board')}
-              className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0E3A99] text-xs font-bold flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#061638] text-xs font-bold flex items-center gap-1.5"
             >
               <PenLine className="w-3.5 h-3.5" />
               <span>{tr('Whiteboard', 'السبورة')}</span>
@@ -838,7 +838,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 activeTab === tab.id
-                  ? 'bg-[#0E3A99] text-[#F3E5AB] shadow-md'
+                  ? 'bg-[#061638] text-[#F3E5AB] shadow-md'
                   : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
               }`}
             >
@@ -869,7 +869,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <span className="text-xs text-gray-500 block">{tr('Students', 'عدد الطلاب')}</span>
-                <span className="font-serif-luxury font-bold text-3xl text-[#0E3A99] mt-1 block">{students.length}</span>
+                <span className="font-serif-luxury font-bold text-3xl text-[#061638] mt-1 block">{students.length}</span>
               </div>
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <span className="text-xs text-gray-500 block">{tr('Pending Applications', 'طلبات قيد المراجعة')}</span>
@@ -877,17 +877,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
               </div>
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <span className="text-xs text-gray-500 block">{tr('Teachers', 'عدد المعلمين')}</span>
-                <span className="font-serif-luxury font-bold text-3xl text-[#0E3A99] mt-1 block">{teachers.length}</span>
+                <span className="font-serif-luxury font-bold text-3xl text-[#061638] mt-1 block">{teachers.length}</span>
               </div>
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <span className="text-xs text-gray-500 block">{tr('Total Applications', 'إجمالي الطلبات')}</span>
-                <span className="font-serif-luxury font-bold text-3xl text-[#0E3A99] mt-1 block">{registrations.length}</span>
+                <span className="font-serif-luxury font-bold text-3xl text-[#061638] mt-1 block">{registrations.length}</span>
               </div>
             </div>
 
             <div className={cardCls}>
               <div className="flex items-center justify-between">
-                <h3 className="font-serif-luxury font-bold text-lg text-[#0E3A99]">
+                <h3 className="font-serif-luxury font-bold text-lg text-[#061638]">
                   {tr('Pending Registration Requests', 'طلبات التسجيل التي تحتاج إجراءً')}
                 </h3>
                 <button onClick={() => setActiveTab('registrations')} className="text-xs font-bold text-[#AA820A] hover:underline">
@@ -902,13 +902,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                   {pendingRegistrations.slice(0, 3).map((reg) => (
                     <div key={reg.id} className="p-4 rounded-xl bg-[#FAF8F5] border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
                       <div>
-                        <span className="font-bold text-sm text-[#0E3A99] block">{reg.fullName}</span>
+                        <span className="font-bold text-sm text-[#061638] block">{reg.fullName}</span>
                         <span className="text-gray-500">
                           {tr('Level', 'المستوى')}: {reg.mainLevel} • {formatLabel(reg.learningFormat)} • WhatsApp: {reg.whatsappNumber} • {tr('Country', 'الدولة')}: {reg.country}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => handleApprove(reg.id)} className="px-4 py-2 rounded-lg bg-[#0E3A99] text-[#F3E5AB] font-bold">
+                        <button onClick={() => handleApprove(reg.id)} className="px-4 py-2 rounded-lg bg-[#061638] text-[#F3E5AB] font-bold">
                           {tr('Add as student', 'إضافة كطالبة')}
                         </button>
                         <button onClick={() => handleReject(reg.id)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:text-red-600">
@@ -928,7 +928,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
           <div className={cardCls}>
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">
+                <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">
                   {tr('Course registrants', 'المسجّلون على الكورس')}
                 </h2>
                 <p className="text-xs text-gray-500">
@@ -957,11 +957,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                   <tbody className="divide-y divide-gray-100 text-xs sm:text-sm">
                     {registrations.map((reg) => (
                       <tr key={reg.id} className="hover:bg-[#FAF8F5]">
-                        <td className="py-3.5 px-4 font-bold text-[#0E3A99]">
+                        <td className="py-3.5 px-4 font-bold text-[#061638]">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span>{reg.fullName}</span>
                             {(reg as any).type === 'english_club' && (
-                              <span className="px-2 py-0.5 rounded-full bg-[#0E3A99] text-[#F3E5AB] text-[10px] font-bold border border-[#D4AF37]/40">
+                              <span className="px-2 py-0.5 rounded-full bg-[#061638] text-[#F3E5AB] text-[10px] font-bold border border-[#D4AF37]/40">
                                 {tr('English Club', 'نادي الإنجليزية')}
                               </span>
                             )}
@@ -973,12 +973,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                         <td className="py-3.5 px-4">
                           {(reg as any).selectedTrack ? (
                             <>
-                              <span className="font-semibold text-[#0E3A99]">{tr('Track', 'المسار')}: {(reg as any).selectedTrack}</span>
+                              <span className="font-semibold text-[#061638]">{tr('Track', 'المسار')}: {(reg as any).selectedTrack}</span>
                               <span className="block text-xs text-gray-500">{tr('60-Min Club Practice', 'ممارسة النادي (60 دقيقة)')}</span>
                             </>
                           ) : (
                             <>
-                              <span className="font-semibold text-[#0E3A99]">{tr('Level', 'المستوى')} {reg.mainLevel}</span>
+                              <span className="font-semibold text-[#061638]">{tr('Level', 'المستوى')} {reg.mainLevel}</span>
                               <span className="block text-xs text-gray-500">{formatLabel(reg.learningFormat)}</span>
                             </>
                           )}
@@ -994,7 +994,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                                 ? 'bg-[#25D366]/10 text-[#128C7E] border border-[#25D366]/30'
                                 : reg.status === 'rejected'
                                 ? 'bg-red-50 text-red-600 border border-red-200'
-                                : 'bg-[#D4AF37]/20 text-[#0E3A99] border border-[#D4AF37]/40'
+                                : 'bg-[#D4AF37]/20 text-[#061638] border border-[#D4AF37]/40'
                             }`}
                           >
                             {statusLabel(reg.status)}
@@ -1006,7 +1006,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                               </div>
                               <button
                                 onClick={() => handleApprove(reg.id, true)}
-                                className="px-2 py-1 rounded-md bg-[#0E3A99] text-[#F3E5AB] text-[10px] font-bold"
+                                className="px-2 py-1 rounded-md bg-[#061638] text-[#F3E5AB] text-[10px] font-bold"
                               >
                                 {tr('She created it – add now', 'أنشأت حسابها؟ أضيفيها الآن')}
                               </button>
@@ -1014,7 +1014,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                                 <button
                                   key={u.id}
                                   onClick={() => linkToAccount(reg.id, u.id)}
-                                  className="block px-2 py-1 rounded-md border border-[#D4AF37] bg-white text-[10px] font-bold text-[#0E3A99]"
+                                  className="block px-2 py-1 rounded-md border border-[#D4AF37] bg-white text-[10px] font-bold text-[#061638]"
                                 >
                                   {tr('Link to', 'اربطي بحساب')}: {u.fullName} ({u.email})
                                 </button>
@@ -1025,7 +1025,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                         <td className="py-3.5 px-4 text-center">
                           {reg.status === 'pending' ? (
                             <div className="inline-flex items-center gap-2">
-                              <button onClick={() => handleApprove(reg.id)} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0]">
+                              <button onClick={() => handleApprove(reg.id)} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#061638] text-[#F3E5AB] hover:bg-[#123A8C]">
                                 {tr('Add as student', 'إضافة كطالبة')}
                               </button>
                               <button onClick={() => handleReject(reg.id)} className="px-2.5 py-1.5 rounded-lg text-xs border border-gray-300 text-gray-600 hover:text-red-600">
@@ -1053,7 +1053,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
           <div className={cardCls}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">
+                <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">
                   {tr('Tuition by Stage', 'أسعار المراحل')}
                 </h2>
                 <p className="text-xs text-gray-500">
@@ -1086,7 +1086,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                 <tbody className="divide-y divide-gray-100">
                   {stageRows.map((row) => (
                     <tr key={row.stage} className="hover:bg-[#FAF8F5]">
-                      <td className="py-2 px-4 font-mono font-bold text-[#0E3A99]">{row.stage}</td>
+                      <td className="py-2 px-4 font-mono font-bold text-[#061638]">{row.stage}</td>
                       {(['groupPrice', 'groupOriginalPrice'] as (keyof StagePricing)[]).map((f) => (
                         <td key={f} className="py-2 px-4">
                           <input
@@ -1094,7 +1094,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                             min="0"
                             value={(row as any)[f] ?? 0}
                             onChange={(e) => updateStageField(row.stage, f, Number(e.target.value) || 0)}
-                            className="w-24 px-2 py-1.5 rounded-lg border border-gray-300 text-xs font-bold text-[#0E3A99]"
+                            className="w-24 px-2 py-1.5 rounded-lg border border-gray-300 text-xs font-bold text-[#061638]"
                           />
                         </td>
                       ))}
@@ -1173,7 +1173,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
         {activeTab === 'settings' && (
           <div className={cardCls}>
             <div>
-              <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">
+              <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">
                 {tr('Academy Settings', 'إعدادات الأكاديمية')}
               </h2>
               <p className="text-xs text-gray-500">
@@ -1187,7 +1187,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#0E3A99] mb-1">{tr('Price currency on the website', 'عملة الأسعار في الموقع')}</label>
+                    <label className="block text-xs font-bold text-[#061638] mb-1">{tr('Price currency on the website', 'عملة الأسعار في الموقع')}</label>
                     <select
                       value={CURRENCIES.some((c) => c.code === ((settings as any).currency || 'USD')) ? (settings as any).currency || 'USD' : '__custom'}
                       onChange={(e) => setSettings({ ...settings, currency: e.target.value === '__custom' ? '' : e.target.value } as any)}
@@ -1213,7 +1213,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                   </div>
                   {settingFields.map((f) => (
                     <div key={f.key as string}>
-                      <label className="block text-xs font-bold text-[#0E3A99] mb-1">{isAr ? f.labelAr : f.labelEn}</label>
+                      <label className="block text-xs font-bold text-[#061638] mb-1">{isAr ? f.labelAr : f.labelEn}</label>
                       <input
                         type="text"
                         dir="ltr"
@@ -1225,7 +1225,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                   ))}
                 </div>
                 <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2">
-                  <div className="text-xs font-bold text-[#0E3A99]">{tr('Test email alerts', 'تجربة تنبيه البريد')}</div>
+                  <div className="text-xs font-bold text-[#061638]">{tr('Test email alerts', 'تجربة تنبيه البريد')}</div>
                   <p className="text-[11px] text-gray-500">
                     {tr('Sends a test email now using the EmailJS fields above (no need to save first).', 'يرسل بريدًا تجريبيًا الآن بالرموز المكتوبة أعلاه (لا يلزم الحفظ أولًا).')}
                   </p>
@@ -1247,11 +1247,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                           : `${tr('EmailJS refused:', 'رفضت EmailJS الإرسال:')} ${r.status} — ${r.text}`
                       );
                     }}
-                    className="px-4 py-2 rounded-xl text-xs font-bold border border-[#D4AF37] text-[#0E3A99] bg-white"
+                    className="px-4 py-2 rounded-xl text-xs font-bold border border-[#D4AF37] text-[#061638] bg-white"
                   >
                     {tr('Send test email', 'إرسال بريد تجريبي')}
                   </button>
-                  {emailTest && <p className="text-xs text-[#0E3A99] break-words" dir="auto">{emailTest}</p>}
+                  {emailTest && <p className="text-xs text-[#061638] break-words" dir="auto">{emailTest}</p>}
                 </div>
                 <div className="pt-4 border-t border-gray-100">
                   <button onClick={handleSaveSettings} disabled={isSettingsSaving} className={primaryBtn}>
@@ -1269,11 +1269,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
           <div className={`${cardCls} space-y-8`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-200">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold mb-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#061638] text-[#F3E5AB] text-xs font-bold mb-2">
                   <MessageSquare className="w-3.5 h-3.5 text-[#D4AF37]" />
                   <span>{tr('Interactive Conversation Activity', 'نشاط المحادثة التفاعلي')}</span>
                 </div>
-                <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99]">
+                <h2 className="font-serif-luxury font-bold text-2xl text-[#061638]">
                   {tr('English Club Administration & Scheduling', 'إدارة نادي الإنجليزية وجدولته')}
                 </h2>
                 <p className="text-xs text-gray-500 mt-1 max-w-2xl">
@@ -1291,7 +1291,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-3">
-                <label className="block text-xs font-bold text-[#0E3A99]">{tr('Registration Availability', 'حالة التسجيل')}</label>
+                <label className="block text-xs font-bold text-[#061638]">{tr('Registration Availability', 'حالة التسجيل')}</label>
                 <select
                   value={clubSettings.status}
                   onChange={(e) => setClubSettings({ ...clubSettings, status: e.target.value as any, isRegistrationOpen: e.target.value === 'open' })}
@@ -1307,7 +1307,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
               </div>
 
               <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-3">
-                <label className="block text-xs font-bold text-[#0E3A99]">{tr('General English Prerequisite', 'شرط دورة اللغة العامة')}</label>
+                <label className="block text-xs font-bold text-[#061638]">{tr('General English Prerequisite', 'شرط دورة اللغة العامة')}</label>
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -1330,7 +1330,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
             <div className="p-6 rounded-3xl bg-[#FAF8F5] border border-gray-200 space-y-4">
               <div>
-                <h3 className="font-bold text-sm text-[#0E3A99] flex items-center gap-2">
+                <h3 className="font-bold text-sm text-[#061638] flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-[#AA820A]" />
                   <span>{tr('Club Fee & Price Display', 'رسوم النادي وعرض السعر')}</span>
                 </h3>
@@ -1356,7 +1356,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                       min="1"
                       value={clubSettings.membershipFeeUSD || ''}
                       onChange={(e) => setClubSettings({ ...clubSettings, membershipFeeUSD: Number(e.target.value) || null })}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 text-sm bg-white font-bold text-[#0E3A99]"
+                      className="w-full px-4 py-2 rounded-xl border border-gray-300 text-sm bg-white font-bold text-[#061638]"
                     />
                   </div>
                 )}
@@ -1365,7 +1365,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
 
             <div className="space-y-4">
               <div>
-                <h3 className="font-bold text-base text-[#0E3A99] flex items-center gap-2">
+                <h3 className="font-bold text-base text-[#061638] flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-[#D4AF37]" />
                   <span>{tr('CEFR Tracks & Meeting Schedule', 'مسارات CEFR وجدول اللقاءات')}</span>
                 </h3>
@@ -1430,7 +1430,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
           <div className={cardCls}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
               <div>
-                <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">
+                <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">
                   {tr('Website Content & Curriculum Management', 'إدارة محتوى الموقع والمناهج')}
                 </h2>
                 <p className="text-xs text-gray-500">
@@ -1449,7 +1449,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                       key={sub.id}
                       onClick={() => setCmsSubTab(sub.id as any)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 whitespace-nowrap transition-all ${
-                        cmsSubTab === sub.id ? 'bg-white text-[#0E3A99] shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                        cmsSubTab === sub.id ? 'bg-white text-[#061638] shadow-sm' : 'text-gray-500 hover:text-gray-900'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
@@ -1483,7 +1483,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                       setWebsiteSections([...websiteSections.filter((s) => s.sectionKey !== sec.key), { ...current, ...patch }]);
                     return (
                       <div key={sec.key} className="p-5 rounded-2xl border border-gray-200 bg-[#FAF8F5] space-y-3">
-                        <span className="font-bold text-xs text-[#0E3A99]">{isAr ? sec.titleAr : sec.titleEn}</span>
+                        <span className="font-bold text-xs text-[#061638]">{isAr ? sec.titleAr : sec.titleEn}</span>
                         <div>
                           <label className={labelCls}>{tr('English Content', 'المحتوى بالإنجليزية')}</label>
                           <textarea rows={2} value={current.contentEn} onChange={(e) => setField({ contentEn: e.target.value })} className={inputCls} />
@@ -1512,7 +1512,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             {cmsSubTab === 'courses' && (
               <div className="space-y-6">
                 <div className={boxCls}>
-                  <h4 className="font-bold text-xs text-[#0E3A99] flex items-center gap-2">
+                  <h4 className="font-bold text-xs text-[#061638] flex items-center gap-2">
                     <FolderPlus className="w-4 h-4 text-[#AA820A]" />
                     <span>{tr('Add New Course', 'إضافة منهج جديد')}</span>
                   </h4>
@@ -1586,9 +1586,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                     coursesList.map((course) => (
                       <div key={course.id} className="p-4 rounded-xl border border-gray-200 bg-white flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <span className="px-2.5 py-1 rounded-lg bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold font-mono">{course.level}</span>
+                          <span className="px-2.5 py-1 rounded-lg bg-[#061638] text-[#F3E5AB] text-xs font-bold font-mono">{course.level}</span>
                           <div>
-                            <span className="font-bold text-xs text-[#0E3A99] block">{isAr ? course.titleAr : course.titleEn}</span>
+                            <span className="font-bold text-xs text-[#061638] block">{isAr ? course.titleAr : course.titleEn}</span>
                             <span className="text-[11px] text-gray-500">
                               {formatLabel(course.format)} • {course.durationMonths} {tr('months', 'أشهر')}
                             </span>
@@ -1624,7 +1624,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
             {cmsSubTab === 'offers' && (
               <div className="space-y-6">
                 <div className={boxCls}>
-                  <h4 className="font-bold text-xs text-[#0E3A99] flex items-center gap-2">
+                  <h4 className="font-bold text-xs text-[#061638] flex items-center gap-2">
                     <Tag className="w-4 h-4 text-[#AA820A]" />
                     <span>{tr('Create Offer', 'إنشاء عرض')}</span>
                   </h4>
@@ -1686,7 +1686,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                             {offer.discountPercentage ?? 0}%
                           </span>
                           <div>
-                            <span className="font-bold text-xs text-[#0E3A99] block">{isAr ? offer.titleAr : offer.titleEn}</span>
+                            <span className="font-bold text-xs text-[#061638] block">{isAr ? offer.titleAr : offer.titleEn}</span>
                             <span className="text-[11px] text-gray-500">
                               {isAr ? offer.badgeAr : offer.badgeEn}
                               {offer.validUntil ? ` • ${tr('Valid until', 'ساري حتى')} ${offer.validUntil}` : ''}
@@ -1725,7 +1725,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
                       <div key={test.id} className="p-4 rounded-xl border border-gray-200 bg-white flex items-start justify-between gap-4">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-xs text-[#0E3A99]">{isAr ? test.studentNameAr : test.studentNameEn}</span>
+                            <span className="font-bold text-xs text-[#061638]">{isAr ? test.studentNameAr : test.studentNameEn}</span>
                             <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-mono">{test.level}</span>
                             {(test as any).studentId && (
                               <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">{tr('Verified student', 'طالب مشترك')}</span>

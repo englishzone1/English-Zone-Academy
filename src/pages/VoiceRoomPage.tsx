@@ -69,7 +69,7 @@ const Avatar: React.FC<{ m: RoomMember; size?: string; speaking?: boolean }> = (
     {m.photo ? (
       <img src={m.photo} alt="" referrerPolicy="no-referrer" className="w-full h-full rounded-full object-cover" />
     ) : (
-      <div className={`w-full h-full rounded-full flex items-center justify-center font-bold text-lg text-white ${m.gender === 'female' ? 'bg-pink-400' : m.gender === 'male' ? 'bg-sky-500' : 'bg-[#0E3A99]'}`}>
+      <div className={`w-full h-full rounded-full flex items-center justify-center font-bold text-lg text-white ${m.gender === 'female' ? 'bg-pink-400' : m.gender === 'male' ? 'bg-sky-500' : 'bg-[#061638]'}`}>
         {(m.name || '?').trim().charAt(0).toUpperCase()}
       </div>
     )}
@@ -717,7 +717,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       <div className="max-w-5xl mx-auto space-y-4">{children}</div>
       {notice && (
         <div className="fixed bottom-24 inset-x-0 flex justify-center z-50 px-4">
-          <div className="px-4 py-2.5 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-sm font-bold shadow-xl">{notice}</div>
+          <div className="px-4 py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-sm font-bold shadow-xl">{notice}</div>
         </div>
       )}
     </div>
@@ -728,12 +728,12 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     return shell(
       <div className="bg-white rounded-3xl p-8 text-center space-y-4 border border-[#D4AF37]/40">
         <Mic className="w-10 h-10 text-[#D4AF37] mx-auto" />
-        <p className="font-bold text-[#0E3A99]">{tr('Sign up free to join voice rooms.', '{سجّل|سجّلي} مجانًا لدخول الغرف الصوتية.')}</p>
+        <p className="font-bold text-[#061638]">{tr('Sign up free to join voice rooms.', '{سجّل|سجّلي} مجانًا لدخول الغرف الصوتية.')}</p>
         <div className="flex gap-2 justify-center">
-          <button onClick={() => navigate('join-us')} className="px-5 py-2.5 rounded-xl bg-[#D4AF37] text-[#0E3A99] font-bold text-sm">
+          <button onClick={() => navigate('join-us')} className="px-5 py-2.5 rounded-xl bg-[#D4AF37] text-[#061638] font-bold text-sm">
             {tr('Sign up', 'تسجيل')}
           </button>
-          <button onClick={() => navigate('login')} className="px-5 py-2.5 rounded-xl border border-[#0E3A99] font-bold text-sm">
+          <button onClick={() => navigate('login')} className="px-5 py-2.5 rounded-xl border border-[#061638] font-bold text-sm">
             {tr('Log in', 'دخول')}
           </button>
         </div>
@@ -745,8 +745,8 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
     return shell(
       <div className="bg-white rounded-3xl p-8 text-center space-y-3 border border-gray-200">
         <Lock className="w-8 h-8 text-gray-400 mx-auto" />
-        <p className="font-bold text-[#0E3A99]">{tr('This room is not available.', 'هذه الغرفة غير متاحة.')}</p>
-        <button onClick={() => navigate('rooms')} className="px-5 py-2.5 rounded-xl bg-[#0E3A99] text-[#F3E5AB] font-bold text-sm">
+        <p className="font-bold text-[#061638]">{tr('This room is not available.', 'هذه الغرفة غير متاحة.')}</p>
+        <button onClick={() => navigate('rooms')} className="px-5 py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] font-bold text-sm">
           {tr('All rooms', 'كل الغرف')}
         </button>
       </div>
@@ -754,7 +754,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
   }
 
   const header = (
-    <div className="bg-gradient-to-r from-[#0E3A99] to-[#102445] text-white rounded-3xl p-5 border border-[#D4AF37]/40 shadow-lg space-y-2">
+    <div className="bg-gradient-to-r from-[#061638] to-[#102445] text-white rounded-3xl p-5 border border-[#D4AF37]/40 shadow-lg space-y-2">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1 min-w-0">
           <button onClick={() => (inRoom ? leave() : navigate('rooms'))} className="text-[11px] text-gray-300 hover:text-white inline-flex items-center gap-1">
@@ -777,7 +777,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <PrivacyBadge privacy={room.privacy} girlsOnly={room.girlsOnly} isAr={isAr} />
-        {room.level && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#0E3A99]">{room.level}</span>}
+        {room.level && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#061638]">{room.level}</span>}
         {room.status === 'closed' && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">{tr('Closed', 'مغلقة')}</span>}
       </div>
       {room.official && nextSession(room, now) !== null && (
@@ -802,14 +802,14 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
           ) : waiting ? (
             <>
               <Loader2 className="w-8 h-8 animate-spin text-[#D4AF37] mx-auto" />
-              <p className="font-bold text-[#0E3A99]">{tr('Waiting for the room owner to let you in…', 'بانتظار موافقة صاحب/ة الغرفة على دخولك…')}</p>
+              <p className="font-bold text-[#061638]">{tr('Waiting for the room owner to let you in…', 'بانتظار موافقة صاحب/ة الغرفة على دخولك…')}</p>
               <button onClick={() => leave()} className="px-4 py-2 rounded-xl border border-gray-300 text-sm font-bold">
                 {tr('Cancel', 'إلغاء')}
               </button>
             </>
           ) : (
             <>
-              <div className="w-16 h-16 rounded-full bg-[#0E3A99] text-[#F3E5AB] flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 rounded-full bg-[#061638] text-[#F3E5AB] flex items-center justify-center mx-auto">
                 <Mic className="w-8 h-8" />
               </div>
               <p className="text-sm text-gray-600">
@@ -820,7 +820,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
               <button
                 onClick={enter}
                 disabled={joining}
-                className="px-8 py-3 rounded-2xl bg-[#D4AF37] text-[#0E3A99] font-bold text-base inline-flex items-center gap-2 disabled:opacity-50"
+                className="px-8 py-3 rounded-2xl bg-[#D4AF37] text-[#061638] font-bold text-base inline-flex items-center gap-2 disabled:opacity-50"
               >
                 {joining && <Loader2 className="w-4 h-4 animate-spin" />}
                 {room.privacy === 'public' || isOwner || admin ? tr('Enter the room', 'دخول الغرفة') : tr('Ask to enter', 'طلب الدخول')}
@@ -886,7 +886,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
         <div className="min-w-0 flex-1">
           <div className="font-bold text-[15px] text-[#F3E5AB] truncate">{room.title}</div>
           <div className="flex items-center gap-1.5 text-[10px] text-gray-300">
-            {room.level && <span className="px-1.5 rounded bg-[#D4AF37] text-[#0E3A99] font-bold">{room.level}</span>}
+            {room.level && <span className="px-1.5 rounded bg-[#D4AF37] text-[#061638] font-bold">{room.level}</span>}
             {room.privacy !== 'public' && <Lock className="w-3 h-3" />}
             {room.girlsOnly && <span className="text-pink-300 font-bold">{tr('Girls only', 'للبنات فقط')}</span>}
             <span>
@@ -895,7 +895,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
           </div>
         </div>
         {isMod && requestsCount > 0 && (
-          <button onClick={() => setShowRequests(true)} className="relative h-9 px-3 rounded-full bg-[#D4AF37] text-[#0E3A99] text-xs font-bold inline-flex items-center gap-1 animate-pulse">
+          <button onClick={() => setShowRequests(true)} className="relative h-9 px-3 rounded-full bg-[#D4AF37] text-[#061638] text-xs font-bold inline-flex items-center gap-1 animate-pulse">
             <Hand className="w-4 h-4" />
             {requestsCount}
           </button>
@@ -916,7 +916,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       {/* تنبيهات */}
       <div className="px-3 space-y-2">
         {audioBlocked && (
-          <button onClick={unlockAudio} className="w-full p-3 rounded-2xl bg-[#D4AF37] text-[#0E3A99] font-bold text-sm animate-pulse">
+          <button onClick={unlockAudio} className="w-full p-3 rounded-2xl bg-[#D4AF37] text-[#061638] font-bold text-sm animate-pulse">
             🔊 {tr('Tap here to hear the room', 'اضغط/ي هنا لتشغيل صوت الغرفة')}
           </button>
         )}
@@ -985,7 +985,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                     <MicOff className="w-4 h-4" />
                   </span>
                 )}
-                {m.screen && <MonitorUp className="absolute -bottom-1 -end-1 w-5 h-5 p-0.5 rounded-full bg-[#D4AF37] text-[#0E3A99]" />}
+                {m.screen && <MonitorUp className="absolute -bottom-1 -end-1 w-5 h-5 p-0.5 rounded-full bg-[#D4AF37] text-[#061638]" />}
                 {m.cam && <Video className="absolute -bottom-1 -start-1 w-5 h-5 p-0.5 rounded-full bg-sky-500 text-white" />}
               </div>
               <span className="text-[11px] font-bold truncate max-w-[80px]">{m.uid === uid ? tr('You', 'أنت') : m.name}</span>
@@ -1049,7 +1049,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                 {!micReady ? <Loader2 className="w-5 h-5 animate-spin" /> : me?.muted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </button>
             ) : (
-              <button onClick={toggleHand} className={`${roundBtn} ${me?.hand ? 'bg-[#D4AF37] text-[#0E3A99]' : 'bg-white/15 text-white'}`} title={me?.hand ? tr('Lower hand', 'إنزال اليد') : tr('Raise hand', 'رفع اليد')}>
+              <button onClick={toggleHand} className={`${roundBtn} ${me?.hand ? 'bg-[#D4AF37] text-[#061638]' : 'bg-white/15 text-white'}`} title={me?.hand ? tr('Lower hand', 'إنزال اليد') : tr('Raise hand', 'رفع اليد')}>
                 <Hand className="w-5 h-5" />
               </button>
             )}
@@ -1082,7 +1082,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                   boardSend({ t: 'open' });
                   setBoardMin(false);
                 }}
-                className={`${roundBtn} ${board.snap.open ? 'bg-[#D4AF37] text-[#0E3A99]' : 'bg-white/15'}`}
+                className={`${roundBtn} ${board.snap.open ? 'bg-[#D4AF37] text-[#061638]' : 'bg-white/15'}`}
                 title={tr('Whiteboard', 'السبورة')}
               >
                 <PenLine className="w-5 h-5" />
@@ -1117,7 +1117,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       {inRoom && board.snap.open && boardMin && (
         <button
           onClick={() => setBoardMin(false)}
-          className="fixed top-16 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 z-40 px-4 py-2 rounded-full bg-[#D4AF37] text-[#0E3A99] text-xs font-bold shadow-xl animate-pulse"
+          className="fixed top-16 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 z-40 px-4 py-2 rounded-full bg-[#D4AF37] text-[#061638] text-xs font-bold shadow-xl animate-pulse"
         >
           🖊️ {tr('The whiteboard is open – view', 'السبورة مفتوحة – عرض')}
         </button>
@@ -1126,7 +1126,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
       {/* طلبات الدخول والأيدي المرفوعة */}
       {showRequests && isMod && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-3" onClick={() => setShowRequests(false)}>
-          <div className="bg-white text-[#0E3A99] rounded-3xl w-full max-w-sm p-4 space-y-3 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white text-[#061638] rounded-3xl w-full max-w-sm p-4 space-y-3 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {pending.length > 0 && <h3 className="text-sm font-bold text-amber-700">{tr('Requests to enter', 'طلبات الدخول')}</h3>}
             {pending.map((m) => (
               <div key={m.uid} className="flex items-center justify-between gap-2">
@@ -1156,7 +1156,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
                   <span className="text-sm font-bold truncate">{m.name}</span>
                 </div>
                 <div className="flex gap-1.5 shrink-0">
-                  <button onClick={() => mod.toStage(m).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold">
+                  <button onClick={() => mod.toStage(m).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-[#061638] text-[#F3E5AB] text-xs font-bold">
                     {tr('Let speak', 'السماح بالكلام')}
                   </button>
                   <button onClick={() => updateMember(roomId, m.uid, { hand: false }).catch(() => {})} className="px-3 py-1.5 rounded-lg bg-gray-200 text-xs font-bold">
@@ -1190,7 +1190,7 @@ export const VoiceRoomPage: React.FC<{ roomId: string; navigate: (r: string) => 
 
       {notice && (
         <div className="fixed bottom-24 inset-x-0 flex justify-center z-50 px-4 pointer-events-none">
-          <div className="px-4 py-2.5 rounded-xl bg-white text-[#0E3A99] text-sm font-bold shadow-xl">{notice}</div>
+          <div className="px-4 py-2.5 rounded-xl bg-white text-[#061638] text-sm font-bold shadow-xl">{notice}</div>
         </div>
       )}
 
@@ -1243,7 +1243,7 @@ type MenuAction = 'stage' | 'audience' | 'mute' | 'screenOn' | 'screenOff' | 'bo
 const MemberMenu: React.FC<{ m: RoomMember; isMod: boolean; isAr: boolean; onClose: () => void; act: (a: MenuAction) => void }> = ({ m, isMod, isAr, onClose, act }) => {
   const tr = (en: string, ar: string) => (isAr ? ar : en);
   const item = (a: MenuAction, icon: React.ReactNode, label: string, danger = false) => (
-    <button key={a} onClick={() => act(a)} className={`w-full px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2 ${danger ? 'text-red-600 hover:bg-red-50' : 'text-[#0E3A99] hover:bg-gray-50'}`}>
+    <button key={a} onClick={() => act(a)} className={`w-full px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2 ${danger ? 'text-red-600 hover:bg-red-50' : 'text-[#061638] hover:bg-gray-50'}`}>
       {icon}
       {label}
     </button>
@@ -1253,7 +1253,7 @@ const MemberMenu: React.FC<{ m: RoomMember; isMod: boolean; isAr: boolean; onClo
       <div className="bg-white rounded-3xl w-full max-w-sm p-4 space-y-1" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-3 pb-2 mb-1 border-b border-gray-100">
           <Avatar m={m} size="w-12 h-12" />
-          <span className="font-bold text-[#0E3A99]">{m.name}</span>
+          <span className="font-bold text-[#061638]">{m.name}</span>
         </div>
         {isMod && m.role === 'listener' && item('stage', <UserPlus className="w-4 h-4" />, tr('Invite to speak', 'دعوة للتحدث'))}
         {isMod && m.role === 'speaker' && item('audience', <UserMinus className="w-4 h-4" />, tr('Move to listeners', 'نقل إلى المستمعين'))}
@@ -1333,7 +1333,7 @@ const ChatFeed: React.FC<{
         </div>
       </div>
       {unseen > 0 && (
-        <button onClick={toBottom} className="absolute bottom-2 start-3 px-3 py-1.5 rounded-full bg-white text-[#0E3A99] text-xs font-bold shadow-lg">
+        <button onClick={toBottom} className="absolute bottom-2 start-3 px-3 py-1.5 rounded-full bg-white text-[#061638] text-xs font-bold shadow-lg">
           ↓ {unseen} {tr('new', 'رسالة جديدة')}
         </button>
       )}
@@ -1387,7 +1387,7 @@ const ChatBar: React.FC<{ roomId: string; uid: string; name: string; isAr: boole
             placeholder={tr('Comment…', 'تعليق…')}
           />
           {text.trim() && (
-            <button onClick={send} className="w-9 h-9 shrink-0 rounded-full bg-[#D4AF37] text-[#0E3A99] flex items-center justify-center">
+            <button onClick={send} className="w-9 h-9 shrink-0 rounded-full bg-[#D4AF37] text-[#061638] flex items-center justify-center">
               <Send className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
             </button>
           )}
@@ -1413,7 +1413,7 @@ const BgPicker: React.FC<{
   const sel = current || roomBg;
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-3" onClick={onClose} dir={isAr ? 'rtl' : 'ltr'}>
-      <div className="bg-white text-[#0E3A99] rounded-3xl w-full max-w-md p-4 space-y-3 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white text-[#061638] rounded-3xl w-full max-w-md p-4 space-y-3 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="font-bold">{tr('Room background', 'خلفية الغرفة')}</h3>
           <button onClick={onClose}>
@@ -1459,7 +1459,7 @@ const BgPicker: React.FC<{
           </button>
         )}
         {canSetRoom && current && current !== 'custom' && (
-          <button onClick={() => onSetRoom(current)} className="w-full py-2.5 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-sm font-bold">
+          <button onClick={() => onSetRoom(current)} className="w-full py-2.5 rounded-xl bg-[#061638] text-[#F3E5AB] text-sm font-bold">
             {tr('Make it the background for everyone', 'اجعلها خلفية الغرفة للجميع')}
           </button>
         )}
@@ -1491,7 +1491,7 @@ const RoomRules: React.FC<{ isAr: boolean; onAccept: () => void; onCancel: () =>
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-3" dir={isAr ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-3xl w-full max-w-md p-5 space-y-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="font-bold text-lg text-[#0E3A99]">{tr('Room rules', 'قواعد الغرف')}</h3>
+        <h3 className="font-bold text-lg text-[#061638]">{tr('Room rules', 'قواعد الغرف')}</h3>
         <ul className="space-y-2.5">
           {rules.map(([icon, text]) => (
             <li key={text} className="flex items-start gap-2.5 text-sm text-gray-700 leading-relaxed">
@@ -1501,7 +1501,7 @@ const RoomRules: React.FC<{ isAr: boolean; onAccept: () => void; onCancel: () =>
           ))}
         </ul>
         <div className="flex gap-2">
-          <button onClick={onAccept} className="flex-1 py-3 rounded-xl bg-[#0E3A99] text-[#F3E5AB] font-bold text-sm">
+          <button onClick={onAccept} className="flex-1 py-3 rounded-xl bg-[#061638] text-[#F3E5AB] font-bold text-sm">
             {tr('I agree, enter', 'أوافق، دخول')}
           </button>
           <button onClick={onCancel} className="px-4 py-3 rounded-xl bg-gray-100 font-bold text-sm">
@@ -1530,7 +1530,7 @@ const RoomSettings: React.FC<{ room: VoiceRoom; isAr: boolean; canGirls: boolean
     <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center p-3" onClick={onClose} dir={isAr ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-[#0E3A99]">{tr('Room settings', 'إعدادات الغرفة')}</h3>
+          <h3 className="font-bold text-[#061638]">{tr('Room settings', 'إعدادات الغرفة')}</h3>
           <button onClick={onClose}>
             <X className="w-5 h-5" />
           </button>
@@ -1543,7 +1543,7 @@ const RoomSettings: React.FC<{ room: VoiceRoom; isAr: boolean; canGirls: boolean
                 key={o.v}
                 disabled={busy}
                 onClick={() => set({ privacy: o.v })}
-                className={`py-2 rounded-xl text-xs font-bold border ${room.privacy === o.v ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#0E3A99]' : 'border-gray-300'}`}
+                className={`py-2 rounded-xl text-xs font-bold border ${room.privacy === o.v ? 'bg-[#061638] text-[#F3E5AB] border-[#061638]' : 'border-gray-300'}`}
               >
                 {tr(o.en, o.ar)}
               </button>

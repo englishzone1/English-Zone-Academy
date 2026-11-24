@@ -141,7 +141,7 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
       <div>
-        <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">{tr('Teachers', 'المعلمون')}</h2>
+        <h2 className="font-serif-luxury font-bold text-xl text-[#061638]">{tr('Teachers', 'المعلمون')}</h2>
         <p className="text-xs text-gray-500">
           {tr(
             'Teachers see only the students of their groups: they give stars and ratings, record grades, homework and attendance, and reply to their students’ messages.',
@@ -151,7 +151,7 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
       </div>
 
       <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/40 text-xs text-gray-700 space-y-1.5">
-        <div className="flex items-center gap-1.5 font-bold text-[#0E3A99]">
+        <div className="flex items-center gap-1.5 font-bold text-[#061638]">
           <Info className="w-4 h-4 text-[#AA820A]" />
           {tr('How to add a teacher', 'طريقة إضافة معلم')}
         </div>
@@ -176,7 +176,7 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
               <div key={t.id} className="p-4 rounded-2xl border border-gray-200 bg-[#FAF8F5] space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <span className="font-bold text-sm text-[#0E3A99] block">{t.fullName || '—'}</span>
+                    <span className="font-bold text-sm text-[#061638] block">{t.fullName || '—'}</span>
                     <span className="text-[11px] text-gray-500 break-all">{t.email}</span>
                     <span className="text-[11px] text-gray-600 block mt-0.5">
                       {tr('Students seen by this teacher:', 'عدد الطلاب الذين يراهم:')} {direct.length + viaGroups}
@@ -185,12 +185,12 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
                   <div className="flex flex-wrap gap-2 self-start">
                     <button
                       onClick={() => setEditing(editing === t.id ? null : t.id)}
-                      className="px-3 py-2 rounded-lg text-xs font-bold bg-[#D4AF37] text-[#0E3A99]"
+                      className="px-3 py-2 rounded-lg text-xs font-bold bg-[#D4AF37] text-[#061638]"
                     >
                       {editing === t.id ? tr('Close editing', 'إغلاق التعديل') : tr('Edit data & photo', 'تعديل البيانات والصورة')}
                     </button>
                     {onOpenChat && (
-                      <button onClick={() => onOpenChat(staffThread(t.id))} className="px-3 py-2 rounded-lg text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] flex items-center gap-1.5">
+                      <button onClick={() => onOpenChat(staffThread(t.id))} className="px-3 py-2 rounded-lg text-xs font-bold bg-[#061638] text-[#F3E5AB] flex items-center gap-1.5">
                         <MessageSquare className="w-4 h-4" />
                         {tr('Private chat', 'محادثة خاصة')}
                       </button>
@@ -209,7 +209,7 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
                 )}
 
                 <div>
-                  <div className="text-xs font-bold text-[#0E3A99] mb-2 flex items-center gap-1.5">
+                  <div className="text-xs font-bold text-[#061638] mb-2 flex items-center gap-1.5">
                     <Users className="w-4 h-4 text-[#AA820A]" />
                     {tr('Groups', 'المجموعات')}
                   </div>
@@ -226,7 +226,7 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
                             disabled={busy}
                             onClick={() => toggleGroup(t, g)}
                             className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all disabled:opacity-50 ${
-                              mine ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#0E3A99]' : 'bg-white text-gray-600 border-gray-300 hover:border-[#D4AF37]'
+                              mine ? 'bg-[#061638] text-[#F3E5AB] border-[#061638]' : 'bg-white text-gray-600 border-gray-300 hover:border-[#D4AF37]'
                             }`}
                             title={other ? tr(`Currently with ${other}`, `حاليًا مع ${other}`) : ''}
                           >
@@ -241,14 +241,14 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
                 </div>
 
                 <div>
-                  <div className="text-xs font-bold text-[#0E3A99] mb-2 flex items-center gap-1.5">
+                  <div className="text-xs font-bold text-[#061638] mb-2 flex items-center gap-1.5">
                     <UserPlus className="w-4 h-4 text-[#AA820A]" />
                     {tr('Individual students', 'طلاب مُسندون مباشرة')}
                   </div>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {direct.length === 0 && <span className="text-[11px] text-gray-400">{tr('None yet.', 'لا يوجد بعد.')}</span>}
                     {direct.map((x) => (
-                      <span key={x.id} className="px-3 py-1.5 rounded-full text-[11px] font-bold bg-white border border-[#D4AF37]/50 text-[#0E3A99] flex items-center gap-1.5">
+                      <span key={x.id} className="px-3 py-1.5 rounded-full text-[11px] font-bold bg-white border border-[#D4AF37]/50 text-[#061638] flex items-center gap-1.5">
                         {x.fullName || x.email}
                         <button onClick={() => removeStudent(x)} disabled={busy} className="text-gray-400 hover:text-red-600" title={tr('Remove', 'إزالة')}>
                           <X className="w-3.5 h-3.5" />
@@ -269,7 +269,7 @@ export const AdminTeachersManager: React.FC<Props> = ({ onNotice, onOpenChat }) 
                         </option>
                       ))}
                     </select>
-                    <button onClick={() => addStudent(t)} disabled={busy || !pick[t.id]} className="px-4 py-2 rounded-xl text-xs font-bold bg-[#D4AF37] text-[#0E3A99] disabled:opacity-50">
+                    <button onClick={() => addStudent(t)} disabled={busy || !pick[t.id]} className="px-4 py-2 rounded-xl text-xs font-bold bg-[#D4AF37] text-[#061638] disabled:opacity-50">
                       {tr('Add', 'إضافة')}
                     </button>
                   </div>

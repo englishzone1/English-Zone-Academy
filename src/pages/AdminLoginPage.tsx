@@ -107,7 +107,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#072A73] via-[#0E3A99] to-[#072A73] text-white py-12 px-4 sm:px-6 flex flex-col justify-center items-center relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-[#020714] via-[#061638] to-[#020714] text-white py-12 px-4 sm:px-6 flex flex-col justify-center items-center relative overflow-hidden">
       
       {/* Subtle background luxury lighting */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[34rem] h-[34rem] bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -138,7 +138,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
           <div className="flex justify-center mb-4">
             <EnglishZoneEmblem sizeClass="w-16 h-16" glow={true} />
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1E55C0] border border-[#D4AF37]/50 text-[#F3E5AB] text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#123A8C] border border-[#D4AF37]/50 text-[#F3E5AB] text-xs font-bold uppercase tracking-wider mb-2">
             <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>Administrative Officers Only</span>
           </div>
@@ -153,13 +153,13 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center p-1 bg-[#072A73] rounded-xl border border-white/10 mb-6">
+        <div className="flex items-center p-1 bg-[#020714] rounded-xl border border-white/10 mb-6">
           <button
             type="button"
             onClick={() => { setActiveTab('signin'); setErrorMsg(null); }}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'signin'
-                ? 'bg-[#D4AF37] text-[#0E3A99] shadow-md'
+                ? 'bg-[#D4AF37] text-[#061638] shadow-md'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -170,7 +170,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
             onClick={() => { setActiveTab('bootstrap'); setErrorMsg(null); }}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'bootstrap'
-                ? 'bg-[#D4AF37] text-[#0E3A99] shadow-md'
+                ? 'bg-[#D4AF37] text-[#061638] shadow-md'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -217,7 +217,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@englishzone.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#072A73]/90 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#020714]/90 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all"
                 />
               </div>
             </div>
@@ -236,7 +236,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#072A73]/90 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#020714]/90 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all"
                 />
               </div>
             </div>
@@ -245,7 +245,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] shadow-lg hover:brightness-105 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] shadow-lg hover:brightness-105 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isLoading ? (
                   <span>{language === 'ar' ? 'جارٍ التحقق من الهوية...' : 'Authenticating Credentials...'}</span>
@@ -273,7 +273,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
         {activeTab === 'bootstrap' && (
           <div>
             {isAlreadyLocked ? (
-              <div className="p-5 rounded-2xl bg-[#072A73] border border-amber-500/40 text-center space-y-3">
+              <div className="p-5 rounded-2xl bg-[#020714] border border-amber-500/40 text-center space-y-3">
                 <div className="w-12 h-12 rounded-full bg-amber-500/10 text-[#D4AF37] flex items-center justify-center mx-auto">
                   <ShieldAlert className="w-6 h-6" />
                 </div>
@@ -288,7 +288,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('signin')}
-                  className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0E3A99] font-bold text-xs hover:brightness-110"
+                  className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#061638] font-bold text-xs hover:brightness-110"
                 >
                   {language === 'ar' ? 'الذهاب لتسجيل الدخول' : 'Proceed to Admin Sign In'}
                 </button>
@@ -307,7 +307,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#072A73] border border-white/10 space-y-3">
+                <div className="p-4 rounded-xl bg-[#020714] border border-white/10 space-y-3">
                   <div className="flex items-center justify-between text-xs text-gray-400">
                     <span className="font-mono text-[11px] text-[#D4AF37]">scripts/init-first-super-admin.ts</span>
                     <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10">Firebase Admin SDK</span>
@@ -350,7 +350,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('signin')}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#0E3A99] font-bold text-xs hover:brightness-105 transition-all shadow-md"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#061638] font-bold text-xs hover:brightness-105 transition-all shadow-md"
                 >
                   {language === 'ar' ? 'العودة إلى شاشة تسجيل الدخول' : 'Return to Administrator Sign In'}
                 </button>

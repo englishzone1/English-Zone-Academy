@@ -74,8 +74,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-[#0E3A99]/95 backdrop-blur-md border-b border-[#D4AF37]/30 py-3 shadow-xl' 
-        : 'bg-[#0E3A99] border-b border-[#D4AF37]/20 py-4'
+        ? 'bg-[#061638] cine-bokeh backdrop-blur-md border-b border-[#D4AF37]/30 py-3 shadow-xl' 
+        : 'bg-[#061638] cine-bokeh border-b border-[#D4AF37]/20 py-4'
     }`}>
       {/* Top micro announcement bar */}
       <div className="hidden lg:block border-b border-white/5 pb-2 mb-2 text-xs">
@@ -138,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                   <span className="flex items-center gap-1.5">
                     <span>{link.label}</span>
                     {link.id === 'english-club' && (
-                      <span className="px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#0E3A99] text-[10px] font-extrabold tracking-wider uppercase leading-none shadow-xs">
+                      <span className="px-1.5 py-0.5 rounded-full bg-[#D4AF37] text-[#061638] text-[10px] font-extrabold tracking-wider uppercase leading-none shadow-xs">
                         New
                       </span>
                     )}
@@ -159,7 +159,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
               {isMoreDropdownOpen && (
                 <div 
-                  className={`absolute ${language === 'ar' ? 'left-0' : 'right-0'} mt-2 w-56 rounded-xl bg-[#0E3A99] border border-[#D4AF37]/30 shadow-2xl p-2 z-50`}
+                  className={`absolute ${language === 'ar' ? 'left-0' : 'right-0'} mt-2 w-56 rounded-xl bg-[#061638] border border-[#D4AF37]/30 shadow-2xl p-2 z-50`}
                   onMouseLeave={() => setIsMoreDropdownOpen(false)}
                 >
                   {moreLinks.map((item) => {
@@ -180,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                             <span>{item.label}</span>
                           </div>
                           {item.badge && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0E3A99]">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#061638]">
                               {item.badge}
                             </span>
                           )}
@@ -202,7 +202,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                           <span>{item.label}</span>
                         </div>
                         {item.badge && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0E3A99]">
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#061638]">
                             {item.badge}
                           </span>
                         )}
@@ -221,9 +221,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             {user ? (
               <button
                 onClick={() => handleNav('portal')}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#1E55C0] border border-[#D4AF37]/40 text-[#F3E5AB] hover:bg-[#D4AF37] hover:text-[#0E3A99] transition-all flex items-center gap-2 shadow"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#123A8C] border border-[#D4AF37]/40 text-[#F3E5AB] hover:bg-[#D4AF37] hover:text-[#061638] transition-all flex items-center gap-2 shadow"
               >
-                <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-[#0E3A99] flex items-center justify-center font-bold text-[10px]">
+                <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-[#061638] flex items-center justify-center font-bold text-[10px]">
                   {user.fullName.charAt(0)}
                 </div>
                 <span>
@@ -245,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
                 <button
                   onClick={() => handleNav('join-us')}
-                  className="relative group overflow-hidden px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] shadow-lg hover:shadow-[#D4AF37]/20 transition-all active:scale-95"
+                  className="relative group overflow-hidden px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] shadow-lg hover:shadow-[#D4AF37]/20 transition-all active:scale-95"
                 >
                   <span className="relative z-10 flex items-center gap-1.5">
                     <GraduationCap className="w-4 h-4" />
@@ -272,12 +272,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-[#D4AF37]/20 bg-[#0E3A99] px-4 pt-4 pb-6 space-y-2 max-h-[85vh] overflow-y-auto">
+        <div className="md:hidden border-t border-[#D4AF37]/20 bg-[#061638] px-4 pt-4 pb-6 space-y-2 max-h-[85vh] overflow-y-auto">
           <div className="grid grid-cols-2 gap-2 mb-4">
             {user ? (
               <button
                 onClick={() => handleNav('portal')}
-                className="col-span-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] text-center"
+                className="col-span-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] text-center"
               >
                 {language === 'ar' ? 'حسابي' : 'My account'}
               </button>
@@ -285,7 +285,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               <>
                 <button
                   onClick={() => handleNav('join-us')}
-                  className="w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] text-center"
+                  className="w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] text-center"
                 >
                   {t.nav.register}
                 </button>
@@ -342,7 +342,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 >
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0E3A99]">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#061638]">
                       {item.badge}
                     </span>
                   )}
@@ -359,7 +359,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 >
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0E3A99]">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#061638]">
                       {item.badge}
                     </span>
                   )}

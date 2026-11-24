@@ -53,7 +53,7 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             Structured CEFR Pathways
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0E3A99] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#061638] mt-2">
             {t.curriculum.sectionTitle}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -74,7 +74,7 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
                 }}
                 className={`px-5 py-3 rounded-2xl font-serif-luxury font-bold text-base transition-all flex items-center gap-2 ${
                   isSelected
-                    ? 'bg-[#0E3A99] text-[#F3E5AB] border-2 border-[#D4AF37] shadow-xl scale-105'
+                    ? 'bg-[#061638] text-[#F3E5AB] border-2 border-[#D4AF37] shadow-xl scale-105'
                     : 'bg-white text-gray-700 border border-gray-200 hover:border-[#D4AF37] hover:bg-gray-50'
                 }`}
               >
@@ -95,11 +95,11 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-gray-100">
             <div>
               <div className="flex items-center gap-3">
-                <span className="w-12 h-12 rounded-xl bg-[#0E3A99] text-[#F3E5AB] font-serif-luxury font-bold text-2xl flex items-center justify-center">
+                <span className="w-12 h-12 rounded-xl bg-[#061638] text-[#F3E5AB] font-serif-luxury font-bold text-2xl flex items-center justify-center">
                   {currentLevelInfo.code}
                 </span>
                 <div>
-                  <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99]">
+                  <h2 className="font-serif-luxury font-bold text-2xl text-[#061638]">
                     {language === 'ar' ? currentLevelInfo.nameAr : currentLevelInfo.nameEn}
                   </h2>
                   <span className="text-xs text-[#AA820A] font-semibold">
@@ -115,7 +115,7 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
             <div className="flex flex-col gap-2 self-start md:self-auto">
               <button
                 onClick={() => navigate('register')}
-                className="px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] hover:brightness-110 shadow transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] hover:brightness-110 shadow transition-all flex items-center gap-2"
               >
                 <GraduationCap className="w-4 h-4" />
                 <span>{language === 'ar' ? `التسجيل في المستوى ${activeLevel}` : `Enroll in Level ${activeLevel}`}</span>
@@ -141,12 +141,12 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
                     onClick={() => setActiveStageNumber(num as 1 | 2 | 3)}
                     className={`p-4 rounded-xl text-left transition-all border ${
                       isSelected
-                        ? 'bg-[#0E3A99] text-white border-[#D4AF37] shadow-md'
+                        ? 'bg-[#061638] text-white border-[#D4AF37] shadow-md'
                         : 'bg-[#FAF8F5] text-gray-700 border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className={`font-serif-luxury font-bold text-base ${isSelected ? 'text-[#F3E5AB]' : 'text-[#0E3A99]'}`}>
+                      <span className={`font-serif-luxury font-bold text-base ${isSelected ? 'text-[#F3E5AB]' : 'text-[#061638]'}`}>
                         Stage {stageId}
                       </span>
                       <span className={`text-[11px] px-2 py-0.5 rounded-full ${isSelected ? 'bg-white/10 text-gray-300' : 'bg-white text-gray-500'}`}>
@@ -169,7 +169,7 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
 
         {levelCourses.length > 0 && (
           <div className="mb-10 space-y-4">
-            <h3 className="font-serif-luxury font-bold text-xl text-[#0E3A99] flex items-center gap-2">
+            <h3 className="font-serif-luxury font-bold text-xl text-[#061638] flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-[#D4AF37]" />
               <span>{language === 'ar' ? `المناهج المتاحة للمستوى ${activeLevel}` : `Available Curricula for ${activeLevel}`}</span>
             </h3>
@@ -177,7 +177,7 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
               {levelCourses.map((c) => (
                 <div key={c.id} className="bg-white rounded-2xl p-5 border border-[#D4AF37]/30 shadow-sm space-y-2">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="font-bold text-[#0E3A99]">{(language === 'ar' ? c.titleAr : c.titleEn) || c.titleAr || c.titleEn}</span>
+                    <span className="font-bold text-[#061638]">{(language === 'ar' ? c.titleAr : c.titleEn) || c.titleAr || c.titleEn}</span>
                     {c.durationMonths ? (
                       <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#FAF8F5] text-[#AA820A] border border-[#D4AF37]/40 whitespace-nowrap">
                         {c.durationMonths} {language === 'ar' ? 'أشهر' : 'months'}
@@ -198,7 +198,7 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
         {/* Stage Units Detailed Accordion / Cards */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="font-serif-luxury font-bold text-xl text-[#0E3A99] flex items-center gap-2">
+            <h3 className="font-serif-luxury font-bold text-xl text-[#061638] flex items-center gap-2">
               <Layers className="w-5 h-5 text-[#D4AF37]" />
               <span>
                 {language === 'ar' ? `محتوى وحدات المرحلة ${activeStageId}` : `Units & Syllabus for Stage ${activeStageId}`}
@@ -226,10 +226,10 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
                 className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200 shadow-sm hover:border-[#D4AF37]/50 transition-all"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="w-9 h-9 rounded-lg bg-[#0E3A99] text-[#F3E5AB] font-bold text-sm flex items-center justify-center">
+                  <span className="w-9 h-9 rounded-lg bg-[#061638] text-[#F3E5AB] font-bold text-sm flex items-center justify-center">
                     0{unit.unitNumber}
                   </span>
-                  <h4 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">
+                  <h4 className="font-serif-luxury font-bold text-xl text-[#061638]">
                     {language === 'ar' ? unit.titleAr : unit.titleEn}
                   </h4>
                 </div>
@@ -262,7 +262,7 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
                   {/* Skills & Speaking Task */}
                   <div className="space-y-4">
                     <div className="p-4 rounded-xl bg-[#FAF8F5] border border-gray-100">
-                      <span className="text-xs uppercase font-bold tracking-wider text-[#0E3A99] flex items-center gap-1.5 mb-1.5">
+                      <span className="text-xs uppercase font-bold tracking-wider text-[#061638] flex items-center gap-1.5 mb-1.5">
                         <FileText className="w-4 h-4 text-[#D4AF37]" />
                         {t.curriculum.skills}
                       </span>
@@ -271,8 +271,8 @@ export const CurriculumPage: React.FC<CurriculumPageProps> = ({ navigate, initia
                       </p>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-[#0E3A99]/5 border border-[#D4AF37]/30">
-                      <span className="text-xs uppercase font-bold tracking-wider text-[#0E3A99] flex items-center gap-1.5 mb-1.5">
+                    <div className="p-4 rounded-xl bg-[#061638]/5 border border-[#D4AF37]/30">
+                      <span className="text-xs uppercase font-bold tracking-wider text-[#061638] flex items-center gap-1.5 mb-1.5">
                         <MessageSquare className="w-4 h-4 text-[#D4AF37]" />
                         {t.curriculum.speakingActivity}
                       </span>

@@ -64,7 +64,7 @@ export const BookReader: React.FC<Props> = ({ folder, count, title, pdf, isAr, o
 
   const btn = 'px-3 py-1.5 rounded-lg text-[11px] font-bold';
   return (
-    <div id="book-reader" className="rounded-2xl border-2 border-[#D4AF37] bg-[#0E3A99] p-2 sm:p-3 space-y-2">
+    <div id="book-reader" className="rounded-2xl border-2 border-[#D4AF37] bg-[#061638] p-2 sm:p-3 space-y-2">
       <div className="flex items-center justify-between text-[#F3E5AB] text-xs font-bold gap-2">
         <span className="truncate">📖 {title}</span>
         <button onClick={onClose} title={tr('Close', 'إغلاق')}>
@@ -97,7 +97,7 @@ export const BookReader: React.FC<Props> = ({ folder, count, title, pdf, isAr, o
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-2" dir="ltr">
-        <button onClick={() => go(page - 1)} disabled={page <= 1} className={`${btn} bg-white text-[#0E3A99] disabled:opacity-40 flex items-center`}>
+        <button onClick={() => go(page - 1)} disabled={page <= 1} className={`${btn} bg-white text-[#061638] disabled:opacity-40 flex items-center`}>
           <ChevronLeft className="w-4 h-4" />
           {tr('Previous', 'السابقة')}
         </button>
@@ -108,11 +108,11 @@ export const BookReader: React.FC<Props> = ({ folder, count, title, pdf, isAr, o
             max={count}
             value={page}
             onChange={(e) => go(Number(e.target.value) || 1)}
-            className="w-14 px-1 py-1 rounded bg-white text-[#0E3A99] text-center"
+            className="w-14 px-1 py-1 rounded bg-white text-[#061638] text-center"
           />
           / {count}
         </span>
-        <button onClick={() => go(page + 1)} disabled={page >= count} className={`${btn} bg-white text-[#0E3A99] disabled:opacity-40 flex items-center`}>
+        <button onClick={() => go(page + 1)} disabled={page >= count} className={`${btn} bg-white text-[#061638] disabled:opacity-40 flex items-center`}>
           {tr('Next', 'التالية')}
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -125,11 +125,11 @@ export const BookReader: React.FC<Props> = ({ folder, count, title, pdf, isAr, o
         <button onClick={() => setZoom((z) => Math.min(3, z + 0.5))} className={`${btn} bg-white/10 text-[#F3E5AB] border border-[#D4AF37]/60`}>
           + {tr('Zoom in', 'تكبير')}
         </button>
-        <button onClick={full} className={`${btn} bg-white text-[#0E3A99]`}>
+        <button onClick={full} className={`${btn} bg-white text-[#061638]`}>
           ⛶ {tr('Full screen', 'ملء الشاشة')}
         </button>
         {pdf && (
-          <a href={pdf} download className={`${btn} bg-[#D4AF37] text-[#0E3A99]`}>
+          <a href={pdf} download className={`${btn} bg-[#D4AF37] text-[#061638]`}>
             ⬇ {tr('Download PDF', 'تحميل الكتاب PDF')}
           </a>
         )}

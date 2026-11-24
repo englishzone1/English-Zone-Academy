@@ -18,7 +18,7 @@ export const TestimonialsPage: React.FC<TestimonialsPageProps> = ({ navigate }) 
 
       {/* Call to join */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="text-center bg-[#0E3A99] text-white p-10 rounded-3xl border border-[#D4AF37]/30">
+        <div className="text-center bg-[#061638] text-white p-10 rounded-3xl border border-[#D4AF37]/30">
           <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#F3E5AB]">
             {language === 'ar' ? 'ابدأ قصة نجاحك الخاصة مع English Zone' : 'Begin Your Own Success Story Today'}
           </h2>
@@ -29,7 +29,7 @@ export const TestimonialsPage: React.FC<TestimonialsPageProps> = ({ navigate }) 
           </p>
           <button
             onClick={() => navigate('register')}
-            className="px-8 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] hover:brightness-110 shadow-lg"
+            className="px-8 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#061638] hover:brightness-110 shadow-lg"
           >
             {t.nav.register}
           </button>

@@ -27,11 +27,11 @@ export const SKINS = ['#F9DCC8', '#F1C6A3', '#E2AC7E', '#C98E5E', '#A26B42', '#6
 export const EYE_COLORS = ['#3B2A20', '#5A3A1E', '#2F5D46', '#2C4C7A', '#4A4A4A'];
 export const HAIR_COLORS = ['#1F1A17', '#3E2A1E', '#6B4226', '#A8743E', '#D9B26A', '#7A2E1F'];
 export const FABRIC_COLORS = [
-  '#0E3A99', '#1E3A5F', '#3B6EA8', '#7FA7C9', '#2F5D50', '#6E8B5A', '#B8C4A0',
+  '#061638', '#1E3A5F', '#3B6EA8', '#7FA7C9', '#2F5D50', '#6E8B5A', '#B8C4A0',
   '#C9A227', '#E8D3A2', '#F4EDE2', '#FFFFFF', '#D8A7A7', '#B76E79', '#7B2D3B',
   '#5B3A6E', '#9C8AB4', '#8B5E3C', '#3A3A3A'
 ];
-export const BACKGROUNDS = ['#F3E9DC', '#E6EEF5', '#EAF2E6', '#F6E3E3', '#ECE6F3', '#FFF4D6', '#0E3A99'];
+export const BACKGROUNDS = ['#F3E9DC', '#E6EEF5', '#EAF2E6', '#F6E3E3', '#ECE6F3', '#FFF4D6', '#061638'];
 
 export const MALE_HAIR = [
   { id: 'short', ar: 'قصير', en: 'Short' },

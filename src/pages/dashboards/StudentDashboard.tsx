@@ -197,7 +197,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
             <span>{isAr ? 'بانتظار الاعتماد الأكاديمي' : 'Pending Academic Approval'}</span>
           </div>
 
-          <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99]">{title}</h2>
+          <h2 className="font-serif-luxury font-bold text-2xl text-[#061638]">{title}</h2>
           <p className="text-sm text-gray-600 leading-relaxed">{message}</p>
 
           <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 text-xs text-left rtl:text-right space-y-1.5 font-mono text-gray-700">
@@ -336,21 +336,21 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
               className="relative cursor-pointer group"
               title="Open Avatar Studio"
             >
-              <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#D4AF37] shadow group-hover:scale-105 transition-transform bg-[#0E3A99]">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#D4AF37] shadow group-hover:scale-105 transition-transform bg-[#061638]">
                 {student.avatarConfig ? (
                   <AvatarRenderer config={student.avatarConfig} gender={(student as any).gender} size={64} showBackground={false} />
                 ) : (
                   <EnglishZoneEmblem sizeClass="w-full h-full" glow={false} />
                 )}
               </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#D4AF37] text-[#0E3A99] flex items-center justify-center shadow">
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#D4AF37] text-[#061638] flex items-center justify-center shadow">
                 <Edit3 className="w-3 h-3" />
               </div>
             </div>
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#0E3A99]">
+                <h1 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#061638]">
                   {student.fullName}
                 </h1>
                 {level && (
@@ -368,7 +368,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
 
           <div className="flex flex-wrap items-center gap-3">
             <div className="grid grid-cols-2 gap-2 w-full md:w-auto">
-              <div className="col-span-2 px-4 py-2 rounded-2xl bg-[#0E3A99] border border-[#D4AF37]/40 text-[#F3E5AB] flex items-center gap-2 shadow-sm">
+              <div className="col-span-2 px-4 py-2 rounded-2xl bg-[#061638] border border-[#D4AF37]/40 text-[#F3E5AB] flex items-center gap-2 shadow-sm">
                 <Sparkles className="w-4 h-4 text-[#D4AF37]" />
                 <div className="text-left rtl:text-right">
                   <span className="text-[10px] text-gray-400 block leading-none">English Zone Stars</span>
@@ -383,7 +383,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                   setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
                 }}
                 className={`relative px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm transition-all ${
-                  activeTab === 'messages' ? 'bg-[#D4AF37] text-[#0E3A99] border-[#D4AF37]' : 'bg-white text-[#0E3A99] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
+                  activeTab === 'messages' ? 'bg-[#D4AF37] text-[#061638] border-[#D4AF37]' : 'bg-white text-[#061638] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
                 }`}
               >
                 <MessageCircle className="w-4 h-4 text-[#AA820A]" />
@@ -402,7 +402,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                   setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
                 }}
                 className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm transition-all ${
-                  activeTab === 'homework' ? 'bg-[#D4AF37] text-[#0E3A99] border-[#D4AF37]' : 'bg-white text-[#0E3A99] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
+                  activeTab === 'homework' ? 'bg-[#D4AF37] text-[#061638] border-[#D4AF37]' : 'bg-white text-[#061638] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
                 }`}
               >
                 <BookOpenCheck className="w-4 h-4 text-[#AA820A]" />
@@ -425,7 +425,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                     setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
                   }}
                   className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm transition-all ${
-                    activeTab === b.id ? 'bg-[#D4AF37] text-[#0E3A99] border-[#D4AF37]' : 'bg-white text-[#0E3A99] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
+                    activeTab === b.id ? 'bg-[#D4AF37] text-[#061638] border-[#D4AF37]' : 'bg-white text-[#061638] border-[#D4AF37]/60 hover:bg-[#FAF8F5]'
                   }`}
                 >
                   <b.icon className="w-4 h-4 text-[#AA820A]" />
@@ -435,7 +435,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
               {/* الغرف الصوتية */}
               <button
                 onClick={() => navigate('rooms')}
-                className="col-span-2 px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm bg-white text-[#0E3A99] border-[#D4AF37]/60 hover:bg-[#FAF8F5]"
+                className="col-span-2 px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border shadow-sm bg-white text-[#061638] border-[#D4AF37]/60 hover:bg-[#FAF8F5]"
               >
                 <Mic className="w-4 h-4 text-[#AA820A]" />
                 <span>{isAr ? 'الغرف الصوتية' : 'Voice rooms'}</span>
@@ -447,7 +447,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                   setActiveTab('offers');
                   setTimeout(() => document.getElementById('ez-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
                 }}
-                className="ez-float-glow col-span-2 px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] border border-[#D4AF37]"
+                className="ez-float-glow col-span-2 px-4 py-2 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#061638] border border-[#D4AF37]"
               >
                 <Gift className="w-4 h-4" />
                 <span>{isAr ? 'العروض: {ادعُ|ادعي} {واربح|واربحي}' : 'Offers: invite & earn'}</span>
@@ -456,7 +456,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
 
             <button
               onClick={() => navigate('avatar-studio')}
-              className="px-4 py-2.5 rounded-xl text-xs font-bold bg-white border border-[#D4AF37]/50 text-[#0E3A99] hover:bg-[#FAF8F5] transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-2.5 rounded-xl text-xs font-bold bg-white border border-[#D4AF37]/50 text-[#061638] hover:bg-[#FAF8F5] transition-all flex items-center gap-1.5 shadow-sm"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#AA820A]" />
               <span>{isAr ? 'استوديو الأفاتار' : 'Avatar Studio'}</span>
@@ -489,7 +489,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 activeTab === tab.id
-                  ? 'bg-[#0E3A99] text-[#F3E5AB] shadow-md'
+                  ? 'bg-[#061638] text-[#F3E5AB] shadow-md'
                   : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
               }`}
             >
@@ -520,7 +520,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                     <span className="text-xs uppercase font-bold tracking-wider text-[#AA820A]">
                       {isAr ? 'دورتك' : 'Your Course'}
                     </span>
-                    <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99] mt-0.5">
+                    <h2 className="font-serif-luxury font-bold text-2xl text-[#061638] mt-0.5">
                       {courseName || notSet}
                     </h2>
                     {(level || stage) && (
@@ -540,7 +540,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                   <div className="space-y-2 mb-6">
                     <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
                       <span>{isAr ? 'نسبة إنجاز المرحلة:' : 'Stage Progress:'}</span>
-                      <span className="text-[#0E3A99] font-bold">{progress}%</span>
+                      <span className="text-[#061638] font-bold">{progress}%</span>
                     </div>
                     <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
                       <div
@@ -556,7 +556,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                     {detailItems.map((item) => (
                       <div key={item.label}>
                         <span className="text-gray-400 block">{item.label}</span>
-                        <span className="font-bold text-sm text-[#0E3A99]">{item.value}</span>
+                        <span className="font-bold text-sm text-[#061638]">{item.value}</span>
                       </div>
                     ))}
                   </div>
@@ -582,8 +582,8 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
               {/* مواعيد الدرس التي كتبتها الإدارة */}
               {(Array.isArray((student as any).lessonDays) && (student as any).lessonDays.length > 0) || (student as any).lessonTime ? (
                 <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-2">
-                  <h4 className="font-serif-luxury font-bold text-sm text-[#0E3A99]">{isAr ? 'مواعيد دروسك' : 'Your lesson times'}</h4>
-                  <p className="text-sm font-bold text-[#0E3A99]">
+                  <h4 className="font-serif-luxury font-bold text-sm text-[#061638]">{isAr ? 'مواعيد دروسك' : 'Your lesson times'}</h4>
+                  <p className="text-sm font-bold text-[#061638]">
                     {((student as any).lessonDays || [])
                       .map((d: number) => (isAr ? ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])[d])
                       .join(isAr ? ' و' : ', ')}
@@ -611,7 +611,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
             ) : (
               <>
                 <div>
-                  <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99]">
+                  <h2 className="font-serif-luxury font-bold text-2xl text-[#061638]">
                     {myGroup?.name || (isAr ? 'مجموعتي' : 'My Group')}
                   </h2>
                   {(myGroup?.level || myGroup?.teacherName) && (
@@ -627,7 +627,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                     { label: isAr ? 'نجم الأسبوع' : 'Star of the Week', row: groupStarWeek, value: groupStarWeek?.week },
                     { label: isAr ? 'نجم الشهر' : 'Star of the Month', row: groupStarMonth, value: groupStarMonth?.month }
                   ].map((c) => (
-                    <div key={c.label} className="p-4 rounded-2xl bg-[#0E3A99] text-center border border-[#D4AF37]/40">
+                    <div key={c.label} className="p-4 rounded-2xl bg-[#061638] text-center border border-[#D4AF37]/40">
                       <span className="text-[11px] text-gray-400 block">{c.label}</span>
                       <span className="font-bold text-sm text-[#F3E5AB] block mt-1">
                         {c.row ? c.row.m.fullName : '—'}
@@ -644,17 +644,17 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                 <div className="grid grid-cols-3 gap-3 text-center text-xs">
                   <div className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-200">
                     <span className="text-gray-400 block">{isAr ? 'ترتيبي' : 'My Rank'}</span>
-                    <span className="font-bold text-base text-[#0E3A99]">
+                    <span className="font-bold text-base text-[#061638]">
                       {myRank > 0 ? `${myRank} / ${boardRows.length}` : '—'}
                     </span>
                   </div>
                   <div className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-200">
                     <span className="text-gray-400 block">{isAr ? 'نقاطي هذا الأسبوع' : 'My Week'}</span>
-                    <span className="font-bold text-base text-[#0E3A99]">{myWeek}</span>
+                    <span className="font-bold text-base text-[#061638]">{myWeek}</span>
                   </div>
                   <div className="p-3 rounded-xl bg-[#FAF8F5] border border-gray-200">
                     <span className="text-gray-400 block">{isAr ? 'نقاطي هذا الشهر' : 'My Month'}</span>
-                    <span className="font-bold text-base text-[#0E3A99]">{myMonth}</span>
+                    <span className="font-bold text-base text-[#061638]">{myMonth}</span>
                   </div>
                 </div>
 
@@ -681,7 +681,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                             className={r.m.id === firebaseUser.uid ? 'bg-[#D4AF37]/10 font-bold' : ''}
                           >
                             <td className="py-2.5 px-3 text-gray-500">{i + 1}</td>
-                            <td className="py-2.5 px-3 text-[#0E3A99]">
+                            <td className="py-2.5 px-3 text-[#061638]">
                               <span className="inline-flex items-center gap-2 align-middle">
                                 <AvatarRenderer config={(r.m as any).avatar} size={28} />
                               </span>{' '}
@@ -755,7 +755,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
         )}
         {activeTab === 'curriculum' && (
           <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
-            <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99]">
+            <h2 className="font-serif-luxury font-bold text-2xl text-[#061638]">
               {isAr ? 'منهجك ومرحلتك' : 'Your Curriculum & Stage'}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
@@ -763,20 +763,20 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#AA820A]">
                   {isAr ? 'الدورة' : 'Course'}
                 </span>
-                <h4 className="font-bold text-lg text-[#0E3A99] mt-1">{courseName || notSet}</h4>
+                <h4 className="font-bold text-lg text-[#061638] mt-1">{courseName || notSet}</h4>
                 {level && <p className="text-xs text-gray-500 mt-1">{isAr ? 'المستوى' : 'Level'} {level}</p>}
               </div>
               <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                   {isAr ? 'المرحلة الحالية' : 'Current Stage'}
                 </span>
-                <h4 className="font-bold text-lg text-[#0E3A99] mt-1">{stage || notSet}</h4>
+                <h4 className="font-bold text-lg text-[#061638] mt-1">{stage || notSet}</h4>
               </div>
               <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                   {isAr ? 'نظام الحصة' : 'Instruction Format'}
                 </span>
-                <h4 className="font-bold text-lg text-[#0E3A99] mt-1">{formatLabel || notSet}</h4>
+                <h4 className="font-bold text-lg text-[#061638] mt-1">{formatLabel || notSet}</h4>
               </div>
             </div>
             <StudentCourseMaterials level={level} isAr={isAr} />
@@ -796,19 +796,19 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
         {/* TAB 5: SUBSCRIPTION */}
         {activeTab === 'subscription' && (
           <div className="bg-white rounded-3xl p-6 sm:p-10 border border-gray-200 shadow-sm space-y-6">
-            <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99]">
+            <h2 className="font-serif-luxury font-bold text-2xl text-[#061638]">
               {isAr ? 'الاشتراك والرسوم' : 'Tuition & Subscription'}
             </h2>
             <div className="p-6 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#0E3A99]">{isAr ? 'حالة الاشتراك' : 'Subscription Status'}</span>
+                <span className="text-xs font-bold text-[#061638]">{isAr ? 'حالة الاشتراك' : 'Subscription Status'}</span>
                 <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs uppercase">
                   {isAr ? 'نشط' : 'Active'}
                 </span>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-3">
                 <span className="text-xs text-gray-600">{isAr ? 'الرسوم الشهرية' : 'Monthly Tuition'}</span>
-                <span className="font-bold text-base text-[#0E3A99]">
+                <span className="font-bold text-base text-[#061638]">
                   {tuition !== undefined ? `${formatMoney(tuition, (student as any).tuitionCurrency || siteCurrency)} / ${isAr ? 'شهر' : 'Month'}` : notSet}
                 </span>
               </div>
