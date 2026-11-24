@@ -32,6 +32,7 @@ export interface Workshop {
   workshopDate?: string;
   active: boolean;
   template?: string; // صورة قالب الشهادة (data URL)
+  type?: 'workshop' | 'certificate'; // ورشة (صفحة تسجيل) أو شهادة؛ القديمة بلا نوع تحمل الاثنين
   layout: CertLayout;
   createdAt: string;
 }
@@ -207,6 +208,7 @@ export const workshopService = {
       createdAt: w.createdAt || new Date().toISOString()
     };
     if (w.template !== undefined) data.template = w.template;
+    if (w.type) data.type = w.type;
     await setDoc(doc(db, 'workshops', id), data, { merge: true });
     return id;
   },
