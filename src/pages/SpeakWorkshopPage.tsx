@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { CalendarDays, Clock, Hourglass, CheckCircle2, Award } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../services/firebase';
 import { validRealName, latinDigits } from '../components/student/CompleteProfile';
 import { GoogleSignInButton, OrDivider, googleErrorMessage } from '../components/common/GoogleSignInButton';
 import { workshopPageService, WorkshopPage, DEFAULT_GROUP_LINK, joinUrl, currentJoinUrl } from '../services/workshopService';
@@ -105,7 +107,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
   const errText = (code?: string) => {
     switch (code) {
       case 'auth/email-already-in-use':
-        return tr('This email already has an account. Please log in.', 'هذا البريد له حساب من قبل، {سجّل|سجّلي} الدخول.');
+        return 'هذا البريد له حساب من قبل بكلمة مرور أخرى. {اكتب|اكتبي} كلمة المرور القديمة، أو {اضغط|اضغطي} «نسيت كلمة المرور» لتصلك رسالة لتعيين كلمة جديدة.';
       case 'auth/weak-password':
         return tr('Password must be at least 6 characters.', 'كلمة المرور 6 أحرف على الأقل.');
       case 'auth/invalid-email':
@@ -233,6 +235,23 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
               <input value={age} onChange={(e) => setAge(latinDigits(e.target.value).replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder="العمر" className={inp} />
             </div>
             {error && <p className="text-sm font-bold text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 text-center">{error}</p>}
+            {error.includes('نسيت كلمة المرور') && (
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await sendPasswordResetEmail(auth, email.trim());
+                    setError('');
+                    window.alert('أرسلنا رسالة إلى بريدك فيها رابط لتعيين كلمة مرور جديدة. افتحها ثم عد وسجّل بكلمة المرور الجديدة.');
+                  } catch (e: any) {
+                    setError(`تعذّر إرسال الرسالة (${e?.code || ''}).`);
+                  }
+                }}
+                className="w-full py-2.5 rounded-xl border-2 border-[var(--wc)] text-[var(--wc)] text-sm font-bold"
+              >
+                نسيت كلمة المرور
+              </button>
+            )}
             {inApp ? (
               <div className="rounded-2xl border-2 border-[#a0522d] bg-[#fff4e5] p-3 space-y-2 text-center">
                 <p className="text-xs font-bold text-[#7a3a14]">للتسجيل بحساب جيميل {'{افتح|افتحي}'} الرابط في المتصفح، أو {'{سجّل|سجّلي}'} بالبريد في الأسفل مباشرة.</p>

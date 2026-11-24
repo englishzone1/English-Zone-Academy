@@ -520,7 +520,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await fetchProfile(fbUser);
         return { success: true, uid: fbUser.uid, email: fbUser.email || '' };
       }
-      const cred = await createUserWithEmailAndPassword(auth, String(p.email || '').trim(), String(p.password || ''));
+      let cred;
+      try {
+        cred = await createUserWithEmailAndPassword(auth, String(p.email || '').trim(), String(p.password || ''));
+      } catch (e: any) {
+        // البريد له حساب دخول من قبل (مثلًا حساب حذفته الإدارة ورفعت حظره): ندخله بكلمة مروره،
+        // وإن لم يكن له ملف في المنصة يُنشأ له ملف جديد تمامًا
+        if (e?.code !== 'auth/email-already-in-use') throw e;
+        try {
+          cred = await signInWithEmailAndPassword(auth, String(p.email || '').trim(), String(p.password || ''));
+        } catch {
+          throw e;
+        }
+      }
       setFirebaseUser(cred.user);
       // الحساب أُنشئ: لا ننتظر تحميل الملف أكثر من 15 ثانية (يكمل في الخلفية)
       await Promise.race([fetchProfile(cred.user), new Promise((r) => setTimeout(r, 15000))]);

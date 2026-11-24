@@ -212,6 +212,18 @@ export const studentDataService = {
     } catch {
       // لا عضوية
     }
+    // نتائج الواجبات والاختبارات وإجاباتها وتسجيلاتها: إن عاد يبدأ من جديد تمامًا
+    try {
+      const rs = await getDocs(query(collection(db, 'homework_results'), where('studentId', '==', uid)));
+      for (const d of rs.docs) {
+        const n = Number((d.data() as any).audioCount) || 0;
+        for (let i = 0; i < n; i++) await deleteDoc(doc(db, 'homework_audio', `${d.id}_${i}`)).catch(() => undefined);
+        await deleteDoc(doc(db, 'homework_answers', d.id)).catch(() => undefined);
+        await deleteDoc(d.ref).catch(() => undefined);
+      }
+    } catch {
+      // لا نتائج
+    }
     try {
       const regs = await getDocs(query(collection(db, 'registration_requests'), where('studentId', '==', uid)));
       for (const d of regs.docs) await deleteDoc(d.ref);
