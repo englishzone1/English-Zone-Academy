@@ -41,7 +41,7 @@ export const AvatarStudioPage: React.FC<AvatarStudioPageProps> = ({ navigate, ed
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
 
-  const saved = toEZAvatar((user as any)?.avatarConfig);
+  const saved = toEZAvatar((user as any)?.avatarConfig, (user as any)?.gender);
   const [a, setA] = useState<EZAvatarConfig>(saved);
   const [tab, setTab] = useState<Tab>('outfit');
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');

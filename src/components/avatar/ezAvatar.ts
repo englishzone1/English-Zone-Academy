@@ -101,9 +101,11 @@ export const defaultAvatar = (gender: Gender = 'female'): EZAvatarConfig => ({
 });
 
 // يحوّل الأفاتار القديم (أو غير الموجود) إلى النموذج الجديد
-export const toEZAvatar = (raw: any): EZAvatarConfig => {
+// fallback: جنس صاحب الحساب (طالب/طالبة)، يُستعمل حين لم يصمّم أفاتاره بعد
+export const toEZAvatar = (raw: any, fallback?: string): EZAvatarConfig => {
   if (raw && raw.v === 2) return { ...defaultAvatar(raw.gender), ...raw };
-  const gender: Gender = raw?.gender === 'male' ? 'male' : 'female';
+  const fb: Gender | '' = fallback === 'male' || fallback === 'female' ? fallback : '';
+  const gender: Gender = fb || (raw?.gender === 'male' ? 'male' : 'female');
   const base = defaultAvatar(gender);
   if (!raw) return base;
   return {

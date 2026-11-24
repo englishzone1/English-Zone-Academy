@@ -7,10 +7,12 @@ interface AvatarRendererProps {
   className?: string;
   showBackground?: boolean;
   view?: 'head' | 'full';
+  // جنس صاحب الحساب (male / female)
+  gender?: string;
 }
 
 // واجهة واحدة لعرض أفاتار أي شخص في الموقع: صورته الشخصية إن اختارها، وإلا الأفاتار الكرتوني
-export const AvatarRenderer: React.FC<AvatarRendererProps> = ({ config, size = 64, className = '', showBackground = true, view = 'head' }) => {
+export const AvatarRenderer: React.FC<AvatarRendererProps> = ({ config, size = 64, className = '', showBackground = true, view = 'head', gender }) => {
   if (config?.mode === 'photo' && typeof config.photo === 'string' && config.photo.startsWith('data:image/')) {
     return (
       <img
@@ -23,5 +25,5 @@ export const AvatarRenderer: React.FC<AvatarRendererProps> = ({ config, size = 6
       />
     );
   }
-  return <EZAvatar config={config} size={size} view={view} showBackground={showBackground} className={className} />;
+  return <EZAvatar config={config} size={size} view={view} showBackground={showBackground} className={className} gender={gender} />;
 };

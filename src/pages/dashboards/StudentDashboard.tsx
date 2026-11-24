@@ -338,7 +338,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
             >
               <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#D4AF37] shadow group-hover:scale-105 transition-transform bg-[#0A192F]">
                 {student.avatarConfig ? (
-                  <AvatarRenderer config={student.avatarConfig} size={64} showBackground={false} />
+                  <AvatarRenderer config={student.avatarConfig} gender={(student as any).gender} size={64} showBackground={false} />
                 ) : (
                   <EnglishZoneEmblem sizeClass="w-full h-full" glow={false} />
                 )}

@@ -85,7 +85,7 @@ export const AdminMemberProfile: React.FC<{ member: any; isAr: boolean; onClose:
       <div className="max-w-2xl mx-auto my-6 bg-white rounded-3xl p-6 space-y-5" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <AvatarRenderer config={cfg} size={72} />
+            <AvatarRenderer config={cfg} gender={(m as any).gender} size={72} />
             <div className="min-w-0">
               <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F]">{m.fullName || '—'}</h3>
               <p className="text-[11px] text-gray-500 break-all" dir="ltr">

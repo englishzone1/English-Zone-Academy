@@ -62,7 +62,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
           <div className="flex items-center gap-4">
             <label className="relative cursor-pointer group" title={tr('Change my photo', 'تغيير صورتي')}>
               {(user as any)?.avatarConfig ? (
-                <AvatarRenderer config={(user as any).avatarConfig} size={56} />
+                <AvatarRenderer config={(user as any).avatarConfig} gender={(user as any).gender} size={56} />
               ) : (
                 <span className="w-14 h-14 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center">
                   <UserRound className="w-7 h-7" />

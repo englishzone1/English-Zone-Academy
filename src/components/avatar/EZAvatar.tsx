@@ -8,13 +8,15 @@ interface Props {
   showBackground?: boolean;
   className?: string;
   rounded?: boolean;
+  // جنس صاحب الأفاتار: رجل للطالب وامرأة للطالبة إن لم يصمّم أفاتاره
+  gender?: string;
 }
 
 const DARK = '#2B211C';
 
 // رسم الأفاتار بصيغة SVG: ألوان مسطحة نظيفة وظلال خفيفة
-export const EZAvatar: React.FC<Props> = ({ config, view = 'head', size = 120, showBackground = true, className = '', rounded = true }) => {
-  const a: EZAvatarConfig = toEZAvatar(config);
+export const EZAvatar: React.FC<Props> = ({ config, view = 'head', size = 120, showBackground = true, className = '', rounded = true, gender }) => {
+  const a: EZAvatarConfig = toEZAvatar(config, gender);
   const female = a.gender === 'female';
   const hijab = female && a.hijab !== 'none';
 

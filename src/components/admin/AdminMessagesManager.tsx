@@ -298,7 +298,7 @@ export const AdminMessagesManager: React.FC<Props> = ({ onNotice, teacherMode = 
               {threads.length === 0 && <div className="p-6 text-center text-xs text-gray-500">{tr('No chats yet.', 'لا توجد محادثات بعد.')}</div>}
               {threads.map((t) => (
                 <button key={t.id} onClick={() => setActiveId(t.id)} className={`w-full text-start p-3 flex items-center gap-2 hover:bg-[#FAF8F5] ${activeId === t.id ? 'bg-[#FAF8F5]' : ''}`}>
-                  <AvatarRenderer config={people[t.id]?.avatarConfig} size={36} />
+                  <AvatarRenderer config={people[t.id]?.avatarConfig} gender={(people[t.id] as any)?.gender} size={36} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-bold text-xs text-[#0A192F] truncate">

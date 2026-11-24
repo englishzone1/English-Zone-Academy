@@ -388,7 +388,7 @@ export const AdminStarsLedger: React.FC<Props> = ({ onNotice, teacherMode = fals
                             <span className="w-7 h-7 rounded-full bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
                             <div className="min-w-0">
                               <div className="font-bold text-sm text-[#0A192F] truncate flex items-center gap-2">
-                                <AvatarRenderer config={(r.s as any).avatarConfig} size={30} />
+                                <AvatarRenderer config={(r.s as any).avatarConfig} gender={(r.s as any).gender} size={30} />
                                 {r.s.fullName || '—'}
                               </div>
                               <div className="text-[11px] text-gray-500">

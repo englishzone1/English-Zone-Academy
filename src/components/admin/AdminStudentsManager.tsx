@@ -466,7 +466,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
                 className="p-4 rounded-xl border border-gray-200 bg-[#FAF8F5] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
               >
                 <div className="min-w-0 flex items-start gap-3">
-                  <AvatarRenderer config={(s as any).avatarConfig} size={44} />
+                  <AvatarRenderer config={(s as any).avatarConfig} gender={(s as any).gender} size={44} />
                   <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold text-sm text-[#0A192F]">{s.fullName || '—'}</span>
@@ -521,7 +521,7 @@ export const AdminStudentsManager: React.FC<AdminStudentsManagerProps> = ({ onNo
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex items-center gap-3">
-                <AvatarRenderer config={(selected as any).avatarConfig} size={56} />
+                <AvatarRenderer config={(selected as any).avatarConfig} gender={(selected as any).gender} size={56} />
                 <div className="min-w-0">
                 <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F]">{selected.fullName || '—'}</h3>
                 {!teacherMode && <p className="text-[11px] text-gray-500 break-all">{selected.email}</p>}
