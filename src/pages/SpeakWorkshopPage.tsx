@@ -3,6 +3,7 @@ import { CalendarDays, Clock, Hourglass, CheckCircle2, Award } from 'lucide-reac
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { validRealName, latinDigits } from '../components/student/CompleteProfile';
+import { GoogleSignInButton, OrDivider, googleErrorMessage } from '../components/common/GoogleSignInButton';
 
 // صفحة الورشة المجانية «تحدّث بالإنجليزية وابنِ ثقتك» برابط مستقل (/workshop):
 // تسجيل حساب في الأكاديمية ← إكمال البيانات (الاسم، الجنس، الدولة، العمر، الهاتف) ← «تم» ← نافذة الانضمام لقناة تيليغرام
@@ -23,11 +24,28 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
   const { registerVisitor, isAuthenticated } = useAuth();
   const [fullName, setFullName] = useState('');
   const [age, setAge] = useState('');
+  const [copied, setCopied] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const W = SPEAK_WORKSHOP;
+
+  // متصفحات داخل التطبيقات (تيليغرام، واتساب، إنستغرام…): Google يمنع الدخول منها
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+  const inApp = /Telegram|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Messenger|Snapchat|TikTok|musical_ly|BytedanceWebview|Line\/|Twitter|WhatsApp|; wv\)/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+  const pageUrl = typeof window !== 'undefined' ? `${window.location.origin}/workshop` : '';
+  const chromeIntent = `intent://${pageUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(pageUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 3000);
+    } catch {
+      /* ignore */
+    }
+  };
 
   useEffect(() => {
     document.title = `${W.titleAr} | English Zone Academy`;
@@ -74,6 +92,20 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
       return false;
     }
     return true;
+  };
+
+  const viaGoogle = async () => {
+    setError('');
+    if (!checkBasics()) return;
+    mark();
+    setBusy(true);
+    const r = await registerVisitor({ name: fullName.trim(), age: age.trim(), google: true });
+    setBusy(false);
+    if (r.success) navigate('portal');
+    else {
+      const m = googleErrorMessage(r.code, isAr);
+      if (m) setError(r.code && r.code !== 'unknown' ? `${m} (${r.code})` : m);
+    }
   };
 
   const viaEmail = async (e: React.FormEvent) => {
@@ -152,6 +184,26 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
               <input value={age} onChange={(e) => setAge(latinDigits(e.target.value).replace(/[^\d]/g, '').slice(0, 2))} inputMode="numeric" placeholder="العمر" className={inp} />
             </div>
             {error && <p className="text-sm font-bold text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 text-center">{error}</p>}
+            {inApp ? (
+              <div className="rounded-2xl border-2 border-[#a0522d] bg-[#fff4e5] p-3 space-y-2 text-center">
+                <p className="text-xs font-bold text-[#7a3a14]">للتسجيل بحساب جيميل {'{افتح|افتحي}'} الرابط في المتصفح، أو {'{سجّل|سجّلي}'} بالبريد في الأسفل مباشرة.</p>
+                {isAndroid ? (
+                  <a href={chromeIntent} className="block w-full py-3 rounded-xl bg-[#1a73e8] text-white text-sm font-bold">
+                    🌐 فتح في Chrome
+                  </a>
+                ) : (
+                  <p className="text-[11px] text-[#7a3a14]">{'{اضغط|اضغطي}'} على ⋯ أو زر المشاركة أعلى الشاشة، ثم «فتح في Safari».</p>
+                )}
+                <button type="button" onClick={copyLink} className="w-full py-2 rounded-xl bg-white border border-[#a0522d] text-[#7a3a14] text-xs font-bold">
+                  {copied ? '✓ تم نسخ الرابط' : '📋 نسخ رابط الورشة'}
+                </button>
+              </div>
+            ) : (
+              <>
+                <GoogleSignInButton onClick={viaGoogle} disabled={busy} isAr={isAr} />
+                <OrDivider isAr={isAr} />
+              </>
+            )}
             <form onSubmit={viaEmail} className="space-y-2">
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} placeholder="البريد الإلكتروني" autoCapitalize="off" autoCorrect="off" className={inp} dir="ltr" />
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="كلمة مرور (6 أحرف على الأقل)" className={inp} dir="ltr" />
