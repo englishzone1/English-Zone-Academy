@@ -23,6 +23,7 @@ import {
   PointsEntry
 } from '../../services/groupService';
 import { db } from '../../services/firebase';
+import { studentHubService as libSvc } from '../../services/studentHubService';
 import { StudentMonthlyReport } from '../../components/student/StudentMonthlyReport';
 import { StudentProgressChart } from '../../components/student/StudentProgressChart';
 import { CurriculumViewer } from '../../components/student/CurriculumViewer';
@@ -58,6 +59,39 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
 
   const [activeTab, setActiveTab] = useState<'overview' | 'group' | 'groupchat' | 'community' | 'stars' | 'curriculum' | 'library' | 'homework' | 'messages' | 'feedback' | 'subscription' | 'offers'>('overview');
   const [homeworkList, setHomeworkList] = useState<HomeworkRecord[]>([]);
+  // تنبيه أحمر على «المكتبة» عند نشر كتب أو مجلة جديدة لم تفتحها الطالبة بعد
+  const libSeenKey = `ez_lib_seen_${firebaseUser?.uid || ''}`;
+  const [libLatest, setLibLatest] = useState('');
+  const [libNew, setLibNew] = useState(0);
+  useEffect(() => {
+    if (!firebaseUser?.uid || preview) return;
+    libSvc
+      .getPublishedLibrary()
+      .then((items) => {
+        const dates = items.map((b: any) => String(b.addedAt || '')).filter(Boolean);
+        let seen = '';
+        try {
+          seen = localStorage.getItem(libSeenKey) || '';
+        } catch {
+          /* ignore */
+        }
+        // أول مرة: ما أُضيف خلال آخر 14 يومًا يُعدّ جديدًا
+        if (!seen) seen = new Date(Date.now() - 14 * 864e5).toISOString();
+        setLibNew(dates.filter((d) => d > seen).length);
+        setLibLatest(dates.sort().pop() || '');
+      })
+      .catch(() => undefined);
+  }, [firebaseUser?.uid]);
+  useEffect(() => {
+    if (activeTab !== 'library' || !libNew) return;
+    try {
+      localStorage.setItem(libSeenKey, libLatest || new Date().toISOString());
+    } catch {
+      /* ignore */
+    }
+    setLibNew(0);
+  }, [activeTab]);
+
   const [pointsLog, setPointsLog] = useState<PointsLogRecord[]>([]);
   const [gradesList, setGradesList] = useState<GradeRecord[]>([]);
   const [timetable, setTimetable] = useState<TimetableRecord[]>([]);
@@ -430,6 +464,11 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ navigate, pr
                 >
                   <b.icon className="w-4 h-4 text-[#AA820A]" />
                   <span>{isAr ? b.ar : b.en}</span>
+                  {b.id === 'library' && libNew > 0 && (
+                    <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center animate-pulse" title={isAr ? 'جديد في المكتبة' : 'New in the library'}>
+                      {isAr ? `${libNew} جديد` : `${libNew} new`}
+                    </span>
+                  )}
                 </button>
               ))}
               {/* الغرف الصوتية */}
