@@ -24,7 +24,9 @@ export const db = firestoreInstance;
 // فيتوقف التسجيل بالبريد بلا رسالة. أدوات نافذة Google تُمرَّر فقط عند الدخول بجوجل.
 let authInstance: Auth;
 try {
-  authInstance = initializeAuth(app, { persistence: [indexedDBLocalPersistence, browserLocalPersistence] });
+  // localStorage أولًا: IndexedDB يتجمّد في متصفحات التطبيقات فلا يكتمل الدخول بعد إنشاء الحساب.
+  // من كان دخوله محفوظًا في IndexedDB يُنقل تلقائيًا ولا يخرج من حسابه.
+  authInstance = initializeAuth(app, { persistence: [browserLocalPersistence, indexedDBLocalPersistence] });
 } catch {
   authInstance = getAuth(app);
 }
