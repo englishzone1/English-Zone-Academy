@@ -269,6 +269,9 @@ function MainApp() {
         if (currentRoute.startsWith('join-workshop/')) {
           return <SpeakWorkshopPage key={currentRoute} navigate={navigate} workshopId={currentRoute.slice('join-workshop/'.length).split(/[/?]/)[0]} />;
         }
+        if (currentRoute.startsWith('library/')) {
+          return <LibraryPage key={currentRoute} navigate={navigate} focusId={currentRoute.slice('library/'.length)} />;
+        }
         if (currentRoute.startsWith('workshop/')) {
           return <WorkshopPage workshopId={currentRoute.slice('workshop/'.length)} navigate={navigate} />;
         }

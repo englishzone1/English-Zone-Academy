@@ -4,9 +4,10 @@ import { BookOpen, Newspaper, Gift } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { studentHubService } from '../services/studentHubService';
+import { ShareLinkButton, libraryItemUrl } from '../components/common/ShareLinkButton';
 
 // صفحة عامة: المواد والمجلة التي نشرتها الأكاديمية «للعامة»
-export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
+export const LibraryPage: React.FC<{ navigate: (route: string) => void; focusId?: string }> = ({ navigate, focusId }) => {
   const { isAuthenticated } = useAuth();
   const { language } = useLanguage();
   const isAr = language === 'ar';
@@ -37,12 +38,25 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
   }, [mags.length]);
   const books = items.filter((b) => b.category !== 'magazine');
   const title = (b: any) => (isAr ? b.titleAr : b.titleEn) || b.titleAr || b.titleEn;
-  const open = (b: any) =>
-    b.downloadUrl ? (
-      <a href={b.downloadUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] whitespace-nowrap">
-        {isAr ? 'فتح' : 'Open'}
-      </a>
-    ) : null;
+  const open = (b: any) => (
+    <div className="flex flex-col gap-1.5 shrink-0">
+      {b.downloadUrl && (
+        <a href={b.downloadUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] whitespace-nowrap text-center">
+          {isAr ? 'فتح' : 'Open'}
+        </a>
+      )}
+      <ShareLinkButton url={libraryItemUrl(b.id)} isAr={isAr} />
+    </div>
+  );
+  // رابط عنصر محدد: يفتح قسمه ويُبرزه
+  React.useEffect(() => {
+    if (!focusId || !items.length) return;
+    const it = items.find((b) => b.id === focusId);
+    if (!it) return;
+    setTab(it.category === 'magazine' ? 'mags' : 'books');
+    setTimeout(() => document.getElementById(`lib-${focusId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 250);
+  }, [focusId, items.length]);
+  const ring = (b: any) => (b.id === focusId ? ' ring-4 ring-[#D4AF37]' : '');
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-10" dir={isAr ? 'rtl' : 'ltr'}>
@@ -102,7 +116,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {mags.map((b) => (
-                  <div key={b.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                  <div key={b.id} id={`lib-${b.id}`} className={`bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col${ring(b)}`}>
                     {b.coverUrl ? (
                       <img src={imgSrc(b.coverUrl)} alt="" className="w-full h-56 object-cover" />
                     ) : (
@@ -130,7 +144,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {books.map((b) => (
-                  <div key={b.id} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-start justify-between gap-3">
+                  <div key={b.id} id={`lib-${b.id}`} className={`p-4 rounded-2xl bg-white border border-gray-200 flex items-start justify-between gap-3${ring(b)}`}>
                     {b.coverUrl && <img src={imgSrc(b.coverUrl)} alt="" className="w-14 h-20 object-cover rounded-lg border border-gray-200 shrink-0" />}
                     <div className="flex-1 min-w-0">
                       <span className="font-bold text-sm text-[#0A192F] block">{title(b)}</span>

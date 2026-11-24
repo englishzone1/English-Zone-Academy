@@ -1,3 +1,4 @@
+import { ShareLinkButton, libraryItemUrl } from '../common/ShareLinkButton';
 import React, { useEffect, useState } from 'react';
 import { BookOpen, Headphones, PlayCircle, Link as LinkIcon, Newspaper, Send, Star, MessageSquare } from 'lucide-react';
 import { studentHubService, CourseMaterials, MaterialType, StudentMessage } from '../../services/studentHubService';
@@ -136,16 +137,19 @@ export const StudentLibrary: React.FC<{ isAr: boolean }> = ({ isAr }) => {
                     </span>
                   </div>
                 </div>
-                {b.downloadUrl && (
-                  <a
-                    href={b.downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] whitespace-nowrap"
-                  >
-                    {isAr ? 'فتح' : 'Open'}
-                  </a>
-                )}
+                <div className="flex flex-col gap-1.5 shrink-0">
+                  {b.downloadUrl && (
+                    <a
+                      href={b.downloadUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] whitespace-nowrap text-center"
+                    >
+                      {isAr ? 'فتح' : 'Open'}
+                    </a>
+                  )}
+                  <ShareLinkButton url={libraryItemUrl(b.id)} isAr={isAr} />
+                </div>
               </div>
             );
           })}
