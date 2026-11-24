@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { RegPageStrip } from './WorkshopRegPage';
 import { Plus, Copy, Trash2, Edit3, Upload, Save, Download, Link as LinkIcon, Eye, EyeOff, Loader2, X, Star, Files } from 'lucide-react';
 import {
   workshopService,
@@ -122,12 +123,15 @@ export const AdminWorkshops: React.FC<{ isAr: boolean; onNotice: (m: string) => 
                     <div className="text-[11px] text-gray-500 mt-0.5">
                       {tr('Registrations', 'المسجّلات')}: {s.count} • ⭐ {s.rating} • {tr('Benefit', 'الاستفادة')}: {s.benefit}/10
                     </div>
-                    <div className="text-[10px] text-gray-400 break-all" dir="ltr">{workshopUrl(w.id)}</div>
+                    <div className="text-[10px] text-gray-400 break-all" dir="ltr">
+                      {tr('Certificate link', 'رابط الشهادة')}: {workshopUrl(w.id)}
+                    </div>
+                    <RegPageStrip w={w} onNotice={onNotice} />
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     <button onClick={() => copyLink(w.id)} className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold flex items-center gap-1">
                       <LinkIcon className="w-3.5 h-3.5" />
-                      {tr('Copy link', 'نسخ الرابط')}
+                      {tr('Copy certificate link', 'نسخ رابط الشهادة')}
                     </button>
                     <a href={workshopUrl(w.id)} target="_blank" rel="noopener noreferrer" className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-[11px] font-bold">
                       {tr('Open', 'فتح')}

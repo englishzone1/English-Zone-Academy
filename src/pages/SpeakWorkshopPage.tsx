@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { validRealName, latinDigits } from '../components/student/CompleteProfile';
 import { GoogleSignInButton, OrDivider, googleErrorMessage } from '../components/common/GoogleSignInButton';
+import { workshopPageService, WorkshopPage, DEFAULT_GROUP_LINK, joinUrl, currentJoinUrl } from '../services/workshopService';
 
 // صفحة الورشة المجانية «تحدّث بالإنجليزية وابنِ ثقتك» برابط مستقل (/workshop):
 // تسجيل حساب في الأكاديمية ← إكمال البيانات (الاسم، الجنس، الدولة، العمر، الهاتف) ← «تم» ← نافذة الانضمام لقناة تيليغرام
@@ -17,11 +18,43 @@ export const SPEAK_WORKSHOP = {
   learnAr: ['كيف تبدأ التحدث باللغة الإنجليزية', 'بناء الجمل والتعبير عن أفكارك', 'التغلب على الخوف والتردد أثناء الحديث', 'ممارسة المحادثة في مواقف واقعية']
 };
 
-export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
+// الورشة الأولى (قبل لوحة الإدارة): تُستعمل إن لم تُنشر ورشة من اللوحة بعد
+export const FALLBACK_PAGE: WorkshopPage = {
+  workshopId: '',
+  published: true,
+  title: SPEAK_WORKSHOP.titleAr,
+  subtitle: SPEAK_WORKSHOP.subtitleAr,
+  date: SPEAK_WORKSHOP.dateAr,
+  time: SPEAK_WORKSHOP.timeAr,
+  duration: SPEAK_WORKSHOP.durationAr,
+  learn: SPEAK_WORKSHOP.learnAr,
+  color: '#6b2f3a',
+  poster: SPEAK_WORKSHOP.poster,
+  groupLink: DEFAULT_GROUP_LINK
+};
+
+// لون فاتح من لون الورشة لخلفية الصفحة
+export const tint = (hex: string, k = 0.88) => {
+  const n = parseInt(hex.replace('#', ''), 16);
+  const ch = (v: number) => Math.round(v + (255 - v) * k);
+  return `rgb(${ch((n >> 16) & 255)}, ${ch((n >> 8) & 255)}, ${ch(n & 255)})`;
+};
+
+// صفحة ورشة: من workshopId، أو الورشة المنشورة الحالية، أو الورشة الأولى
+export const loadWorkshopPage = async (workshopId?: string): Promise<WorkshopPage | null> => {
+  try {
+    if (workshopId) return await workshopPageService.get(workshopId);
+    return (await workshopPageService.current()) || FALLBACK_PAGE;
+  } catch {
+    return workshopId ? null : FALLBACK_PAGE;
+  }
+};
+
+export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; workshopId?: string }> = ({ navigate, workshopId }) => {
   const { language } = useLanguage();
   const isAr = language === 'ar';
   const tr = (en: string, ar: string) => (isAr ? ar : en);
-  const { registerVisitor, isAuthenticated } = useAuth();
+  const { registerVisitor, isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
   const [fullName, setFullName] = useState('');
   const [age, setAge] = useState('');
   const [copied, setCopied] = useState(false);
@@ -29,13 +62,18 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const W = SPEAK_WORKSHOP;
+  const [page, setPage] = useState<WorkshopPage | null | undefined>(undefined);
+  useEffect(() => {
+    loadWorkshopPage(workshopId).then(setPage);
+  }, [workshopId]);
+  const P = page || FALLBACK_PAGE;
+  const W = { poster: P.poster, titleAr: P.title, subtitleAr: P.subtitle, dateAr: P.date, timeAr: P.time, durationAr: P.duration, learnAr: P.learn || [] };
 
   // متصفحات داخل التطبيقات (تيليغرام، واتساب، إنستغرام…): Google يمنع الدخول منها
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
   const inApp = /Telegram|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Messenger|Snapchat|TikTok|musical_ly|BytedanceWebview|Line\/|Twitter|WhatsApp|; wv\)/i.test(ua);
   const isAndroid = /Android/i.test(ua);
-  const pageUrl = typeof window !== 'undefined' ? `${window.location.origin}/workshop` : '';
+  const pageUrl = typeof window !== 'undefined' ? (workshopId ? joinUrl(workshopId) : currentJoinUrl()) : '';
   const chromeIntent = `intent://${pageUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
   const copyLink = async () => {
     try {
@@ -49,16 +87,16 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
 
   useEffect(() => {
     document.title = `${W.titleAr} | English Zone Academy`;
-  }, []);
+  }, [W.titleAr]);
 
   // بعد التسجيل: إلى صفحتها، حيث تُكمل بياناتها ثم يظهر رابط تيليغرام
   useEffect(() => {
-    if (isAuthenticated) navigate('portal');
-  }, [isAuthenticated]);
+    if (isAuthenticated && !isAdmin && !isSuperAdmin) navigate('portal');
+  }, [isAuthenticated, isAdmin, isSuperAdmin]);
 
   const mark = () => {
     try {
-      localStorage.setItem('ez_from_workshop', String(Date.now()));
+      localStorage.setItem('ez_from_workshop', JSON.stringify({ at: Date.now(), id: P.workshopId || '' }));
     } catch {
       /* ignore */
     }
@@ -130,18 +168,29 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
     else setError(errText(r.code));
   };
 
-  const inp = 'w-full px-4 py-3 rounded-xl border border-[#d8c4c0] text-sm bg-white focus:outline-none focus:border-[#6b2f3a]';
+  const inp = 'w-full px-4 py-3 rounded-xl border border-[#d8c4c0] text-sm bg-white focus:outline-none focus:border-[var(--wc)]';
+
+  if (page === undefined) return <div className="min-h-screen flex items-center justify-center text-sm text-gray-400">...</div>;
+  if (page === null || (!page.published && !isAdmin && !isSuperAdmin))
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 p-6 text-center" dir="rtl">
+        <p className="text-lg font-bold text-[#2b1d1d]">التسجيل في هذه الورشة غير متاح الآن.</p>
+        <a href={DEFAULT_GROUP_LINK} className="px-5 py-2.5 rounded-xl bg-[#229ED9] text-white text-sm font-bold">
+          تابعنا على تيليغرام لمعرفة الورش القادمة
+        </a>
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-[#f6ede6] py-6 px-4" dir="rtl">
+    <div className="min-h-screen bg-[var(--wl)] py-6 px-4" dir="rtl" style={{ ['--wc' as any]: P.color, ['--wl' as any]: tint(P.color) }}>
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <div className="space-y-4">
-          <img src={W.poster} alt={W.titleAr} className="w-full rounded-3xl shadow-xl border border-[#e3d2cb]" />
+          {W.poster && <img src={W.poster} alt={W.titleAr} className="w-full rounded-3xl shadow-xl border border-[#e3d2cb]" />}
         </div>
 
         <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-[#e3d2cb] space-y-5">
           <div className="space-y-2 text-center">
-            <span className="inline-block px-4 py-1 rounded-full bg-[#6b2f3a] text-white text-xs font-bold">ورشة مجانية تفاعلية</span>
+            <span className="inline-block px-4 py-1 rounded-full bg-[var(--wc)] text-white text-xs font-bold">ورشة مجانية تفاعلية</span>
             <h1 className="text-3xl font-extrabold text-[#2b1d1d]">{W.titleAr}</h1>
             <p className="text-sm text-[#6b5b57]">{W.subtitleAr}</p>
           </div>
@@ -152,19 +201,19 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
               { icon: Clock, t: W.timeAr },
               { icon: Hourglass, t: `المدة: ${W.durationAr}` }
             ].map((x) => (
-              <div key={x.t} className="p-3 rounded-2xl bg-[#f6ede6]">
-                <x.icon className="w-5 h-5 mx-auto mb-1 text-[#6b2f3a]" />
+              <div key={x.t} className="p-3 rounded-2xl bg-[var(--wl)]">
+                <x.icon className="w-5 h-5 mx-auto mb-1 text-[var(--wc)]" />
                 <p className="text-[11px] font-bold text-[#2b1d1d] leading-snug">{x.t}</p>
               </div>
             ))}
           </div>
 
           <div>
-            <p className="font-bold text-[#6b2f3a] mb-2">ماذا {'{ستتعلم|ستتعلمين}'} في الورشة؟</p>
+            <p className="font-bold text-[var(--wc)] mb-2">ماذا {'{ستتعلم|ستتعلمين}'} في الورشة؟</p>
             <ul className="space-y-1.5">
               {W.learnAr.map((l) => (
                 <li key={l} className="flex items-center gap-2 text-sm text-[#2b1d1d]">
-                  <CheckCircle2 className="w-4 h-4 text-[#6b2f3a] shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[var(--wc)] shrink-0" />
                   {l}
                 </li>
               ))}
@@ -207,13 +256,13 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void }> 
             <form onSubmit={viaEmail} className="space-y-2">
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} placeholder="البريد الإلكتروني" autoCapitalize="off" autoCorrect="off" className={inp} dir="ltr" />
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="كلمة مرور (6 أحرف على الأقل)" className={inp} dir="ltr" />
-              <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-[#6b2f3a] hover:bg-[#5a2630] text-white text-sm font-bold disabled:opacity-50">
+              <button type="submit" disabled={busy} className="w-full py-3.5 rounded-xl bg-[var(--wc)] hover:opacity-90 text-white text-sm font-bold disabled:opacity-50">
                 {busy ? '...' : 'التسجيل في الورشة'}
               </button>
             </form>
             <p className="text-[11px] text-center text-[#6b5b57]">
               لديك حساب؟{' '}
-              <button onClick={() => navigate('login')} className="font-bold text-[#6b2f3a] underline">
+              <button onClick={() => navigate('login')} className="font-bold text-[var(--wc)] underline">
                 تسجيل الدخول
               </button>
             </p>

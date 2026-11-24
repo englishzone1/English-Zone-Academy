@@ -91,10 +91,101 @@ export const formatCertDate = (iso: string, lang: 'ar' | 'en' = 'en') => {
     : date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
+/* ---------- صفحة التسجيل في الورشة (قبل الورشة) ---------- */
+// تُحفظ في workshops/{id}_page (نفس صلاحيات الورش: قراءة عامة، كتابة للإدارة)
+// و workshops/current_page يشير إلى الورشة المنشورة الحالية (يفتحها الرابط القصير /workshop)
+export interface WorkshopPage {
+  workshopId: string;
+  published: boolean;
+  title: string;
+  subtitle: string;
+  date: string;
+  time: string;
+  duration: string;
+  learn: string[];
+  color: string;
+  poster?: string;
+  groupLink: string;
+  updatedAt?: string;
+}
+
+export const DEFAULT_GROUP_LINK = 'https://t.me/EnglishZ0ne1';
+export const joinUrl = (id: string) => `${window.location.origin}/workshop/${id}`;
+export const currentJoinUrl = () => `${window.location.origin}/workshop`;
+const PAGE_SUFFIX = '_page';
+export const isPageDocId = (id: string) => id.endsWith(PAGE_SUFFIX) || id === 'current_page';
+
+export const workshopPageService = {
+  async get(workshopId: string): Promise<WorkshopPage | null> {
+    const snap = await getDoc(doc(db, 'workshops', workshopId + PAGE_SUFFIX));
+    return snap.exists() ? ({ ...(snap.data() as any), workshopId } as WorkshopPage) : null;
+  },
+  async current(): Promise<WorkshopPage | null> {
+    const ptr = await getDoc(doc(db, 'workshops', 'current_page'));
+    const id = ptr.exists() ? String((ptr.data() as any).workshopId || '') : '';
+    if (!id) return null;
+    const p = await this.get(id);
+    return p && p.published ? p : null;
+  },
+  async save(p: WorkshopPage): Promise<void> {
+    const data: any = {
+      kind: 'page',
+      workshopId: p.workshopId,
+      published: !!p.published,
+      title: p.title.trim().slice(0, 150),
+      subtitle: (p.subtitle || '').trim().slice(0, 300),
+      date: (p.date || '').trim().slice(0, 80),
+      time: (p.time || '').trim().slice(0, 40),
+      duration: (p.duration || '').trim().slice(0, 40),
+      learn: (p.learn || []).map((x) => String(x).trim()).filter(Boolean).slice(0, 10),
+      color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#6b2f3a',
+      groupLink: (p.groupLink || DEFAULT_GROUP_LINK).trim().slice(0, 300),
+      updatedAt: new Date().toISOString()
+    };
+    if (p.poster !== undefined) data.poster = p.poster;
+    await setDoc(doc(db, 'workshops', p.workshopId + PAGE_SUFFIX), data, { merge: true });
+    // آخر ورشة تُنشر تصبح هي التي يفتحها الرابط القصير /workshop
+    if (data.published) await setDoc(doc(db, 'workshops', 'current_page'), { kind: 'pointer', workshopId: p.workshopId, updatedAt: data.updatedAt });
+  },
+  async remove(workshopId: string): Promise<void> {
+    await deleteDoc(doc(db, 'workshops', workshopId + PAGE_SUFFIX)).catch(() => undefined);
+  }
+};
+
+// صورة إعلان الورشة: أصغر من 700 ك.ب لتُحفظ مع إعدادات الصفحة
+export const compressPoster = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let w = Math.min(1400, img.naturalWidth);
+      for (let attempt = 0; attempt < 8; attempt++) {
+        const h = Math.round((img.naturalHeight / img.naturalWidth) * w);
+        const c = document.createElement('canvas');
+        c.width = w;
+        c.height = h;
+        const ctx = c.getContext('2d')!;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        for (const q of [0.88, 0.8, 0.72]) {
+          const d = c.toDataURL('image/jpeg', q);
+          if (d.length <= 700000) return resolve(d);
+        }
+        w = Math.round(w * 0.85);
+      }
+      reject(new Error('too-large'));
+    };
+    img.onerror = () => reject(new Error('bad-image'));
+    img.src = url;
+  });
+
 export const workshopService = {
   async list(): Promise<Workshop[]> {
     const snap = await getDocs(collection(db, 'workshops'));
     return snap.docs
+      .filter((d) => !isPageDocId(d.id))
       .map((d) => ({ ...(d.data() as any), id: d.id } as Workshop))
       .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
   },

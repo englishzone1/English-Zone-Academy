@@ -32,8 +32,10 @@ import { VisitorJoinPage } from './pages/VisitorJoinPage';
 import { SpeakWorkshopPage } from './pages/SpeakWorkshopPage';
 
 // رابط الورشة المستقل: /workshop يفتح صفحة الورشة مباشرة
-if (typeof window !== 'undefined' && /^\/workshop\/?$/i.test(window.location.pathname) && !window.location.hash) {
-  window.history.replaceState(null, '', '/#/speak-workshop');
+// و /workshop/<id> يفتح صفحة التسجيل في ورشة محددة من لوحة الإدارة
+if (typeof window !== 'undefined' && !window.location.hash) {
+  const m = window.location.pathname.match(/^\/workshop(?:\/([A-Za-z0-9-]+))?\/?$/i);
+  if (m) window.history.replaceState(null, '', m[1] ? `/#/join-workshop/${m[1]}` : '/#/speak-workshop');
 }
 import { HomeworkPlatform } from './components/student/HomeworkPlatform';
 import { HomeworkAnswersPage } from './components/admin/HomeworkAnswersPage';
@@ -139,7 +141,7 @@ function MainApp() {
   // المعلم لا يرى صفحات الموقع العامة (الأسعار والعروض والتسجيل…): لوحته فقط، بلا شعار ولا قوائم
   const teacherOnly = isTeacher && !isAdmin && !isSuperAdmin;
   // الغرفة الصوتية تملأ الشاشة (بلا القائمة العلوية والتذييل)
-  const bare = teacherOnly || currentRoute === 'staff' || currentRoute === 'speak-workshop' || currentRoute.startsWith('room/');
+  const bare = teacherOnly || currentRoute === 'staff' || currentRoute === 'speak-workshop' || currentRoute.startsWith('join-workshop/') || currentRoute.startsWith('room/');
   useEffect(() => {
     if (teacherOnly) document.title = 'لوحة المعلم';
   }, [teacherOnly]);
@@ -263,6 +265,9 @@ function MainApp() {
         // صفحة الورشة العامة وصفحة التحقق من الشهادة
         if (currentRoute.startsWith('room/')) {
           return <VoiceRoomPage key={currentRoute} roomId={currentRoute.slice('room/'.length).split(/[/?]/)[0]} navigate={navigate} />;
+        }
+        if (currentRoute.startsWith('join-workshop/')) {
+          return <SpeakWorkshopPage key={currentRoute} navigate={navigate} workshopId={currentRoute.slice('join-workshop/'.length).split(/[/?]/)[0]} />;
         }
         if (currentRoute.startsWith('workshop/')) {
           return <WorkshopPage workshopId={currentRoute.slice('workshop/'.length)} navigate={navigate} />;
