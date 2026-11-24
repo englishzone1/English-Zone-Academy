@@ -3,7 +3,7 @@ import React from 'react';
 // رسومات خاصة بكل ميزة (SVG خفيفة) بألوان English Zone: الكحلي والذهبي
 export type FeatureKind = 'all' | 'placement' | 'certs' | 'rooms' | 'package' | 'platform' | 'community';
 
-const NAVY = '#0A192F';
+const NAVY = '#0E3A99';
 const NAVY2 = '#102445';
 const GOLD = '#D4AF37';
 const CREAM = '#F3E5AB';

@@ -38,7 +38,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             Academy Tuition & Plan
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0E3A99] mt-2">
             {t.pricing.sectionTitle}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -54,7 +54,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
               onClick={() => setLevelFilter(lvl)}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 levelFilter === lvl
-                  ? 'bg-[#D4AF37] text-[#0A192F] font-bold shadow-sm'
+                  ? 'bg-[#D4AF37] text-[#0E3A99] font-bold shadow-sm'
                   : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
               }`}
             >
@@ -67,11 +67,11 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Group Format Overview Banner */}
-        <div className="mb-10 bg-gradient-to-r from-[#0A192F] to-[#102445] text-white rounded-3xl p-6 sm:p-8 border border-[#D4AF37]/30 shadow-lg">
+        <div className="mb-10 bg-gradient-to-r from-[#0E3A99] to-[#102445] text-white rounded-3xl p-6 sm:p-8 border border-[#D4AF37]/30 shadow-lg">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-xs font-bold">
+                <span className="px-3 py-1 rounded-full bg-[#D4AF37] text-[#0E3A99] text-xs font-bold">
                   90 MIN / LESSON
                 </span>
                 <span className="font-serif-luxury font-bold text-xl text-[#F3E5AB]">
@@ -97,7 +97,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
         {/* PROMINENT STUDY & PAYMENT PLAN NOTICE DIRECTLY ABOVE A1-C2 CARDS */}
         <div
           dir={dir}
-          className="mb-10 relative bg-gradient-to-br from-[#0A192F] via-[#0F2042] to-[#0A192F] text-white rounded-3xl p-6 sm:p-8 border-2 border-[#D4AF37] shadow-xl overflow-hidden"
+          className="mb-10 relative bg-gradient-to-br from-[#0E3A99] via-[#1E63D6] to-[#0E3A99] text-white rounded-3xl p-6 sm:p-8 border-2 border-[#D4AF37] shadow-xl overflow-hidden"
         >
           <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]" />
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -110,7 +110,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                   <h2 className="font-serif-luxury font-bold text-xl sm:text-2xl text-[#F3E5AB]">
                     {t.pricing.studyPaymentTitle}
                   </h2>
-                  <span className="inline-flex items-center px-3.5 py-1 rounded-lg bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] text-xs sm:text-sm font-extrabold shadow-sm">
+                  <span className="inline-flex items-center px-3.5 py-1 rounded-lg bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] text-xs sm:text-sm font-extrabold shadow-sm">
                     {t.pricing.studyPaymentHighlight}
                   </span>
                 </div>
@@ -124,11 +124,11 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
 
         {/* 6 SEPARATE LEVEL-BASED PRICING CARDS */}
         {locked && (
-          <div className="mb-6 p-8 rounded-3xl bg-gradient-to-br from-[#0A192F] to-[#102445] text-center space-y-3 border-2 border-[#D4AF37]/50 shadow-lg">
+          <div className="mb-6 p-8 rounded-3xl bg-gradient-to-br from-[#0E3A99] to-[#102445] text-center space-y-3 border-2 border-[#D4AF37]/50 shadow-lg">
             <div className="text-3xl">🔒</div>
             <h3 className="font-serif-luxury font-bold text-xl text-[#F3E5AB]">{language === 'ar' ? 'الأسعار متاحة للمسجّلين' : 'Prices are for registered members'}</h3>
             <p className="text-sm text-gray-300">{language === 'ar' ? '{سجّل|سجّلي} مجانًا بضغطة واحدة {لترى|لتري} الرسوم وعروض الخصم.' : 'Sign up free in one click to see tuition and discount offers.'}</p>
-            <button onClick={() => navigate('join-us')} className="ez-float-glow px-8 py-3 rounded-xl bg-[#D4AF37] text-[#0A192F] font-bold text-sm">
+            <button onClick={() => navigate('join-us')} className="ez-float-glow px-8 py-3 rounded-xl bg-[#D4AF37] text-[#0E3A99] font-bold text-sm">
               {language === 'ar' ? '{سجّل|سجّلي} مجانًا لرؤية الأسعار' : 'Sign up free to see prices'}
             </button>
           </div>
@@ -154,11 +154,11 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                 {/* Card Top Header */}
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <span className="w-12 h-12 rounded-2xl bg-[#0A192F] text-[#F3E5AB] font-serif-luxury font-bold text-xl flex items-center justify-center shadow">
+                    <span className="w-12 h-12 rounded-2xl bg-[#0E3A99] text-[#F3E5AB] font-serif-luxury font-bold text-xl flex items-center justify-center shadow">
                       {item.level}
                     </span>
                     <div>
-                      <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F]">
+                      <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">
                         {language === 'ar' ? `المستوى ${item.level}` : `Level ${item.level}`}
                       </h2>
                       <span className="text-xs text-gray-500 font-medium block">
@@ -209,7 +209,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
                       <span className="text-[11px] uppercase tracking-wider text-[#AA820A] font-bold block">
                         {language === 'ar' ? 'جماعي' : 'Group'} • {t.pricing.monthlyPrice}
                       </span>
-                      <div className="inline-flex items-baseline gap-1 px-3 py-1 rounded-xl bg-[#0A192F] text-[#F3E5AB] mt-1 shadow-sm">
+                      <div className="inline-flex items-baseline gap-1 px-3 py-1 rounded-xl bg-[#0E3A99] text-[#F3E5AB] mt-1 shadow-sm">
                         {item.groupVaries && (
                           <span className="text-xs text-gray-300 font-normal">{language === 'ar' ? 'من' : 'from'}</span>
                         )}
@@ -229,7 +229,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
               {/* Enroll Button */}
               <button
                 onClick={() => navigate('register', { preselectedLevel: item.level })}
-                className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] hover:brightness-110 transition-all shadow flex items-center justify-center gap-2 active:scale-95"
+                className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] hover:brightness-110 transition-all shadow flex items-center justify-center gap-2 active:scale-95"
               >
                 <GraduationCap className="w-4 h-4" />
                 <span>
@@ -242,7 +242,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
 
         {/* PRICING POLICIES & NOTICES */}
         <div className="mt-12 bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm">
-          <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F] flex items-center gap-2 mb-4">
+          <h3 className="font-serif-luxury font-bold text-xl text-[#0E3A99] flex items-center gap-2 mb-4">
             <Info className="w-5 h-5 text-[#D4AF37]" />
             <span>{t.pricing.noticeTitle}</span>
           </h3>
@@ -271,7 +271,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ navigate }) => {
             dir={dir}
             className="mt-6 pt-6 border-t border-gray-200/80"
           >
-            <div className="bg-gradient-to-r from-[#0A192F] to-[#102445] text-white rounded-2xl p-5 sm:p-6 border border-[#D4AF37]/50 shadow-md flex flex-col sm:flex-row items-start gap-4">
+            <div className="bg-gradient-to-r from-[#0E3A99] to-[#102445] text-white rounded-2xl p-5 sm:p-6 border border-[#D4AF37]/50 shadow-md flex flex-col sm:flex-row items-start gap-4">
               <div className="w-11 h-11 rounded-xl bg-white/10 border border-[#D4AF37]/40 text-[#D4AF37] flex items-center justify-center flex-shrink-0">
                 <Award className="w-6 h-6" aria-hidden="true" />
               </div>

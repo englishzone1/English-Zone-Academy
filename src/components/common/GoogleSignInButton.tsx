@@ -48,7 +48,7 @@ export const GoogleSignInButton: React.FC<{ onClick: () => void; disabled?: bool
     onClick={onClick}
     disabled={disabled}
     className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 border transition-colors disabled:opacity-50 ${
-      dark ? 'bg-white text-[#0A192F] border-white hover:bg-gray-100' : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-50'
+      dark ? 'bg-white text-[#0E3A99] border-white hover:bg-gray-100' : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-50'
     }`}
   >
     <GoogleLogo />

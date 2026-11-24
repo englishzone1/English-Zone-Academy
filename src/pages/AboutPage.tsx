@@ -53,7 +53,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             {t.brand.tagline}
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0E3A99] mt-2">
             {language === 'ar' ? 'عن أكاديمية English Zone' : 'About English Zone Academy'}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -71,7 +71,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
               <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37] block">
                 Brand Positioning
               </span>
-              <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F]">
+              <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0E3A99]">
                 {t.brand.slogan}
               </h2>
               <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
@@ -80,19 +80,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
                   : 'English Zone is a premium international online English academy offering structured CEFR learning pathways, interactive small groups, conversation mastery, and specialized English programs for career and academic excellence.'}
               </p>
               <div className="pt-2 flex flex-wrap gap-3">
-                <span className="px-3 py-1.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-semibold">
+                <span className="px-3 py-1.5 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-xs font-semibold">
                   {language === 'ar' ? 'تعليم عبر الإنترنت فقط' : 'Online Only Format'}
                 </span>
-                <span className="px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/40 text-[#0A192F] text-xs font-semibold">
+                <span className="px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/40 text-[#0E3A99] text-xs font-semibold">
                   {language === 'ar' ? 'للأطفال والناشئة والكبار' : 'Children, Teens & Adults'}
                 </span>
-                <span className="px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/40 text-[#0A192F] text-xs font-semibold">
+                <span className="px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#D4AF37]/40 text-[#0E3A99] text-xs font-semibold">
                   {language === 'ar' ? 'معايير CEFR الأوروبية' : 'CEFR A1 to C2 Standard'}
                 </span>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#0A192F] to-[#102445] text-white p-8 rounded-2xl border border-[#D4AF37]/30 shadow-inner space-y-4">
+            <div className="bg-gradient-to-br from-[#0E3A99] to-[#102445] text-white p-8 rounded-2xl border border-[#D4AF37]/30 shadow-inner space-y-4">
               <h3 className="font-serif-luxury font-bold text-xl text-[#F3E5AB]">
                 {language === 'ar' ? 'الفئات المستهدفة بأكاديمية English Zone' : 'Our Target Learners'}
               </h3>
@@ -119,12 +119,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
         </div>
 
         {/* Academic Leadership / Founder Section (Strictly no personal name) */}
-        <div className="bg-[#0A192F] text-white rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/40 shadow-xl">
+        <div className="bg-[#0E3A99] text-white rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/40 shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             {/* English Zone Academy Image */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-xs sm:max-w-sm rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 shadow-xl bg-[#060D1A]">
+              <div className="relative w-full max-w-xs sm:max-w-sm rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 shadow-xl bg-[#072A73]">
                 <img
                   src="/assets/aistudio/file_00000000c3b08210abdde9ab8258756c_98faaab4.png"
                   alt="English Zone Academy"
@@ -169,7 +169,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
             <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
               Academic Pillars
             </span>
-            <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F] mt-1">
+            <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0E3A99] mt-1">
               {language === 'ar' ? 'قيم وركائز التدريس بالأكاديمية' : 'Our Educational Philosophy'}
             </h2>
           </div>
@@ -177,7 +177,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {values.map((v, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm hover:border-[#D4AF37]/50 transition-all">
-                <h3 className="font-serif-luxury font-bold text-lg text-[#0A192F] mb-2 flex items-center gap-2">
+                <h3 className="font-serif-luxury font-bold text-lg text-[#0E3A99] mb-2 flex items-center gap-2">
                   <ShieldCheck className="w-5 h-5 text-[#D4AF37]" />
                   <span>{language === 'ar' ? v.titleAr : v.titleEn}</span>
                 </h3>

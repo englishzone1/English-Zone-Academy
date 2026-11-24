@@ -14,8 +14,8 @@ export const OxfordBadge: React.FC<Props> = ({ language, dark, className = '' })
     <div
       className={`inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border-2 shadow-sm ${
         dark
-          ? 'bg-[#F3E5AB] border-[#D4AF37] text-[#0A192F]'
-          : 'bg-[#FFF8E1] border-[#D4AF37] text-[#0A192F]'
+          ? 'bg-[#F3E5AB] border-[#D4AF37] text-[#0E3A99]'
+          : 'bg-[#FFF8E1] border-[#D4AF37] text-[#0E3A99]'
       } ${className}`}
     >
       <BookOpenCheck className="w-5 h-5 flex-shrink-0 text-[#AA820A]" />

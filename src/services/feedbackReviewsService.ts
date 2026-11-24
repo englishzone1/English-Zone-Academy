@@ -161,14 +161,14 @@ export async function renderPrivacyMaskedImage(
           pCtx.drawImage(img, rx, ry, rw, rh, 0, 0, tinyW, tinyH);
           tCtx.imageSmoothingEnabled = false;
           tCtx.drawImage(pixelCanvas, 0, 0, tinyW, tinyH, 0, 0, rw, rh);
-          tCtx.fillStyle = 'rgba(10, 25, 47, 0.25)';
+          tCtx.fillStyle = 'rgba(14, 58, 153, 0.25)';
           tCtx.fillRect(0, 0, rw, rh);
           ctx.drawImage(tempCanvas, rx, ry);
         }
       }
     } else {
       ctx.save();
-      ctx.fillStyle = maskStyle === 'navy' ? '#0A192F' : '#111827';
+      ctx.fillStyle = maskStyle === 'navy' ? '#0E3A99' : '#111827';
       ctx.fillRect(rx, ry, rw, rh);
       ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
       ctx.lineWidth = Math.max(1, Math.round(w * 0.002));

@@ -111,7 +111,7 @@ export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice
     <>
       {/* Interactive homework results */}
       <div className="border-t border-gray-100 pt-4 space-y-2">
-        <h4 className="font-bold text-sm text-[#0A192F]">{tr('Interactive homework & tests', 'نتائج الواجبات والاختبارات التفاعلية')}</h4>
+        <h4 className="font-bold text-sm text-[#0E3A99]">{tr('Interactive homework & tests', 'نتائج الواجبات والاختبارات التفاعلية')}</h4>
         {online.length === 0 ? (
           <p className="text-[11px] text-gray-400">{tr('No results yet.', 'لا توجد نتائج بعد.')}</p>
         ) : (
@@ -133,12 +133,12 @@ export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice
       {/* Monthly attendance: every day of the month */}
       <div className="border-t border-gray-100 pt-4 space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <h4 className="font-bold text-sm text-[#0A192F]">{tr('Monthly attendance', 'الحضور والغياب الشهري')}</h4>
+          <h4 className="font-bold text-sm text-[#0E3A99]">{tr('Monthly attendance', 'الحضور والغياب الشهري')}</h4>
           <div className="flex items-center gap-1">
             <button onClick={() => shift(-1)} className="p-1.5 rounded-lg border border-gray-200 bg-white" title={tr('Previous month', 'الشهر السابق')}>
               {isAr ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
-            <span className="text-xs font-bold text-[#0A192F] min-w-[110px] text-center">{monthLabel}</span>
+            <span className="text-xs font-bold text-[#0E3A99] min-w-[110px] text-center">{monthLabel}</span>
             <button onClick={() => shift(1)} className="p-1.5 rounded-lg border border-gray-200 bg-white" title={tr('Next month', 'الشهر التالي')}>
               {isAr ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
             </button>
@@ -149,7 +149,7 @@ export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice
           <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">{tr('Present', 'حضور')}: {presentCount}</span>
           <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">{tr('Absent', 'غياب')}: {absentCount}</span>
           {lessonsTotal !== undefined && (
-            <span className="px-2.5 py-1 rounded-full bg-[#0A192F] text-[#F3E5AB]">
+            <span className="px-2.5 py-1 rounded-full bg-[#0E3A99] text-[#F3E5AB]">
               {tr('Lessons done', 'الحصص المنجزة')}: {Number(lessonsAttended) || 0} / {lessonsTotal}
             </span>
           )}
@@ -172,14 +172,14 @@ export const AdminStudentRecords: React.FC<Props> = ({ studentId, isAr, onNotice
                 ? 'bg-emerald-600 text-white border-emerald-600'
                 : 'bg-red-500 text-white border-red-500'
               : lessonDay
-              ? 'bg-[#FFF8E1] text-[#0A192F] border-[#D4AF37]'
+              ? 'bg-[#FFF8E1] text-[#0E3A99] border-[#D4AF37]'
               : 'bg-white text-gray-600 border-gray-200';
             return (
               <button
                 key={date}
                 onClick={() => cycle(date)}
                 disabled={busy}
-                className={`relative h-11 rounded-lg border text-xs font-bold flex flex-col items-center justify-center disabled:opacity-60 ${cls} ${date === todayIso ? 'ring-2 ring-[#0A192F]/40' : ''}`}
+                className={`relative h-11 rounded-lg border text-xs font-bold flex flex-col items-center justify-center disabled:opacity-60 ${cls} ${date === todayIso ? 'ring-2 ring-[#0E3A99]/40' : ''}`}
                 title={rec ? (rec.present ? tr('Present', 'حضرت') : tr('Absent', 'غابت')) : lessonDay ? tr('Lesson day', 'يوم درس') : ''}
               >
                 {d}

@@ -32,7 +32,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
   };
 
   return (
-    <footer className="bg-[#060D1A] text-gray-300 border-t border-[#D4AF37]/30 pt-16 pb-12">
+    <footer className="bg-[#072A73] text-gray-300 border-t border-[#D4AF37]/30 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/10">
           
@@ -42,7 +42,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
             <p className="text-sm text-gray-400 leading-relaxed max-w-md">
               {t.footer.aboutText}
             </p>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0A192F] border border-[#D4AF37]/30 text-xs text-[#F3E5AB]">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0E3A99] border border-[#D4AF37]/30 text-xs text-[#F3E5AB]">
               <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
               <span>{t.brand.cefrStandard}</span>
             </div>
@@ -58,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                   href={contacts.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#25D366] hover:border-[#25D366] transition-all"
+                  className="w-9 h-9 rounded-lg bg-[#0E3A99] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#25D366] hover:border-[#25D366] transition-all"
                   title="WhatsApp"
                 >
                   <Phone className="w-4 h-4" />
@@ -67,7 +67,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                 {contacts.email && (
                 <a
                   href={`mailto:${contacts.email}`}
-                  className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all"
+                  className="w-9 h-9 rounded-lg bg-[#0E3A99] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all"
                   title="Email"
                 >
                   <Mail className="w-4 h-4" />
@@ -78,7 +78,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                   href={contacts.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#FF0000] hover:border-[#FF0000] transition-all"
+                  className="w-9 h-9 rounded-lg bg-[#0E3A99] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#FF0000] hover:border-[#FF0000] transition-all"
                   title="YouTube"
                 >
                   <Youtube className="w-4 h-4" />
@@ -89,7 +89,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                   href={contacts.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#E4405F] hover:border-[#E4405F] transition-all"
+                  className="w-9 h-9 rounded-lg bg-[#0E3A99] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#E4405F] hover:border-[#E4405F] transition-all"
                   title="Instagram"
                 >
                   <Instagram className="w-4 h-4" />
@@ -100,7 +100,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                   href={contacts.discord}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-[#0A192F] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#5865F2] hover:border-[#5865F2] transition-all"
+                  className="w-9 h-9 rounded-lg bg-[#0E3A99] border border-white/10 flex items-center justify-center text-gray-300 hover:text-[#5865F2] hover:border-[#5865F2] transition-all"
                   title="Discord"
                 >
                   <MessageSquare className="w-4 h-4" />
@@ -155,7 +155,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
               <li>
                 <button onClick={() => handleNav('english-club')} className="hover:text-[#F3E5AB] text-[#D4AF37] font-semibold transition-colors flex items-center gap-1">
                   <span>{t.nav.englishClub}</span>
-                  <span className="text-[10px] bg-[#D4AF37] text-[#0A192F] px-1 rounded font-bold">New</span>
+                  <span className="text-[10px] bg-[#D4AF37] text-[#0E3A99] px-1 rounded font-bold">New</span>
                 </button>
               </li>
               {contacts.placementTestUrl && (
@@ -249,7 +249,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
               <li className="pt-2">
                 <button
                   onClick={() => handleNav('join-us')}
-                  className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] font-bold text-center text-xs shadow hover:brightness-110"
+                  className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] font-bold text-center text-xs shadow hover:brightness-110"
                 >
                   {t.nav.register}
                 </button>

@@ -23,7 +23,7 @@ export const DailyChallenge: React.FC<{ uid: string; isAr: boolean }> = ({ uid, 
   return (
     <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#FFF7E0] to-white border-2 border-[#D4AF37]/60 shadow-sm space-y-4" dir={isAr ? 'rtl' : 'ltr'}>
       <div className="flex items-center justify-between gap-3">
-        <h3 className="font-bold text-[#0A192F] text-lg">🎯 {tr("Today's challenge", 'تحدّي اليوم')}</h3>
+        <h3 className="font-bold text-[#0E3A99] text-lg">🎯 {tr("Today's challenge", 'تحدّي اليوم')}</h3>
         {liveStreak > 0 && (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-bold" title={tr('Days in a row', 'أيام متتالية')}>
             <Flame className="w-4 h-4" />
@@ -31,7 +31,7 @@ export const DailyChallenge: React.FC<{ uid: string; isAr: boolean }> = ({ uid, 
           </span>
         )}
       </div>
-      <p className="text-base font-bold text-[#0A192F] leading-relaxed" dir="auto">{c.question}</p>
+      <p className="text-base font-bold text-[#0E3A99] leading-relaxed" dir="auto">{c.question}</p>
       <div className="grid gap-2">
         {c.options.map((o, i) => {
           const chosen = answered && p!.lastChoice === i;
@@ -51,7 +51,7 @@ export const DailyChallenge: React.FC<{ uid: string; isAr: boolean }> = ({ uid, 
                 setBusy(false);
               }}
               className={`text-start px-4 py-3 rounded-xl border text-sm font-bold transition-colors flex items-center justify-between gap-2 ${
-                right ? 'bg-emerald-50 border-emerald-400 text-emerald-800' : chosen ? 'bg-red-50 border-red-300 text-red-700' : answered ? 'bg-white border-gray-200 text-gray-400' : 'bg-white border-gray-200 hover:border-[#D4AF37] text-[#0A192F]'
+                right ? 'bg-emerald-50 border-emerald-400 text-emerald-800' : chosen ? 'bg-red-50 border-red-300 text-red-700' : answered ? 'bg-white border-gray-200 text-gray-400' : 'bg-white border-gray-200 hover:border-[#D4AF37] text-[#0E3A99]'
               }`}
             >
               <span>{o}</span>

@@ -26,7 +26,7 @@ export const ProgramShowcase: React.FC<Props> = ({ prog, language, dark }) => {
   }, [open, imgs.length]);
 
   if (!imgs.length && !vids.length) return null;
-  const head = dark ? 'text-[#F3E5AB]' : 'text-[#0A192F]';
+  const head = dark ? 'text-[#F3E5AB]' : 'text-[#0E3A99]';
 
   return (
     <div className="space-y-8">

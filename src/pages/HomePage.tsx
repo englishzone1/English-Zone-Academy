@@ -51,18 +51,18 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0A192F] via-[#0F2042] to-[#0A192F] text-white pt-12 pb-16 lg:pt-16 lg:pb-20 border-b border-[#D4AF37]/30">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E3A99] via-[#1E63D6] to-[#0E3A99] text-white pt-12 pb-16 lg:pt-16 lg:pb-20 border-b border-[#D4AF37]/30">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px]" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#D4AF37]/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto space-y-6">
             {heroAnnouncement && (
-              <div className="mx-auto max-w-2xl px-4 py-2.5 rounded-2xl bg-[#D4AF37] text-[#0A192F] text-sm font-bold shadow-lg whitespace-pre-line">
+              <div className="mx-auto max-w-2xl px-4 py-2.5 rounded-2xl bg-[#D4AF37] text-[#0E3A99] text-sm font-bold shadow-lg whitespace-pre-line">
                 {heroAnnouncement}
               </div>
             )}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#162B4D] border border-[#D4AF37]/40 text-[#F3E5AB] text-xs sm:text-sm font-semibold tracking-wide shadow-sm">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1E55C0] border border-[#D4AF37]/40 text-[#F3E5AB] text-xs sm:text-sm font-semibold tracking-wide shadow-sm">
               <EnglishZoneEmblem sizeClass="w-4 h-4" glow={false} showBevelBorder={false} />
               <span>{t.hero.badge}</span>
             </div>
@@ -85,7 +85,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => navigate('join-us')}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-xl hover:shadow-[#D4AF37]/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] shadow-xl hover:shadow-[#D4AF37]/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
               >
                 <GraduationCap className="w-5 h-5" />
                 <span>{t.hero.ctaJoin}</span>
@@ -125,7 +125,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
               {t.brand.name} Courses
             </span>
-            <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0A192F] mt-2">
+            <h2 className="font-serif-luxury font-bold text-3xl sm:text-4xl text-[#0E3A99] mt-2">
               {language === 'ar' ? 'دورات اللغة الإنجليزية' : 'English Courses'}
             </h2>
             <p className="text-gray-600 mt-3 text-base">
@@ -142,13 +142,13 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                   <div
                     key={prog.id}
                     dir={dir}
-                    className="md:col-span-2 relative bg-gradient-to-br from-[#0A192F] via-[#0F2042] to-[#102445] text-white rounded-3xl p-7 sm:p-10 border-2 border-[#D4AF37] shadow-2xl overflow-hidden flex flex-col justify-between"
+                    className="md:col-span-2 relative bg-gradient-to-br from-[#0E3A99] via-[#1E63D6] to-[#102445] text-white rounded-3xl p-7 sm:p-10 border-2 border-[#D4AF37] shadow-2xl overflow-hidden flex flex-col justify-between"
                   >
                     <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]" />
 
                     <div>
                       <div className="mb-4">
-                        <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] text-xs font-extrabold tracking-wider uppercase shadow-sm">
+                        <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] text-xs font-extrabold tracking-wider uppercase shadow-sm">
                           {language === 'ar' ? prog.badgeAr : prog.badgeEn}
                         </span>
                       </div>
@@ -167,7 +167,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                     <div>
                       <button
                         onClick={() => navigate(`course/${prog.id}`)}
-                        className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] hover:brightness-105 active:scale-95 transition-all shadow-lg inline-flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-sm sm:text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] hover:brightness-105 active:scale-95 transition-all shadow-lg inline-flex items-center justify-center gap-2"
                       >
                         <span>{language === 'ar' ? 'عرض تفاصيل الدورة' : 'View Course Details'}</span>
                         <ArrowRight className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
@@ -184,7 +184,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                   className={`${(PROGRAM_CATEGORIES.length - 1) % 2 === 1 && idx === PROGRAM_CATEGORIES.length - 1 ? 'md:col-span-2 ' : ''}bg-white rounded-2xl p-6 sm:p-7 border-2 border-[#D4AF37]/25 shadow-md hover:border-[#D4AF37] hover:shadow-lg transition-all flex flex-col justify-between`}
                 >
                   <div>
-                    <h3 className="font-serif-luxury font-bold text-xl text-[#0A192F] mb-3">
+                    <h3 className="font-serif-luxury font-bold text-xl text-[#0E3A99] mb-3">
                       {language === 'ar' ? prog.titleAr : prog.titleEn}
                     </h3>
                     {!prog.notOxford && <OxfordBadge language={language} className="mb-4" />}
@@ -196,7 +196,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
 
                   <button
                     onClick={() => navigate(`course/${prog.id}`)}
-                    className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-[#0A192F] text-[#F3E5AB] hover:bg-[#D4AF37] hover:text-[#0A192F] transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#D4AF37] hover:text-[#0E3A99] transition-all shadow-sm flex items-center justify-center gap-2"
                   >
                     <span>{language === 'ar' ? 'عرض تفاصيل الدورة' : 'View Course Details'}</span>
                     <ArrowRight className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
@@ -212,12 +212,12 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
       <EnglishClubHomeSection navigate={navigate} onJoinClick={() => navigate('english-club')} />
 
       {/* 4. ABOUT THE ACADEMY */}
-      <section className="py-16 sm:py-20 bg-gradient-to-r from-[#0A192F] via-[#0F2042] to-[#0A192F] text-white border-t border-[#D4AF37]/30">
+      <section className="py-16 sm:py-20 bg-gradient-to-r from-[#0E3A99] via-[#1E63D6] to-[#0E3A99] text-white border-t border-[#D4AF37]/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             {/* English Zone Academy Image */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-sm rounded-3xl overflow-hidden border-2 border-[#D4AF37]/60 shadow-2xl bg-[#060D1A]">
+              <div className="relative w-full max-w-sm rounded-3xl overflow-hidden border-2 border-[#D4AF37]/60 shadow-2xl bg-[#072A73]">
                 <img
                   src="/assets/aistudio/file_00000000c3b08210abdde9ab8258756c_98faaab4.png"
                   alt="English Zone Academy"
@@ -252,7 +252,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
                 <button
                   onClick={() => navigate('about')}
-                  className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] hover:brightness-110 transition-all shadow-md inline-flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] hover:brightness-110 transition-all shadow-md inline-flex items-center justify-center gap-2"
                 >
                   <span>{language === 'ar' ? 'اقرأ المزيد عن الأكاديمية' : 'Learn More About Us'}</span>
                   <ArrowRight className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
@@ -275,7 +275,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             {t.brand.cefrStandard}
           </span>
-          <h2 className="font-serif-luxury font-bold text-3xl text-[#0A192F] mt-2">
+          <h2 className="font-serif-luxury font-bold text-3xl text-[#0E3A99] mt-2">
             {language === 'ar' ? 'استكشف منهجنا الدراسي' : 'Explore Our Curriculum'}
           </h2>
           <p className="text-sm sm:text-base text-gray-600 mt-3 max-w-2xl mx-auto">
@@ -289,10 +289,10 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
                 onClick={() => navigate('curriculum', { curriculumLevel: lvl.code })}
                 className="bg-white rounded-2xl p-4 border border-[#D4AF37]/30 hover:border-[#D4AF37] shadow-sm hover:shadow-md transition-all text-center group"
               >
-                <span className="w-10 h-10 mx-auto rounded-xl bg-[#0A192F] text-[#F3E5AB] font-serif-luxury font-bold text-lg flex items-center justify-center mb-2 group-hover:bg-[#D4AF37] group-hover:text-[#0A192F] transition-colors">
+                <span className="w-10 h-10 mx-auto rounded-xl bg-[#0E3A99] text-[#F3E5AB] font-serif-luxury font-bold text-lg flex items-center justify-center mb-2 group-hover:bg-[#D4AF37] group-hover:text-[#0E3A99] transition-colors">
                   {lvl.code}
                 </span>
-                <span className="block font-bold text-xs text-[#0A192F]">
+                <span className="block font-bold text-xs text-[#0E3A99]">
                   {language === 'ar' ? lvl.nameAr : lvl.nameEn}
                 </span>
               </button>
@@ -302,7 +302,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={() => navigate('curriculum')}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] transition-all shadow-md"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0] transition-all shadow-md"
             >
               <span>{t.curriculum.exploreSyllabus}</span>
               <ArrowRight className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
@@ -314,7 +314,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               target={pt.target}
               rel={pt.rel}
               aria-label={t.features.placementAriaLabel}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] hover:brightness-105 active:scale-95 transition-all shadow-md"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] hover:brightness-105 active:scale-95 transition-all shadow-md"
             >
               <ClipboardCheck className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
               <span>{pt.label(language === 'ar')}</span>

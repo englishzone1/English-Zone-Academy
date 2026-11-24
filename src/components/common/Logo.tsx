@@ -43,7 +43,7 @@ export const EnglishZoneEmblem: React.FC<{
       <div
         className={`w-full h-full rounded-full overflow-hidden shadow-lg ${
           showBevelBorder ? 'border border-[#D4AF37]/50 ring-1 ring-white/20' : ''
-        } bg-[#0A192F] relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}
+        } bg-[#0E3A99] relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}
       >
         {!imageError ? (
           <img
@@ -57,7 +57,7 @@ export const EnglishZoneEmblem: React.FC<{
           /* High-fidelity Vector Fallback if image fails to load */
           <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
             <circle cx="50" cy="50" r="47.5" fill="#D4AF37" />
-            <circle cx="50" cy="50" r="44" fill="#0A192F" />
+            <circle cx="50" cy="50" r="44" fill="#0E3A99" />
             <circle cx="50" cy="50" r="40" fill="none" stroke="#D4AF37" strokeWidth="1" strokeDasharray="2 1" />
             <path d="M 23 71.5 L 23 74.5 C 33 78 43 78.5 50 75.5 C 57 78.5 67 78 77 74.5 L 77 71.5 Z" fill="#D4AF37" />
             <path d="M 50 60 C 42 63.5 32 62.5 22 57.5 L 22 69 C 32 74 42 75 50 71.5 Z" fill="#FAF8F5" />
@@ -124,7 +124,7 @@ export const Logo: React.FC<LogoProps> = ({
           <EnglishZoneEmblem sizeClass={sizeMap.emblem} glow={true} />
         </div>
         <div className="mt-2 flex flex-col items-center">
-          <span className="font-serif-luxury font-bold tracking-widest text-[#0A192F] group-hover:text-[#AA820A] transition-colors">
+          <span className="font-serif-luxury font-bold tracking-widest text-[#0E3A99] group-hover:text-[#AA820A] transition-colors">
             ENGLISH ZONE
           </span>
           <span className="text-[9px] uppercase tracking-[0.28em] font-semibold text-[#D4AF37]">
@@ -154,7 +154,7 @@ export const Logo: React.FC<LogoProps> = ({
             className={`font-serif-luxury font-bold tracking-wider ${sizeMap.title} leading-none transition-colors duration-200 ${
               isDarkBg
                 ? 'text-white group-hover:text-[#F3E5AB]'
-                : 'text-[#0A192F] group-hover:text-[#AA820A]'
+                : 'text-[#0E3A99] group-hover:text-[#AA820A]'
             }`}
           >
             ENGLISH ZONE

@@ -37,7 +37,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             English Zone Faculty Insights
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0E3A99] mt-2">
             {t.blog.title}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -69,7 +69,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
                       loading="lazy"
                     />
                   )}
-                  <span className="absolute top-4 left-4 rtl:left-auto rtl:right-4 px-3 py-1 rounded-full bg-[#0A192F]/90 text-[#F3E5AB] text-[11px] font-bold">
+                  <span className="absolute top-4 left-4 rtl:left-auto rtl:right-4 px-3 py-1 rounded-full bg-[#0E3A99]/90 text-[#F3E5AB] text-[11px] font-bold">
                     {language === 'ar' ? post.categoryAr : post.categoryEn}
                   </span>
                 </div>
@@ -86,7 +86,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
                     </span>
                   </div>
 
-                  <h2 className="font-serif-luxury font-bold text-lg text-[#0A192F] line-clamp-2 mb-3">
+                  <h2 className="font-serif-luxury font-bold text-lg text-[#0E3A99] line-clamp-2 mb-3">
                     {language === 'ar' ? post.titleAr : post.titleEn}
                   </h2>
 
@@ -99,7 +99,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
               <div className="p-6 pt-0 border-t border-gray-100">
                 <button
                   onClick={() => setSelectedPost(post)}
-                  className="w-full py-2.5 rounded-xl text-xs font-bold bg-[#FAF8F5] text-[#0A192F] hover:bg-[#0A192F] hover:text-[#F3E5AB] transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-xl text-xs font-bold bg-[#FAF8F5] text-[#0E3A99] hover:bg-[#0E3A99] hover:text-[#F3E5AB] transition-colors flex items-center justify-center gap-1.5"
                 >
                   <span>{t.blog.readMore}</span>
                   <ArrowRight className={`w-3.5 h-3.5 ${language === 'ar' ? 'rotate-180' : ''}`} />
@@ -125,7 +125,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({ navigate }) => {
               {language === 'ar' ? selectedPost.categoryAr : selectedPost.categoryEn}
             </span>
 
-            <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mt-2 mb-4">
+            <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99] mt-2 mb-4">
               {language === 'ar' ? selectedPost.titleAr : selectedPost.titleEn}
             </h2>
 

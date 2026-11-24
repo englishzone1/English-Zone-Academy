@@ -176,7 +176,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
           <div className={`${box} space-y-4`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h1 className="font-serif-luxury font-bold text-xl text-[#0A192F]">{result.studentName}</h1>
+                <h1 className="font-serif-luxury font-bold text-xl text-[#0E3A99]">{result.studentName}</h1>
                 <p className="text-sm text-gray-600">{result.title}</p>
                 <p className="text-[11px] text-gray-400">
                   {new Date(result.createdAt).toLocaleString(isAr ? 'ar' : 'en', { dateStyle: 'medium', timeStyle: 'short' })}
@@ -193,7 +193,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                   </span>
                 )}
                 {result.speakingScore !== undefined && (
-                  <span className="px-3 py-1.5 rounded-xl font-bold text-sm bg-[#F3E5AB]/50 text-[#0A192F] flex items-center gap-1">
+                  <span className="px-3 py-1.5 rounded-xl font-bold text-sm bg-[#F3E5AB]/50 text-[#0E3A99] flex items-center gap-1">
                     <Mic className="w-4 h-4" />
                     {result.speakingScore}/{result.speakingMax}
                   </span>
@@ -204,7 +204,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
             {staff && (
               <div className="p-3 rounded-2xl bg-indigo-50/60 border border-indigo-100 flex flex-wrap items-center gap-2">
                 <PencilLine className="w-4 h-4 text-indigo-700" />
-                <span className="text-xs font-bold text-[#0A192F]">{tr('Final score', 'الدرجة النهائية')}</span>
+                <span className="text-xs font-bold text-[#0E3A99]">{tr('Final score', 'الدرجة النهائية')}</span>
                 <input
                   value={scoreIn}
                   onChange={(e) => setScoreIn(e.target.value)}
@@ -217,7 +217,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                 <button
                   onClick={() => saveTotal()}
                   disabled={saving}
-                  className="px-3 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1 disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-lg bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold flex items-center gap-1 disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {tr('Save score', 'حفظ الدرجة')}
@@ -242,7 +242,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                   const p = s.n ? Math.round((s.ok / s.n) * 100) : 0;
                   return (
                     <div key={s.name} className="p-2.5 rounded-xl bg-[#FAF8F5] border border-gray-100 text-xs">
-                      <div className="flex justify-between font-bold text-[#0A192F]">
+                      <div className="flex justify-between font-bold text-[#0E3A99]">
                         <span dir="ltr">{s.name}</span>
                         <span>
                           {s.ok}/{s.n}
@@ -278,7 +278,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
               <Mic className="w-4 h-4 text-[#D4AF37]" />
               {tr('The speaking recordings were deleted after grading to save space.', 'حُذفت تسجيلات المحادثة بعد التقييم لتوفير المساحة.')}
               {result.speakingScore !== undefined && (
-                <b className="text-[#0A192F]">
+                <b className="text-[#0E3A99]">
                   {tr('Grade', 'الدرجة')}: {result.speakingScore}/{result.speakingMax}
                 </b>
               )}
@@ -287,7 +287,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
 
           {(audio.length > 0 || !!result.audioCount) && (
             <div className={`${box} space-y-3`}>
-              <h2 className="font-bold text-[#0A192F] flex items-center gap-2">
+              <h2 className="font-bold text-[#0E3A99] flex items-center gap-2">
                 <Mic className="w-5 h-5 text-[#D4AF37]" />
                 {tr('Speaking recordings', 'تسجيلات المحادثة')}
               </h2>
@@ -301,14 +301,14 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
               ))}
               {staff && (
                 <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <span className="text-xs font-bold text-[#0A192F]">{tr('Speaking grade', 'درجة المحادثة')}</span>
+                  <span className="text-xs font-bold text-[#0E3A99]">{tr('Speaking grade', 'درجة المحادثة')}</span>
                   <input value={spScore} onChange={(e) => setSpScore(e.target.value)} inputMode="numeric" className="w-16 px-2 py-1.5 rounded-lg border border-gray-300 text-sm text-center" />
                   <span className="text-xs">{tr('out of', 'من')}</span>
                   <input value={spMax} onChange={(e) => setSpMax(e.target.value)} inputMode="numeric" className="w-16 px-2 py-1.5 rounded-lg border border-gray-300 text-sm text-center" />
                   <button
                     onClick={saveSpeaking}
                     disabled={saving}
-                    className="px-3 py-1.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1 disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-lg bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold flex items-center gap-1 disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
                     {tr('Save', 'حفظ')}
@@ -333,7 +333,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
 
           <div className={`${box} space-y-4`}>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="font-bold text-[#0A192F]">{tr("Student's answers", 'إجابات الطالب')}</h2>
+              <h2 className="font-bold text-[#0E3A99]">{tr("Student's answers", 'إجابات الطالب')}</h2>
               <label className="text-xs flex items-center gap-1.5 cursor-pointer">
                 <input type="checkbox" checked={onlyWrong} onChange={(e) => setOnlyWrong(e.target.checked)} />
                 {tr('Mistakes only', 'الأخطاء فقط')}
@@ -355,7 +355,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
               )}
               {groups.map(([sec, rows]) => (
                 <div key={sec} className="space-y-1.5">
-                  <h3 className="text-sm font-bold text-[#0A192F] border-b border-gray-100 pb-1" dir="ltr">
+                  <h3 className="text-sm font-bold text-[#0E3A99] border-b border-gray-100 pb-1" dir="ltr">
                     {sec}
                   </h3>
                   {rows.map(({ a, idx }) => {
@@ -366,7 +366,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                         <div className="flex items-start justify-between gap-2">
                           <div dir="ltr" className="text-left flex-1">
                             <div className="text-gray-500">{a.q || a.e}</div>
-                            <div className="font-bold text-[#0A192F] whitespace-pre-line">{a.a || tr('(no answer)', '(بلا إجابة)')}</div>
+                            <div className="font-bold text-[#0E3A99] whitespace-pre-line">{a.a || tr('(no answer)', '(بلا إجابة)')}</div>
                             {!ok && a.c && <div className="text-emerald-700">✓ {a.c}</div>}
                           </div>
                           {staff ? (
@@ -423,7 +423,7 @@ export const HomeworkAnswersPage: React.FC<Props> = ({ resultId, navigate }) => 
                   <button
                     onClick={saveQuestions}
                     disabled={saving || !dirty}
-                    className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#0A192F] text-sm font-bold shadow-lg flex items-center gap-1.5 disabled:opacity-40"
+                    className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#0E3A99] text-sm font-bold shadow-lg flex items-center gap-1.5 disabled:opacity-40"
                   >
                     <Save className="w-4 h-4" />
                     {tr('Save marking', 'حفظ التصحيح')}

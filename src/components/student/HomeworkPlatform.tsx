@@ -250,7 +250,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   if (full) {
     return (
       <div className="fixed inset-0 flex flex-col bg-[#FAF8F5]">
-        <div className="h-9 shrink-0 flex items-center justify-between gap-2 px-3 bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+        <div className="h-9 shrink-0 flex items-center justify-between gap-2 px-3 bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold">
           <span className="flex items-center gap-1.5 truncate">
             <BookOpenCheck className="w-4 h-4 shrink-0" />
             {saveError ? <span className="text-red-300">{saveError}</span> : savedNote || 'English Zone'}
@@ -280,14 +280,14 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         className="bg-white rounded-3xl p-4 sm:p-6 border border-[#D4AF37]/40 shadow-sm space-y-4"
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-serif-luxury font-bold text-xl text-[#0A192F] flex items-center gap-2">
+          <h2 className="font-serif-luxury font-bold text-xl text-[#0E3A99] flex items-center gap-2">
             <BookOpenCheck className="w-5 h-5 text-[#D4AF37]" />
             {isAr ? 'الواجبات والاختبارات التفاعلية' : 'Interactive Homework & Tests'}
           </h2>
           <div className="flex items-center gap-2">
             <button
               onClick={openFull}
-              className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5"
             >
               <ExternalLink className="w-4 h-4" />
               {isAr ? 'فتح في صفحة كاملة' : 'Open full page'}
@@ -345,7 +345,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
             return (
               <div key={half.key} className={`bg-white rounded-3xl p-5 border shadow-sm space-y-3 ${half.key === 'hw' ? 'border-sky-200' : 'border-violet-200'}`}>
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="font-bold text-sm text-[#0A192F]">{isAr ? half.ar : half.en}</h3>
+                  <h3 className="font-bold text-sm text-[#0E3A99]">{isAr ? half.ar : half.en}</h3>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${half.key === 'hw' ? 'bg-sky-50 text-sky-700' : 'bg-violet-50 text-violet-700'}`}>
                     {half.list.length} {avg !== null ? `• ${isAr ? 'المعدل' : 'avg'} ${avg}%` : ''}
                   </span>
@@ -357,7 +357,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
                     {half.list.slice(0, 20).map((r) => (
                       <div key={r.id} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#FAF8F5] border border-gray-100 text-xs">
                         <div className="min-w-0">
-                          <span className="font-bold text-[#0A192F]">{r.title}</span>
+                          <span className="font-bold text-[#0E3A99]">{r.title}</span>
                           {r.partial && (
                             <span className="ms-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold">
                               {isAr ? `غير مكتمل ${r.done}/${r.total}` : `unfinished ${r.done}/${r.total}`}

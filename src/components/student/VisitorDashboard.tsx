@@ -61,13 +61,13 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           <Icon className="w-5 h-5 text-[#AA820A] mt-0.5 shrink-0" />
         )}
         <div>
-          <span className="font-bold text-sm text-[#0A192F] block">{title(b)}</span>
+          <span className="font-bold text-sm text-[#0E3A99] block">{title(b)}</span>
           <span className="text-[11px] text-gray-500">{b.issue || (b.level && b.level !== 'All Levels' ? b.level : '')}</span>
           {b.description && <p className="text-xs text-gray-600 mt-1">{b.description}</p>}
         </div>
       </div>
       {b.downloadUrl && (
-        <a href={b.downloadUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] whitespace-nowrap">
+        <a href={b.downloadUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] whitespace-nowrap">
           {tr('Open', 'فتح')}
         </a>
       )}
@@ -78,9 +78,9 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
     <div className="min-h-screen bg-[#FAF8F5] py-10 px-4" dir={isAr ? 'rtl' : 'ltr'}>
       <CompleteProfile isAr={isAr} />
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="bg-gradient-to-r from-[#0A192F] to-[#102445] text-white rounded-3xl p-6 sm:p-8 border border-[#D4AF37]/40 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-[#0E3A99] to-[#102445] text-white rounded-3xl p-6 sm:p-8 border border-[#D4AF37]/40 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4AF37] text-[#0E3A99] text-[11px] font-bold">
               <Gift className="w-3.5 h-3.5" />
               {tr('Free account', 'حساب مجاني')}
             </span>
@@ -90,7 +90,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
             <p className="text-sm text-gray-300">{tr('Here are the free books and materials for members.', 'هنا الكتب والمواد المجانية المفتوحة {لك|لكِ}.')}</p>
           </div>
           <div className="flex gap-2 self-start">
-          <button onClick={() => navigate('avatar-studio')} className="px-3 py-2 rounded-xl bg-[#D4AF37] text-[#0A192F] text-xs font-bold">
+          <button onClick={() => navigate('avatar-studio')} className="px-3 py-2 rounded-xl bg-[#D4AF37] text-[#0E3A99] text-xs font-bold">
             {tr('My avatar', 'الأفاتار الخاص بي')}
           </button>
           <button onClick={onLogout} className="px-3 py-2 rounded-xl border border-white/20 text-xs font-bold flex items-center gap-1.5">
@@ -103,7 +103,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
         {/* زر الاشتراك الكبير المضيء */}
         <button
           onClick={() => navigate('register')}
-          className="relative w-full rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] shadow-[0_0_35px_rgba(212,175,55,0.65)] animate-pulse hover:animate-none hover:scale-[1.01] transition-transform text-center"
+          className="relative w-full rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] shadow-[0_0_35px_rgba(212,175,55,0.65)] animate-pulse hover:animate-none hover:scale-[1.01] transition-transform text-center"
         >
           <span className="flex items-center justify-center gap-3 font-serif-luxury font-bold text-2xl sm:text-3xl">
             <GraduationCap className="w-8 h-8" />
@@ -121,11 +121,11 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
           onClick={() => navigate('rooms')}
           className="w-full p-5 rounded-3xl bg-white border-2 border-[#D4AF37] flex items-center gap-4 text-start hover:shadow-md transition-shadow"
         >
-          <span className="w-12 h-12 rounded-full bg-[#0A192F] text-[#F3E5AB] flex items-center justify-center shrink-0">
+          <span className="w-12 h-12 rounded-full bg-[#0E3A99] text-[#F3E5AB] flex items-center justify-center shrink-0">
             <Mic className="w-6 h-6" />
           </span>
           <span>
-            <span className="block font-bold text-[#0A192F] text-base">{tr('Voice rooms — free', 'الغرف الصوتية — مجانًا')}</span>
+            <span className="block font-bold text-[#0E3A99] text-base">{tr('Voice rooms — free', 'الغرف الصوتية — مجانًا')}</span>
             <span className="block text-xs text-gray-600">
               {tr('Practise speaking English live with other learners.', '{تدرّب|تدرّبي} على المحادثة بالإنجليزية مباشرة مع متعلمين آخرين.')}
             </span>
@@ -134,16 +134,16 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {placementTestUrl ? (
-            <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37]">
+            <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0E3A99] hover:border-[#D4AF37]">
               <Target className="w-6 h-6 text-[#D4AF37]" />
               {tr('Free placement test', '{اختبر|اختبري} {مستواك|مستواكِ} مجانًا')}
             </a>
           ) : null}
-          <button onClick={() => setTab('community')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
+          <button onClick={() => setTab('community')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0E3A99] hover:border-[#D4AF37] text-start">
             <Users className="w-6 h-6 text-[#D4AF37]" />
             {tr('English Zone community', 'مجتمع English Zone')}
           </button>
-          <button onClick={() => navigate('blog')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0A192F] hover:border-[#D4AF37] text-start">
+          <button onClick={() => navigate('blog')} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center gap-3 text-sm font-bold text-[#0E3A99] hover:border-[#D4AF37] text-start">
             <BookOpen className="w-6 h-6 text-[#D4AF37]" />
             {tr('Academy blog', 'مدونة الأكاديمية')}
           </button>
@@ -152,9 +152,9 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
               setTab('offers');
               setTimeout(() => document.getElementById('ez-visitor-offers')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
             }}
-            className="ez-float-glow p-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] border border-[#D4AF37] flex items-center gap-3 text-sm font-bold text-[#0A192F] text-start"
+            className="ez-float-glow p-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] border border-[#D4AF37] flex items-center gap-3 text-sm font-bold text-[#0E3A99] text-start"
           >
-            <BadgePercent className="w-6 h-6 text-[#0A192F]" />
+            <BadgePercent className="w-6 h-6 text-[#0E3A99]" />
             {tr('🎁 Offers — invite & earn', '🎁 العروض: {ادعُ|ادعي} {واربح|واربحي}')}
           </button>
         </div>
@@ -163,7 +163,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
         <div className="bg-white rounded-3xl p-5 border border-[#D4AF37]/40 shadow-sm space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="font-bold text-[#0A192F] flex items-center gap-2">
+              <h2 className="font-bold text-[#0E3A99] flex items-center gap-2">
                 <Target className="w-5 h-5 text-[#D4AF37]" />
                 {tr('Your free placement test', 'اختبار تحديد المستوى المجاني')}
               </h2>
@@ -172,18 +172,18 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
               </p>
             </div>
             {placementTestUrl && (
-              <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+              <a href={placementTestUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2.5 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold">
                 {tr('Start the test', '{ابدأ|ابدئي} الاختبار')}
               </a>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold text-[#0A192F]">{tr('My result:', 'نتيجتي:')}</span>
+            <span className="text-xs font-bold text-[#0E3A99]">{tr('My result:', 'نتيجتي:')}</span>
             {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((l) => (
               <button
                 key={l}
                 onClick={() => savePlacement(l)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${ptLevel === l ? 'bg-[#D4AF37] text-[#0A192F] border-[#D4AF37]' : 'bg-white text-gray-600 border-gray-200'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${ptLevel === l ? 'bg-[#D4AF37] text-[#0E3A99] border-[#D4AF37]' : 'bg-white text-gray-600 border-gray-200'}`}
               >
                 {l}
               </button>
@@ -194,7 +194,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
 
         <div className={`bg-white rounded-3xl p-5 border border-gray-200 shadow-sm flex-col sm:flex-row sm:items-center justify-between gap-4 ${whatsapp ? 'flex' : 'hidden'}`}>
           <div>
-            <h2 className="font-bold text-[#0A192F] flex items-center gap-2">
+            <h2 className="font-bold text-[#0E3A99] flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
               {tr('A question before subscribing?', '{عندك|عندكِ} سؤال قبل الاشتراك؟')}
             </h2>
@@ -225,7 +225,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
             <button
               key={k}
               onClick={() => setTab(k)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold ${tab === k ? 'bg-[#0A192F] text-[#F3E5AB]' : 'bg-white border border-gray-200 text-gray-600'}`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold ${tab === k ? 'bg-[#0E3A99] text-[#F3E5AB]' : 'bg-white border border-gray-200 text-gray-600'}`}
             >
               {k === 'library' ? tr('Books & magazine', 'الكتب والمجلة') : tr('Community', 'المجتمع')}
             </button>
@@ -248,7 +248,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
             <>
               {mags.length > 0 && (
                 <div className="space-y-2">
-                  <h3 className="font-bold text-[#0A192F] flex items-center gap-2">
+                  <h3 className="font-bold text-[#0E3A99] flex items-center gap-2">
                     <Newspaper className="w-5 h-5 text-[#D4AF37]" />
                     {tr('Academy Magazine', 'مجلة الأكاديمية')}
                   </h3>
@@ -257,7 +257,7 @@ export const VisitorDashboard: React.FC<Props> = ({ isAr, uid, name, whatsapp, n
               )}
               {books.length > 0 && (
                 <div className="space-y-2">
-                  <h3 className="font-bold text-[#0A192F] flex items-center gap-2">
+                  <h3 className="font-bold text-[#0E3A99] flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-[#D4AF37]" />
                     {tr('Library', 'المكتبة')}
                   </h3>

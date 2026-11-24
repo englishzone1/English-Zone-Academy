@@ -29,7 +29,7 @@ export const EnglishClubHomeSection: React.FC<EnglishClubHomeSectionProps> = ({
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="bg-[#0A192F] text-white rounded-3xl p-8 sm:p-12 lg:p-14 shadow-2xl border border-[#D4AF37]/40 relative overflow-hidden">
+        <div className="bg-[#0E3A99] text-white rounded-3xl p-8 sm:p-12 lg:p-14 shadow-2xl border border-[#D4AF37]/40 relative overflow-hidden">
           
           {/* Subtle metallic backdrop pattern */}
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
@@ -40,7 +40,7 @@ export const EnglishClubHomeSection: React.FC<EnglishClubHomeSectionProps> = ({
             <div className="lg:col-span-5 flex justify-center order-2 lg:order-1">
               <div 
                 onClick={() => navigate('english-club')}
-                className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-2 border-[#D4AF37]/50 group cursor-pointer bg-[#0A192F]"
+                className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-2 border-[#D4AF37]/50 group cursor-pointer bg-[#0E3A99]"
               >
                 <img
                   src={OFFICIAL_ENGLISH_CLUB_IMAGE}
@@ -48,12 +48,12 @@ export const EnglishClubHomeSection: React.FC<EnglishClubHomeSectionProps> = ({
                   className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A192F]/80 via-transparent to-transparent pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0E3A99]/80 via-transparent to-transparent pointer-events-none"></div>
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white">
                   <span className="font-serif-luxury font-bold text-[#F3E5AB]">
                     Interactive Online Practice
                   </span>
-                  <span className="px-2.5 py-1 rounded-full bg-[#D4AF37] text-[#0A192F] text-[10px] font-bold tracking-wider uppercase">
+                  <span className="px-2.5 py-1 rounded-full bg-[#D4AF37] text-[#0E3A99] text-[10px] font-bold tracking-wider uppercase">
                     New Feature
                   </span>
                 </div>
@@ -64,7 +64,7 @@ export const EnglishClubHomeSection: React.FC<EnglishClubHomeSectionProps> = ({
             <div className="lg:col-span-7 space-y-6 order-1 lg:order-2">
               
               {/* Pill badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#162B4D] border border-[#D4AF37]/50 text-[#F3E5AB] text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1E55C0] border border-[#D4AF37]/50 text-[#F3E5AB] text-xs font-semibold">
                 <EnglishZoneEmblem sizeClass="w-3.5 h-3.5" glow={false} showBevelBorder={false} />
                 <span>{c.badge}</span>
                 <span className="text-gray-400">•</span>

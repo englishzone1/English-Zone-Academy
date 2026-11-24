@@ -76,7 +76,7 @@ export const StudentProgressChart: React.FC<Props> = ({ uid, isAr, lessonsAttend
 
   return (
     <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm space-y-5">
-      <h3 className="font-bold text-[#0A192F] flex items-center gap-2">
+      <h3 className="font-bold text-[#0E3A99] flex items-center gap-2">
         <TrendingUp className="w-5 h-5 text-[#D4AF37]" />
         {tr('My progress', 'تقدّمي')}
       </h3>
@@ -98,8 +98,8 @@ export const StudentProgressChart: React.FC<Props> = ({ uid, isAr, lessonsAttend
             {pts.map((p, i) =>
               p ? (
                 <g key={i}>
-                  <circle cx={p.x} cy={p.y} r="3.5" fill="#0A192F" stroke="#D4AF37" strokeWidth="1.5" />
-                  <text x={p.x} y={p.y - 6} fontSize="7.5" textAnchor="middle" fill="#0A192F" fontWeight="bold">{p.v}%</text>
+                  <circle cx={p.x} cy={p.y} r="3.5" fill="#0E3A99" stroke="#D4AF37" strokeWidth="1.5" />
+                  <text x={p.x} y={p.y - 6} fontSize="7.5" textAnchor="middle" fill="#0E3A99" fontWeight="bold">{p.v}%</text>
                 </g>
               ) : null
             )}
@@ -115,10 +115,10 @@ export const StudentProgressChart: React.FC<Props> = ({ uid, isAr, lessonsAttend
         <div>
           <div className="flex justify-between text-xs font-bold text-gray-600 mb-1">
             <span>{tr('Lessons attended', 'الحصص المنجزة')}</span>
-            <span className="text-[#0A192F]">{lessonsAttended || 0} / {lessonsTotal}</span>
+            <span className="text-[#0E3A99]">{lessonsAttended || 0} / {lessonsTotal}</span>
           </div>
           <div className="h-3 rounded-full bg-gray-100 overflow-hidden">
-            <div className="h-full rounded-full bg-gradient-to-r from-[#0A192F] to-[#1E3A6B]" style={{ width: `${lessonPct}%` }} />
+            <div className="h-full rounded-full bg-gradient-to-r from-[#0E3A99] to-[#1E3A6B]" style={{ width: `${lessonPct}%` }} />
           </div>
         </div>
       )}
@@ -132,7 +132,7 @@ export const StudentProgressChart: React.FC<Props> = ({ uid, isAr, lessonsAttend
             <div key={s.en}>
               <div className="flex justify-between text-[11px] font-semibold text-gray-600 mb-1">
                 <span>{isAr ? s.ar : s.en}</span>
-                <span className="text-[#0A192F]">{s.done} / {s.ids.length}</span>
+                <span className="text-[#0E3A99]">{s.done} / {s.ids.length}</span>
               </div>
               <div className="h-2.5 rounded-full bg-gray-100 overflow-hidden">
                 <div className="h-full rounded-full bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]" style={{ width: `${pct}%` }} />

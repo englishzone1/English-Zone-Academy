@@ -125,13 +125,13 @@ export const StudentMonthlyReport: React.FC<Props> = ({ uid, isAr, homework, gra
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#0A192F] via-[#102445] to-[#0A192F] text-white rounded-3xl p-6 border border-[#D4AF37]/50 shadow-xl space-y-4">
+    <div className="bg-gradient-to-br from-[#0E3A99] via-[#102445] to-[#0E3A99] text-white rounded-3xl p-6 border border-[#D4AF37]/50 shadow-xl space-y-4">
       <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-white/10">
         {(['week', 'month'] as const).map((m) => (
           <button
             key={m}
             onClick={() => switchTo(m)}
-            className={`py-1.5 rounded-lg text-xs font-bold ${mode === m ? 'bg-[#D4AF37] text-[#0A192F]' : 'text-gray-300'}`}
+            className={`py-1.5 rounded-lg text-xs font-bold ${mode === m ? 'bg-[#D4AF37] text-[#0E3A99]' : 'text-gray-300'}`}
           >
             {m === 'week' ? (isAr ? 'التقرير الأسبوعي' : 'Weekly') : isAr ? 'التقرير الشهري' : 'Monthly'}
           </button>

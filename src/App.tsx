@@ -58,7 +58,7 @@ const LoadingScreen: React.FC = () => (
       <div className="animate-spin-slow">
         <EnglishZoneEmblem sizeClass="w-20 h-20" glow={true} />
       </div>
-      <span className="font-serif-luxury font-bold text-sm tracking-wider text-[#0A192F]">
+      <span className="font-serif-luxury font-bold text-sm tracking-wider text-[#0E3A99]">
         ENGLISH ZONE
       </span>
       <span className="text-xs text-gray-400">
@@ -79,7 +79,7 @@ const UnauthorizedScreen: React.FC<{ navigate: (route: string) => void; required
         <div className="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto">
           <ShieldAlert className="w-8 h-8" />
         </div>
-        <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F]">
+        <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99]">
           {language === 'ar' ? 'وصول غير مصرح به' : 'Access Restricted'}
         </h2>
         <p className="text-sm text-gray-600 leading-relaxed">
@@ -89,7 +89,7 @@ const UnauthorizedScreen: React.FC<{ navigate: (route: string) => void; required
         </p>
         <button
           onClick={() => navigate('portal')}
-          className="px-6 py-3 rounded-xl bg-[#0A192F] text-[#F3E5AB] font-bold text-xs hover:bg-[#162B4D] transition-colors inline-flex items-center gap-2"
+          className="px-6 py-3 rounded-xl bg-[#0E3A99] text-[#F3E5AB] font-bold text-xs hover:bg-[#1E55C0] transition-colors inline-flex items-center gap-2"
         >
           <ArrowLeft className={`w-4 h-4 ${language === 'ar' ? 'rotate-180' : ''}`} />
           <span>{language === 'ar' ? 'العودة لبوابتك المصرح بها' : 'Return to Authorized Portal'}</span>
@@ -310,10 +310,10 @@ function MainApp() {
     if (!staff && String(u.subscriptionStatus || '').toLowerCase() !== 'active') {
       return (
         <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center bg-[#FAF8F5]">
-          <p className="text-sm font-bold text-[#0A192F]">
+          <p className="text-sm font-bold text-[#0E3A99]">
             {language === 'ar' ? 'الواجبات تفتح بعد تفعيل اشتراكك من الأكاديمية.' : 'Homework opens after the academy activates your subscription.'}
           </p>
-          <button onClick={() => navigate('portal')} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+          <button onClick={() => navigate('portal')} className="px-4 py-2 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold">
             {language === 'ar' ? 'العودة إلى لوحتي' : 'Back to my dashboard'}
           </button>
         </div>

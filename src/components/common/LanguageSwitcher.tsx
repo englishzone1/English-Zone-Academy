@@ -13,7 +13,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
     <button
       onClick={toggleLanguage}
       type="button"
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide border border-[#D4AF37]/40 bg-[#FAF8F5]/80 hover:bg-[#D4AF37]/15 hover:border-[#D4AF37] text-[#0A192F] transition-all shadow-sm active:scale-95 ${className}`}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide border border-[#D4AF37]/40 bg-[#FAF8F5]/80 hover:bg-[#D4AF37]/15 hover:border-[#D4AF37] text-[#0E3A99] transition-all shadow-sm active:scale-95 ${className}`}
       title={language === 'en' ? 'التحويل إلى اللغة العربية' : 'Switch to English'}
     >
       <Globe className="w-3.5 h-3.5 text-[#D4AF37]" />
@@ -24,7 +24,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
           <span className="font-semibold tracking-wider">English</span>
         )}
       </span>
-      <span className="text-[10px] uppercase px-1.5 py-0.5 rounded-full bg-[#0A192F] text-[#F3E5AB]">
+      <span className="text-[10px] uppercase px-1.5 py-0.5 rounded-full bg-[#0E3A99] text-[#F3E5AB]">
         {language.toUpperCase()}
       </span>
     </button>

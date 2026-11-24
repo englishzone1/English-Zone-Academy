@@ -59,7 +59,7 @@ export const TelegramWelcome: React.FC<Props> = ({ uid, role, createdAt, profile
           <X className="w-5 h-5" />
         </button>
         <div className="mx-auto mb-3 w-16 h-16 rounded-full bg-[#229ED9] flex items-center justify-center text-white text-3xl">✈</div>
-        <h3 className="text-lg font-bold text-[#0A192F] mb-2">{isAr ? 'أهلًا {بك|بكِ} في English Zone 🎉' : 'Welcome to English Zone 🎉'}</h3>
+        <h3 className="text-lg font-bold text-[#0E3A99] mb-2">{isAr ? 'أهلًا {بك|بكِ} في English Zone 🎉' : 'Welcome to English Zone 🎉'}</h3>
         <p className="text-sm text-gray-600 mb-5 leading-relaxed">
           {fromWorkshop
             ? isAr

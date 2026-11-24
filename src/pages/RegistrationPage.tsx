@@ -177,7 +177,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             Official Admissions Application
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0E3A99] mt-2">
             {t.register.title}
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-3 leading-relaxed">
@@ -199,7 +199,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
               Application Reference: {submissionId}
             </span>
 
-            <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F]">
+            <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0E3A99]">
               {t.register.successTitle}
             </h2>
 
@@ -209,7 +209,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
             {/* الخطوة الأخيرة: حساب الدخول بنفس البريد */}
             {!isAuthenticated && (
-              <div className="p-4 rounded-2xl bg-[#FAF8F5] border-2 border-[#D4AF37] text-sm text-[#0A192F] space-y-3" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+              <div className="p-4 rounded-2xl bg-[#FAF8F5] border-2 border-[#D4AF37] text-sm text-[#0E3A99] space-y-3" dir={language === 'ar' ? 'rtl' : 'ltr'}>
                 <b className="block">
                   {language === 'ar' ? 'خطوة أخيرة مهمة: {أنشئ|أنشئي} حساب الدخول' : 'One last step: create your login account'}
                 </b>
@@ -220,7 +220,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                 </p>
                 <button
                   onClick={() => navigate('login')}
-                  className="px-6 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold"
+                  className="px-6 py-2.5 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold"
                 >
                   {language === 'ar' ? 'إنشاء حساب الدخول الآن' : 'Create my login now'}
                 </button>
@@ -248,7 +248,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                     href={contacts.placementTestUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block px-6 py-2.5 rounded-xl text-xs font-semibold text-[#0A192F] bg-[#FAF8F5] border border-[#D4AF37] hover:bg-[#D4AF37]/10"
+                    className="inline-block px-6 py-2.5 rounded-xl text-xs font-semibold text-[#0E3A99] bg-[#FAF8F5] border border-[#D4AF37] hover:bg-[#D4AF37]/10"
                   >
                     {t.hero.ctaTest}
                   </a>
@@ -260,7 +260,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
             <div className="pt-6 border-t border-gray-100">
               <button
                 onClick={() => navigate('home')}
-                className="text-xs font-bold text-gray-500 hover:text-[#0A192F]"
+                className="text-xs font-bold text-gray-500 hover:text-[#0E3A99]"
               >
                 {language === 'ar' ? 'العودة إلى الصفحة الرئيسية' : 'Return to Academy Home'}
               </button>
@@ -277,7 +277,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-[#0A192F]">
+                  <h4 className="font-bold text-sm text-[#0E3A99]">
                     {language === 'ar' ? 'تسجيل مباشر وسريع عبر الواتساب' : 'Fast-Track WhatsApp Registration'}
                   </h4>
                   <p className="text-xs text-gray-600">
@@ -313,7 +313,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {!known.name && (
                 <div className={known.age ? 'sm:col-span-3' : 'sm:col-span-2'}>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1.5">
                     {t.register.fullName} *
                   </label>
                   <div className="relative">
@@ -332,7 +332,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
                 {!known.age && (
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1.5">
                     {t.register.age} *
                   </label>
                   <div className="relative">
@@ -358,7 +358,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {!known.country && (
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1.5">
                     {t.register.country} *
                   </label>
                   <div className="relative">
@@ -377,7 +377,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
                 {!known.phone && (
                 <div className={known.country ? 'sm:col-span-2' : ''}>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1.5">
                     {t.register.whatsapp} *
                   </label>
                   <div className="relative">
@@ -398,7 +398,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1.5">
                   {t.register.email} *
                 </label>
                 <div className="relative">
@@ -419,7 +419,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                   </p>
                 ) : (
                   <div className="mt-3 space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F]">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99]">
                       {language === 'ar' ? 'كلمة مرور لحسابك *' : 'Password for your account *'}
                     </label>
                     <input
@@ -447,7 +447,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                           setSubmitError(language === 'ar' ? 'تعذر الدخول بحساب Google، {حاول|حاولي} مرة أخرى.' : 'Google sign-in failed, please try again.');
                         }
                       }}
-                      className="w-full py-2.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-[#0A192F] disabled:opacity-50"
+                      className="w-full py-2.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-[#0E3A99] disabled:opacity-50"
                     >
                       {language === 'ar' ? 'أو {استعمل|استعملي} حساب Google بدل كلمة المرور' : 'Or use your Google account instead'}
                     </button>
@@ -458,7 +458,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
               {/* CRITICAL ENROLLMENT RULE: Main CEFR Level A1–C2 ONLY (Sections 8 & 17) */}
               <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F]">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99]">
                     {t.register.levelLabel} *
                   </label>
                   {contacts.placementTestUrl && (
@@ -487,7 +487,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                         onClick={() => setFormData({ ...formData, mainLevel: levelCode })}
                         className={`p-3 rounded-xl text-center font-bold text-sm border-2 transition-all ${
                           isSelected
-                            ? 'bg-[#0A192F] text-[#F3E5AB] border-[#D4AF37] shadow'
+                            ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#D4AF37] shadow'
                             : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
                         }`}
                       >
@@ -504,7 +504,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
                     onClick={() => setFormData({ ...formData, mainLevel: 'needs_test' })}
                     className={`w-full p-3 rounded-xl text-xs font-bold border-2 transition-all flex items-center justify-center gap-2 ${
                       formData.mainLevel === 'needs_test'
-                        ? 'bg-[#0A192F] text-[#F3E5AB] border-[#D4AF37] shadow'
+                        ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#D4AF37] shadow'
                         : 'bg-white text-gray-600 border-dashed border-gray-300 hover:border-gray-400'
                     }`}
                   >
@@ -516,10 +516,10 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
               {/* Learning Format: Small Group Classes (90 min) */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-2">
                   {t.register.formatLabel} *
                 </label>
-                <div className="p-4 rounded-xl text-left rtl:text-right border-2 bg-[#0A192F] text-[#F3E5AB] border-[#D4AF37] shadow">
+                <div className="p-4 rounded-xl text-left rtl:text-right border-2 bg-[#0E3A99] text-[#F3E5AB] border-[#D4AF37] shadow">
                   <div className="font-bold text-sm">{t.register.formatGroup}</div>
                   <div className="text-xs text-gray-300 mt-1">
                     {language === 'ar'
@@ -531,7 +531,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
               {/* Goal & Notes */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1.5">
                   {t.register.goalLabel}
                 </label>
                 <input
@@ -544,7 +544,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1.5">
                   {t.register.notesLabel}
                 </label>
                 <textarea
@@ -558,7 +558,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
 
               {/* كود الدعوة: خصم 30% على الشهر الأول */}
               <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#D4AF37]/40">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0A192F] mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E3A99] mb-1.5">
                   {language === 'ar' ? '🎁 كود الدعوة (اختياري)' : '🎁 Invitation code (optional)'}
                 </label>
                 <input
@@ -585,7 +585,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({ navigate, in
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="disabled:opacity-60 w-full py-4 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0A192F] hover:shadow-xl shadow-[#D4AF37]/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                className="disabled:opacity-60 w-full py-4 rounded-xl font-bold text-base bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#0E3A99] hover:shadow-xl shadow-[#D4AF37]/20 transition-all active:scale-95 flex items-center justify-center gap-2"
               >
                 <Send className="w-5 h-5" />
                 <span>{isSubmitting ? (language === 'ar' ? 'جارٍ الإرسال...' : 'Sending...') : t.register.submitBtn}</span>

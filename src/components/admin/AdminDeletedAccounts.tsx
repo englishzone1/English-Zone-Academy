@@ -43,7 +43,7 @@ export const AdminDeletedAccounts: React.FC<{ isAr: boolean; onNotice: (m: strin
   return (
     <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
       <div>
-        <h3 className="font-bold text-[#0A192F] flex items-center gap-2">
+        <h3 className="font-bold text-[#0E3A99] flex items-center gap-2">
           <UserX className="w-4 h-4 text-gray-600" />
           {tr('Deleted accounts', 'الحسابات المحذوفة')} ({list.length})
         </h3>

@@ -36,7 +36,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
   const title = (b: any) => (isAr ? b.titleAr : b.titleEn) || b.titleAr || b.titleEn;
   const open = (b: any) =>
     b.downloadUrl ? (
-      <a href={b.downloadUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A192F] text-[#F3E5AB] whitespace-nowrap">
+      <a href={b.downloadUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] whitespace-nowrap">
         {isAr ? 'فتح' : 'Open'}
       </a>
     ) : null;
@@ -44,12 +44,12 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-10" dir={isAr ? 'rtl' : 'ltr'}>
       <div className="text-center space-y-2">
-        <h1 className="font-serif-luxury font-bold text-3xl text-[#0A192F]">{isAr ? 'المكتبة والمجلة' : 'Library & Magazine'}</h1>
+        <h1 className="font-serif-luxury font-bold text-3xl text-[#0E3A99]">{isAr ? 'المكتبة والمجلة' : 'Library & Magazine'}</h1>
         <p className="text-sm text-gray-500">{isAr ? 'مواد ومجلة English Zone Academy المتاحة للجميع' : 'English Zone Academy materials and magazine, free for everyone'}</p>
       </div>
 
       {!isAuthenticated && (
-        <div className="bg-gradient-to-r from-[#0A192F] to-[#102445] text-white rounded-3xl p-5 sm:p-6 border border-[#D4AF37]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-[#0E3A99] to-[#102445] text-white rounded-3xl p-5 sm:p-6 border border-[#D4AF37]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
             <Gift className="w-7 h-7 text-[#D4AF37] shrink-0" />
             <div>
@@ -57,7 +57,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
               <p className="text-xs text-gray-300 mt-1">{isAr ? '{أنشئ|أنشئي} حسابًا مجانيًا في دقيقة {لتفتح|لتفتحي} المواد المخصّصة للأعضاء.' : 'Create a free account in a minute to unlock members-only materials.'}</p>
             </div>
           </div>
-          <button onClick={() => navigate('join')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] text-sm font-bold whitespace-nowrap">
+          <button onClick={() => navigate('join')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] text-sm font-bold whitespace-nowrap">
             {isAr ? '{سجّل|سجّلي} مجانًا' : 'Join free'}
           </button>
         </div>
@@ -71,7 +71,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
         <>
           {mags.length > 0 && (
             <section id="ez-magazine" className="space-y-4 scroll-mt-24">
-              <h2 className="font-bold text-xl text-[#0A192F] flex items-center gap-2">
+              <h2 className="font-bold text-xl text-[#0E3A99] flex items-center gap-2">
                 <Newspaper className="w-5 h-5 text-[#D4AF37]" />
                 {isAr ? 'مجلة الأكاديمية' : 'Academy Magazine'}
               </h2>
@@ -81,12 +81,12 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
                     {b.coverUrl ? (
                       <img src={imgSrc(b.coverUrl)} alt="" className="w-full h-56 object-cover" />
                     ) : (
-                      <div className="w-full h-32 bg-[#0A192F] flex items-center justify-center">
+                      <div className="w-full h-32 bg-[#0E3A99] flex items-center justify-center">
                         <Newspaper className="w-10 h-10 text-[#D4AF37]" />
                       </div>
                     )}
                     <div className="p-4 flex-1 flex flex-col gap-2">
-                      <span className="font-bold text-sm text-[#0A192F]">{title(b)}</span>
+                      <span className="font-bold text-sm text-[#0E3A99]">{title(b)}</span>
                       {b.issue && <span className="text-[11px] text-[#AA820A] font-bold">{b.issue}</span>}
                       {b.description && <p className="text-xs text-gray-600 flex-1">{b.description}</p>}
                       <div>{open(b)}</div>
@@ -99,7 +99,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
 
           {books.length > 0 && (
             <section className="space-y-4">
-              <h2 className="font-bold text-xl text-[#0A192F] flex items-center gap-2">
+              <h2 className="font-bold text-xl text-[#0E3A99] flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-[#D4AF37]" />
                 {isAr ? 'المكتبة' : 'Library'}
               </h2>
@@ -108,7 +108,7 @@ export const LibraryPage: React.FC<{ navigate: (route: string) => void }> = ({ n
                   <div key={b.id} className="p-4 rounded-2xl bg-white border border-gray-200 flex items-start justify-between gap-3">
                     {b.coverUrl && <img src={imgSrc(b.coverUrl)} alt="" className="w-14 h-20 object-cover rounded-lg border border-gray-200 shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <span className="font-bold text-sm text-[#0A192F] block">{title(b)}</span>
+                      <span className="font-bold text-sm text-[#0E3A99] block">{title(b)}</span>
                       {b.level && b.level !== 'All Levels' && <span className="text-[11px] text-gray-500">{b.level}</span>}
                       {b.description && <p className="text-xs text-gray-600 mt-1">{b.description}</p>}
                     </div>

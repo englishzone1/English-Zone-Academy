@@ -61,9 +61,9 @@ export interface CertificateRecord {
 }
 
 export const DEFAULT_LAYOUT: CertLayout = {
-  name: { x: 50, y: 48, size: 4.2, color: '#0A192F', font: 'Tajawal', show: true },
-  date: { x: 25, y: 82, size: 1.6, color: '#0A192F', font: 'Tajawal', show: true },
-  serial: { x: 75, y: 82, size: 1.4, color: '#0A192F', font: 'Plus Jakarta Sans', show: true },
+  name: { x: 50, y: 48, size: 4.2, color: '#0E3A99', font: 'Tajawal', show: true },
+  date: { x: 25, y: 82, size: 1.6, color: '#0E3A99', font: 'Tajawal', show: true },
+  serial: { x: 75, y: 82, size: 1.4, color: '#0E3A99', font: 'Plus Jakarta Sans', show: true },
   qr: { x: 86, y: 70, size: 11, show: true }
 };
 
@@ -321,7 +321,7 @@ export const renderCertificate = async (
       px -= 2;
       ctx.font = `${weight} ${px}px ${fontStack(spot.font)}`;
     }
-    ctx.fillStyle = spot.color || '#0A192F';
+    ctx.fillStyle = spot.color || '#0E3A99';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.direction = /[؀-ۿ]/.test(value) ? 'rtl' : 'ltr';

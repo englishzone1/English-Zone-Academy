@@ -31,7 +31,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
           <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
             {t.brand.name} Academic Catalog
           </span>
-          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0A192F] mt-2">
+          <h1 className="font-serif-luxury font-bold text-3xl sm:text-5xl text-[#0E3A99] mt-2">
             {t.programs.sectionTitle}
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mt-4 leading-relaxed">
@@ -45,7 +45,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
             onClick={() => setSelectedFilter('all')}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
               selectedFilter === 'all'
-                ? 'bg-[#0A192F] text-white shadow'
+                ? 'bg-[#0E3A99] text-white shadow'
                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
             }`}
           >
@@ -55,7 +55,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
             onClick={() => setSelectedFilter('levels')}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
               selectedFilter === 'levels'
-                ? 'bg-[#0A192F] text-white shadow'
+                ? 'bg-[#0E3A99] text-white shadow'
                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
             }`}
           >
@@ -74,7 +74,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                 <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
                   Academic Progression Matrix
                 </span>
-                <h2 className="font-serif-luxury font-bold text-2xl text-[#0A192F] mt-1">
+                <h2 className="font-serif-luxury font-bold text-2xl text-[#0E3A99] mt-1">
                   {language === 'ar' ? 'هيكلية المستويات الستة والـ 18 مرحلة' : '6 Core CEFR Levels & 18 Internal Stages'}
                 </h2>
                 <OxfordBadge language={language} className="mt-3 mb-2" />
@@ -87,7 +87,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
               </div>
               <button
                 onClick={() => navigate('curriculum')}
-                className="mt-4 md:mt-0 px-5 py-2.5 rounded-xl font-bold text-xs bg-[#0A192F] text-white hover:bg-[#162B4D] transition-colors self-start md:self-auto"
+                className="mt-4 md:mt-0 px-5 py-2.5 rounded-xl font-bold text-xs bg-[#0E3A99] text-white hover:bg-[#1E55C0] transition-colors self-start md:self-auto"
               >
                 {t.curriculum.exploreSyllabus}
               </button>
@@ -96,10 +96,10 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               {CEFR_LEVELS_INFO.map((lvl) => (
                 <div key={lvl.code} className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 text-center hover:border-[#D4AF37] transition-all">
-                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#0A192F] text-[#F3E5AB] font-serif-luxury font-bold text-xl flex items-center justify-center mb-2">
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#0E3A99] text-[#F3E5AB] font-serif-luxury font-bold text-xl flex items-center justify-center mb-2">
                     {lvl.code}
                   </div>
-                  <h3 className="font-bold text-sm text-[#0A192F]">
+                  <h3 className="font-bold text-sm text-[#0E3A99]">
                     {language === 'ar' ? lvl.nameAr : lvl.nameEn}
                   </h3>
                   <div className="text-[11px] text-gray-500 font-mono mt-1">
@@ -127,17 +127,17 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                   {/* Left Column: Info */}
                   <div className="lg:col-span-8 space-y-4">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#0A192F] text-[#F3E5AB]">
+                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#0E3A99] text-[#F3E5AB]">
                         Program 0{index + 1}
                       </span>
                       {prog.badgeEn && (
-                        <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#D4AF37]/20 text-[#0A192F] border border-[#D4AF37]/40">
+                        <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#D4AF37]/20 text-[#0E3A99] border border-[#D4AF37]/40">
                           {language === 'ar' ? prog.badgeAr : prog.badgeEn}
                         </span>
                       )}
                     </div>
 
-                    <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F]">
+                    <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0E3A99]">
                       {language === 'ar' ? prog.titleAr : prog.titleEn}
                     </h2>
 
@@ -149,7 +149,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
 
                     {/* Learning Objectives */}
                     <div className="pt-2">
-                      <h4 className="text-xs uppercase font-bold tracking-wider text-[#0A192F] mb-3">
+                      <h4 className="text-xs uppercase font-bold tracking-wider text-[#0E3A99] mb-3">
                         {language === 'ar' ? 'الأهداف التعليمية الرئيسية:' : 'Core Learning Objectives:'}
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -165,15 +165,15 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                     {/* Details pill row */}
                     <div className="pt-4 flex flex-wrap gap-4 text-xs text-gray-600 border-t border-gray-100">
                       <div>
-                        <span className="font-bold text-[#0A192F] block">{t.programs.format}:</span>
+                        <span className="font-bold text-[#0E3A99] block">{t.programs.format}:</span>
                         <span>{language === 'ar' ? prog.formatAr : prog.formatEn}</span>
                       </div>
                       <div>
-                        <span className="font-bold text-[#0A192F] block">{t.programs.duration}:</span>
+                        <span className="font-bold text-[#0E3A99] block">{t.programs.duration}:</span>
                         <span>{language === 'ar' ? prog.durationAr : prog.durationEn}</span>
                       </div>
                       <div>
-                        <span className="font-bold text-[#0A192F] block">{t.programs.suitableFor}:</span>
+                        <span className="font-bold text-[#0E3A99] block">{t.programs.suitableFor}:</span>
                         <span>{language === 'ar' ? prog.suitableForAr : prog.suitableForEn}</span>
                       </div>
                     </div>
@@ -195,7 +195,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
                     <div className="pt-6 space-y-3">
                       <button
                         onClick={() => navigate(`course/${prog.id}`)}
-                        className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0A192F] hover:brightness-110 shadow transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#0E3A99] hover:brightness-110 shadow transition-all flex items-center justify-center gap-2"
                       >
                         <BookOpen className="w-4 h-4" />
                         <span>{language === 'ar' ? 'عرض تفاصيل الدورة' : 'View Course Details'}</span>
@@ -203,7 +203,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
 
                       <button
                         onClick={() => navigate('register')}
-                        className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] transition-colors flex items-center justify-center gap-2"
+                        className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0] transition-colors flex items-center justify-center gap-2"
                       >
                         <GraduationCap className="w-4 h-4" />
                         <span>{t.programs.enrollNow}</span>
@@ -211,7 +211,7 @@ export const ProgramsPage: React.FC<ProgramsPageProps> = ({ navigate }) => {
 
                       <button
                         onClick={() => navigate('curriculum')}
-                        className="w-full py-2.5 rounded-xl font-semibold text-xs border border-gray-300 text-[#0A192F] hover:bg-white transition-colors"
+                        className="w-full py-2.5 rounded-xl font-semibold text-xs border border-gray-300 text-[#0E3A99] hover:bg-white transition-colors"
                       >
                         {t.curriculum.exploreSyllabus}
                       </button>

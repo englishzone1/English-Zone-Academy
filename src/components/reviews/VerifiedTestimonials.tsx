@@ -22,7 +22,7 @@ export const VerifiedTestimonials: React.FC<{ limit?: number; title?: boolean }>
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6" dir={isAr ? 'rtl' : 'ltr'}>
       {title && (
         <div className="text-center space-y-1">
-          <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F]">{isAr ? 'ماذا يقول طلابنا' : 'What our students say'}</h2>
+          <h2 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0E3A99]">{isAr ? 'ماذا يقول طلابنا' : 'What our students say'}</h2>
           <p className="text-sm text-gray-500">{isAr ? 'تقييمات حقيقية من طلاب مشتركين في الأكاديمية' : 'Real reviews from enrolled academy students'}</p>
         </div>
       )}
@@ -45,7 +45,7 @@ export const VerifiedTestimonials: React.FC<{ limit?: number; title?: boolean }>
             <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line flex-1">
               {(isAr ? w.quoteAr : w.quoteEn) || w.quoteAr || w.quoteEn}
             </p>
-            <div className="text-xs font-bold text-[#0A192F]">
+            <div className="text-xs font-bold text-[#0E3A99]">
               {(isAr ? w.studentNameAr : w.studentNameEn) || w.studentNameAr}
               {w.level ? <span className="text-gray-400 font-normal"> • {w.level}</span> : null}
             </div>

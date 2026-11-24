@@ -45,17 +45,17 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
 
   return (
     <div className="space-y-5">
-      <h3 className="font-bold text-lg text-[#0A192F]">{isAr ? cur.titleAr : cur.titleEn}</h3>
+      <h3 className="font-bold text-lg text-[#0E3A99]">{isAr ? cur.titleAr : cur.titleEn}</h3>
 
       {(CURRICULUM_EXTRAS[cur.id] || []).length > 0 && (
         <div className="p-4 rounded-2xl bg-[#F4F8F9] border border-[#0e4d5c]/20 space-y-3">
-          <p className="font-bold text-sm text-[#0A192F]">📚 {tr('Supplements and extra practice', 'ملحقات وتمارين إضافية')}</p>
+          <p className="font-bold text-sm text-[#0E3A99]">📚 {tr('Supplements and extra practice', 'ملحقات وتمارين إضافية')}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {CURRICULUM_EXTRAS[cur.id].map((x) => (
               <button
                 key={x.key}
                 onClick={() => { setPlayer(null); setReading(null); setExtra(extra?.key === x.key ? null : x); }}
-                className={`text-start px-3 py-2.5 rounded-xl border transition-all ${extra?.key === x.key ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-[#0A192F] border-gray-200 hover:border-[#D4AF37]'}`}
+                className={`text-start px-3 py-2.5 rounded-xl border transition-all ${extra?.key === x.key ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#0E3A99]' : 'bg-white text-[#0E3A99] border-gray-200 hover:border-[#D4AF37]'}`}
               >
                 <span className="block text-xs font-bold">{isAr ? x.titleAr : x.titleEn}</span>
                 <span className="block text-[10px] opacity-75">{isAr ? x.descAr : x.descEn}</span>
@@ -81,7 +81,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
           <button
             key={s.key}
             onClick={() => { setStage(i); setUnit(null); setPlayer(null); setReading(null); }}
-            className={`px-2 py-2.5 rounded-xl text-xs font-bold border transition-all ${i === stage ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white text-[#0A192F] border-gray-200'}`}
+            className={`px-2 py-2.5 rounded-xl text-xs font-bold border transition-all ${i === stage ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#0E3A99]' : 'bg-white text-[#0E3A99] border-gray-200'}`}
           >
             {i + 1 > myStage && <Lock className="w-3.5 h-3.5 inline-block mb-0.5 me-1 opacity-80" />}
             {isAr ? s.titleAr : s.titleEn}
@@ -91,7 +91,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
       </div>
 
       {player && (
-        <div id="cur-player" className="rounded-2xl border-2 border-[#D4AF37] bg-[#0A192F] p-3 space-y-2">
+        <div id="cur-player" className="rounded-2xl border-2 border-[#D4AF37] bg-[#0E3A99] p-3 space-y-2">
           <div className="flex items-center justify-between text-[#F3E5AB] text-xs font-bold">
             <span>{player.label}</span>
             <button onClick={() => setPlayer(null)} title={tr('Close', 'إغلاق')}><X className="w-4 h-4" /></button>
@@ -137,7 +137,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
                   if (el?.requestFullscreen) el.requestFullscreen().catch(() => undefined);
                   else if (el?.webkitRequestFullscreen) el.webkitRequestFullscreen();
                 }}
-                className="px-3 py-1.5 rounded-lg bg-white text-[#0A192F] text-[11px] font-bold"
+                className="px-3 py-1.5 rounded-lg bg-white text-[#0E3A99] text-[11px] font-bold"
               >
                 ⛶ {tr('Full screen', 'ملء الشاشة')}
               </button>
@@ -154,7 +154,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
               href={`https://drive.usercontent.google.com/download?id=${player.id}&export=download&confirm=t`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 rounded-lg bg-[#D4AF37] text-[#0A192F] text-[11px] font-bold"
+              className="px-3 py-1.5 rounded-lg bg-[#D4AF37] text-[#0E3A99] text-[11px] font-bold"
             >
               ⬇ {tr('Download', 'تحميل الملف')}
             </a>
@@ -165,7 +165,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
       {locked ? (
         <div className="p-6 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-300 text-center space-y-2">
           <Lock className="w-8 h-8 mx-auto text-gray-400" />
-          <p className="font-bold text-[#0A192F]">{tr('This stage is locked', 'هذه المرحلة مقفلة')}</p>
+          <p className="font-bold text-[#0E3A99]">{tr('This stage is locked', 'هذه المرحلة مقفلة')}</p>
           <p className="text-xs text-gray-500">{tr('It opens when you move up to it with your teacher.', 'تُفتح {لك|لكِ} عندما {تنتقل|تنتقلين} إليها مع {معلمك|معلمتك}.')}</p>
         </div>
       ) : (
@@ -183,16 +183,16 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
           />
         ) : (
         <div className="p-4 rounded-2xl bg-[#FFF8E1] border-2 border-[#D4AF37] space-y-3">
-          <p className="font-bold text-sm text-[#0A192F] flex items-center gap-2">
+          <p className="font-bold text-sm text-[#0E3A99] flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-[#AA820A]" />
             {tr('Student book', 'كتاب الطالب')} – {isAr ? st.titleAr : st.titleEn}
           </p>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => { setPlayer(null); setExtra(null); setReading('stage'); }} className="px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold">
+            <button onClick={() => { setPlayer(null); setExtra(null); setReading('stage'); }} className="px-4 py-2 rounded-xl bg-[#0E3A99] text-[#F3E5AB] text-xs font-bold">
               📖 {tr('Open the stage book', 'فتح كتاب المرحلة')}
             </button>
             {books?.appendix && (
-              <button onClick={() => { setPlayer(null); setReading('appendix'); }} className="px-4 py-2 rounded-xl bg-white border border-[#D4AF37] text-[#0A192F] text-xs font-bold">
+              <button onClick={() => { setPlayer(null); setReading('appendix'); }} className="px-4 py-2 rounded-xl bg-white border border-[#D4AF37] text-[#0E3A99] text-xs font-bold">
                 📎 {tr('Book appendix', 'ملحق الكتاب')}
               </button>
             )}
@@ -203,7 +203,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
       <button
         disabled={!st.bookId}
         onClick={() => st.bookId && setPlayer({ kind: 'book', id: st.bookId, label: `📖 ${tr('Student book', 'كتاب الطالب')} – ${isAr ? st.titleAr : st.titleEn}` })}
-        className="w-full px-4 py-3 rounded-2xl bg-[#FFF8E1] border-2 border-[#D4AF37] text-[#0A192F] font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+        className="w-full px-4 py-3 rounded-2xl bg-[#FFF8E1] border-2 border-[#D4AF37] text-[#0E3A99] font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
       >
         <BookOpen className="w-5 h-5 text-[#AA820A]" />
         {st.bookId ? tr('Open the stage book', 'فتح كتاب المرحلة') : tr('The stage book will be added soon', 'كتاب المرحلة يُضاف قريبًا')}
@@ -215,7 +215,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
           <button
             key={n}
             onClick={() => setUnit(unit === n ? null : n)}
-            className={`px-3 py-3 rounded-xl text-sm font-bold border transition-all ${unit === n ? 'bg-[#D4AF37] text-[#0A192F] border-[#D4AF37]' : 'bg-white text-[#0A192F] border-gray-200 hover:border-[#D4AF37]'}`}
+            className={`px-3 py-3 rounded-xl text-sm font-bold border transition-all ${unit === n ? 'bg-[#D4AF37] text-[#0E3A99] border-[#D4AF37]' : 'bg-white text-[#0E3A99] border-gray-200 hover:border-[#D4AF37]'}`}
           >
             {tr('Unit', 'الوحدة')} {n}
           </button>
@@ -226,8 +226,8 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
         <div className="space-y-4">
           {(u.lessons || []).map((l) => (
             <div key={l.key} className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-3">
-              <h4 className="font-bold text-[#0A192F] flex flex-wrap items-baseline gap-2">
-                <span className="px-2.5 py-0.5 rounded-lg bg-[#0A192F] text-[#F3E5AB] text-xs">{isAr ? l.codeAr : l.code}</span>
+              <h4 className="font-bold text-[#0E3A99] flex flex-wrap items-baseline gap-2">
+                <span className="px-2.5 py-0.5 rounded-lg bg-[#0E3A99] text-[#F3E5AB] text-xs">{isAr ? l.codeAr : l.code}</span>
                 <span className="text-sm" dir="ltr">{l.title}</span>
               </h4>
               {l.tracks.length > 0 && (
@@ -241,7 +241,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
                       <button
                         key={id}
                         onClick={() => setPlayer({ kind: 'audio', id, num, label: `🎧 ${num}` })}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white border-gray-300 text-[#0A192F] hover:border-[#D4AF37]'}`}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === id ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#0E3A99]' : 'bg-white border-gray-300 text-[#0E3A99] hover:border-[#D4AF37]'}`}
                       >
                         {num}
                       </button>
@@ -260,7 +260,7 @@ export const CurriculumViewer: React.FC<Props> = ({ curriculumId, stage: myStage
                       <button
                         key={v.id}
                         onClick={() => setPlayer({ kind: 'video', id: v.id, label: `🎬 ${isAr ? l.codeAr : l.code} – ${isAr ? v.ar : v.en}` })}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === v.id ? 'bg-[#0A192F] text-[#F3E5AB] border-[#0A192F]' : 'bg-white border-gray-300 text-[#0A192F] hover:border-[#D4AF37]'}`}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border ${player?.id === v.id ? 'bg-[#0E3A99] text-[#F3E5AB] border-[#0E3A99]' : 'bg-white border-gray-300 text-[#0E3A99] hover:border-[#D4AF37]'}`}
                       >
                         ▶ {isAr ? v.ar : v.en}
                       </button>

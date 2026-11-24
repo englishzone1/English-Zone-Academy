@@ -241,11 +241,11 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar, 
 
   const AuthorBadge = ({ r }: { r: string }) =>
     r === 'teacher' ? (
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0A192F] text-[10px] font-bold">
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0E3A99] text-[10px] font-bold">
         {tr('Teacher', 'معلم')}
       </span>
     ) : r === 'admin' ? (
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#0A192F] text-[#F3E5AB] text-[10px] font-bold">
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#0E3A99] text-[#F3E5AB] text-[10px] font-bold">
         <ShieldCheck className="w-3 h-3 text-[#D4AF37]" />
         {tr('Academy', 'الأكاديمية')}
       </span>
@@ -263,7 +263,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar, 
   return (
     <div className="space-y-6">
       {readOnly && (
-        <div className="p-3 rounded-2xl bg-[#F3E5AB]/40 border border-[#D4AF37]/40 text-xs text-[#0A192F] font-bold">
+        <div className="p-3 rounded-2xl bg-[#F3E5AB]/40 border border-[#D4AF37]/40 text-xs text-[#0E3A99] font-bold">
           {tr('You can read and like posts. Posting and commenting are for enrolled students.', '{تستطيع|تستطيعين} قراءة المنشورات والإعجاب بها. النشر والتعليق للطالبات المشتركات في الكورس.')}
         </div>
       )}
@@ -331,7 +331,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar, 
           <button
             onClick={submit}
             disabled={posting || recording || (!text.trim() && !image && !audio && !videoUrl.trim())}
-            className="px-5 py-2 rounded-xl text-xs font-bold bg-[#0A192F] text-[#F3E5AB] hover:bg-[#162B4D] disabled:opacity-50 flex items-center gap-1.5"
+            className="px-5 py-2 rounded-xl text-xs font-bold bg-[#0E3A99] text-[#F3E5AB] hover:bg-[#1E55C0] disabled:opacity-50 flex items-center gap-1.5"
           >
             <Send className="w-4 h-4 text-[#D4AF37]" />
             <span>{posting ? tr('Publishing...', 'جارٍ النشر...') : tr('Publish', 'نشر')}</span>
@@ -359,7 +359,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar, 
                   <Face r={p.authorRole} cfg={p.authorAvatar} size={40} />
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-[#0A192F]">{p.authorName}</span>
+                      <span className="font-bold text-sm text-[#0E3A99]">{p.authorName}</span>
                       <AuthorBadge r={p.authorRole} />
                     </div>
                     <span className="text-[11px] text-gray-400">{when(p.createdAt)}</span>
@@ -404,7 +404,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar, 
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <Face r={c.authorRole} cfg={c.authorAvatar} size={28} />
-                          <span className="font-bold text-[#0A192F]">{c.authorName}</span>
+                          <span className="font-bold text-[#0E3A99]">{c.authorName}</span>
                           <AuthorBadge r={c.authorRole} />
                         </div>
                         {(isAdmin || c.authorId === uid) && (
@@ -425,7 +425,7 @@ export const CommunityFeed: React.FC<Props> = ({ uid, name, role, isAr, avatar, 
                       placeholder={tr('Write a comment...', 'اكتب تعليقًا...')}
                       className="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-xs"
                     />
-                    <button onClick={() => sendComment(p.id)} className="p-2 rounded-xl bg-[#0A192F] text-[#F3E5AB]">
+                    <button onClick={() => sendComment(p.id)} className="p-2 rounded-xl bg-[#0E3A99] text-[#F3E5AB]">
                       <Send className="w-4 h-4" />
                     </button>
                   </div>
