@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Gift, X, ArrowLeft, Award } from 'lucide-react';
 import { PROGRAM_CATEGORIES } from '../../data/academyData';
 
@@ -15,13 +15,7 @@ export const OfferBubble: React.FC<Props> = ({ language, navigate }) => {
   const ar = language === 'ar';
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    let closed = false;
-    try { closed = sessionStorage.getItem(KEY) === '1'; } catch { /* ignore */ }
-    if (closed) return;
-    const t = setTimeout(() => setOpen(true), 1500);
-    return () => clearTimeout(t);
-  }, []);
+  // لا تُفتح تلقائيًا: تبقى الأيقونة ظاهرة ومن يريد يضغط عليها
 
   if (!offer) return null;
 
