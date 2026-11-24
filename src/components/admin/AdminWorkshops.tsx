@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { RegPageStrip } from './WorkshopRegPage';
+import { WsThemePicker, WsTheme } from '../common/WorkshopTheme';
 import { Plus, Copy, Trash2, Edit3, Upload, Save, Download, Link as LinkIcon, Eye, EyeOff, Loader2, X, Star, Files } from 'lucide-react';
 import {
   workshopService,
   workshopPageService,
   renderCertificate,
   compressTemplate,
+  compressPoster,
   DEFAULT_LAYOUT,
   Workshop,
   WorkshopReg,
@@ -282,6 +284,22 @@ const WorkshopEditor: React.FC<{
   const [sample, setSample] = useState(isAr ? 'أمل الحسن' : 'Amal Alhasan');
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const layout = w.layout as CertLayout;
+  const isWsType = w.type === 'workshop';
+  // الورشة: صورة الإعلان والمظهر يُحفظان مع صفحة التسجيل
+  const [poster, setPoster] = useState<string | undefined>(undefined);
+  const [posterBusy, setPosterBusy] = useState(false);
+  const [theme, setTheme] = useState<WsTheme>(initial.id ? (initial.theme as WsTheme) || 'white' : 'blue');
+  useEffect(() => {
+    if (!isWsType || !initial.id) return;
+    workshopPageService
+      .get(initial.id)
+      .then((pg) => {
+        if (!pg) return;
+        if (pg.poster) setPoster(pg.poster);
+        setTheme((pg.theme as WsTheme) || 'white');
+      })
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     if (!w.template || !canvasRef.current) return;
@@ -302,7 +320,12 @@ const WorkshopEditor: React.FC<{
     if (!String(w.title || '').trim()) return onNotice(tr('Write the workshop title.', 'اكتبي عنوان الورشة.'));
     setSaving(true);
     try {
-      await workshopService.save(w as any);
+      if (isWsType) {
+        const id = await workshopService.save(w as any);
+        await workshopPageService.patch(id, String(w.title || ''), { poster, theme });
+      } else {
+        await workshopService.save({ ...(w as any), theme });
+      }
       onSaved();
     } catch (e: any) {
       onNotice(`${tr('Could not save:', 'تعذر الحفظ:')} ${e?.code || e?.message || ''}`);
@@ -374,6 +397,47 @@ const WorkshopEditor: React.FC<{
         </label>
       </div>
 
+      {isWsType && (
+        <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2">
+          <div className="text-xs font-bold text-[#0A192F]">{tr('Workshop image (poster)', 'صورة الورشة (الإعلان)')}</div>
+          <div className="flex items-center gap-3">
+            {poster ? <img src={poster} alt="" className="w-24 h-24 object-cover rounded-xl border" /> : <div className="w-24 h-24 rounded-xl bg-gray-100" />}
+            <label className="inline-flex px-4 py-2 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold items-center gap-1.5 cursor-pointer">
+              {posterBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4 text-[#D4AF37]" />}
+              {poster ? tr('Change image', 'تغيير الصورة') : tr('Upload image', 'رفع صورة')}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  e.target.value = '';
+                  if (!f) return;
+                  setPosterBusy(true);
+                  try {
+                    setPoster(await compressPoster(f));
+                  } catch {
+                    onNotice(tr('Could not read this image.', 'تعذرت قراءة الصورة، جرّبي صورة أصغر.'));
+                  } finally {
+                    setPosterBusy(false);
+                  }
+                }}
+              />
+            </label>
+            {poster && (
+              <button type="button" onClick={() => setPoster('')} className="text-[11px] text-red-600 font-bold">
+                {tr('Remove', 'حذف الصورة')}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2">
+        <div className="text-xs font-bold text-[#0A192F]">{isWsType ? tr('Registration page look', 'لون صفحة التسجيل') : tr('Certificate page look', 'لون صفحة الشهادة')}</div>
+        <WsThemePicker value={theme} onChange={setTheme} />
+      </div>
+
       {w.type !== 'workshop' && <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-gray-200 space-y-2">
         <div className="text-xs font-bold text-[#0A192F]">{tr('Certificate template (image)', 'قالب الشهادة (صورة)')}</div>
         <p className="text-[11px] text-gray-500">
@@ -437,7 +501,7 @@ const WorkshopEditor: React.FC<{
       )}
 
       <div className="flex gap-2 pt-2 border-t border-gray-100">
-        <button onClick={save} disabled={saving || uploading} className="px-5 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+        <button onClick={save} disabled={saving || uploading || posterBusy} className="px-5 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 text-[#D4AF37]" />}
           {w.type === 'certificate' ? tr('Save certificate', 'حفظ الشهادة') : tr('Save workshop', 'حفظ الورشة')}
         </button>

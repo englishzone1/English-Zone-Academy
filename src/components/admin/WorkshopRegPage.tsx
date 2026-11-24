@@ -1,3 +1,4 @@
+import { WsThemePicker, WsTheme } from '../common/WorkshopTheme';
 import React, { useEffect, useRef, useState } from 'react';
 import { Upload, Save, X, Link as LinkIcon, Download, Loader2, Megaphone } from 'lucide-react';
 import { workshopPageService, WorkshopPage, Workshop, compressPoster, joinUrl, DEFAULT_GROUP_LINK } from '../../services/workshopService';
@@ -71,20 +72,20 @@ export const RegPageStrip: React.FC<{ w: Workshop; onNotice: (m: string) => void
 };
 
 const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClose: () => void; onSaved: () => void }> = ({ w, initial, onClose, onSaved }) => {
-  const [p, setP] = useState<WorkshopPage>(
-    initial || {
-      workshopId: w.id,
-      published: false,
-      title: w.title,
-      subtitle: '',
-      date: '',
-      time: '',
-      duration: '',
-      learn: [],
-      color: '#6b2f3a',
-      groupLink: DEFAULT_GROUP_LINK
-    }
-  );
+  const [p, setP] = useState<WorkshopPage>({
+    workshopId: w.id,
+    published: false,
+    title: w.title,
+    subtitle: '',
+    date: '',
+    time: '',
+    duration: '',
+    learn: [],
+    color: '#6b2f3a',
+    groupLink: DEFAULT_GROUP_LINK,
+    ...(initial || {}),
+    theme: initial ? initial.theme || 'white' : 'blue'
+  } as WorkshopPage);
   const [learnText, setLearnText] = useState((initial?.learn || []).join('\n'));
   const [busy, setBusy] = useState(false);
   const [upl, setUpl] = useState(false);
@@ -218,14 +219,18 @@ const RegPageEditor: React.FC<{ w: Workshop; initial: WorkshopPage | null; onClo
               <textarea value={learnText} onChange={(e) => setLearnText(e.target.value)} rows={4} className={inp} />
             </div>
             <div>
-              <label className={lbl}>لون الصفحة</label>
+              <label className={lbl}>مظهر الصفحة</label>
+              <WsThemePicker value={(p.theme as WsTheme) || 'blue'} onChange={(t) => set('theme', t)} />
+            </div>
+            {p.theme === 'white' && <div>
+              <label className={lbl}>لون الأزرار والعناوين</label>
               <div className="flex flex-wrap items-center gap-2">
                 {COLORS.map((c) => (
                   <button key={c} type="button" onClick={() => set('color', c)} className={`w-8 h-8 rounded-full border-2 ${p.color === c ? 'border-[#D4AF37] scale-110' : 'border-white'}`} style={{ background: c }} />
                 ))}
                 <input type="color" value={p.color} onChange={(e) => set('color', e.target.value)} className="w-9 h-9 rounded-lg border" title="لون آخر" />
               </div>
-            </div>
+            </div>}
             <div>
               <label className={lbl}>رابط مجموعة تيليغرام (بعد تأكيد التسجيل)</label>
               <input value={p.groupLink} onChange={(e) => set('groupLink', e.target.value)} dir="ltr" className={inp} />

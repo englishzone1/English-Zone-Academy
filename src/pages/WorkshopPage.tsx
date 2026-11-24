@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Award, Download, Printer, Star, CheckCircle2, Sparkles, BookOpen, Gift, Users, Loader2, ShieldCheck } from 'lucide-react';
+import { Award, Download, Printer, Star, CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { WsBackdrop, wsVars } from '../components/common/WorkshopTheme';
 import { workshopService, renderCertificate, Workshop, CertificateRecord, verifyUrl } from '../services/workshopService';
 
 interface Props {
@@ -126,41 +127,21 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
     );
   }
 
-  const joinOffer = (
-    <div className="rounded-3xl p-6 sm:p-8 bg-[#0A192F] text-[#F3E5AB] space-y-4 shadow-lg">
-      <div className="flex items-center gap-2">
-        <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-        <h2 className="font-serif-luxury font-bold text-xl">{tr('Join English Zone for free', '{انضم|انضمي} إلى منصة English Zone مجانًا')}</h2>
-      </div>
-      <p className="text-sm text-gray-300">
-        {tr('Create a free account to get first access to:', '{أنشئ|أنشئي} حسابًا مجانيًا {لتكون|لتكوني} أول من يحصل على:')}
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-        <div className="flex items-center gap-2"><Gift className="w-4 h-4 text-[#D4AF37]" />{tr('Exclusive discounts & offers', 'عروض وخصومات حصرية')}</div>
-        <div className="flex items-center gap-2"><Award className="w-4 h-4 text-[#D4AF37]" />{tr('Upcoming free workshops', 'إعلانات الورش المجانية القادمة')}</div>
-        <div className="flex items-center gap-2"><BookOpen className="w-4 h-4 text-[#D4AF37]" />{tr('Free books & magazine', 'كتب ومجلة الأكاديمية مجانًا')}</div>
-        <div className="flex items-center gap-2"><Users className="w-4 h-4 text-[#D4AF37]" />{tr('Free placement test & community', 'اختبار تحديد المستوى ومجتمع المتعلمات')}</div>
-      </div>
-      <button onClick={() => navigate('join-us')} className="w-full sm:w-auto px-8 py-3 rounded-xl bg-[#D4AF37] text-[#0A192F] font-bold text-sm shadow-[0_0_25px_rgba(212,175,55,0.5)] hover:scale-[1.02] transition-transform">
-        {tr('Join now for free', '{سجّل|سجّلي} الآن مجانًا')}
-      </button>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-[#FAF8F5] py-10">
-      <div className="max-w-3xl mx-auto px-4 space-y-6">
+    <div className="relative min-h-screen py-10" dir={isAr ? 'rtl' : 'ltr'} style={wsVars(ws.theme, '#0A192F', '#eef2f9')}>
+      <WsBackdrop theme={ws.theme} />
+      <div className="relative z-10 max-w-3xl mx-auto px-4 space-y-6">
         <div className="text-center space-y-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/20 text-[#7A5C00] text-xs font-bold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/20 text-[#B8901F] text-xs font-bold">
             <Award className="w-3.5 h-3.5" />
             {tr('Free workshop', 'ورشة مجانية')}
           </span>
-          <h1 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[#0A192F]">{ws.title}</h1>
-          {ws.description && <p className="text-sm text-gray-600 whitespace-pre-line">{ws.description}</p>}
+          <h1 className="font-serif-luxury font-bold text-2xl sm:text-3xl text-[var(--ink)]">{ws.title}</h1>
+          {ws.description && <p className="text-sm text-[var(--muted)] whitespace-pre-line">{ws.description}</p>}
         </div>
 
         {cert ? (
-          <div className="bg-white rounded-3xl p-5 sm:p-8 border border-[#D4AF37]/40 shadow-md space-y-4">
+          <div className="bg-[var(--card)] backdrop-blur-md rounded-3xl p-5 sm:p-8 border border-[#D4AF37]/40 shadow-md space-y-4">
             <div className="flex items-center gap-2 text-emerald-700 font-bold">
               <CheckCircle2 className="w-5 h-5" />
               {tr('Congratulations! Here is your certificate.', 'مبارك! هذه {شهادتك|شهادتكِ}.')}
@@ -168,26 +149,26 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
             {ws.template ? (
               <div className="relative">
                 {rendering && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-xl">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-xl">
                     <Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]" />
                   </div>
                 )}
                 <canvas ref={canvasRef} className="w-full h-auto rounded-xl border border-gray-200 shadow-sm" />
               </div>
             ) : (
-              <p className="text-sm text-gray-600">{tr('The certificate design will be available soon.', 'تصميم الشهادة سيتوفر قريبًا.')}</p>
+              <p className="text-sm text-[var(--muted)]">{tr('The certificate design will be available soon.', 'تصميم الشهادة سيتوفر قريبًا.')}</p>
             )}
             <div className="flex flex-wrap gap-2">
-              <button onClick={download} disabled={!ws.template} className="px-5 py-2.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+              <button onClick={download} disabled={!ws.template} className="px-5 py-2.5 rounded-xl bg-[var(--btn)] text-[var(--btnInk)] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
                 <Download className="w-4 h-4 text-[#D4AF37]" />
                 {tr('Download image', 'تحميل الشهادة (صورة)')}
               </button>
-              <button onClick={printPdf} disabled={!ws.template} className="px-5 py-2.5 rounded-xl border border-[#D4AF37] text-[#0A192F] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
+              <button onClick={printPdf} disabled={!ws.template} className="px-5 py-2.5 rounded-xl border border-[#D4AF37] text-[var(--ink)] text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
                 <Printer className="w-4 h-4 text-[#AA820A]" />
                 {tr('Print / save as PDF', 'طباعة أو حفظ PDF')}
               </button>
             </div>
-            <div className="text-xs text-gray-600 flex flex-wrap items-center gap-2">
+            <div className="text-xs text-[var(--muted)] flex flex-wrap items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               {tr('Serial number:', 'الرقم التسلسلي:')} <b dir="ltr">{cert.serial}</b>
               <a href={verifyUrl(cert.serial)} target="_blank" rel="noopener noreferrer" className="text-[#AA820A] underline">
@@ -196,28 +177,28 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
             </div>
           </div>
         ) : (
-          <form onSubmit={submit} className="bg-white rounded-3xl p-5 sm:p-8 border border-gray-200 shadow-md space-y-4">
-            <h2 className="font-bold text-lg text-[#0A192F]">{tr('Register & get your certificate', '{سجّل|سجّلي} {واحصل|واحصلي} على {شهادتك|شهادتكِ} فورًا')}</h2>
+          <form onSubmit={submit} className="bg-[var(--card)] backdrop-blur-md rounded-3xl p-5 sm:p-8 border border-[var(--line)] shadow-md space-y-4">
+            <h2 className="font-bold text-lg text-[var(--ink)]">{tr('Register & get your certificate', '{سجّل|سجّلي} {واحصل|واحصلي} على {شهادتك|شهادتكِ} فورًا')}</h2>
             <div>
-              <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Full name (as on the certificate) *', 'الاسم الكامل كما تريدينه على الشهادة *')}</label>
-              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={80} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
+              <label className="block text-xs font-bold text-[var(--ink)] mb-1">{tr('Full name (as on the certificate) *', 'الاسم الكامل كما تريدينه على الشهادة *')}</label>
+              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={80} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm text-[#1f2433] bg-white" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Email *', 'البريد الإلكتروني *')}</label>
-                <input type="email" dir="ltr" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
+                <label className="block text-xs font-bold text-[var(--ink)] mb-1">{tr('Email *', 'البريد الإلكتروني *')}</label>
+                <input type="email" dir="ltr" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm text-[#1f2433] bg-white" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('WhatsApp (optional)', 'رقم الواتساب (اختياري)')}</label>
-                <input type="tel" dir="ltr" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
+                <label className="block text-xs font-bold text-[var(--ink)] mb-1">{tr('WhatsApp (optional)', 'رقم الواتساب (اختياري)')}</label>
+                <input type="tel" dir="ltr" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm text-[#1f2433] bg-white" />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Country (optional)', 'الدولة (اختياري)')}</label>
-              <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
+              <label className="block text-xs font-bold text-[var(--ink)] mb-1">{tr('Country (optional)', 'الدولة (اختياري)')}</label>
+              <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm text-[#1f2433] bg-white" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Your rating of the workshop', '{تقييمك|تقييمكِ} للورشة')}</label>
+              <label className="block text-xs font-bold text-[var(--ink)] mb-1">{tr('Your rating of the workshop', '{تقييمك|تقييمكِ} للورشة')}</label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button type="button" key={n} onClick={() => setForm({ ...form, rating: n })}>
@@ -227,24 +208,23 @@ export const WorkshopPage: React.FC<Props> = ({ workshopId, navigate }) => {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0A192F] mb-1">
+              <label className="block text-xs font-bold text-[var(--ink)] mb-1">
                 {tr('How much did the workshop benefit you?', 'ما مدى {استفادتك|استفادتكِ} من الورشة؟')} <span className="text-[#AA820A]">{form.benefit} / 10</span>
               </label>
               <input type="range" min={1} max={10} value={form.benefit} onChange={(e) => setForm({ ...form, benefit: Number(e.target.value) })} className="w-full accent-[#D4AF37]" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0A192F] mb-1">{tr('Your feedback *', '{رأيك|رأيكِ} في الورشة *')}</label>
-              <textarea rows={4} value={form.feedback} onChange={(e) => setForm({ ...form, feedback: e.target.value })} maxLength={2000} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm" />
+              <label className="block text-xs font-bold text-[var(--ink)] mb-1">{tr('Your feedback *', '{رأيك|رأيكِ} في الورشة *')}</label>
+              <textarea rows={4} value={form.feedback} onChange={(e) => setForm({ ...form, feedback: e.target.value })} maxLength={2000} className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm text-[#1f2433] bg-white" />
             </div>
             {error && <p className="text-xs text-red-600">{error}</p>}
-            <button type="submit" disabled={sending} className="w-full py-3.5 rounded-xl bg-[#0A192F] text-[#F3E5AB] font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60">
+            <button type="submit" disabled={sending} className="w-full py-3.5 rounded-xl bg-[var(--btn)] text-[var(--btnInk)] font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Award className="w-4 h-4 text-[#D4AF37]" />}
               {tr('Get my certificate', '{احصل|احصلي} على {شهادتك|شهادتكِ}')}
             </button>
           </form>
         )}
 
-        {joinOffer}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { validRealName, latinDigits } from '../components/student/CompleteProfile';
 import { GoogleSignInButton, OrDivider, googleErrorMessage } from '../components/common/GoogleSignInButton';
+import { WsBackdrop, wsVars } from '../components/common/WorkshopTheme';
 import { workshopPageService, WorkshopPage, DEFAULT_GROUP_LINK, joinUrl, currentJoinUrl } from '../services/workshopService';
 
 // صفحة الورشة المجانية «تحدّث بالإنجليزية وابنِ ثقتك» برابط مستقل (/workshop):
@@ -31,6 +32,7 @@ export const FALLBACK_PAGE: WorkshopPage = {
   duration: SPEAK_WORKSHOP.durationAr,
   learn: SPEAK_WORKSHOP.learnAr,
   color: '#6b2f3a',
+  theme: 'white',
   poster: SPEAK_WORKSHOP.poster,
   groupLink: DEFAULT_GROUP_LINK
 };
@@ -170,7 +172,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
     else setError(errText(r.code));
   };
 
-  const inp = 'w-full px-4 py-3 rounded-xl border border-[#d8c4c0] text-sm bg-white focus:outline-none focus:border-[var(--wc)]';
+  const inp = 'w-full px-4 py-3 rounded-xl border border-[var(--line)] text-sm text-[#1f2433] bg-white focus:outline-none focus:border-[var(--wc)]';
 
   if (page === undefined) return <div className="min-h-screen flex items-center justify-center text-sm text-gray-400">...</div>;
   if (page === null || (!page.published && !isAdmin && !isSuperAdmin))
@@ -184,17 +186,18 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
     );
 
   return (
-    <div className="min-h-screen bg-[var(--wl)] py-6 px-4" dir="rtl" style={{ ['--wc' as any]: P.color, ['--wl' as any]: tint(P.color) }}>
-      <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <div className="relative min-h-screen py-6 px-4" dir="rtl" style={wsVars(P.theme, P.color, tint(P.color))}>
+      <WsBackdrop theme={P.theme} />
+      <div className="relative z-10 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <div className="space-y-4">
-          {W.poster && <img src={W.poster} alt={W.titleAr} className="w-full rounded-3xl shadow-xl border border-[#e3d2cb]" />}
+          {W.poster && <img src={W.poster} alt={W.titleAr} className="w-full rounded-3xl shadow-xl border border-[var(--line)]" />}
         </div>
 
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-[#e3d2cb] space-y-5">
+        <div className="bg-[var(--card)] backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl border border-[var(--line)] space-y-5">
           <div className="space-y-2 text-center">
             <span className="inline-block px-4 py-1 rounded-full bg-[var(--wc)] text-white text-xs font-bold">ورشة مجانية تفاعلية</span>
-            <h1 className="text-3xl font-extrabold text-[#2b1d1d]">{W.titleAr}</h1>
-            <p className="text-sm text-[#6b5b57]">{W.subtitleAr}</p>
+            <h1 className="text-3xl font-extrabold text-[var(--ink)]">{W.titleAr}</h1>
+            <p className="text-sm text-[var(--muted)]">{W.subtitleAr}</p>
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center">
@@ -205,7 +208,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
             ].map((x) => (
               <div key={x.t} className="p-3 rounded-2xl bg-[var(--wl)]">
                 <x.icon className="w-5 h-5 mx-auto mb-1 text-[var(--wc)]" />
-                <p className="text-[11px] font-bold text-[#2b1d1d] leading-snug">{x.t}</p>
+                <p className="text-[11px] font-bold text-[var(--ink)] leading-snug">{x.t}</p>
               </div>
             ))}
           </div>
@@ -214,20 +217,20 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
             <p className="font-bold text-[var(--wc)] mb-2">ماذا {'{ستتعلم|ستتعلمين}'} في الورشة؟</p>
             <ul className="space-y-1.5">
               {W.learnAr.map((l) => (
-                <li key={l} className="flex items-center gap-2 text-sm text-[#2b1d1d]">
+                <li key={l} className="flex items-center gap-2 text-sm text-[var(--ink)]">
                   <CheckCircle2 className="w-4 h-4 text-[var(--wc)] shrink-0" />
                   {l}
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-sm font-bold text-[#2b1d1d] flex items-center gap-2">
+            <p className="mt-3 text-sm font-bold text-[var(--ink)] flex items-center gap-2">
               <Award className="w-5 h-5 text-[#b58a3c]" /> الورشة مجانية بالكامل + شهادة حضور مجانية وموثّقة
             </p>
           </div>
 
-          <div className="border-t border-[#eadbd5] pt-5 space-y-3">
-            <p className="font-bold text-[#2b1d1d] text-center">{'{سجّل|سجّلي}'} الآن مجانًا</p>
-            <p className="text-[11px] text-[#6b5b57] text-center">
+          <div className="border-t border-[var(--line)] pt-5 space-y-3">
+            <p className="font-bold text-[var(--ink)] text-center">{'{سجّل|سجّلي}'} الآن مجانًا</p>
+            <p className="text-[11px] text-[var(--muted)] text-center">
               {'{تنشئ|تنشئين}'} حسابًا مجانيًا في English Zone Academy، ثم {'{تكتب|تكتبين}'} {'{اسمك|اسمكِ}'} وبياناتك، وبعدها يظهر لك رابط قناة تيليغرام التي نرسل فيها رابط الورشة وموعدها.
             </p>
             <div className="grid grid-cols-3 gap-2">
@@ -279,7 +282,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
                 {busy ? '...' : 'التسجيل في الورشة'}
               </button>
             </form>
-            <p className="text-[11px] text-center text-[#6b5b57]">
+            <p className="text-[11px] text-center text-[var(--muted)]">
               لديك حساب؟{' '}
               <button onClick={() => navigate('login')} className="font-bold text-[var(--wc)] underline">
                 تسجيل الدخول
@@ -288,7 +291,7 @@ export const SpeakWorkshopPage: React.FC<{ navigate: (route: string) => void; wo
           </div>
         </div>
       </div>
-      <p className="text-center text-[11px] text-[#6b5b57] mt-6">English Zone Academy | Learn • Speak • Grow</p>
+      <p className="relative z-10 text-center text-[11px] text-[var(--muted)] mt-6">English Zone Academy | Learn • Speak • Grow</p>
     </div>
   );
 };

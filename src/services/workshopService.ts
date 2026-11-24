@@ -32,6 +32,7 @@ export interface Workshop {
   workshopDate?: string;
   active: boolean;
   template?: string; // صورة قالب الشهادة (data URL)
+  theme?: 'blue' | 'white'; // مظهر صفحة الشهادة
   type?: 'workshop' | 'certificate'; // ورشة (صفحة تسجيل) أو شهادة؛ القديمة بلا نوع تحمل الاثنين
   layout: CertLayout;
   createdAt: string;
@@ -106,6 +107,7 @@ export interface WorkshopPage {
   learn: string[];
   color: string;
   poster?: string;
+  theme?: 'blue' | 'white';
   groupLink: string;
   updatedAt?: string;
 }
@@ -141,12 +143,23 @@ export const workshopPageService = {
       learn: (p.learn || []).map((x) => String(x).trim()).filter(Boolean).slice(0, 10),
       color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#6b2f3a',
       groupLink: (p.groupLink || DEFAULT_GROUP_LINK).trim().slice(0, 300),
+      theme: p.theme === 'white' ? 'white' : 'blue',
       updatedAt: new Date().toISOString()
     };
     if (p.poster !== undefined) data.poster = p.poster;
     await setDoc(doc(db, 'workshops', p.workshopId + PAGE_SUFFIX), data, { merge: true });
     // آخر ورشة تُنشر تصبح هي التي يفتحها الرابط القصير /workshop
     if (data.published) await setDoc(doc(db, 'workshops', 'current_page'), { kind: 'pointer', workshopId: p.workshopId, updatedAt: data.updatedAt });
+  },
+  // من نموذج «ورشة جديدة»: الصورة والمظهر (تُنشأ الصفحة غير منشورة إن لم تكن موجودة)
+  async patch(workshopId: string, title: string, data: { poster?: string; theme?: 'blue' | 'white' }): Promise<void> {
+    const ref = doc(db, 'workshops', workshopId + PAGE_SUFFIX);
+    const exists = (await getDoc(ref)).exists();
+    const d: any = { kind: 'page', workshopId, updatedAt: new Date().toISOString() };
+    if (!exists) Object.assign(d, { published: false, title: title.trim().slice(0, 150), subtitle: '', date: '', time: '', duration: '', learn: [], color: '#1d4ed8', groupLink: DEFAULT_GROUP_LINK });
+    if (data.poster !== undefined) d.poster = data.poster;
+    if (data.theme) d.theme = data.theme;
+    await setDoc(ref, d, { merge: true });
   },
   async remove(workshopId: string): Promise<void> {
     await deleteDoc(doc(db, 'workshops', workshopId + PAGE_SUFFIX)).catch(() => undefined);
@@ -209,6 +222,7 @@ export const workshopService = {
     };
     if (w.template !== undefined) data.template = w.template;
     if (w.type) data.type = w.type;
+    if (w.theme) data.theme = w.theme;
     await setDoc(doc(db, 'workshops', id), data, { merge: true });
     return id;
   },
