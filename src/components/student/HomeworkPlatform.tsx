@@ -42,6 +42,18 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
   const progressTimer = useRef<number | null>(null);
   // دروس أُنهيت في هذه الجلسة: لا يُحفظ لها «غير مكتمل» متأخر
   const finished = useRef<Set<string>>(new Set());
+  // واجبات لها نتيجة محفوظة: إعادة حلّها للتدريب فقط ولا تُحفظ
+  const doneIds = useRef<Set<string>>(new Set());
+  const sendDone = (target?: Window | null) => {
+    const ids = [...doneIds.current];
+    [target, frameRef.current?.contentWindow, popupRef.current].forEach((w) => {
+      try {
+        if (w) w.postMessage({ source: 'ez-platform', type: 'done', ids }, '*');
+      } catch {
+        /* الصفحة أُغلقت */
+      }
+    });
+  };
   const valid = true;
 
 
@@ -51,6 +63,8 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
       .then((r) => {
         // إن أُنهي الدرس لاحقًا يُحذف «غير المكتمل» القديم
         const full = new Set(r.filter((x) => !x.partial).map((x) => x.itemId));
+        full.forEach((id) => doneIds.current.add(id));
+        sendDone();
         r.filter((x) => x.partial && full.has(x.itemId)).forEach((x) => studentHubService.deletePartialResult(uid, x.itemId).catch(() => undefined));
         setResults(r.filter((x) => !(x.partial && full.has(x.itemId))));
       })
@@ -120,6 +134,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
     if (!list.length) return;
     const left: any[] = [];
     for (const m of list) {
+      if (doneIds.current.has(String(m.id || m.title || ''))) continue;
       try {
         await saveFinal(m);
       } catch {
@@ -148,6 +163,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
       console.error('Error loading homework progress:', err);
     }
     win.postMessage({ source: 'ez-platform', type: 'student', name }, '*');
+    sendDone(win);
   };
 
   useEffect(() => {
@@ -170,6 +186,14 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         const score = Number(m.score);
         const total = Number(m.total);
         if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0) return;
+        const itemId = String(m.id || m.title || '');
+        if (doneIds.current.has(itemId)) {
+          // إعادة حل للتدريب: النتيجة تظهر للطالبة فقط ولا تُحفظ ولا تصل للمعلمة
+          setSavedNote(isAr ? `إعادة للتدريب: ${m.title} (${score}/${total}). هذه النتيجة لكِ فقط، ونتيجتك الأولى هي المحفوظة.` : `Practice retake: ${m.title} (${score}/${total}). Only you see this; your first result is the one saved.`);
+          window.setTimeout(() => setSavedNote(''), 7000);
+          return;
+        }
+        doneIds.current.add(itemId);
         try {
           await saveFinal(m);
           setSaveError('');
@@ -178,6 +202,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
           loadResults();
         } catch (err: any) {
           console.error('Error saving homework result:', err);
+          doneIds.current.delete(itemId);
           writePending([...readPending(), m]);
           setSaveError(
             (isAr ? 'لم تُحفظ النتيجة الآن، وستُعاد المحاولة تلقائيًا عند فتح الواجبات مرة أخرى. الخطأ: ' : 'Result not saved yet; it will retry automatically next time. Error: ') + (err?.code || err?.message || '')
@@ -190,6 +215,7 @@ export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, te
         const done = Number(m.done);
         if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0 || !Number.isFinite(done)) return;
         const ex = m.extra && typeof m.extra === 'object' ? m.extra : {};
+        if (doneIds.current.has(String(m.id || m.title || ''))) return;
         freshIds()
           .then((ids) => finished.current.has(String(m.id || m.title || '').slice(0, 80)) ? undefined : studentHubService.savePartialResult({
             studentId: uid,

@@ -704,11 +704,27 @@ export const studentHubService = {
     await updateDoc(doc(db, 'homework_results', id), { starsGiven: stars });
   },
 
+  // كل واجب يظهر مرة واحدة: أول حلّ مكتمل هو المعتمد (إعادة الحل للتدريب لا تُحسب)،
+  // و«غير المكتمل» يظهر فقط إن لم يكتمل الواجب بعد
+  firstAttempts(list: HomeworkResult[]): HomeworkResult[] {
+    const asc = [...list].sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+    const full = new Map<string, HomeworkResult>();
+    const part = new Map<string, HomeworkResult>();
+    asc.forEach((r) => {
+      const k = `${r.studentId}|${r.itemId}`;
+      if (r.partial) part.set(k, r);
+      else if (!full.has(k)) full.set(k, r);
+    });
+    const out = [...full.values()];
+    part.forEach((r, k) => {
+      if (!full.has(k)) out.push(r);
+    });
+    return out.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  },
+
   async getMyHomeworkResults(studentId: string): Promise<HomeworkResult[]> {
     const snap = await getDocs(query(collection(db, 'homework_results'), where('studentId', '==', studentId)));
-    return snap.docs
-      .map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult))
-      .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    return this.firstAttempts(snap.docs.map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult)));
   },
 
   // للمعلم: يجب تمرير معرّفه حتى تسمح القواعد بالقراءة
@@ -717,9 +733,7 @@ export const studentHubService = {
       ? query(collection(db, 'homework_results'), where('studentId', '==', studentId), where('teacherId', '==', teacherId))
       : query(collection(db, 'homework_results'), where('studentId', '==', studentId));
     const snap = await getDocs(q);
-    return snap.docs
-      .map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult))
-      .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    return this.firstAttempts(snap.docs.map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult)));
   },
 
   // كل النتائج: للإدارة، أو لطلاب المعلم فقط
@@ -756,9 +770,7 @@ export const studentHubService = {
       ? query(collection(db, 'homework_results'), where('teacherId', '==', teacherId))
       : collection(db, 'homework_results');
     const snap = await getDocs(q);
-    return snap.docs
-      .map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult))
-      .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    return this.firstAttempts(snap.docs.map((d) => ({ ...(d.data() as any), id: d.id } as HomeworkResult)));
   },
 
   async saveHomeworkProgress(uid: string, data: Record<string, string>): Promise<void> {

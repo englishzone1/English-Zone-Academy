@@ -877,7 +877,7 @@ const TQ={
  fr:(s,v,sample)=>({free:1,v:v||`sent`,sample:sample||``,p:[s+`\n`,[``]]})
 };
 let TCUR=null, TBACK=`levels`, TWARN=false;
-function openTest(T,back){ TCUR=T; TBACK=back||`levels`; TWARN=false; $(`etitle`).textContent=T.title; renderTest(); show(`exam`); }
+function openTest(T,back){ TCUR=T; TBACK=back||`levels`; TWARN=false; $(`etitle`).textContent=T.title; renderTest(); show(`exam`); if(itemDone(T.id)) setTimeout(()=>toast(`✔ أنهيتِ هذا الاختبار من قبل، ونتيجتك الأولى هي المحفوظة. يمكنك إعادته للتدريب، ونتيجته تظهر لكِ فقط.`),1200); }
 function renderTest(){
   const T=TCUR;
   $(`examBody`).innerHTML=`<div class="tcover" dir="rtl"><b>${T.ar||T.title}</b><div>أجيبي عن كل الأسئلة ثم اضغطي «تسليم الاختبار» في آخر الصفحة. لا تظهر النتيجة إلا بعد التسليم.</div><div>الطالبة: ${student&&student.name?student.name:``}</div></div><div id="tsecs"></div><p id="exwarn" class="fb no hidden" dir="rtl"></p><button class="btn all" id="exsub">تسليم الاختبار ✅</button>`;
@@ -1033,7 +1033,8 @@ function gradeTest(){
   document.querySelectorAll(`#tsecs input,#tsecs select,#tsecs textarea`).forEach(x=>x.disabled=true);
   const graded=all; const ok=Math.round(graded.reduce((a,r)=>a+rowGot(r),0)*100)/100, n=graded.reduce((a,r)=>a+rowMax(r),0), pct=n?Math.round(ok/n*100):0;
   const nrec=REC.filter(Boolean).length;
-  TDONE=true; const doneKey=tKey(); setTimeout(()=>clearTestWork(doneKey),5000);
+  TDONE=true; clearTestWork(tKey());
+  try{ const D=getDone(), k=`t_`+TCUR.id; if(!D[k]){ D[k]={s:ok,t:n}; localStorage.setItem(doneKey(),JSON.stringify(D)); } markCards(); }catch(e){}
   setTimeout(()=>ezSendTest(graded,ok,n),400);
   const msg=pct>=90?`عمل ممتاز! 🏆`:pct>=70?`عمل جيد! ⭐`:pct>=50?`مقبول – واصلي التدريب. 👍`:`تحتاجين مزيدًا من التدريب – راجعي الدروس. 💪`;
   const secs=[]; graded.forEach(r=>{ let g=secs.find(x=>x.s===r.secRef); if(!g){ g={s:r.secRef,n:0,ok:0}; secs.push(g); } g.n+=rowMax(r); g.ok+=rowGot(r); });
@@ -1524,11 +1525,12 @@ const LESSON_REV56 = [
 ];
 
 let SECTIONS = LESSON_1A;
-function openLesson(t,s,b){REPSHOWN=false;PARTSENT=0;PARTFIN=0;BACKTO=b||`lvl1`;SECTIONS=s;$(`ltitle`).textContent=t;renderCover(t);build();show(`lesson`);const rn=restoreWork();updLesson();if(rn) toast(`📌 رجعنا إلى حيث توقفتِ في هذا الدرس، أكملي الحل.`);}
+function openLesson(t,s,b){REPSHOWN=false;PARTSENT=0;PARTFIN=0;BACKTO=b||`lvl1`;SECTIONS=s;$(`ltitle`).textContent=t;renderCover(t);build();show(`lesson`);const rn=restoreWork();updLesson();if(rn) toast(`📌 رجعنا إلى حيث توقفتِ في هذا الدرس، أكملي الحل.`); else if(itemDone(CURCARD)) toast(`✔ أنهيتِ هذا الواجب من قبل، ونتيجتك الأولى هي المحفوظة. يمكنك حله مرة ثانية للتدريب، ونتيجته تظهر لكِ فقط.`);}
 const UCOL={u1:`#1b5faa`,u2:`#e0a800`,u3:`#2e9e5b`,u4:`#7b4bb7`,u5:`#ef6c00`,u6:`#00897b`,u7:`#c2185b`,u8:`#3949ab`,rev:`#d64545`};
 let CURCARD=null;
 function renderCover(t){
-  const card=[...document.querySelectorAll(`button.lesson`)].find(c=>c.firstChild&&c.firstChild.textContent.trim()===t.trim());
+  const head=c=>[...c.childNodes].find(n=>!(n.classList&&n.classList.contains(`fin`)));
+  const card=[...document.querySelectorAll(`button.lesson`)].find(c=>{ const h=head(c); return h&&h.textContent.trim()===t.trim(); });
   CURCARD=card?card.id:t;
   const cls=card?[...card.classList].find(c=>UCOL[c]):null;
   $(`lesson`).style.setProperty(`--uc`,cls?UCOL[cls]:`#1b5faa`);
@@ -1542,7 +1544,12 @@ function renderCover(t){
 }
 function doneKey(){ return `ez_done_`+(student&&student.name?student.name.toLowerCase():`guest`); }
 function getDone(){ try{ return JSON.parse(localStorage.getItem(doneKey())||`{}`); }catch(e){ return {}; } }
-function markCards(){ const D=getDone(); document.querySelectorAll(`button.lesson`).forEach(c=>{ const old=c.querySelector(`.badge`); if(old) old.remove(); if(D[c.id]){ const b=document.createElement(`em`); b.className=`badge`; b.textContent=`✓ ${D[c.id].s} / ${D[c.id].t}`; c.appendChild(b); } }); }
+/* الواجبات التي أُنهيت: من هذا الجهاز أو من المنصة (أول حل هو الذي يُحسب) */
+let EZDONE=new Set();
+function itemDone(id){ if(!id) return false; const D=getDone(); const k=String(id); return !!(D[k]||D[`c`+k]||D[`t_`+k]||EZDONE.has(k)||EZDONE.has(k.replace(/^c/,``))||EZDONE.has(k.replace(/^t_/,``))||EZDONE.has(`c`+k)); }
+function markCards(){ const D=getDone(); document.querySelectorAll(`button.lesson`).forEach(c=>{ const old=c.querySelector(`.badge`); if(old) old.remove(); const of=c.querySelector(`.fin`); if(of) of.remove();
+  if(D[c.id]){ const b=document.createElement(`em`); b.className=`badge`; b.textContent=`✓ ${D[c.id].s} / ${D[c.id].t}`; c.appendChild(b); }
+  if(itemDone(c.id)){ const f=document.createElement(`b`); f.className=`fin`; f.dir=`rtl`; f.style.cssText=`display:block;color:#d32f2f;font-weight:800;font-size:.85rem;margin-bottom:4px`; f.textContent=`✔ أنهيتِ هذا الواجب`; c.prepend(f); } }); }
 const HOWTO={
  Grammar:`اقرئي شرح القاعدة بهدوء، ثم اكتبي ثلاث جمل من عندك عليها، وأعيدي التمرين بعد يوم.`,
  Vocabulary:`اكتبي الكلمات في دفترك مع معناها بالعربية ومثال أو رسم صغير، وراجعيها كل يوم خمس دقائق.`,
@@ -1665,7 +1672,7 @@ let RESTORING=false, PARTSENT=0, PARTFIN=0;
 function workKey(){ return `ez_w_`+(student&&student.name?student.name.toLowerCase():`guest`)+`_`+CURCARD; }
 function lessonItems(){ return [...document.querySelectorAll(`#sections .item`)]; }
 function saveWork(){
-  if(RESTORING||!CURCARD||$(`lesson`).classList.contains(`hidden`)) return;
+  if(RESTORING||REPSHOWN||!CURCARD||$(`lesson`).classList.contains(`hidden`)) return;
   const d=lessonItems().map(r=>{ const f=[...r.querySelectorAll(`input,select,textarea`)]; if(!f.length) return 0; const v=f.map(x=>x.value); const st=r.isOk?1:r.locked?2:(r.tries||0)?3:0; if(!st&&v.every(x=>!x)) return 0; return {v,st}; });
   try{ if(d.some(Boolean)) localStorage.setItem(workKey(),JSON.stringify({t:Date.now(),d})); }catch(e){}
 }
@@ -1673,7 +1680,11 @@ function clearWork(){ try{ localStorage.removeItem(workKey()); }catch(e){} }
 function restoreWork(){
   let w=null; try{ w=JSON.parse(localStorage.getItem(workKey())||`null`); }catch(e){}
   if(!w||!Array.isArray(w.d)) return 0;
-  const rows=lessonItems(); RESTORING=true; let n=0;
+  const rows=lessonItems();
+  // حل محفوظ مكتمل (بقي بعد الإنهاء): لا نعيده حتى لا تُرسل النتيجة مرة ثانية
+  const chk=rows.filter(r=>r.querySelector(`.chk`)&&!r.isFree&&!r.isX).length, fin=w.d.filter(x=>x&&(x.st===1||x.st===2)).length;
+  if(chk&&fin>=chk){ clearWork(); return 0; }
+  RESTORING=true; let n=0;
   w.d.forEach((s,i)=>{ const r=rows[i]; if(!s||!r||!Array.isArray(s.v)) return; const f=[...r.querySelectorAll(`input,select,textarea`)];
     s.v.forEach((v,j)=>{ if(f[j]) f[j].value=v; }); n++;
     const b=r.querySelector(`.chk`); if(!b||r.isFree||b.disabled) return;
@@ -1712,6 +1723,7 @@ window.addEventListener(`message`,ev=>{
     try{ Object.keys(m.data).forEach(k=>{ if(k.indexOf(`ez_`)!==0) return; const cur=localStorage.getItem(k); if(!cur||cur.length<String(m.data[k]).length) localStorage.setItem(k,String(m.data[k])); }); }catch(e){}
     try{ markCards(); }catch(e){}
   }
+  if(m.type===`done`&&Array.isArray(m.ids)){ EZDONE=new Set(m.ids.map(String)); try{ markCards(); }catch(e){} }
   if(m.type===`student`&&m.name){
     student={name:String(m.name).slice(0,60)};
     $(`hello`).textContent=`Welcome, ${student.name} 🌟`;
