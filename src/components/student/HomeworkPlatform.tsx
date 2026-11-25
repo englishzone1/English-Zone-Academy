@@ -3,6 +3,7 @@ import { Maximize2, Minimize2, BookOpenCheck, CheckCircle2, ExternalLink } from 
 import { studentHubService, HomeworkResult } from '../../services/studentHubService';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
+const HW_VER = Date.now().toString(36);
 
 interface Props {
   isAr: boolean;
@@ -24,7 +25,8 @@ const kindLabel = (k: string, isAr: boolean) =>
 // الموقع المضمّن يرسل النتائج والتقدّم، فتُحفظ هنا باسم الطالب وتظهر للإدارة والمعلم.
 export const HomeworkPlatform: React.FC<Props> = ({ isAr, uid, name, groupId, teacherId, preview = false, full = false, onBack }) => {
   // موقع الواجبات صار جزءًا من المنصة نفسها، ولا يُفتح إلا من هنا
-  const homeworkUrl = '/homework/';
+  // رقم نسخة يتغيّر مع كل نشر حتى لا يعرض المتصفح نسخة قديمة محفوظة من الاختبارات
+  const homeworkUrl = `/homework/?v=${HW_VER}`;
   const [tall, setTall] = useState(false);
   const [results, setResults] = useState<HomeworkResult[]>([]);
   const [savedNote, setSavedNote] = useState('');
